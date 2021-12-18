@@ -1,8 +1,10 @@
 package com.brandon3055.draconicevolution.common.tileentities.multiblocktiles;
 
-import cofh.api.energy.IEnergyHandler;
-import cofh.api.energy.IEnergyReceiver;
-import com.brandon3055.draconicevolution.api.IExtendedRFStorage;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import com.brandon3055.brandonscore.common.utills.LogHelper;
 import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
 import com.brandon3055.draconicevolution.client.render.particle.Particles;
 import com.brandon3055.draconicevolution.common.ModBlocks;
@@ -10,25 +12,31 @@ import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelp
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.TileObjectSync;
 import com.brandon3055.draconicevolution.integration.computers.IDEPeripheral;
+
+import cofh.api.energy.IEnergyReceiver;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import gregtech.api.interfaces.tileentity.IEnergyConnected;
+import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import net.minecraftforge.fluids.IFluidHandler;
 
 /**
  * Created by Brandon on 28/07/2014.
  */
-public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, IExtendedRFStorage, IDEPeripheral {
+public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IEnergyConnected {
     public boolean active = false;
     public boolean lastTickActive = false;
     public boolean reciveEnergy = false; //Power Flow to system
@@ -69,7 +77,7 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
                 lastCheckCompOverride = cOut;
             }
         }
-
+        /*
         if (active && !reciveEnergy) {
             for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
                 TileEntity tile = worldObj.getTileEntity(xCoord + d.offsetX, yCoord + d.offsetY, zCoord + d.offsetZ);
@@ -78,7 +86,7 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
                 }
             }
         }
-
+    */
         detectAndSendChanges();
         if (particleRate > 0) particleRate--;
     }
@@ -259,12 +267,36 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
         readFromNBT(pkt.func_148857_g());
     }
 
-    /* IEnergyHandler */
     @Override
-    public boolean canConnectEnergy(ForgeDirection from) {
+    public long injectEnergyUnits(byte aSide, long aVoltage, long aAmperage) {
+        
+        LogHelper.warn("Blah blah");
+        
+        if (getMaster() == null) return 0;
+        long totalEnergyAccumalated = 0L;
+        
+        while (inputEnergyFrom(aSide)) {
+             totalEnergyAccumalated += (aVoltage * aAmperage); // Must do once per tick
+        }
+        
+        getMaster().receiveEnergy(totalEnergyAccumalated, false);
+        
+        return aAmperage; // *Should* allow for infinite amps?? Maybe set it to something specific
+    }
+    
+    //Don't care about sides
+    @Override
+    public boolean inputEnergyFrom(byte aSide) {
         return true;
     }
-
+    
+    @Override
+    public boolean outputsEnergyTo(byte aSide) {
+        return true;
+    }
+    
+    
+    /* Old RF fuckery
     @Override
     public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
         if (getMaster() == null) return 0;
@@ -273,7 +305,8 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
             particleRate = (byte) Math.min(20, received < 500 && received > 0 ? 1 : received / 500);
         return received;
     }
-
+     
+    
     @Override
     public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
         if (getMaster() == null || !getMaster().isOnline()) return 0;
@@ -282,18 +315,7 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
             particleRate = (byte) Math.min(20, extracted < 500 && extracted > 0 ? 1 : extracted / 500);
         return extracted;
     }
-
-    @Override
-    public int getEnergyStored(ForgeDirection from) {
-        if (getMaster() == null) return 0;
-        return (int) Math.min(Integer.MAX_VALUE, getMaster().getEnergyStored());
-    }
-
-    @Override
-    public int getMaxEnergyStored(ForgeDirection from) {
-        if (getMaster() == null) return 0;
-        return (int) Math.min(Integer.MAX_VALUE, getMaster().getMaxEnergyStored());
-    }
+    */
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
@@ -325,22 +347,18 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
         }
     }
 
-    @Override
     public double getEnergyStored() {
         return getMaster() != null ? getMaster().getEnergyStored() : 0D;
     }
 
-    @Override
     public double getMaxEnergyStored() {
         return getMaster() != null ? getMaster().getMaxEnergyStored() : 0D;
     }
 
-    @Override
     public long getExtendedStorage() {
         return getMaster() != null ? getMaster().getEnergyStored() : 0L;
     }
 
-    @Override
     public long getExtendedCapacity() {
         return getMaster() != null ? getMaster().getMaxEnergyStored() : 0L;
     }
@@ -360,5 +378,373 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
         if (method.equals("getEnergyStored")) return new Object[]{getExtendedStorage()};
         else if (method.equals("getMaxEnergyStored")) return new Object[]{getExtendedCapacity()};
         return new Object[0];
+    }
+
+    // ALL of below is bs that is really only necessary to not displease daddy inheritance
+    
+    @Override
+    public byte getColorization() {
+        // TODO Auto-generated method stub
+        return -1;
+    }
+
+    @Override
+    public byte setColorization(byte arg0) {
+        // TODO Auto-generated method stub
+        return -1;
+    }
+
+    @Override
+    public boolean getAir(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean getAirAtSide(byte arg0) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean getAirAtSideAndDistance(byte arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean getAirOffset(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public BiomeGenBase getBiome() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public BiomeGenBase getBiome(int arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Block getBlock(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Block getBlockAtSide(byte arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Block getBlockAtSideAndDistance(byte arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Block getBlockOffset(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IGregTechTileEntity getIGregTechTileEntity(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IGregTechTileEntity getIGregTechTileEntityAtSide(byte arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IGregTechTileEntity getIGregTechTileEntityAtSideAndDistance(byte arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IGregTechTileEntity getIGregTechTileEntityOffset(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IInventory getIInventory(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IInventory getIInventoryAtSide(byte arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IInventory getIInventoryAtSideAndDistance(byte arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IInventory getIInventoryOffset(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IFluidHandler getITankContainer(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IFluidHandler getITankContainerAtSide(byte arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IFluidHandler getITankContainerAtSideAndDistance(byte arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IFluidHandler getITankContainerOffset(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public byte getLightLevel(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public byte getLightLevelAtSide(byte arg0) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public byte getLightLevelAtSideAndDistance(byte arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public byte getLightLevelOffset(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public byte getMetaID(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public byte getMetaIDAtSide(byte arg0) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public byte getMetaIDAtSideAndDistance(byte arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public byte getMetaIDOffset(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int getOffsetX(byte arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public short getOffsetY(byte arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int getOffsetZ(byte arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public boolean getOpacity(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean getOpacityAtSide(byte arg0) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean getOpacityAtSideAndDistance(byte arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean getOpacityOffset(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public int getRandomNumber(int arg0) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public boolean getSky(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean getSkyAtSide(byte arg0) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean getSkyAtSideAndDistance(byte arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean getSkyOffset(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public TileEntity getTileEntity(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public TileEntity getTileEntityAtSide(byte arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public TileEntity getTileEntityAtSideAndDistance(byte arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public TileEntity getTileEntityOffset(int arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public long getTimer() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public World getWorld() {
+        // TODO Auto-generated method stub
+        return getWorldObj();
+    }
+
+    @Override
+    public int getXCoord() {
+        // TODO Auto-generated method stub
+        return xCoord;
+    }
+
+    @Override
+    public short getYCoord() {
+        // TODO Auto-generated method stub
+        return (short) yCoord;
+    }
+
+    @Override
+    public int getZCoord() {
+        // TODO Auto-generated method stub
+        return zCoord;
+    }
+
+    @Override
+    public boolean isClientSide() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean isDead() {
+        // TODO Auto-generated method stub
+        return tileEntityInvalid;
+    }
+
+    @Override
+    public boolean isInvalidTileEntity() {
+        // TODO Auto-generated method stub
+        return tileEntityInvalid;
+    }
+
+    @Override
+    public boolean isServerSide() {
+        // TODO Auto-generated method stub
+        return true; // I guess??
+    }
+
+    @Override
+    public boolean openGUI(EntityPlayer arg0) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean openGUI(EntityPlayer arg0, int arg1) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void sendBlockEvent(byte arg0, byte arg1) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void setLightValue(byte arg0) {
+        // TODO Auto-generated method stub
+        
     }
 }
