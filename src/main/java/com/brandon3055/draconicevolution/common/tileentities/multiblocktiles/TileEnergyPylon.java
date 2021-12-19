@@ -13,7 +13,6 @@ import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.TileObjectSync;
 import com.brandon3055.draconicevolution.integration.computers.IDEPeripheral;
 
-import cofh.api.energy.IEnergyReceiver;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -30,7 +29,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.IFluidHandler;
 
 /**
@@ -99,22 +97,32 @@ public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IE
     }
 
     private TileEnergyStorageCore getMaster() {
-        if (coreLocatios.isEmpty()) return null;
+        if (coreLocatios.isEmpty()) { LogHelper.warn("Locs are empty"); return null; }
         if (selectedCore >= coreLocatios.size()) selectedCore = coreLocatios.size() - 1;
         TileLocation core = coreLocatios.get(selectedCore);
         if (core == null || !(worldObj.getTileEntity(core.getXCoord(), core.getYCoord(), core.getZCoord()) instanceof TileEnergyStorageCore))
+        { 
+            LogHelper.warn("Core null or smth");
             return null;
+        }
         return (TileEnergyStorageCore) worldObj.getTileEntity(core.getXCoord(), core.getYCoord(), core.getZCoord());
     }
 
     private void findCores() {
         int yMod = worldObj.getBlockMetadata(xCoord, yCoord, zCoord) == 1 ? 15 : -15;
-        int range = 15;
+        LogHelper.warn(yMod);
+        int range = 16; // Was 15
         List<TileLocation> locations = new ArrayList<TileLocation>();
         for (int x = xCoord - range; x <= xCoord + range; x++) {
+            //LogHelper.warn("in ys");
             for (int y = yCoord + yMod - range; y <= yCoord + yMod + range; y++) {
+                //LogHelper.warn("in ys");
                 for (int z = zCoord - range; z <= zCoord + range; z++) {
+                    //LogHelper.warn("In zs");
+                    // LogHelper.warn(x + " " + y + " " + z);
+                    // LogHelper.warn(worldObj.getBlock(x, y, z));    
                     if (worldObj.getBlock(x, y, z) == ModBlocks.energyStorageCore) {
+                        LogHelper.warn("Found core!");
                         locations.add(new TileLocation(x, y, z));
                     }
                 }
@@ -216,6 +224,7 @@ public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IE
     }
 
     private boolean isValidStructure() {
+        LogHelper.warn("in isValid");
         return (isGlass(xCoord, yCoord + 1, zCoord) || isGlass(xCoord, yCoord - 1, zCoord)) && (!isGlass(xCoord, yCoord + 1, zCoord) || !isGlass(xCoord, yCoord - 1, zCoord));
     }
 
@@ -272,12 +281,10 @@ public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IE
         
         LogHelper.warn("Blah blah");
         
-        if (getMaster() == null) return 0;
+        if (getMaster() == null) { LogHelper.warn("Slave says master doesn't exist"); return 0; }
         long totalEnergyAccumalated = 0L;
         
-        while (inputEnergyFrom(aSide)) {
-             totalEnergyAccumalated += (aVoltage * aAmperage); // Must do once per tick
-        }
+        totalEnergyAccumalated = (aVoltage * aAmperage); // Must do once per tick
         
         getMaster().receiveEnergy(totalEnergyAccumalated, false);
         
