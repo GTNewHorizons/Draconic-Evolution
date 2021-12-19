@@ -737,16 +737,15 @@ public class TileEnergyStorageCore extends TileObjectSync {
 
 	/* EnergyHandler */
 
-    //TODO: This doesn't currently work. The function is never entered for some reason.
     public long receiveEnergy(long maxReceive, boolean simulate) {
         long energyReceived = Math.min(capacity - energy, maxReceive);
         
-        LogHelper.warn("Blah blah you are in receive mode");
+        //LogHelper.warn("Blah blah you are in receive mode");
         
         if (!simulate) {
             energy += energyReceived;
         }
-        LogHelper.warn("blah blah the receiving is over");
+        //LogHelper.warn("blah blah the receiving is over");
         return energyReceived;
         
     }

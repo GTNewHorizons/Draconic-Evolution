@@ -224,7 +224,7 @@ public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IE
     }
 
     private boolean isValidStructure() {
-        LogHelper.warn("in isValid");
+        //LogHelper.warn("in isValid");
         return (isGlass(xCoord, yCoord + 1, zCoord) || isGlass(xCoord, yCoord - 1, zCoord)) && (!isGlass(xCoord, yCoord + 1, zCoord) || !isGlass(xCoord, yCoord - 1, zCoord));
     }
 
@@ -279,7 +279,7 @@ public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IE
     @Override
     public long injectEnergyUnits(byte aSide, long aVoltage, long aAmperage) {
         
-        LogHelper.warn("Blah blah");
+        //LogHelper.warn("Blah blah");
         
         if (getMaster() == null) { LogHelper.warn("Slave says master doesn't exist"); return 0; }
         long totalEnergyAccumalated = 0L;
