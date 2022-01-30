@@ -12,7 +12,7 @@ This mod is [licensed under the **LGPL license**](https://github.com/GTNewHorizo
 All **assets are public domain**, unless otherwise stated; all are free to be distributed as long as the license / source credits are kept. 
 This means you can use this mod in any mod pack **as you please**; however if you make any changes you must make the source available!
 
-Original code Copyright (c) 2013-2016 brandon3055
+Original code Copyright (c) 2013-2016 brandon3055 and was licensed MIT
 
 GTNH Modifications:
 
