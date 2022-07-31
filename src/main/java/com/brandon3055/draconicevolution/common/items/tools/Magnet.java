@@ -77,7 +77,7 @@ public class Magnet extends ItemDE {
 
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean hotbar) {
-        if (!entity.isSneaking() && entity.ticksExisted % 5 == 0 && ItemNBTHelper.getBoolean(stack, "MagnetEnabled", false) && entity instanceof EntityPlayer) {
+        if (!entity.isSneaking() && entity.ticksExisted % 5 == 0 && isEnabled(stack) && entity instanceof EntityPlayer) {
             int range = stack.getItemDamage() == 0 ? 8 : 32;
 
             List<EntityItem> items = world.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(entity.posX, entity.posY, entity.posZ, entity.posX, entity.posY, entity.posZ).expand(range, range, range));
@@ -121,10 +121,19 @@ public class Magnet extends ItemDE {
         }
     }
 
+    public static boolean isEnabled(ItemStack itemStack) {
+        return ItemNBTHelper.getBoolean(itemStack, "MagnetEnabled", false);
+    }
+
+    public static void toggle(ItemStack itemStack) {
+        ItemNBTHelper.setBoolean(itemStack, "MagnetEnabled", !isEnabled(itemStack));
+    }
+
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-        if (player.isSneaking())
-            ItemNBTHelper.setBoolean(stack, "MagnetEnabled", !ItemNBTHelper.getBoolean(stack, "MagnetEnabled", false));
+        if (player.isSneaking()) {
+            toggle(stack);
+        }
         return stack;
     }
 
