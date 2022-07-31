@@ -72,7 +72,7 @@ public class Magnet extends ItemDE {
     @SideOnly(Side.CLIENT)
     @Override
     public boolean hasEffect(ItemStack stack, int pass) {
-        return ItemNBTHelper.getBoolean(stack, "MagnetEnabled", false);
+        return isEnabled(stack);
     }
 
     @Override
@@ -127,6 +127,10 @@ public class Magnet extends ItemDE {
 
     public static void toggle(ItemStack itemStack) {
         ItemNBTHelper.setBoolean(itemStack, "MagnetEnabled", !isEnabled(itemStack));
+    }
+
+    public static void setStatus(ItemStack itemStack, boolean status) {
+        ItemNBTHelper.setBoolean(itemStack, "MagnetEnabled", status);
     }
 
     @Override
