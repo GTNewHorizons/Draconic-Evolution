@@ -12,6 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.IEntityMultiPart;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -165,7 +166,12 @@ public class TileGrinder extends TileObjectSync implements ISidedInventory, IEne
         if (killList.size() > 0) {
             EntityLiving mob = killList.get(worldObj.rand.nextInt(killList.size()));
             if (mob.isEntityAlive()) {
-                mob.attackEntityFrom(DamageSource.causePlayerDamage(fakePlayer), 50000F);
+                if (mob instanceof IEntityMultiPart) {
+                    ((IEntityMultiPart) mob)
+                            .attackEntityFromPart(null, DamageSource.causePlayerDamage(fakePlayer), 50000F);
+                } else {
+                    mob.attackEntityFrom(DamageSource.causePlayerDamage(fakePlayer), 50000F);
+                }
                 readyNext = true;
                 return true;
             }
