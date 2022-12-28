@@ -2,7 +2,6 @@ package com.brandon3055.draconicevolution.client.render.block;
 
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 import com.brandon3055.draconicevolution.client.render.tile.RenderTileEarth;
-import com.brandon3055.draconicevolution.client.render.tile.RenderTileReactorCore;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;

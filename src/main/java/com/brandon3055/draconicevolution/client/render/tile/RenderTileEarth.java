@@ -2,10 +2,7 @@ package com.brandon3055.draconicevolution.client.render.tile;
 
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileEarth;
-import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileEnergyStorageCore;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -25,8 +22,8 @@ public class RenderTileEarth extends TileEntitySpecialRenderer {
     public static IModelCustom modelCustom;
 
     public RenderTileEarth() {
-        modelCustom = AdvancedModelLoader.loadModel(
-                new ResourceLocation(References.MODID.toLowerCase(), "models/Earth.obj"));
+        modelCustom =
+                AdvancedModelLoader.loadModel(new ResourceLocation(References.MODID.toLowerCase(), "models/Earth.obj"));
     }
 
     @Override

@@ -15,7 +15,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 
-
 public class Earth extends BlockDE {
 
     public Earth() {
@@ -69,7 +68,7 @@ public class Earth extends BlockDE {
             float p_149727_7_,
             float p_149727_8_,
             float p_149727_9_) {
-        TileEarth tile = (TileEarth) world.getTileEntity(x,y,z);
+        TileEarth tile = (TileEarth) world.getTileEntity(x, y, z);
 
         if (player.isSneaking()) {
             tile.incrementSize();
@@ -84,5 +83,4 @@ public class Earth extends BlockDE {
 
         return true;
     }
-
 }
