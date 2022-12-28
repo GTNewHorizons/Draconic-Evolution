@@ -6,6 +6,7 @@ import net.minecraft.util.AxisAlignedBB;
 
 public class TileEarth extends TileEntity {
 
+    // Prevent culling when block is out of frame so model can remain active.
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
         return INFINITE_EXTENT_AABB;

@@ -166,7 +166,7 @@ public class CommonProxy {
         GameRegistry.registerTileEntity(
                 TileEnergyStorageCore.class, References.RESOURCESPREFIX + "TileEnergyStorageCore");
         GameRegistry.registerTileEntity(
-                TileEnergyStorageCore.class, References.RESOURCESPREFIX + "TileEarth");
+                TileEarth.class, References.RESOURCESPREFIX + "TileEarth");
         GameRegistry.registerTileEntity(
                 TileInvisibleMultiblock.class, References.RESOURCESPREFIX + "TileInvisibleMultiblock");
         GameRegistry.registerTileEntity(TileEnergyPylon.class, References.RESOURCESPREFIX + "TileEnergyPylon");
