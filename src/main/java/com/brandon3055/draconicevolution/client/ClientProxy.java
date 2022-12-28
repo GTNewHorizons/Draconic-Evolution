@@ -18,6 +18,7 @@ import com.brandon3055.draconicevolution.client.render.tile.*;
 import com.brandon3055.draconicevolution.common.CommonProxy;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.ModItems;
+import com.brandon3055.draconicevolution.common.blocks.multiblock.Earth;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.IReactorPart;
 import com.brandon3055.draconicevolution.common.entity.*;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
@@ -26,6 +27,7 @@ import com.brandon3055.draconicevolution.common.tileentities.*;
 import com.brandon3055.draconicevolution.common.tileentities.energynet.TileEnergyRelay;
 import com.brandon3055.draconicevolution.common.tileentities.energynet.TileEnergyTransceiver;
 import com.brandon3055.draconicevolution.common.tileentities.energynet.TileWirelessEnergyTransceiver;
+import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileEarth;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileEnergyPylon;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileEnergyStorageCore;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
@@ -154,7 +156,7 @@ public class ClientProxy extends CommonProxy {
                     ModItems.draconicSword,
                     new RenderTool(
                             "models/tools/DraconicSword.obj", "textures/models/tools/DraconicSword.png", (IRenderTweak)
-                                    ModItems.draconicSword));
+                            ModItems.draconicSword));
             MinecraftForgeClient.registerItemRenderer(
                     ModItems.wyvernPickaxe,
                     new RenderTool("models/tools/Pickaxe.obj", "textures/models/tools/Pickaxe.png", (IRenderTweak)
@@ -195,7 +197,7 @@ public class ClientProxy extends CommonProxy {
                     ModItems.draconicHoe,
                     new RenderTool(
                             "models/tools/DraconicHoe.obj", "textures/models/tools/DraconicHoe.png", (IRenderTweak)
-                                    ModItems.draconicHoe));
+                            ModItems.draconicHoe));
             MinecraftForgeClient.registerItemRenderer(ModItems.draconicBow, new RenderBowModel(true));
             MinecraftForgeClient.registerItemRenderer(ModItems.wyvernBow, new RenderBowModel(false));
         }
@@ -228,6 +230,7 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileCustomSpawner.class, new RenderTileCustomSpawner());
         // ClientRegistry.bindTileEntitySpecialRenderer(TileTestBlock.class, new RenderTileCrystal());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnergyStorageCore.class, new RenderTileEnergyStorageCore());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEarth.class, new RenderTileEarth());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnergyPylon.class, new RenderTileEnergyPylon());
         ClientRegistry.bindTileEntitySpecialRenderer(TilePlacedItem.class, new RenderTilePlacedItem());
         ClientRegistry.bindTileEntitySpecialRenderer(TileDissEnchanter.class, new RenderTileDissEnchanter());
