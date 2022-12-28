@@ -18,7 +18,7 @@ public class TileEarth extends TileObjectSync {
     }
 
     private static final int maxRotationSpeed = 64;
-    private static final int maxSize = 32;
+    private static final int maxSize = 200;
 
     private int size = 1;
     private int rotationSpeed = 0;

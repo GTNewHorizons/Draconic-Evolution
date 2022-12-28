@@ -216,6 +216,8 @@ public class ClientProxy extends CommonProxy {
         MinecraftForgeClient.registerItemRenderer(
                 Item.getItemFromBlock(ModBlocks.reactorCore), new RenderReactorCore());
         MinecraftForgeClient.registerItemRenderer(
+                Item.getItemFromBlock(ModBlocks.earthBlock), new RenderEarthItem());
+        MinecraftForgeClient.registerItemRenderer(
                 Item.getItemFromBlock(ModBlocks.chaosCrystal), new RenderChaosShard());
         MinecraftForgeClient.registerItemRenderer(
                 Item.getItemFromBlock(ModBlocks.upgradeModifier), new RenderUpgradeModifier());

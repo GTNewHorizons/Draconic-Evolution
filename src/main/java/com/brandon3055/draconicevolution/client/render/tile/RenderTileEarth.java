@@ -22,7 +22,7 @@ public class RenderTileEarth extends TileEntitySpecialRenderer {
 
     private static final ResourceLocation iner_model_texture =
             new ResourceLocation(References.MODID.toLowerCase(), "textures/models/Earth.png");
-    private final IModelCustom modelCustom;
+    public static IModelCustom modelCustom;
 
     public RenderTileEarth() {
         modelCustom = AdvancedModelLoader.loadModel(
