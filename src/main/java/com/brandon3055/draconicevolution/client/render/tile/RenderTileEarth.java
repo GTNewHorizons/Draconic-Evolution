@@ -2,7 +2,10 @@ package com.brandon3055.draconicevolution.client.render.tile;
 
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileEarth;
+import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileEnergyStorageCore;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -28,11 +31,9 @@ public class RenderTileEarth extends TileEntitySpecialRenderer {
 
     @Override
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float timeSinceLastTick) {
+        if (!(tile instanceof TileEarth)) return;
 
         TileEarth tileEarth = (TileEarth) tile;
-        TileEntity test = (TileEarth) tile.getWorldObj().getTileEntity((int) x, (int) y, (int) z);
-
-
         float scale = 0.01f * tileEarth.getSize();
 
         GL11.glPushMatrix();

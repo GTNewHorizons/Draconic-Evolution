@@ -1,10 +1,15 @@
 package com.brandon3055.draconicevolution.common.tileentities.multiblocktiles;
 
+import com.brandon3055.draconicevolution.common.blocks.BlockDE;
+import com.brandon3055.draconicevolution.common.tileentities.TileObjectSync;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 
-public class TileEarth extends TileEntity {
+public class TileEarth extends TileObjectSync {
 
     // Prevent culling when block is out of frame so model can remain active.
     @Override
@@ -34,8 +39,8 @@ public class TileEarth extends TileEntity {
         return rotationSpeed % maxRotationSpeed;
     }
 
-    private static final String rotationSpeedNBTTag = "rotationSpeed";
-    private static final String sizeNBTTag = "size";
+    private static final String rotationSpeedNBTTag = "DE:rotationSpeed";
+    private static final String sizeNBTTag = "DE:size";
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
@@ -49,5 +54,17 @@ public class TileEarth extends TileEntity {
         super.readFromNBT(compound);
         rotationSpeed = compound.getInteger(rotationSpeedNBTTag);
         size = compound.getInteger(sizeNBTTag);
+    }
+
+    @Override
+    public Packet getDescriptionPacket() {
+        NBTTagCompound nbttagcompound = new NBTTagCompound();
+        writeToNBT(nbttagcompound);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, nbttagcompound);
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
+        readFromNBT(pkt.func_148857_g());
     }
 }
