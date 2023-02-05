@@ -271,8 +271,7 @@ public class ConfigHandler {
                     Configuration.CATEGORY_GENERAL,
                     "Item Dislocator Disable Sound",
                     false,
-                    "Disable item dislocator sound")
-                    .getBoolean(false);
+                    "Disable item dislocator sound").getBoolean(false);
             disableLog = config.get(
                     Configuration.CATEGORY_GENERAL,
                     "Disable Log",
