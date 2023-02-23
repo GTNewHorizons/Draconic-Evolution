@@ -36,7 +36,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GUITeleporter extends GuiScreen {
 
-    private static final int pearlsWithShift = Loader.isModLoaded("dreamcraft") ? 64 : 16;
+    private static final int PEARLS_WITH_SHIFT = Loader.isModLoaded("dreamcraft") ? 64 : 16;
     private final int xSize = 182;
     private final int ySize = 141;
     private ResourceLocation guiTexture = new ResourceLocation(
@@ -535,10 +535,10 @@ public class GUITeleporter extends GuiScreen {
                 if ((!Keyboard.isKeyDown(42)) && (!Keyboard.isKeyDown(54))) {
                     DraconicEvolution.network.sendToServer(new TeleporterPacket(TeleporterPacket.ADDFUEL, 1, false));
                     this.fuel += ConfigHandler.teleporterUsesPerPearl;
-                } else if (hasPearls(pearlsWithShift)) {
+                } else if (hasPearls(PEARLS_WITH_SHIFT)) {
                     DraconicEvolution.network
-                            .sendToServer(new TeleporterPacket(TeleporterPacket.ADDFUEL, pearlsWithShift, false));
-                    this.fuel += ConfigHandler.teleporterUsesPerPearl * pearlsWithShift;
+                            .sendToServer(new TeleporterPacket(TeleporterPacket.ADDFUEL, PEARLS_WITH_SHIFT, false));
+                    this.fuel += ConfigHandler.teleporterUsesPerPearl * PEARLS_WITH_SHIFT;
                 } else player.addChatMessage(new ChatComponentTranslation("msg.teleporterOutOfPearls.txt"));
             } else player.addChatMessage(new ChatComponentTranslation("msg.teleporterOutOfPearls.txt"));
         }
