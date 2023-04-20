@@ -84,7 +84,15 @@ public class EnergyStorageCore extends BlockDE implements IHudDisplayBlock {
         if (!world.isRemote) {
             player.addChatComponentMessage(new ChatComponentText("Tier:" + (tile.getTier() + 1)));
             String BN = String.valueOf(tile.getEnergyStored());
-            player.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocal("info.de.charge.txt") + ": " + Utills.formatNumber(tile.getEnergyStored()) + " / " + Utills.formatNumber(tile.getMaxEnergyStored()) + " [" + BN + " EU]"));
+            player.addChatComponentMessage(
+                    new ChatComponentText(
+                            StatCollector.translateToLocal("info.de.charge.txt") + ": "
+                                    + Utills.formatNumber(tile.getEnergyStored())
+                                    + " / "
+                                    + Utills.formatNumber(tile.getMaxEnergyStored())
+                                    + " ["
+                                    + BN
+                                    + " EU]"));
         }
         return true;
     }
@@ -172,7 +180,15 @@ public class EnergyStorageCore extends BlockDE implements IHudDisplayBlock {
         list.add(InfoHelper.HITC() + getLocalizedName());
         list.add("Tier: " + InfoHelper.ITC() + (tile.getTier() + 1));
         String BN = String.valueOf(tile.getEnergyStored());
-        list.add(StatCollector.translateToLocal("info.de.charge.txt") + ": " + InfoHelper.ITC() + Utills.formatNumber(tile.getEnergyStored()) + " / " + Utills.formatNumber(tile.getMaxEnergyStored()) + " [" + BN + " EU]");
+        list.add(
+                StatCollector.translateToLocal("info.de.charge.txt") + ": "
+                        + InfoHelper.ITC()
+                        + Utills.formatNumber(tile.getEnergyStored())
+                        + " / "
+                        + Utills.formatNumber(tile.getMaxEnergyStored())
+                        + " ["
+                        + BN
+                        + " EU]");
 
         return list;
     }

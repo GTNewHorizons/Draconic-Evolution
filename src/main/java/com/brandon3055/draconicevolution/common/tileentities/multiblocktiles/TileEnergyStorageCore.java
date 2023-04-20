@@ -14,15 +14,7 @@ import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.TileObjectSync;
 import com.brandon3055.draconicevolution.common.tileentities.TileParticleGenerator;
 import com.brandon3055.draconicevolution.common.utills.LogHelper;
-
 import cpw.mods.fml.common.network.NetworkRegistry;
-import gregtech.api.interfaces.tileentity.IEnergyConnected;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.util.AxisAlignedBB;
 
 /**
  * Created by Brandon on 25/07/2014.
@@ -898,15 +890,15 @@ public class TileEnergyStorageCore extends TileObjectSync {
 
     public long receiveEnergy(long maxReceive, boolean simulate) {
         long energyReceived = Math.min(capacity - energy, maxReceive);
-        
-        //LogHelper.warn("Blah blah you are in receive mode");
-        
+
+        // LogHelper.warn("Blah blah you are in receive mode");
+
         if (!simulate) {
             energy += energyReceived;
         }
-        //LogHelper.warn("blah blah the receiving is over");
+        // LogHelper.warn("blah blah the receiving is over");
         return energyReceived;
-        
+
     }
 
     public long extractEnergy(long maxExtract, boolean simulate) {

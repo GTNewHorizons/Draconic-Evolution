@@ -4,6 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.fluids.IFluidHandler;
+
 import com.brandon3055.brandonscore.common.utills.LogHelper;
 import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
 import com.brandon3055.draconicevolution.client.render.particle.Particles;
@@ -19,24 +32,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.interfaces.tileentity.IEnergyConnected;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.interfaces.tileentity.IHasWorldObjectAndCoords;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.fluids.IFluidHandler;
-
 
 /**
  * Created by Brandon on 28/07/2014.
  */
-public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IEnergyConnected, IHasWorldObjectAndCoords {
+public class TileEnergyPylon extends TileObjectSync
+        implements IDEPeripheral, IEnergyConnected, IHasWorldObjectAndCoords {
 
     public boolean active = false;
     public boolean lastTickActive = false;
@@ -106,19 +107,11 @@ public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IE
             }
         }
         /*
-        if (active && !reciveEnergy) {
-            for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
-                TileEntity tile = worldObj.getTileEntity(xCoord + d.offsetX, yCoord + d.offsetY, zCoord + d.offsetZ);
-                if (tile != null && tile instanceof IEnergyReceiver) {
-                    extractEnergy(
-                            d,
-                            ((IEnergyReceiver) tile)
-                                    .receiveEnergy(d.getOpposite(), extractEnergy(d, Integer.MAX_VALUE, true), false),
-                            false);
-                }
-            }
-        }
-    */
+         * if (active && !reciveEnergy) { for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) { TileEntity tile =
+         * worldObj.getTileEntity(xCoord + d.offsetX, yCoord + d.offsetY, zCoord + d.offsetZ); if (tile != null && tile
+         * instanceof IEnergyReceiver) { extractEnergy( d, ((IEnergyReceiver) tile) .receiveEnergy(d.getOpposite(),
+         * extractEnergy(d, Integer.MAX_VALUE, true), false), false); } } }
+         */
         detectAndSendChanges();
         if (particleRate > 0) particleRate--;
     }
@@ -131,11 +124,16 @@ public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IE
     }
 
     private TileEnergyStorageCore getMaster() {
-        if (coreLocatios.isEmpty()) { LogHelper.warn("Locs are empty"); return null; }
+        if (coreLocatios.isEmpty()) {
+            LogHelper.warn("Locs are empty");
+            return null;
+        }
         if (selectedCore >= coreLocatios.size()) selectedCore = coreLocatios.size() - 1;
         TileLocation core = coreLocatios.get(selectedCore);
-        if (core == null || !(worldObj.getTileEntity(core.getXCoord(), core.getYCoord(), core.getZCoord()) instanceof TileEnergyStorageCore))
-        { 
+        if (core == null || !(worldObj.getTileEntity(
+                core.getXCoord(),
+                core.getYCoord(),
+                core.getZCoord()) instanceof TileEnergyStorageCore)) {
             LogHelper.warn("Core null or smth");
             return null;
         }
@@ -148,13 +146,13 @@ public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IE
         int range = 16; // Was 15
         List<TileLocation> locations = new ArrayList<TileLocation>();
         for (int x = xCoord - range; x <= xCoord + range; x++) {
-            //LogHelper.warn("in ys");
+            // LogHelper.warn("in ys");
             for (int y = yCoord + yMod - range; y <= yCoord + yMod + range; y++) {
-                //LogHelper.warn("in ys");
+                // LogHelper.warn("in ys");
                 for (int z = zCoord - range; z <= zCoord + range; z++) {
-                    //LogHelper.warn("In zs");
+                    // LogHelper.warn("In zs");
                     // LogHelper.warn(x + " " + y + " " + z);
-                    // LogHelper.warn(worldObj.getBlock(x, y, z));    
+                    // LogHelper.warn(worldObj.getBlock(x, y, z));
                     if (worldObj.getBlock(x, y, z) == ModBlocks.energyStorageCore) {
                         LogHelper.warn("Found core!");
                         locations.add(new TileLocation(x, y, z));
@@ -310,8 +308,9 @@ public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IE
     }
 
     private boolean isValidStructure() {
-        //LogHelper.warn("in isValid");
-        return (isGlass(xCoord, yCoord + 1, zCoord) || isGlass(xCoord, yCoord - 1, zCoord)) && (!isGlass(xCoord, yCoord + 1, zCoord) || !isGlass(xCoord, yCoord - 1, zCoord));
+        // LogHelper.warn("in isValid");
+        return (isGlass(xCoord, yCoord + 1, zCoord) || isGlass(xCoord, yCoord - 1, zCoord))
+                && (!isGlass(xCoord, yCoord + 1, zCoord) || !isGlass(xCoord, yCoord - 1, zCoord));
     }
 
     private boolean isGlass(int x, int y, int z) {
@@ -364,51 +363,44 @@ public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IE
 
     @Override
     public long injectEnergyUnits(byte aSide, long aVoltage, long aAmperage) {
-        
-        //LogHelper.warn("Blah blah");
-        
-        if (getMaster() == null) { LogHelper.warn("Slave says master doesn't exist"); return 0; }
+
+        // LogHelper.warn("Blah blah");
+
+        if (getMaster() == null) {
+            LogHelper.warn("Slave says master doesn't exist");
+            return 0;
+        }
         long totalEnergyAccumalated = 0L;
-        
+
         totalEnergyAccumalated = (aVoltage * aAmperage); // Must do once per tick
-        
+
         getMaster().receiveEnergy(totalEnergyAccumalated, false);
-        
+
         return aAmperage; // *Should* allow for infinite amps?? Maybe set it to something specific
     }
-    
-    //Don't care about sides
+
+    // Don't care about sides
     @Override
     public boolean inputEnergyFrom(byte aSide) {
         return true;
     }
-    
+
     @Override
     public boolean outputsEnergyTo(byte aSide) {
         return true;
     }
-    
-    
-    /* Old RF fuckery
-    @Override
-    public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
-        if (getMaster() == null) return 0;
-        int received = reciveEnergy ? getMaster().receiveEnergy(maxReceive, simulate) : 0;
-        if (!simulate && received > 0)
-            particleRate = (byte) Math.min(20, received < 500 && received > 0 ? 1 : received / 500);
-        return received;
-    }
-     
-    
-    @Override
-    public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
-        if (getMaster() == null || !getMaster().isOnline()) return 0;
-        int extracted = reciveEnergy ? 0 : getMaster().extractEnergy(maxExtract, simulate);
-        if (!simulate && extracted > 0)
-            particleRate = (byte) Math.min(20, extracted < 500 && extracted > 0 ? 1 : extracted / 500);
-        return extracted;
-    }
-    */
+
+    /*
+     * Old RF fuckery
+     * @Override public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) { if (getMaster() ==
+     * null) return 0; int received = reciveEnergy ? getMaster().receiveEnergy(maxReceive, simulate) : 0; if (!simulate
+     * && received > 0) particleRate = (byte) Math.min(20, received < 500 && received > 0 ? 1 : received / 500); return
+     * received; }
+     * @Override public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) { if (getMaster() ==
+     * null || !getMaster().isOnline()) return 0; int extracted = reciveEnergy ? 0 :
+     * getMaster().extractEnergy(maxExtract, simulate); if (!simulate && extracted > 0) particleRate = (byte)
+     * Math.min(20, extracted < 500 && extracted > 0 ? 1 : extracted / 500); return extracted; }
+     */
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
@@ -480,7 +472,7 @@ public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IE
     }
 
     // ALL of below is bs that is really only necessary to not displease daddy inheritance
-    
+
     @Override
     public byte getColorization() {
         // TODO Auto-generated method stub
@@ -838,12 +830,12 @@ public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IE
     @Override
     public void sendBlockEvent(byte arg0, byte arg1) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void setLightValue(byte arg0) {
         // TODO Auto-generated method stub
-        
+
     }
 }
