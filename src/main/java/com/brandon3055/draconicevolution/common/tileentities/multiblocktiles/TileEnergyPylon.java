@@ -18,6 +18,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.interfaces.tileentity.IEnergyConnected;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import gregtech.api.interfaces.tileentity.IHasWorldObjectAndCoords;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -35,7 +36,7 @@ import net.minecraftforge.fluids.IFluidHandler;
 /**
  * Created by Brandon on 28/07/2014.
  */
-public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IEnergyConnected {
+public class TileEnergyPylon extends TileObjectSync implements IDEPeripheral, IEnergyConnected, IHasWorldObjectAndCoords {
 
     public boolean active = false;
     public boolean lastTickActive = false;

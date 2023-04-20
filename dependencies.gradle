@@ -1,21 +1,22 @@
 // Add your dependencies here
 
 dependencies {
-    compile("curse.maven:brandons-core-231382:2297163")
+    api("curse.maven:brandons-core-231382:2297163")
+    implementation("com.github.GTNewHorizons:GT5-Unofficial:5.09.42.61:dev")
 
-    compileOnly("com.github.GTNewHorizons:ForestryMC:4.4.5:api") {
+    compileOnly("com.github.GTNewHorizons:ForestryMC:4.6.5:api") {
         transitive = false
     }
-    compileOnly("com.github.GTNewHorizons:OpenComputers:1.7.5.20-GTNH:api") {
+    compileOnly("com.github.GTNewHorizons:OpenComputers:1.9.1-GTNH:api") {
         transitive = false
     }
-    compileOnly("com.github.GTNewHorizons:NotEnoughItems:2.2.3-GTNH:dev") {
+    compileOnly("com.github.GTNewHorizons:NotEnoughItems:2.3.45-GTNH:dev") {
         transitive = false
     }
-    compileOnly("com.github.GTNewHorizons:CodeChickenLib:1.1.5.1:dev") {
+    compileOnly("com.github.GTNewHorizons:CodeChickenLib:1.1.8:dev") {
         transitive = false
     }
-    compileOnly("com.github.GTNewHorizons:inventory-tweaks:1.5.13:dev") {
+    compileOnly("com.github.GTNewHorizons:inventory-tweaks:1.5.16:dev") {
         transitive = false
     }
 
