@@ -1,7 +1,5 @@
 package com.brandon3055.draconicevolution.client.render.tile;
 
-import com.brandon3055.draconicevolution.common.items.MobSoul;
-import com.brandon3055.draconicevolution.common.tileentities.TilePlacedItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -13,15 +11,18 @@ import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
 import org.lwjgl.opengl.GL11;
+
+import com.brandon3055.draconicevolution.common.items.MobSoul;
+import com.brandon3055.draconicevolution.common.tileentities.TilePlacedItem;
 
 /**
  * Created by Brandon on 27/07/2014.
  */
 public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
 
-    public RenderTilePlacedItem() {
-    }
+    public RenderTilePlacedItem() {}
 
     @Override
     public void renderTileEntityAt(TileEntity te, double x, double y, double z, float timeSinceLastTick) {
@@ -41,7 +42,7 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
         World world = Minecraft.getMinecraft().theWorld;
         EntityItem itemEntity = new EntityItem(tile.getWorldObj(), 0, 0, 0, stack);
         int meta = world.getBlockMetadata(tile.xCoord, tile.yCoord, tile.zCoord);
-        //itemEntity.getEntityItem().stackSize = 1;
+        // itemEntity.getEntityItem().stackSize = 1;
         itemEntity.hoverStart = 0.0F;
         boolean is3D = stack.getItem().isFull3D();
         boolean isBlock = stack.getItem() instanceof ItemBlock;

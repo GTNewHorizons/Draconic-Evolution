@@ -12,6 +12,7 @@ import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
+
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class SlotItemValid extends Slot {
@@ -71,13 +72,7 @@ public class SlotItemValid extends Slot {
         }
     }
     /*
-	@Override
-	public IIcon getBackgroundIconIndex()
-	{
-		IIcon icon = Items.coal.getIconIndex(new ItemStack(Items.coal));
-		if (false)
-			return icon;
-		else
-			return super.getBackgroundIconIndex();
-	}*/
+     * @Override public IIcon getBackgroundIconIndex() { IIcon icon = Items.coal.getIconIndex(new
+     * ItemStack(Items.coal)); if (false) return icon; else return super.getBackgroundIconIndex(); }
+     */
 }

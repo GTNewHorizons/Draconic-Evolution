@@ -1,13 +1,15 @@
 package com.brandon3055.draconicevolution.common.container;
 
-import com.brandon3055.draconicevolution.common.inventory.SlotItemValid;
-import com.brandon3055.draconicevolution.common.tileentities.TileGrinder;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
+import com.brandon3055.draconicevolution.common.inventory.SlotItemValid;
+import com.brandon3055.draconicevolution.common.tileentities.TileGrinder;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ContainerGrinder extends ContainerDataSync {
 
@@ -31,14 +33,12 @@ public class ContainerGrinder extends ContainerDataSync {
         }
         if (!tile.isExternallyPowered()) addSlotToContainer(new SlotItemValid(tile, 0, 64, 35, true));
         else addSlotToContainer(new SlotItemValid(tile, 0, -10000, -10000, true));
-
     }
 
     @Override
     public boolean canInteractWith(EntityPlayer player) {
         return tile.isUseableByPlayer(player);
     }
-
 
     @Override
     public ItemStack transferStackInSlot(EntityPlayer player, int i) {
@@ -52,9 +52,10 @@ public class ContainerGrinder extends ContainerDataSync {
                 if (!mergeItemStack(stack, 0, 36, false)) {
                     return null;
                 }
-            } else if (TileGrinder.getItemBurnTime(stack) == 0 || !mergeItemStack(stack, 36, 36 + tile.getSizeInventory(), false)) {
-                return null;
-            }
+            } else if (TileGrinder.getItemBurnTime(stack) == 0
+                    || !mergeItemStack(stack, 36, 36 + tile.getSizeInventory(), false)) {
+                        return null;
+                    }
 
             if (stack.stackSize == 0) {
                 slot.putStack(null);
@@ -89,6 +90,5 @@ public class ContainerGrinder extends ContainerDataSync {
         else if (index == 1) tile.internalGenBuffer.setEnergyStored(i);
         else if (index == 2) tile.burnTime = i;
         else if (index == 3) tile.burnTimeRemaining = i;
-
     }
 }

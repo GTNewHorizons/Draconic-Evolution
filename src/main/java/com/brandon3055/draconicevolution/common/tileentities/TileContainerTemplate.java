@@ -13,17 +13,15 @@ import net.minecraft.tileentity.TileEntity;
  * Created by Brandon on 27/06/2014.
  */
 public class TileContainerTemplate extends TileEntity implements ISidedInventory {
+
     ItemStack[] items = new ItemStack[9];
 
-    //==============================================LOGIC=======================================================//
+    // ==============================================LOGIC=======================================================//
 
     @Override
-    public void updateEntity() {
+    public void updateEntity() {}
 
-    }
-
-
-    //==========================================SYNCHRONIZATION==================================================//
+    // ==========================================SYNCHRONIZATION==================================================//
 
     @Override
     public Packet getDescriptionPacket() {
@@ -37,7 +35,7 @@ public class TileContainerTemplate extends TileEntity implements ISidedInventory
         readFromNBT(pkt.func_148857_g());
     }
 
-    //==============================================INVENTORY====================================================//
+    // ==============================================INVENTORY====================================================//
 
     @Override
     public int getSizeInventory() {
@@ -102,12 +100,10 @@ public class TileContainerTemplate extends TileEntity implements ISidedInventory
     }
 
     @Override
-    public void openInventory() {
-    }
+    public void openInventory() {}
 
     @Override
-    public void closeInventory() {
-    }
+    public void closeInventory() {}
 
     @Override
     public boolean isItemValidForSlot(int i, ItemStack itemstack) {
@@ -116,7 +112,7 @@ public class TileContainerTemplate extends TileEntity implements ISidedInventory
 
     @Override
     public int[] getAccessibleSlotsFromSide(int var1) {
-        return new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8};
+        return new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
     }
 
     @Override
@@ -129,7 +125,7 @@ public class TileContainerTemplate extends TileEntity implements ISidedInventory
         return true;
     }
 
-    //===========================================================================================================//
+    // ===========================================================================================================//
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {

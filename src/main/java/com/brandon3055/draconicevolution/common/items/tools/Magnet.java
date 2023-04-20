@@ -1,14 +1,7 @@
 package com.brandon3055.draconicevolution.common.items.tools;
 
-import com.brandon3055.brandonscore.common.utills.InfoHelper;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.draconicevolution.DraconicEvolution;
-import com.brandon3055.draconicevolution.common.ModItems;
-import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
-import com.brandon3055.draconicevolution.common.items.ItemDE;
-import com.brandon3055.draconicevolution.common.lib.References;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.List;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -24,12 +17,22 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
 
-import java.util.List;
+import com.brandon3055.brandonscore.common.utills.InfoHelper;
+import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
+import com.brandon3055.draconicevolution.DraconicEvolution;
+import com.brandon3055.draconicevolution.common.ModItems;
+import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
+import com.brandon3055.draconicevolution.common.items.ItemDE;
+import com.brandon3055.draconicevolution.common.lib.References;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Created by brandon3055 on 9/3/2016.
  */
 public class Magnet extends ItemDE {
+
     private IIcon draconium;
     private IIcon awakened;
 
@@ -71,17 +74,27 @@ public class Magnet extends ItemDE {
     @SideOnly(Side.CLIENT)
     @Override
     public boolean hasEffect(ItemStack stack, int pass) {
-        return ItemNBTHelper.getBoolean(stack, "MagnetEnabled", false);
+        return isEnabled(stack);
     }
 
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean hotbar) {
-        if (!entity.isSneaking() && entity.ticksExisted % 5 == 0 && ItemNBTHelper.getBoolean(stack, "MagnetEnabled", false) && entity instanceof EntityPlayer) {
+        if (!entity.isSneaking() && entity.ticksExisted % 5 == 0
+                && isEnabled(stack)
+                && entity instanceof EntityPlayer) {
             int range = stack.getItemDamage() == 0 ? 8 : 32;
 
-            List<EntityItem> items = world.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(entity.posX, entity.posY, entity.posZ, entity.posX, entity.posY, entity.posZ).expand(range, range, range));
+            List<EntityItem> items = world.getEntitiesWithinAABB(
+                    EntityItem.class,
+                    AxisAlignedBB.getBoundingBox(
+                            entity.posX,
+                            entity.posY,
+                            entity.posZ,
+                            entity.posX,
+                            entity.posY,
+                            entity.posZ).expand(range, range, range));
 
-            boolean flag = false;
+            boolean playSound = false;
 
             for (EntityItem item : items) {
                 if (item.getEntityItem() == null) {
@@ -89,27 +102,52 @@ public class Magnet extends ItemDE {
                 }
 
                 String name = Item.itemRegistry.getNameForObject(item.getEntityItem().getItem());
-                if (ConfigHandler.itemDislocatorBlacklistMap.containsKey(name) && (ConfigHandler.itemDislocatorBlacklistMap.get(name) == -1 || ConfigHandler.itemDislocatorBlacklistMap.get(name) == item.getEntityItem().getItemDamage())) {
+                if (ConfigHandler.itemDislocatorBlacklistMap.containsKey(name)
+                        && (ConfigHandler.itemDislocatorBlacklistMap.get(name) == -1
+                                || ConfigHandler.itemDislocatorBlacklistMap.get(name)
+                                        == item.getEntityItem().getItemDamage())) {
                     continue;
                 }
-                flag = true;
+                playSound = true;
 
-                if (item.delayBeforeCanPickup > 0) item.delayBeforeCanPickup = 0;
-                item.motionX = item.motionY = item.motionZ = 0;
-                item.setPosition(entity.posX - 0.2 + (world.rand.nextDouble() * 0.4), entity.posY - 0.6, entity.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+                if (item.delayBeforeCanPickup > 0) {
+                    item.delayBeforeCanPickup = 0;
+                }
+                item.motionX = 0;
+                item.motionY = 0;
+                item.motionZ = 0;
+                item.setPosition(
+                        entity.posX - 0.2 + (world.rand.nextDouble() * 0.4),
+                        entity.posY - 0.6,
+                        entity.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
             }
-            if (flag)
-                world.playSoundAtEntity(entity, "random.orb", 0.1F, 0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
+            if (playSound && !ConfigHandler.itemDislocatorDisableSound) {
+                world.playSoundAtEntity(
+                        entity,
+                        "random.orb",
+                        0.1F,
+                        0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
+            }
 
-            List<EntityXPOrb> xp = world.getEntitiesWithinAABB(EntityXPOrb.class, AxisAlignedBB.getBoundingBox(entity.posX, entity.posY, entity.posZ, entity.posX, entity.posY, entity.posZ).expand(4, 4, 4));
-
-            EntityPlayer player = (EntityPlayer) entity;
-
-            for (EntityXPOrb orb : xp) {
-                if (!world.isRemote) {
+            if (!world.isRemote) {
+                List<EntityXPOrb> xp = world.getEntitiesWithinAABB(
+                        EntityXPOrb.class,
+                        AxisAlignedBB.getBoundingBox(
+                                entity.posX,
+                                entity.posY,
+                                entity.posZ,
+                                entity.posX,
+                                entity.posY,
+                                entity.posZ).expand(4, 4, 4));
+                EntityPlayer player = (EntityPlayer) entity;
+                for (EntityXPOrb orb : xp) {
                     if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
                         if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, orb))) continue;
-                        world.playSoundAtEntity(player, "random.orb", 0.1F, 0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
+                        world.playSoundAtEntity(
+                                player,
+                                "random.orb",
+                                0.1F,
+                                0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
                         player.onItemPickup(orb, 1);
                         player.addExperience(orb.xpValue);
                         orb.setDead();
@@ -119,10 +157,23 @@ public class Magnet extends ItemDE {
         }
     }
 
+    public static boolean isEnabled(ItemStack itemStack) {
+        return ItemNBTHelper.getBoolean(itemStack, "MagnetEnabled", false);
+    }
+
+    public static void toggle(ItemStack itemStack) {
+        ItemNBTHelper.setBoolean(itemStack, "MagnetEnabled", !isEnabled(itemStack));
+    }
+
+    public static void setStatus(ItemStack itemStack, boolean status) {
+        ItemNBTHelper.setBoolean(itemStack, "MagnetEnabled", status);
+    }
+
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-        if (player.isSneaking())
-            ItemNBTHelper.setBoolean(stack, "MagnetEnabled", !ItemNBTHelper.getBoolean(stack, "MagnetEnabled", false));
+        if (player.isSneaking()) {
+            toggle(stack);
+        }
         return stack;
     }
 
@@ -130,6 +181,10 @@ public class Magnet extends ItemDE {
     public void addInformation(ItemStack stack, EntityPlayer p_77624_2_, List list, boolean p_77624_4_) {
         list.add(StatCollector.translateToLocal("info.de.shiftRightClickToActivate.txt"));
         int range = stack.getItemDamage() == 0 ? 8 : 32;
-        list.add(InfoHelper.HITC() + range + InfoHelper.ITC() + " " + StatCollector.translateToLocal("info.de.blockRange.txt"));
+        list.add(
+                InfoHelper.HITC() + range
+                        + InfoHelper.ITC()
+                        + " "
+                        + StatCollector.translateToLocal("info.de.blockRange.txt"));
     }
 }

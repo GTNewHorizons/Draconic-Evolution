@@ -1,5 +1,20 @@
 package com.brandon3055.draconicevolution.common.handler;
 
+import java.io.*;
+import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.client.event.RenderPlayerEvent;
+
+import org.apache.commons.io.IOUtils;
+import org.lwjgl.opengl.GL11;
+
 import com.brandon3055.brandonscore.common.handlers.FileHandler;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
@@ -8,21 +23,9 @@ import com.brandon3055.draconicevolution.common.network.ContributorPacket;
 import com.brandon3055.draconicevolution.common.utills.LogHelper;
 import com.google.common.base.Charsets;
 import com.google.gson.stream.JsonReader;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.client.event.RenderPlayerEvent;
-import org.apache.commons.io.IOUtils;
-import org.lwjgl.opengl.GL11;
-
-import java.io.*;
-import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by brandon3055 on 5/11/2015.
@@ -44,13 +47,15 @@ public class ContributorHandler {
             Contributor contributor = contributors.get(event.entityPlayer.getCommandSenderName());
 
             if (contributor.contributionLevel >= 1 && (contributor.contributorWingsEnabled)) renderWings(event);
-            if (contributor.contribution != null && contributor.contribution.toLowerCase().contains("patreon") && contributor.patreonBadgeEnabled)
+            if (contributor.contribution != null && contributor.contribution.toLowerCase().contains("patreon")
+                    && contributor.patreonBadgeEnabled)
                 renderBadge(event);
         }
     }
 
     public static boolean isPlayerContributor(EntityPlayer player) {
-        return contributors.containsKey(player.getCommandSenderName()) && contributors.get(player.getCommandSenderName()).isUserValid(player);
+        return contributors.containsKey(player.getCommandSenderName())
+                && contributors.get(player.getCommandSenderName()).isUserValid(player);
     }
 
     private static void renderWings(RenderPlayerEvent event) {
@@ -133,14 +138,19 @@ public class ContributorHandler {
                 for (String name : FMLCommonHandler.instance().getMinecraftServerInstance().getAllUsernames()) {
                     if (name.equals(contribName)) {
                         ContributorHandler.Contributor contributor = ContributorHandler.contributors.get(contribName);
-                        DraconicEvolution.network.sendTo(new ContributorPacket(contribName, contributor.contributorWingsEnabled, contributor.patreonBadgeEnabled), (EntityPlayerMP) event.player);
+                        DraconicEvolution.network.sendTo(
+                                new ContributorPacket(
+                                        contribName,
+                                        contributor.contributorWingsEnabled,
+                                        contributor.patreonBadgeEnabled),
+                                (EntityPlayerMP) event.player);
                     }
                 }
             }
         }
     }
 
-    //region Reading online contributors list
+    // region Reading online contributors list
     private static void readFile() {
         File cFile = new File(FileHandler.configFolder, "/draconicevolution/contributors.json");
 
@@ -180,8 +190,7 @@ public class ContributorHandler {
 
             reader.close();
             cFile.delete();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -226,13 +235,11 @@ public class ContributorHandler {
                 is.close();
                 os.close();
                 finished = true;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 LogHelper.error("Failed to download contributors list");
                 failed = true;
                 e.printStackTrace();
             }
-
         }
 
         public boolean isFinished() {
@@ -243,9 +250,10 @@ public class ContributorHandler {
             return failed;
         }
     }
-    //endregion
+    // endregion
 
     public static class Contributor {
+
         public String name;
         public String ign;
         public String contribution;
@@ -256,23 +264,32 @@ public class ContributorHandler {
          * 0=Disabled, 1=Enabled when flying, 2=Always Enabled
          */
         public boolean contributorWingsEnabled = true;
+
         public boolean patreonBadgeEnabled = true;
         private boolean validated = false;
         private boolean isValid;
 
-        public Contributor() {
-        }
+        public Contributor() {}
 
         public boolean isUserValid(EntityPlayer player) {
             if (!validated) {
-                isValid = !UUID.nameUUIDFromBytes(("OfflinePlayer:" + player.getCommandSenderName()).getBytes(Charsets.UTF_8)).equals(player.getUniqueID());
+                isValid = !UUID
+                        .nameUUIDFromBytes(("OfflinePlayer:" + player.getCommandSenderName()).getBytes(Charsets.UTF_8))
+                        .equals(player.getUniqueID());
             }
             return isValid;
         }
 
         @Override
         public String toString() {
-            return "[Contributor: " + name + ", Contribution: " + contribution + ", Details: " + details + ", Website: " + website + "]";
+            return "[Contributor: " + name
+                    + ", Contribution: "
+                    + contribution
+                    + ", Details: "
+                    + details
+                    + ", Website: "
+                    + website
+                    + "]";
         }
     }
 }

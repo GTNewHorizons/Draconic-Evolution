@@ -3,10 +3,8 @@ package com.brandon3055.draconicevolution.common.tileentities;
 /**
  * Created by Brandon on 5/07/2014.
  */
+import java.util.Arrays;
 
-import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
@@ -19,9 +17,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
-import java.util.Arrays;
+import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class CustomSpawnerBaseLogic {
+
     /**
      * The delay to spawn.
      */
@@ -39,12 +41,14 @@ public abstract class CustomSpawnerBaseLogic {
      * A counter for spawn tries.
      */
     private int spawnCount = 6;
+
     private Entity renderedEntity;
     private int maxNearbyEntities = 20;
     /**
      * Is receiving a redstone signal
      */
     public boolean powered = false;
+
     public boolean ltPowered = false;
     /**
      * Dose the spawner require a player nearby
@@ -66,6 +70,7 @@ public abstract class CustomSpawnerBaseLogic {
      * The range coefficient for spawning entities around.
      */
     private int spawnRange = 4;
+
     public int skeletonType = 0;
 
     /**
@@ -84,8 +89,11 @@ public abstract class CustomSpawnerBaseLogic {
      */
     public boolean isActivated() {
         if (!requiresPlayer) return true;
-        else
-            return this.getSpawnerWorld().getClosestPlayer((double) this.getSpawnerX() + 0.5D, (double) this.getSpawnerY() + 0.5D, (double) this.getSpawnerZ() + 0.5D, (double) this.activatingRangeFromPlayer) != null;
+        else return this.getSpawnerWorld().getClosestPlayer(
+                (double) this.getSpawnerX() + 0.5D,
+                (double) this.getSpawnerY() + 0.5D,
+                (double) this.getSpawnerZ() + 0.5D,
+                (double) this.activatingRangeFromPlayer) != null;
     }
 
     public void updateSpawner() {
@@ -104,7 +112,8 @@ public abstract class CustomSpawnerBaseLogic {
                 }
 
                 this.renderRotation1 = this.renderRotation0;
-                this.renderRotation0 = (this.renderRotation0 + (double) (1000.0F / ((float) this.spawnDelay + 200.0F))) % 360.0D;
+                this.renderRotation0 = (this.renderRotation0 + (double) (1000.0F / ((float) this.spawnDelay + 200.0F)))
+                        % 360.0D;
             } else {
                 if (this.spawnDelay == -1) {
                     this.resetTimer();
@@ -124,29 +133,48 @@ public abstract class CustomSpawnerBaseLogic {
                         return;
                     }
 
-                    int j = this.getSpawnerWorld().getEntitiesWithinAABB(entity.getClass(), AxisAlignedBB.getBoundingBox((double) this.getSpawnerX(), (double) this.getSpawnerY(), (double) this.getSpawnerZ(), (double) (this.getSpawnerX() + 1), (double) (this.getSpawnerY() + 1), (double) (this.getSpawnerZ() + 1)).expand((double) (this.spawnRange * 2), 4.0D, (double) (this.spawnRange * 2))).size();
+                    int j = this.getSpawnerWorld().getEntitiesWithinAABB(
+                            entity.getClass(),
+                            AxisAlignedBB
+                                    .getBoundingBox(
+                                            (double) this.getSpawnerX(),
+                                            (double) this.getSpawnerY(),
+                                            (double) this.getSpawnerZ(),
+                                            (double) (this.getSpawnerX() + 1),
+                                            (double) (this.getSpawnerY() + 1),
+                                            (double) (this.getSpawnerZ() + 1))
+                                    .expand((double) (this.spawnRange * 2), 4.0D, (double) (this.spawnRange * 2)))
+                            .size();
 
                     if (j >= this.maxNearbyEntities) {
                         this.resetTimer();
                         return;
                     }
 
-                    int x = this.getSpawnerX() + (int) ((this.getSpawnerWorld().rand.nextDouble() - this.getSpawnerWorld().rand.nextDouble()) * (double) this.spawnRange);
+                    int x = this.getSpawnerX() + (int) ((this.getSpawnerWorld().rand.nextDouble()
+                            - this.getSpawnerWorld().rand.nextDouble()) * (double) this.spawnRange);
                     int y = this.getSpawnerY() + this.getSpawnerWorld().rand.nextInt(3) - 1;
-                    int z = this.getSpawnerZ() + (int) ((this.getSpawnerWorld().rand.nextDouble() - this.getSpawnerWorld().rand.nextDouble()) * (double) this.spawnRange);
+                    int z = this.getSpawnerZ() + (int) ((this.getSpawnerWorld().rand.nextDouble()
+                            - this.getSpawnerWorld().rand.nextDouble()) * (double) this.spawnRange);
                     EntityLiving entityliving = entity instanceof EntityLiving ? (EntityLiving) entity : null;
-                    entity.setLocationAndAngles(x + 0.5, y + 0.5, z + 0.5, this.getSpawnerWorld().rand.nextFloat() * 360.0F, 0.0F);
+                    entity.setLocationAndAngles(
+                            x + 0.5,
+                            y + 0.5,
+                            z + 0.5,
+                            this.getSpawnerWorld().rand.nextFloat() * 360.0F,
+                            0.0F);
 
-                    if (entityliving == null || (entityliving.getCanSpawnHere() || ignoreSpawnRequirements && getSpawnerWorld().getBlock(x, y, z) == Blocks.air)) {
+                    if (entityliving == null || (entityliving.getCanSpawnHere()
+                            || ignoreSpawnRequirements && getSpawnerWorld().getBlock(x, y, z) == Blocks.air)) {
                         this.spawnEntity(entity);
-                        this.getSpawnerWorld().playAuxSFX(2004, this.getSpawnerX(), this.getSpawnerY(), this.getSpawnerZ(), 0);
+                        this.getSpawnerWorld()
+                                .playAuxSFX(2004, this.getSpawnerX(), this.getSpawnerY(), this.getSpawnerZ(), 0);
 
                         if (entityliving != null) {
                             entityliving.spawnExplosionParticle();
                         }
 
                         flag = true;
-
                     }
                 }
 
@@ -168,7 +196,7 @@ public abstract class CustomSpawnerBaseLogic {
                 } else {
                     par1Entity.setCurrentItemOrArmor(0, new ItemStack(Items.bow));
                 }
-            } else ((EntityLiving) par1Entity).onSpawnWithEgg(null);
+            } else((EntityLiving) par1Entity).onSpawnWithEgg(null);
 
             if (!requiresPlayer) {
                 ((EntityLiving) par1Entity).func_110163_bv();
@@ -195,7 +223,9 @@ public abstract class CustomSpawnerBaseLogic {
     public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
         this.entityName = par1NBTTagCompound.getString("EntityId");
         this.spawnDelay = par1NBTTagCompound.getShort("Delay");
-        if ((!ConfigHandler.spawnerListType && Arrays.asList(ConfigHandler.spawnerList).contains(this.entityName)) || (ConfigHandler.spawnerListType && !Arrays.asList(ConfigHandler.spawnerList).contains(this.entityName))) {
+        if ((!ConfigHandler.spawnerListType && Arrays.asList(ConfigHandler.spawnerList).contains(this.entityName))
+                || (ConfigHandler.spawnerListType
+                        && !Arrays.asList(ConfigHandler.spawnerList).contains(this.entityName))) {
             this.entityName = "Pig";
             par1NBTTagCompound.setBoolean("Running", false);
         }

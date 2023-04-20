@@ -1,15 +1,5 @@
 package com.brandon3055.draconicevolution.common.blocks;
 
-import com.brandon3055.draconicevolution.DraconicEvolution;
-import com.brandon3055.draconicevolution.common.ModBlocks;
-import com.brandon3055.draconicevolution.common.blocks.itemblocks.CKeyStoneItemBlock;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.draconicevolution.common.ModItems;
-import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.lib.Strings;
-import com.brandon3055.draconicevolution.common.tileentities.TileCKeyStone;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -21,10 +11,23 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
+import com.brandon3055.draconicevolution.DraconicEvolution;
+import com.brandon3055.draconicevolution.common.ModBlocks;
+import com.brandon3055.draconicevolution.common.ModItems;
+import com.brandon3055.draconicevolution.common.blocks.itemblocks.CKeyStoneItemBlock;
+import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.lib.Strings;
+import com.brandon3055.draconicevolution.common.tileentities.TileCKeyStone;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 /**
  * Created by Brandon on 27/08/2014.
  */
 public class CKeyStone extends BlockDE {
+
     private IIcon blockIcon1;
 
     public CKeyStone() {
@@ -33,7 +36,6 @@ public class CKeyStone extends BlockDE {
         this.setBlockName(Strings.cKeyStoneName);
         ModBlocks.register(this, CKeyStoneItemBlock.class);
     }
-
 
     @Override
     public boolean hasTileEntity(int metadata) {
@@ -62,14 +64,19 @@ public class CKeyStone extends BlockDE {
     @Override
     public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
         if (side == 0 || side == 1) return Blocks.furnace.getIcon(side, 0);
-        TileCKeyStone tile = world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof TileCKeyStone ? (TileCKeyStone) world.getTileEntity(x, y, z) : null;
+        TileCKeyStone tile = world.getTileEntity(x, y, z) != null
+                && world.getTileEntity(x, y, z) instanceof TileCKeyStone ? (TileCKeyStone) world.getTileEntity(x, y, z)
+                        : null;
         if (tile != null) return tile.isActivated ? blockIcon1 : blockIcon;
         else return blockIcon;
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
-        TileCKeyStone tile = world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof TileCKeyStone ? (TileCKeyStone) world.getTileEntity(x, y, z) : null;
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_,
+            float p_149727_7_, float p_149727_8_, float p_149727_9_) {
+        TileCKeyStone tile = world.getTileEntity(x, y, z) != null
+                && world.getTileEntity(x, y, z) instanceof TileCKeyStone ? (TileCKeyStone) world.getTileEntity(x, y, z)
+                        : null;
 
         if (tile != null) return tile.onActivated(player.getHeldItem(), player);
         return false;
@@ -87,7 +94,9 @@ public class CKeyStone extends BlockDE {
 
     @Override
     public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int meta) {
-        TileCKeyStone tile = world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof TileCKeyStone ? (TileCKeyStone) world.getTileEntity(x, y, z) : null;
+        TileCKeyStone tile = world.getTileEntity(x, y, z) != null
+                && world.getTileEntity(x, y, z) instanceof TileCKeyStone ? (TileCKeyStone) world.getTileEntity(x, y, z)
+                        : null;
         if (tile != null) return tile.isActivated ? 15 : 0;
         return 0;
     }
@@ -99,7 +108,9 @@ public class CKeyStone extends BlockDE {
 
     @Override
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) {
-        TileCKeyStone tile = world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof TileCKeyStone ? (TileCKeyStone) world.getTileEntity(x, y, z) : null;
+        TileCKeyStone tile = world.getTileEntity(x, y, z) != null
+                && world.getTileEntity(x, y, z) instanceof TileCKeyStone ? (TileCKeyStone) world.getTileEntity(x, y, z)
+                        : null;
         if (tile != null) {
             ItemStack key = new ItemStack(ModItems.key);
             ItemNBTHelper.setInteger(key, "KeyCode", tile.getKeyCode());
@@ -112,7 +123,8 @@ public class CKeyStone extends BlockDE {
     }
 
     @Override
-    public boolean isBlockSolid(IBlockAccess p_149747_1_, int p_149747_2_, int p_149747_3_, int p_149747_4_, int p_149747_5_) {
+    public boolean isBlockSolid(IBlockAccess p_149747_1_, int p_149747_2_, int p_149747_3_, int p_149747_4_,
+            int p_149747_5_) {
         return true;
     }
 
@@ -120,6 +132,4 @@ public class CKeyStone extends BlockDE {
     public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
         return true;
     }
-
 }
-

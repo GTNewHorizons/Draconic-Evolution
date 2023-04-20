@@ -3,7 +3,15 @@ package com.brandon3055.draconicevolution.common.tileentities.energynet;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraftforge.common.util.ForgeDirection;
+
 import cofh.api.energy.IEnergyReceiver;
+
 import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.render.particle.ParticleEnergyField;
@@ -11,14 +19,9 @@ import com.brandon3055.draconicevolution.client.render.particle.Particles;
 import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
 import com.brandon3055.draconicevolution.common.items.tools.Wrench;
 import com.brandon3055.draconicevolution.common.lib.References;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * Created by Brandon on 10/02/2015.
@@ -30,34 +33,29 @@ public class TileWirelessEnergyTransceiver extends TileRemoteEnergyBase {
 
     public List<LinkedReceiver> receiverList = new ArrayList<LinkedReceiver>();
 
-    public TileWirelessEnergyTransceiver() {
-    }
+    public TileWirelessEnergyTransceiver() {}
 
     public TileWirelessEnergyTransceiver(int powerTier) {
         this.powerTier = powerTier;
         this.updateStorage();
     }
 
-
     @Override
     public int getCap() {
-        return powerTier == 0 ?
-               BalanceConfigHandler.energyWirelessTransceiverBasicStorage :
-               BalanceConfigHandler.energyWirelessTransceiverAdvancedStorage;
+        return powerTier == 0 ? BalanceConfigHandler.energyWirelessTransceiverBasicStorage
+                : BalanceConfigHandler.energyWirelessTransceiverAdvancedStorage;
     }
 
     @Override
     public int getRec() {
-        return powerTier == 0 ?
-               BalanceConfigHandler.energyWirelessTransceiverBasicMaxReceive :
-               BalanceConfigHandler.energyWirelessTransceiverAdvancedMaxReceive;
+        return powerTier == 0 ? BalanceConfigHandler.energyWirelessTransceiverBasicMaxReceive
+                : BalanceConfigHandler.energyWirelessTransceiverAdvancedMaxReceive;
     }
 
     @Override
     public int getExt() {
-        return powerTier == 0 ?
-               BalanceConfigHandler.energyWirelessTransceiverBasicMaxExtract :
-               BalanceConfigHandler.energyWirelessTransceiverAdvancedMaxExtract;
+        return powerTier == 0 ? BalanceConfigHandler.energyWirelessTransceiverBasicMaxExtract
+                : BalanceConfigHandler.energyWirelessTransceiverAdvancedMaxExtract;
     }
 
     @Override
@@ -65,26 +63,53 @@ public class TileWirelessEnergyTransceiver extends TileRemoteEnergyBase {
         super.updateEntity();
 
         if (worldObj.isRemote) {
-            ring = DraconicEvolution.proxy.energyField(worldObj, xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, 2, powerTier == 1, ring, inView > 0);
+            ring = DraconicEvolution.proxy.energyField(
+                    worldObj,
+                    xCoord + 0.5,
+                    yCoord + 0.5,
+                    zCoord + 0.5,
+                    2,
+                    powerTier == 1,
+                    ring,
+                    inView > 0);
 
             for (LinkedReceiver receiver : receiverList) {
                 int particleValue = 200;
                 if (receiver.particleEnergyCounter > particleValue) {
                     receiver.particleEnergyCounter -= particleValue;
 
-                    //todo detect box size
-                    DraconicEvolution.proxy.spawnParticle(new Particles.TransceiverParticle(worldObj, xCoord + 0.5, yCoord + 0.3 + (worldObj.rand.nextDouble() * 0.4), zCoord + 0.5, receiver.xCoord + worldObj.rand.nextDouble(), receiver.yCoord + worldObj.rand.nextDouble(), receiver.zCoord + worldObj.rand.nextDouble()), 64);
+                    // todo detect box size
+                    DraconicEvolution.proxy.spawnParticle(
+                            new Particles.TransceiverParticle(
+                                    worldObj,
+                                    xCoord + 0.5,
+                                    yCoord + 0.3 + (worldObj.rand.nextDouble() * 0.4),
+                                    zCoord + 0.5,
+                                    receiver.xCoord + worldObj.rand.nextDouble(),
+                                    receiver.yCoord + worldObj.rand.nextDouble(),
+                                    receiver.zCoord + worldObj.rand.nextDouble()),
+                            64);
                 }
             }
         } else {
             for (LinkedReceiver receiver : receiverList) {
-                if (!receiver.isStillValid(worldObj) && worldObj.getChunkFromBlockCoords(receiver.xCoord, receiver.zCoord).isChunkLoaded) {
+                if (!receiver.isStillValid(worldObj)
+                        && worldObj.getChunkFromBlockCoords(receiver.xCoord, receiver.zCoord).isChunkLoaded) {
                     receiverList.remove(receiver);
                     worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
                     break;
                 }
 
-                int sent = receiver.receiveEnergy(worldObj, storage.extractEnergy(receiver.receiveEnergy(worldObj, powerTier == 0 ? BalanceConfigHandler.energyWirelessTransceiverBasicMaxSend : BalanceConfigHandler.energyWirelessTransceiverAdvancedMaxSend, true), false), false);
+                int sent = receiver.receiveEnergy(
+                        worldObj,
+                        storage.extractEnergy(
+                                receiver.receiveEnergy(
+                                        worldObj,
+                                        powerTier == 0 ? BalanceConfigHandler.energyWirelessTransceiverBasicMaxSend
+                                                : BalanceConfigHandler.energyWirelessTransceiverAdvancedMaxSend,
+                                        true),
+                                false),
+                        false);
 
                 sent = (sent / 20);
 
@@ -131,12 +156,13 @@ public class TileWirelessEnergyTransceiver extends TileRemoteEnergyBase {
             return;
         }
 
-
         if (mode.equals(Wrench.BIND_MODE)) {
             LinkedReceiver r = new LinkedReceiver(x, y, z, side);
 
             for (LinkedReceiver r2 : receiverList) {
-                if (r.xCoord == r2.xCoord && r.yCoord == r2.yCoord && r.zCoord == r2.zCoord && r.connectionSide == r2.connectionSide) {
+                if (r.xCoord == r2.xCoord && r.yCoord == r2.yCoord
+                        && r.zCoord == r2.zCoord
+                        && r.connectionSide == r2.connectionSide) {
                     player.addChatComponentMessage(new ChatComponentTranslation("msg.de.linked.txt"));
                     return;
                 }
@@ -175,18 +201,17 @@ public class TileWirelessEnergyTransceiver extends TileRemoteEnergyBase {
         }
     }
 
-//	@Override
-//	public double getCapacity() {
-//		return ((double) getEnergyStored(ForgeDirection.UNKNOWN) / (double) getMaxEnergyStored(ForgeDirection.UNKNOWN)) * 100D;
-//	}
+    // @Override
+    // public double getCapacity() {
+    // return ((double) getEnergyStored(ForgeDirection.UNKNOWN) / (double) getMaxEnergyStored(ForgeDirection.UNKNOWN))
+    // * 100D;
+    // }
 
     /**
-     * Calculates the energy flow based on the local buffer
-     * and the remote buffer
-     * return double between 0 to 100
+     * Calculates the energy flow based on the local buffer and the remote buffer return double between 0 to 100
      */
     public double getFlow(double localCap, double remoteCap) {
-        return Math.max(0, Math.min(100, (localCap - remoteCap) * 100D/*Flow Multiplier*/));
+        return Math.max(0, Math.min(100, (localCap - remoteCap) * 100D /* Flow Multiplier */));
     }
 
     @Override

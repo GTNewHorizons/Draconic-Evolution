@@ -1,11 +1,12 @@
 package com.brandon3055.draconicevolution.common.container;
 
-import com.brandon3055.draconicevolution.common.tileentities.TileContainerTemplate;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
+import com.brandon3055.draconicevolution.common.tileentities.TileContainerTemplate;
 
 public class ContainerTemplate extends Container {
 
@@ -29,7 +30,6 @@ public class ContainerTemplate extends Container {
         for (int x = 0; x < 9; x++) {
             addSlotToContainer(new Slot(tile, x, 8 + 18 * x, 10));
         }
-
     }
 
     @Override
@@ -49,9 +49,10 @@ public class ContainerTemplate extends Container {
                 if (!mergeItemStack(stack, 0, 36, false)) {
                     return null;
                 }
-            } else if (!isStackValidForInventory(stack, 0) || !mergeItemStack(stack, 36, 36 + tile.getSizeInventory(), false)) {
-                return null;
-            }
+            } else if (!isStackValidForInventory(stack, 0)
+                    || !mergeItemStack(stack, 36, 36 + tile.getSizeInventory(), false)) {
+                        return null;
+                    }
 
             if (stack.stackSize == 0) {
                 slot.putStack(null);
@@ -70,5 +71,4 @@ public class ContainerTemplate extends Container {
     private boolean isStackValidForInventory(ItemStack stack, int slot) {
         return true;
     }
-
 }

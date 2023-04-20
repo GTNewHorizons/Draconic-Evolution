@@ -1,15 +1,7 @@
 package com.brandon3055.draconicevolution.common.blocks.machine;
 
-import com.brandon3055.draconicevolution.DraconicEvolution;
-import com.brandon3055.draconicevolution.client.gui.GuiHandler;
-import com.brandon3055.draconicevolution.common.blocks.BlockCustomDrop;
-import com.brandon3055.draconicevolution.common.ModBlocks;
-import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.lib.Strings;
-import com.brandon3055.draconicevolution.common.tileentities.TileWeatherController;
-import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -22,7 +14,17 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import java.util.List;
+import com.brandon3055.draconicevolution.DraconicEvolution;
+import com.brandon3055.draconicevolution.client.gui.GuiHandler;
+import com.brandon3055.draconicevolution.common.ModBlocks;
+import com.brandon3055.draconicevolution.common.blocks.BlockCustomDrop;
+import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.lib.Strings;
+import com.brandon3055.draconicevolution.common.tileentities.TileWeatherController;
+
+import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class WeatherController extends BlockCustomDrop {
 
@@ -54,12 +56,18 @@ public class WeatherController extends BlockCustomDrop {
     public void registerBlockIcons(final IIconRegister iconRegister) {
         icon_top = iconRegister.registerIcon(References.RESOURCESPREFIX + "weather_controller/weather_controller_top");
         icon_bottom = iconRegister.registerIcon(References.RESOURCESPREFIX + "machine_side");
-        icon_side_rain_off = iconRegister.registerIcon(References.RESOURCESPREFIX + "weather_controller/weather_controller_rain");
-        icon_side_rain_on = iconRegister.registerIcon(References.RESOURCESPREFIX + "weather_controller/weatherController_rain_active");
-        icon_side_thunder_off = iconRegister.registerIcon(References.RESOURCESPREFIX + "weather_controller/weatherController_thunderstorm");
-        icon_side_thunder_on = iconRegister.registerIcon(References.RESOURCESPREFIX + "weather_controller/weatherController_thunderstorm_active");
-        icon_side_sun_off = iconRegister.registerIcon(References.RESOURCESPREFIX + "weather_controller/weatherController_sun");
-        icon_side_sun_on = iconRegister.registerIcon(References.RESOURCESPREFIX + "weather_controller/weatherController_sun_active");
+        icon_side_rain_off = iconRegister
+                .registerIcon(References.RESOURCESPREFIX + "weather_controller/weather_controller_rain");
+        icon_side_rain_on = iconRegister
+                .registerIcon(References.RESOURCESPREFIX + "weather_controller/weatherController_rain_active");
+        icon_side_thunder_off = iconRegister
+                .registerIcon(References.RESOURCESPREFIX + "weather_controller/weatherController_thunderstorm");
+        icon_side_thunder_on = iconRegister
+                .registerIcon(References.RESOURCESPREFIX + "weather_controller/weatherController_thunderstorm_active");
+        icon_side_sun_off = iconRegister
+                .registerIcon(References.RESOURCESPREFIX + "weather_controller/weatherController_sun");
+        icon_side_sun_on = iconRegister
+                .registerIcon(References.RESOURCESPREFIX + "weather_controller/weatherController_sun_active");
     }
 
     @Override
@@ -79,11 +87,9 @@ public class WeatherController extends BlockCustomDrop {
             }
         }
 
-
         if (side > 1) return icon_side;
         else if (side == 0) return icon_bottom;
         else return icon_top;
-
     }
 
     @Override
@@ -102,9 +108,17 @@ public class WeatherController extends BlockCustomDrop {
     }
 
     @Override
-    public boolean onBlockActivated(final World world, final int x, final int y, final int z, final EntityPlayer entityPlayer, final int par1, final float par2, final float par3, final float par4) {
+    public boolean onBlockActivated(final World world, final int x, final int y, final int z,
+            final EntityPlayer entityPlayer, final int par1, final float par2, final float par3, final float par4) {
         if (!world.isRemote) {
-            FMLNetworkHandler.openGui(entityPlayer, DraconicEvolution.instance, GuiHandler.GUIID_WEATHER_CONTROLLER, world, x, y, z);
+            FMLNetworkHandler.openGui(
+                    entityPlayer,
+                    DraconicEvolution.instance,
+                    GuiHandler.GUIID_WEATHER_CONTROLLER,
+                    world,
+                    x,
+                    y,
+                    z);
         }
         return true;
     }
@@ -125,9 +139,7 @@ public class WeatherController extends BlockCustomDrop {
     }
 
     @Override
-    protected void getCustomTileEntityDrops(TileEntity te, List<ItemStack> droppes) {
-
-    }
+    protected void getCustomTileEntityDrops(TileEntity te, List<ItemStack> droppes) {}
 
     @Override
     public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {

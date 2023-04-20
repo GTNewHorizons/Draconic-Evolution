@@ -1,13 +1,15 @@
 package com.brandon3055.draconicevolution.integration.nei;
 
+import java.util.ArrayList;
+
+import net.minecraft.client.Minecraft;
+
 import codechicken.nei.PositionedStack;
 import codechicken.nei.api.IStackPositioner;
 import codechicken.nei.recipe.GuiRecipe;
+
 import com.brandon3055.draconicevolution.client.gui.GUIDraconiumChest;
 import com.brandon3055.draconicevolution.common.utills.LogHelper;
-import net.minecraft.client.Minecraft;
-
-import java.util.ArrayList;
 
 /**
  * Created by Brandon on 30/10/2014.
@@ -38,5 +40,4 @@ public class CraftingChestStackPositioner implements IStackPositioner {
 
         return stacks;
     }
-
 }

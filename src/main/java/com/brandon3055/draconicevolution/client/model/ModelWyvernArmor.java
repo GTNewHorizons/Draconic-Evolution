@@ -1,10 +1,10 @@
 package com.brandon3055.draconicevolution.client.model;
 
-import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 
+import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 
 public class ModelWyvernArmor extends ModelBiped {
 
@@ -45,16 +45,42 @@ public class ModelWyvernArmor extends ModelBiped {
         this.bipedRightLeg.setRotationPoint(-2.0F, 12.0F, 0.0F);
         this.bipedRightLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F);
 
-
-        this.head = new ModelRenderOBJ(this, ResourceHandler.getResource("models/armor/WyvernHelmet.obj"), ResourceHandler.getResource("textures/models/armor/WyvernHelmet.png"));
-        this.body = new ModelRenderOBJ(this, ResourceHandler.getResource("models/armor/WyvernBody.obj"), ResourceHandler.getResource("textures/models/armor/WyvernBody.png"));
-        this.rightArm = new ModelRenderOBJ(this, ResourceHandler.getResource("models/armor/WyvernRightArm.obj"), ResourceHandler.getResource("textures/models/armor/WyvernRightArm.png"));
-        this.leftArm = new ModelRenderOBJ(this, ResourceHandler.getResource("models/armor/WyvernLeftArm.obj"), ResourceHandler.getResource("textures/models/armor/WyvernLeftArm.png"));
-        this.belt = new ModelRenderOBJ(this, ResourceHandler.getResource("models/armor/WyvernBelt.obj"), ResourceHandler.getResource("textures/models/armor/WyvernBelt.png"));
-        this.rightLeg = new ModelRenderOBJ(this, ResourceHandler.getResource("models/armor/WyvernRightLeg.obj"), ResourceHandler.getResource("textures/models/armor/WyvernRightLeg.png"));
-        this.leftLeg = new ModelRenderOBJ(this, ResourceHandler.getResource("models/armor/WyvernLeftLeg.obj"), ResourceHandler.getResource("textures/models/armor/WyvernLeftLeg.png"));
-        this.rightBoot = new ModelRenderOBJ(this, ResourceHandler.getResource("models/armor/WyvernRightBoot.obj"), ResourceHandler.getResource("textures/models/armor/WyvernRightBoot.png"));
-        this.leftBoot = new ModelRenderOBJ(this, ResourceHandler.getResource("models/armor/WyvernLeftBoot.obj"), ResourceHandler.getResource("textures/models/armor/WyvernLeftBoot.png"));
+        this.head = new ModelRenderOBJ(
+                this,
+                ResourceHandler.getResource("models/armor/WyvernHelmet.obj"),
+                ResourceHandler.getResource("textures/models/armor/WyvernHelmet.png"));
+        this.body = new ModelRenderOBJ(
+                this,
+                ResourceHandler.getResource("models/armor/WyvernBody.obj"),
+                ResourceHandler.getResource("textures/models/armor/WyvernBody.png"));
+        this.rightArm = new ModelRenderOBJ(
+                this,
+                ResourceHandler.getResource("models/armor/WyvernRightArm.obj"),
+                ResourceHandler.getResource("textures/models/armor/WyvernRightArm.png"));
+        this.leftArm = new ModelRenderOBJ(
+                this,
+                ResourceHandler.getResource("models/armor/WyvernLeftArm.obj"),
+                ResourceHandler.getResource("textures/models/armor/WyvernLeftArm.png"));
+        this.belt = new ModelRenderOBJ(
+                this,
+                ResourceHandler.getResource("models/armor/WyvernBelt.obj"),
+                ResourceHandler.getResource("textures/models/armor/WyvernBelt.png"));
+        this.rightLeg = new ModelRenderOBJ(
+                this,
+                ResourceHandler.getResource("models/armor/WyvernRightLeg.obj"),
+                ResourceHandler.getResource("textures/models/armor/WyvernRightLeg.png"));
+        this.leftLeg = new ModelRenderOBJ(
+                this,
+                ResourceHandler.getResource("models/armor/WyvernLeftLeg.obj"),
+                ResourceHandler.getResource("textures/models/armor/WyvernLeftLeg.png"));
+        this.rightBoot = new ModelRenderOBJ(
+                this,
+                ResourceHandler.getResource("models/armor/WyvernRightBoot.obj"),
+                ResourceHandler.getResource("textures/models/armor/WyvernRightBoot.png"));
+        this.leftBoot = new ModelRenderOBJ(
+                this,
+                ResourceHandler.getResource("models/armor/WyvernLeftBoot.obj"),
+                ResourceHandler.getResource("textures/models/armor/WyvernLeftBoot.png"));
 
         this.bipedHead.cubeList.clear();
         this.bipedHeadwear.cubeList.clear();
@@ -110,7 +136,6 @@ public class ModelWyvernArmor extends ModelBiped {
             this.bipedLeftLeg.addChild(leftBoot);
             this.bipedRightLeg.addChild(rightBoot);
         }
-
     }
 
     @Override
@@ -155,7 +180,8 @@ public class ModelWyvernArmor extends ModelBiped {
         this.bipedLeftLeg.render(1F / 16F);
     }
 
-    public void setRotationAngles(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_, float p_78087_5_, float scale, Entity p_78087_7_) {
+    public void setRotationAngles(float p_78087_1_, float p_78087_2_, float p_78087_3_, float p_78087_4_,
+            float p_78087_5_, float scale, Entity p_78087_7_) {
         this.bipedRightArm.rotateAngleZ = 0.0F;
         this.bipedLeftArm.rotateAngleZ = 0.0F;
         this.bipedRightArm.rotationPointZ = 0.0F;

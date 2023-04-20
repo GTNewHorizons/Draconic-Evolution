@@ -1,14 +1,15 @@
 package com.brandon3055.draconicevolution.common.entity;
 
-import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
-import com.brandon3055.brandonscore.common.utills.Utills;
+import java.util.ArrayList;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
+import com.brandon3055.brandonscore.common.utills.Utills;
+import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper;
+import com.brandon3055.draconicevolution.common.utills.LogHelper;
 
 /**
  * Created by Brandon on 14/09/2014.
@@ -42,20 +43,16 @@ public class EntityChaosDrill extends Entity {
 
     @Override
     public void onUpdate() {
-        //LogHelper.info("onUpdate");
+        // LogHelper.info("onUpdate");
         mineNextBlockInPattern();
         entityTick();
     }
 
     @Override
-    protected void readEntityFromNBT(NBTTagCompound p_70037_1_) {
-
-    }
+    protected void readEntityFromNBT(NBTTagCompound p_70037_1_) {}
 
     @Override
-    protected void writeEntityToNBT(NBTTagCompound p_70014_1_) {
-
-    }
+    protected void writeEntityToNBT(NBTTagCompound p_70014_1_) {}
 
     private void entityTick() {
         if (ENTITY_AGE >= MAX_AGE) setDead();
@@ -94,5 +91,4 @@ public class EntityChaosDrill extends Entity {
 
         return blocks;
     }
-
 }

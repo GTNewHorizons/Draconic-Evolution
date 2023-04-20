@@ -1,16 +1,11 @@
 package com.brandon3055.draconicevolution.common.blocks;
 
-import com.brandon3055.draconicevolution.DraconicEvolution;
-import com.brandon3055.draconicevolution.client.gui.GuiHandler;
-import com.brandon3055.draconicevolution.common.ModBlocks;
-import com.brandon3055.draconicevolution.common.blocks.itemblocks.DraconiumChestItemBlock;
-import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.lib.Strings;
-import com.brandon3055.draconicevolution.common.tileentities.TileDraconiumChest;
-import com.brandon3055.draconicevolution.common.utills.ICustomItemData;
-import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import static net.minecraftforge.common.util.ForgeDirection.DOWN;
+import static net.minecraftforge.common.util.ForgeDirection.UP;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -29,18 +24,26 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.brandon3055.draconicevolution.DraconicEvolution;
+import com.brandon3055.draconicevolution.client.gui.GuiHandler;
+import com.brandon3055.draconicevolution.common.ModBlocks;
+import com.brandon3055.draconicevolution.common.blocks.itemblocks.DraconiumChestItemBlock;
+import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.lib.Strings;
+import com.brandon3055.draconicevolution.common.tileentities.TileDraconiumChest;
+import com.brandon3055.draconicevolution.common.utills.ICustomItemData;
 
-import static net.minecraftforge.common.util.ForgeDirection.DOWN;
-import static net.minecraftforge.common.util.ForgeDirection.UP;
+import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Created by Brandon on 28/10/2014.
  */
 public class DraconiumChest extends BlockCustomDrop {
 
-    private static final String[] STORAGE_BLACKLIST = new String[]{"tile.thermalexpansion.strongbox", "item.thermalexpansion.satchel", "tile.draconicevolution:draconiumChest"};
+    private static final String[] STORAGE_BLACKLIST = new String[] { "tile.thermalexpansion.strongbox",
+            "item.thermalexpansion.satchel", "tile.draconicevolution:draconiumChest" };
 
     public DraconiumChest() {
         super(Material.iron);
@@ -59,31 +62,45 @@ public class DraconiumChest extends BlockCustomDrop {
         return true;
     }
 
-
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float cx, float cy, float cz) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float cx, float cy,
+            float cz) {
         TileEntity tileEntity = world.getTileEntity(x, y, z);
         if (!(tileEntity instanceof TileDraconiumChest)) return false;
         TileDraconiumChest te = (TileDraconiumChest) tileEntity;
 
         if (player.isSneaking()) {
             te.editMode = !te.editMode;
-            if (world.isRemote)
-                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.DARK_GREEN + "" + StatCollector.translateToLocal("msg.draconiumChestEditmode.txt") + EnumChatFormatting.DARK_AQUA + " " + String.valueOf(te.editMode)));
+            if (world.isRemote) player.addChatComponentMessage(
+                    new ChatComponentText(
+                            EnumChatFormatting.DARK_GREEN + ""
+                                    + StatCollector.translateToLocal("msg.draconiumChestEditmode.txt")
+                                    + EnumChatFormatting.DARK_AQUA
+                                    + " "
+                                    + String.valueOf(te.editMode)));
             if (te.editMode) {
-                if (world.isRemote)
-                    player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GOLD + "" + StatCollector.translateToLocal("msg.draconiumChestEditL1.txt")));
-                if (world.isRemote)
-                    player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GOLD + "" + StatCollector.translateToLocal("msg.draconiumChestEditL2.txt")));
-                if (world.isRemote)
-                    player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GOLD + "" + StatCollector.translateToLocal("msg.draconiumChestEditL3.txt")));
-                if (world.isRemote)
-                    player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GOLD + "" + StatCollector.translateToLocal("msg.draconiumChestEditL4.txt")));
+                if (world.isRemote) player.addChatComponentMessage(
+                        new ChatComponentText(
+                                EnumChatFormatting.GOLD + ""
+                                        + StatCollector.translateToLocal("msg.draconiumChestEditL1.txt")));
+                if (world.isRemote) player.addChatComponentMessage(
+                        new ChatComponentText(
+                                EnumChatFormatting.GOLD + ""
+                                        + StatCollector.translateToLocal("msg.draconiumChestEditL2.txt")));
+                if (world.isRemote) player.addChatComponentMessage(
+                        new ChatComponentText(
+                                EnumChatFormatting.GOLD + ""
+                                        + StatCollector.translateToLocal("msg.draconiumChestEditL3.txt")));
+                if (world.isRemote) player.addChatComponentMessage(
+                        new ChatComponentText(
+                                EnumChatFormatting.GOLD + ""
+                                        + StatCollector.translateToLocal("msg.draconiumChestEditL4.txt")));
             }
             return false;
         }
 
-        if (te.editMode && (isDye(player.getHeldItem(), "dyeRed") || isDye(player.getHeldItem(), "dyeGreen") || isDye(player.getHeldItem(), "dyeBlue"))) {
+        if (te.editMode && (isDye(player.getHeldItem(), "dyeRed") || isDye(player.getHeldItem(), "dyeGreen")
+                || isDye(player.getHeldItem(), "dyeBlue"))) {
             int increment = cy > 0.5F ? 5 : -5;
 
             if (isDye(player.getHeldItem(), "dyeRed")) {
@@ -101,12 +118,14 @@ public class DraconiumChest extends BlockCustomDrop {
                 if (te.blue > 255) te.blue = 255;
                 if (te.blue < 0) te.blue = 0;
             }
-            if (world.isRemote)
-                player.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocal("msg.draconiumChestRed.txt") + " " + te.red));
-            if (world.isRemote)
-                player.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocal("msg.draconiumChestGreen.txt") + " " + te.green));
-            if (world.isRemote)
-                player.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocal("msg.draconiumChestBlue.txt") + " " + te.blue));
+            if (world.isRemote) player.addChatComponentMessage(
+                    new ChatComponentText(StatCollector.translateToLocal("msg.draconiumChestRed.txt") + " " + te.red));
+            if (world.isRemote) player.addChatComponentMessage(
+                    new ChatComponentText(
+                            StatCollector.translateToLocal("msg.draconiumChestGreen.txt") + " " + te.green));
+            if (world.isRemote) player.addChatComponentMessage(
+                    new ChatComponentText(
+                            StatCollector.translateToLocal("msg.draconiumChestBlue.txt") + " " + te.blue));
             return true;
         }
 
@@ -143,8 +162,8 @@ public class DraconiumChest extends BlockCustomDrop {
             return true;
         }
 
-        if (!world.isRemote)
-            FMLNetworkHandler.openGui(player, DraconicEvolution.instance, GuiHandler.GUIID_DRACONIC_CHEST, world, x, y, z);
+        if (!world.isRemote) FMLNetworkHandler
+                .openGui(player, DraconicEvolution.instance, GuiHandler.GUIID_DRACONIC_CHEST, world, x, y, z);
         return true;
     }
 
@@ -265,6 +284,4 @@ public class DraconiumChest extends BlockCustomDrop {
         }
         droppes.add(stack);
     }
-
-
 }

@@ -1,26 +1,29 @@
 package com.brandon3055.draconicevolution.common.items.tools;
 
-import com.brandon3055.draconicevolution.common.ModBlocks;
-import com.brandon3055.draconicevolution.common.ModItems;
-import com.brandon3055.draconicevolution.common.items.ItemDE;
-import com.brandon3055.draconicevolution.common.lib.Strings;
-import com.brandon3055.draconicevolution.common.tileentities.TileChaosShard;
-import com.brandon3055.draconicevolution.common.world.WorldGenEnderComet;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.List;
+import java.util.Random;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-import java.util.List;
-import java.util.Random;
+import com.brandon3055.draconicevolution.common.ModBlocks;
+import com.brandon3055.draconicevolution.common.ModItems;
+import com.brandon3055.draconicevolution.common.items.ItemDE;
+import com.brandon3055.draconicevolution.common.lib.Strings;
+import com.brandon3055.draconicevolution.common.tileentities.TileChaosShard;
+import com.brandon3055.draconicevolution.common.world.WorldGenEnderComet;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Created by Brandon on 29/08/2014.
  */
 public class CreativeStructureSpawner extends ItemDE {
+
     public CreativeStructureSpawner() {
         this.setUnlocalizedName(Strings.creativeStructureSpawnerName);
         this.hasSubtypes = true;
@@ -40,13 +43,14 @@ public class CreativeStructureSpawner extends ItemDE {
 
         switch (stack.getItemDamage()) {
             case 0:
-                new WorldGenEnderComet().generate(world, new Random(), (int) player.posX, (int) player.posY + 10, (int) player.posZ);
+                new WorldGenEnderComet()
+                        .generate(world, new Random(), (int) player.posX, (int) player.posY + 10, (int) player.posZ);
                 break;
             case 1:
-                //new WorldGenEnderIsland().generate(world, new Random(), (int)player.posX, (int)player.posY + 10, (int)player.posZ);
+                // new WorldGenEnderIsland().generate(world, new Random(), (int)player.posX, (int)player.posY + 10,
+                // (int)player.posZ);
                 break;
             case 2:
-
                 break;
             case 3:
                 break;
@@ -55,7 +59,8 @@ public class CreativeStructureSpawner extends ItemDE {
     }
 
     @Override
-    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int p_77648_7_, float p_77648_8_, float p_77648_9_, float p_77648_10_) {
+    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int p_77648_7_,
+            float p_77648_8_, float p_77648_9_, float p_77648_10_) {
 
         if (world.isRemote) return false;
 

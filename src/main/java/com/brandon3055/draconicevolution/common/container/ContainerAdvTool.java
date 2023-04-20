@@ -1,7 +1,7 @@
 package com.brandon3055.draconicevolution.common.container;
 
-import com.brandon3055.draconicevolution.common.inventory.InventoryTool;
-import com.brandon3055.draconicevolution.common.utills.IInventoryTool;
+import java.util.ArrayList;
+
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnumEnchantmentType;
@@ -14,7 +14,8 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 
-import java.util.ArrayList;
+import com.brandon3055.draconicevolution.common.inventory.InventoryTool;
+import com.brandon3055.draconicevolution.common.utills.IInventoryTool;
 
 /**
  * Created by Brandon on 13/01/2015.
@@ -45,7 +46,13 @@ public class ContainerAdvTool extends ContainerDataSync {
 
             for (int y = 0; y < 3; y++) {
                 for (int x = 0; x < 9; x++) {
-                    addSlotToContainer(new SlotPlayerInv(player.inventory, x + y * 9 + 9, 8 + 18 * x, 45 + y * 18, inventoryItemSlot));
+                    addSlotToContainer(
+                            new SlotPlayerInv(
+                                    player.inventory,
+                                    x + y * 9 + 9,
+                                    8 + 18 * x,
+                                    45 + y * 18,
+                                    inventoryItemSlot));
                 }
             }
 
@@ -58,12 +65,19 @@ public class ContainerAdvTool extends ContainerDataSync {
             }
         } else {
             for (int x = 0; x < 9; x++) {
-                addSlotToContainer(new SlotPlayerInv(player.inventory, x, -1000 + 8 + 18 * x, -1000 + 103, inventoryItemSlot));
+                addSlotToContainer(
+                        new SlotPlayerInv(player.inventory, x, -1000 + 8 + 18 * x, -1000 + 103, inventoryItemSlot));
             }
 
             for (int y = 0; y < 3; y++) {
                 for (int x = 0; x < 9; x++) {
-                    addSlotToContainer(new SlotPlayerInv(player.inventory, x + y * 9 + 9, -1000 + 8 + 18 * x, -1000 + 45 + y * 18, inventoryItemSlot));
+                    addSlotToContainer(
+                            new SlotPlayerInv(
+                                    player.inventory,
+                                    x + y * 9 + 9,
+                                    -1000 + 8 + 18 * x,
+                                    -1000 + 45 + y * 18,
+                                    inventoryItemSlot));
                 }
             }
         }
@@ -88,31 +102,32 @@ public class ContainerAdvTool extends ContainerDataSync {
 
     @Override
     public ItemStack transferStackInSlot(EntityPlayer player, int i) {
-//		Slot slot = getSlot(i);
-//
-//		if (slot != null && slot.getHasStack())
-//		{
-//			ItemStack stack = slot.getStack();
-//			ItemStack result = stack.copy();
-//
-//			if (i >= 36){ //To player
-//				if (!mergeItemStack(stack, 0, 36, false)){
-//					return null;
-//				}
-//			}else if (stack.stackSize != 1 || !(stack.getItem() instanceof IEnergyContainerItem) || !mergeItemStack(stack, 36, 37, false)){
-//				return null;
-//			}
-//
-//			if (stack.stackSize == 0) {
-//				slot.putStack(null);
-//			}else{
-//				slot.onSlotChanged();
-//			}
-//
-//			slot.onPickupFromSlot(player, stack);
-//
-//			return result;
-//		}
+        // Slot slot = getSlot(i);
+        //
+        // if (slot != null && slot.getHasStack())
+        // {
+        // ItemStack stack = slot.getStack();
+        // ItemStack result = stack.copy();
+        //
+        // if (i >= 36){ //To player
+        // if (!mergeItemStack(stack, 0, 36, false)){
+        // return null;
+        // }
+        // }else if (stack.stackSize != 1 || !(stack.getItem() instanceof IEnergyContainerItem) ||
+        // !mergeItemStack(stack, 36, 37, false)){
+        // return null;
+        // }
+        //
+        // if (stack.stackSize == 0) {
+        // slot.putStack(null);
+        // }else{
+        // slot.onSlotChanged();
+        // }
+        //
+        // slot.onPickupFromSlot(player, stack);
+        //
+        // return result;
+        // }
 
         return null;
     }
@@ -132,12 +147,14 @@ public class ContainerAdvTool extends ContainerDataSync {
             sendObjectToServer(null, 0, slot);
         }
 
-        if (player.inventory.getStackInSlot(slot) != null && player.inventory.getStackInSlot(slot).getItem() instanceof IInventoryTool) {
+        if (player.inventory.getStackInSlot(slot) != null
+                && player.inventory.getStackInSlot(slot).getItem() instanceof IInventoryTool) {
             this.inventoryTool.setAndReadFromStack(player.inventory.getStackInSlot(slot), slot);
         }
     }
 
     public class SlotPlayerInv extends Slot {
+
         public int inventoryItemSlot = -1;
 
         public SlotPlayerInv(IInventory iInventory, int slot, int x, int y, int inventoryItemSlot) {
@@ -152,6 +169,7 @@ public class ContainerAdvTool extends ContainerDataSync {
     }
 
     public class SlotOblitFilter extends Slot {
+
         public SlotOblitFilter(IInventory iInventory, int slot, int x, int y) {
             super(iInventory, slot, x, y);
         }
@@ -160,11 +178,10 @@ public class ContainerAdvTool extends ContainerDataSync {
         public boolean isItemValid(ItemStack stack) {
             return stack != null && stack.getItem() instanceof ItemBlock && super.isItemValid(stack);
         }
-
-
     }
 
     public class SlotEnchantment extends Slot {
+
         InventoryTool inventory;
 
         public SlotEnchantment(IInventory iInventory, int slot, int x, int y) {
@@ -177,9 +194,13 @@ public class ContainerAdvTool extends ContainerDataSync {
             NBTTagList list = stack.getTagCompound().getTagList("StoredEnchantments", 10);
             if (list.tagCount() != 1) return false;
             Enchantment enchant = Enchantment.enchantmentsList[list.getCompoundTagAt(0).getInteger("id")];
-            if (inventoryTool.inventoryItem == null || !(inventoryTool.inventoryItem.getItem() instanceof IInventoryTool) || (!((IInventoryTool) inventoryTool.inventoryItem.getItem()).isEnchantValid(enchant) && enchant.type != EnumEnchantmentType.all))
+            if (inventoryTool.inventoryItem == null
+                    || !(inventoryTool.inventoryItem.getItem() instanceof IInventoryTool)
+                    || (!((IInventoryTool) inventoryTool.inventoryItem.getItem()).isEnchantValid(enchant)
+                            && enchant.type != EnumEnchantmentType.all))
                 return false;
-            if (EnchantmentHelper.getEnchantments(inventoryTool.inventoryItem).containsKey(list.getCompoundTagAt(0).getInteger("id")))
+            if (EnchantmentHelper.getEnchantments(inventoryTool.inventoryItem)
+                    .containsKey(list.getCompoundTagAt(0).getInteger("id")))
                 return false;
             return super.isItemValid(stack);
         }

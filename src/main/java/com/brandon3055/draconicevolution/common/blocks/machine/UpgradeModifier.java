@@ -1,13 +1,7 @@
 package com.brandon3055.draconicevolution.common.blocks.machine;
 
-import com.brandon3055.draconicevolution.DraconicEvolution;
-import com.brandon3055.draconicevolution.client.gui.GuiHandler;
-import com.brandon3055.draconicevolution.common.ModBlocks;
-import com.brandon3055.draconicevolution.common.blocks.BlockCustomDrop;
-import com.brandon3055.draconicevolution.common.tileentities.TileUpgradeModifier;
-import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.List;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,12 +11,21 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.List;
+import com.brandon3055.draconicevolution.DraconicEvolution;
+import com.brandon3055.draconicevolution.client.gui.GuiHandler;
+import com.brandon3055.draconicevolution.common.ModBlocks;
+import com.brandon3055.draconicevolution.common.blocks.BlockCustomDrop;
+import com.brandon3055.draconicevolution.common.tileentities.TileUpgradeModifier;
+
+import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Created by brandon3055 on 23/12/2015.
  */
 public class UpgradeModifier extends BlockCustomDrop {
+
     public UpgradeModifier() {
         super(Material.iron);
         this.setBlockName("upgradeModifier");
@@ -35,7 +38,7 @@ public class UpgradeModifier extends BlockCustomDrop {
     @SideOnly(Side.CLIENT)
     @Override
     public void registerBlockIcons(IIconRegister iconRegister) {
-        //blockIcon = iconRegister.registerIcon(References.RESOURCESPREFIX + "machine_side");
+        // blockIcon = iconRegister.registerIcon(References.RESOURCESPREFIX + "machine_side");
     }
 
     @Override
@@ -44,9 +47,11 @@ public class UpgradeModifier extends BlockCustomDrop {
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float prx, float pry, float prz) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float prx,
+            float pry, float prz) {
         if (!world.isRemote) {
-            FMLNetworkHandler.openGui(player, DraconicEvolution.instance, GuiHandler.GUIID_UPGRADE_MODIFIER, world, x, y, z);
+            FMLNetworkHandler
+                    .openGui(player, DraconicEvolution.instance, GuiHandler.GUIID_UPGRADE_MODIFIER, world, x, y, z);
         }
         world.markBlockForUpdate(x, y, z);
         return true;
@@ -79,9 +84,7 @@ public class UpgradeModifier extends BlockCustomDrop {
     }
 
     @Override
-    protected void getCustomTileEntityDrops(TileEntity te, List<ItemStack> droppes) {
-
-    }
+    protected void getCustomTileEntityDrops(TileEntity te, List<ItemStack> droppes) {}
 
     @Override
     public boolean shouldSideBeRendered(IBlockAccess access, int x, int y, int z, int side) {

@@ -1,7 +1,5 @@
 package com.brandon3055.draconicevolution.common.blocks.itemblocks;
 
-import com.brandon3055.draconicevolution.common.utills.ICustomItemData;
-import com.brandon3055.draconicevolution.common.tileentities.TileDraconiumChest;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -11,6 +9,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import com.brandon3055.draconicevolution.common.tileentities.TileDraconiumChest;
+import com.brandon3055.draconicevolution.common.utills.ICustomItemData;
 
 /**
  * Created by Brandon on 13/11/2014.
@@ -22,7 +23,8 @@ public class ItemBlockCustomData extends ItemBlock {
     }
 
     @Override
-    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side,
+            float hitX, float hitY, float hitZ) {
         if (stack.stackSize <= 0) return false;
 
         Block block = world.getBlock(x, y, z);
@@ -37,7 +39,6 @@ public class ItemBlockCustomData extends ItemBlock {
             z += sideDir.offsetZ;
         }
 
-
         if (!player.canPlayerEdit(x, y, z, side, stack)) return false;
 
         Block ownBlock = this.field_150939_a;
@@ -50,7 +51,9 @@ public class ItemBlockCustomData extends ItemBlock {
 
         if (!placeBlockAt(stack, player, world, x, y, z, side, hitX, hitY, hitZ, newMeta)) return false;
 
-        TileEntity te = world.getTileEntity(x, y, z) instanceof TileDraconiumChest ? (TileDraconiumChest) world.getTileEntity(x, y, z) : null;
+        TileEntity te = world.getTileEntity(x, y, z) instanceof TileDraconiumChest
+                ? (TileDraconiumChest) world.getTileEntity(x, y, z)
+                : null;
 
         if (te instanceof ICustomItemData) {
             NBTTagCompound itemTag = stack.getTagCompound();
@@ -59,7 +62,13 @@ public class ItemBlockCustomData extends ItemBlock {
             }
         }
 
-        world.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, ownBlock.stepSound.getBreakSound(), (ownBlock.stepSound.getVolume() + 1.0F) / 2.0F, ownBlock.stepSound.getPitch() * 0.8F);
+        world.playSoundEffect(
+                x + 0.5,
+                y + 0.5,
+                z + 0.5,
+                ownBlock.stepSound.getBreakSound(),
+                (ownBlock.stepSound.getVolume() + 1.0F) / 2.0F,
+                ownBlock.stepSound.getPitch() * 0.8F);
         stack.stackSize--;
         return true;
     }

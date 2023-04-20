@@ -1,5 +1,9 @@
 package com.brandon3055.draconicevolution.client.gui;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.gui.componentguis.GUIManual;
 import com.brandon3055.draconicevolution.client.gui.componentguis.GUIReactor;
@@ -9,11 +13,9 @@ import com.brandon3055.draconicevolution.common.inventory.InventoryTool;
 import com.brandon3055.draconicevolution.common.tileentities.*;
 import com.brandon3055.draconicevolution.common.tileentities.gates.TileGate;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
+
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 
 public class GuiHandler implements IGuiHandler {
 
@@ -104,13 +106,12 @@ public class GuiHandler implements IGuiHandler {
                 }
                 break;
 
-
-//			case GUIID_CONTAINER_TEMPLATE:
-//				TileEntity containerTemp = world.getTileEntity(x, y, z);
-//				if (containerTemp != null && containerTemp instanceof TileContainerTemplate) {
-//					return new ContainerTemplate(player.inventory, (TileContainerTemplate) containerTemp);
-//				}
-//				break;
+            // case GUIID_CONTAINER_TEMPLATE:
+            // TileEntity containerTemp = world.getTileEntity(x, y, z);
+            // if (containerTemp != null && containerTemp instanceof TileContainerTemplate) {
+            // return new ContainerTemplate(player.inventory, (TileContainerTemplate) containerTemp);
+            // }
+            // break;
         }
 
         return null;
@@ -141,7 +142,9 @@ public class GuiHandler implements IGuiHandler {
                 break;
             case GUIID_PARTICLEGEN:
                 TileEntity gen = world.getTileEntity(x, y, z);
-                return (gen != null && gen instanceof TileParticleGenerator) ? new GUIParticleGenerator((TileParticleGenerator) gen, player) : null;
+                return (gen != null && gen instanceof TileParticleGenerator)
+                        ? new GUIParticleGenerator((TileParticleGenerator) gen, player)
+                        : null;
             case GUIID_PLAYERDETECTOR:
                 TileEntity detector = world.getTileEntity(x, y, z);
                 if (detector != null && detector instanceof TilePlayerDetectorAdvanced) {
@@ -177,29 +180,38 @@ public class GuiHandler implements IGuiHandler {
             case GUIID_REACTOR:
                 TileEntity reactor = world.getTileEntity(x, y, z);
                 if (reactor != null && reactor instanceof TileReactorCore) {
-                    return new GUIReactor(player, (TileReactorCore) reactor, new ContainerReactor(player, (TileReactorCore) reactor));
+                    return new GUIReactor(
+                            player,
+                            (TileReactorCore) reactor,
+                            new ContainerReactor(player, (TileReactorCore) reactor));
                 }
                 break;
             case GUIID_TOOL_CONFIG:
-                return new GUIToolConfig(player, new ContainerAdvTool(player.inventory, new InventoryTool(player, null)));
+                return new GUIToolConfig(
+                        player,
+                        new ContainerAdvTool(player.inventory, new InventoryTool(player, null)));
             case GUIID_FLOW_GATE:
-                return world.getTileEntity(x, y, z) instanceof TileGate ? new GUIFlowGate((TileGate) world.getTileEntity(x, y, z)) : null;
+                return world.getTileEntity(x, y, z) instanceof TileGate
+                        ? new GUIFlowGate((TileGate) world.getTileEntity(x, y, z))
+                        : null;
             case GUIID_UPGRADE_MODIFIER:
                 TileEntity containerTemp = world.getTileEntity(x, y, z);
                 if (containerTemp != null && containerTemp instanceof TileUpgradeModifier) {
-                    return new GUIUpgradeModifier(player.inventory, (TileUpgradeModifier) containerTemp, new ContainerUpgradeModifier(player.inventory, (TileUpgradeModifier) containerTemp));
+                    return new GUIUpgradeModifier(
+                            player.inventory,
+                            (TileUpgradeModifier) containerTemp,
+                            new ContainerUpgradeModifier(player.inventory, (TileUpgradeModifier) containerTemp));
                 }
                 break;
 
-//			case GUIID_CONTAINER_TEMPLATE:
-//				TileEntity containerTemp = world.getTileEntity(x, y, z);
-//				if (containerTemp != null && containerTemp instanceof TileContainerTemplate) {
-//					return new GUIContainerTemplate(player.inventory, (TileContainerTemplate) containerTemp);
-//				}
-//				break;
+            // case GUIID_CONTAINER_TEMPLATE:
+            // TileEntity containerTemp = world.getTileEntity(x, y, z);
+            // if (containerTemp != null && containerTemp instanceof TileContainerTemplate) {
+            // return new GUIContainerTemplate(player.inventory, (TileContainerTemplate) containerTemp);
+            // }
+            // break;
         }
 
         return null;
     }
-
 }

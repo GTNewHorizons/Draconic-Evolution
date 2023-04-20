@@ -8,6 +8,7 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 public class TilePlayerDetector extends TileEntity {
+
     private int tick = 0;
     public boolean output = false;
     private int scanRate = 5;
@@ -26,7 +27,6 @@ public class TilePlayerDetector extends TileEntity {
                 if (output) setOutput(false);
             }
         } else tick++;
-
     }
 
     private void setOutput(boolean out) {
@@ -80,6 +80,4 @@ public class TilePlayerDetector extends TileEntity {
 
         super.readFromNBT(compound);
     }
-
-
 }

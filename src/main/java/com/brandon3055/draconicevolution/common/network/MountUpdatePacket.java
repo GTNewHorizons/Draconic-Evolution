@@ -1,6 +1,7 @@
 package com.brandon3055.draconicevolution.common.network;
 
 import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
+
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -14,8 +15,7 @@ public class MountUpdatePacket implements IMessage {
 
     public int entityID;
 
-    public MountUpdatePacket() {
-    }
+    public MountUpdatePacket() {}
 
     public MountUpdatePacket(int id) {
         this.entityID = id;

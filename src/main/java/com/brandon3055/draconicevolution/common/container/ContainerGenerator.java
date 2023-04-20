@@ -1,14 +1,16 @@
 package com.brandon3055.draconicevolution.common.container;
 
-import com.brandon3055.draconicevolution.common.inventory.SlotItemValid;
-import com.brandon3055.draconicevolution.common.tileentities.TileGenerator;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import com.brandon3055.draconicevolution.common.inventory.SlotItemValid;
+import com.brandon3055.draconicevolution.common.tileentities.TileGenerator;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ContainerGenerator extends ContainerDataSync {
 
@@ -50,9 +52,10 @@ public class ContainerGenerator extends ContainerDataSync {
                 if (!mergeItemStack(stack, 0, 36, false)) {
                     return null;
                 }
-            } else if (TileGenerator.getItemBurnTime(stack) == 0 || !mergeItemStack(stack, 36, 36 + tile.getSizeInventory(), false)) {
-                return null;
-            }
+            } else if (TileGenerator.getItemBurnTime(stack) == 0
+                    || !mergeItemStack(stack, 36, 36 + tile.getSizeInventory(), false)) {
+                        return null;
+                    }
 
             if (stack.stackSize == 0) {
                 slot.putStack(null);

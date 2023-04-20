@@ -7,6 +7,7 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 public class TilePotentiometer extends TileEntity {
+
     public int power = 0;
 
     public void increasePower() {
@@ -32,19 +33,47 @@ public class TilePotentiometer extends TileEntity {
         worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
 
         if (meta == 1) {
-            worldObj.notifyBlocksOfNeighborChange(xCoord - 1, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
+            worldObj.notifyBlocksOfNeighborChange(
+                    xCoord - 1,
+                    yCoord,
+                    zCoord,
+                    worldObj.getBlock(xCoord, yCoord, zCoord));
         } else if (meta == 2) {
-            worldObj.notifyBlocksOfNeighborChange(xCoord + 1, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
+            worldObj.notifyBlocksOfNeighborChange(
+                    xCoord + 1,
+                    yCoord,
+                    zCoord,
+                    worldObj.getBlock(xCoord, yCoord, zCoord));
         } else if (meta == 3) {
-            worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord - 1, worldObj.getBlock(xCoord, yCoord, zCoord));
+            worldObj.notifyBlocksOfNeighborChange(
+                    xCoord,
+                    yCoord,
+                    zCoord - 1,
+                    worldObj.getBlock(xCoord, yCoord, zCoord));
         } else if (meta == 4) {
-            worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord + 1, worldObj.getBlock(xCoord, yCoord, zCoord));
+            worldObj.notifyBlocksOfNeighborChange(
+                    xCoord,
+                    yCoord,
+                    zCoord + 1,
+                    worldObj.getBlock(xCoord, yCoord, zCoord));
         } else if (meta == 5) {
-            worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord + 1, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
+            worldObj.notifyBlocksOfNeighborChange(
+                    xCoord,
+                    yCoord + 1,
+                    zCoord,
+                    worldObj.getBlock(xCoord, yCoord, zCoord));
         } else if (meta == 6) {
-            worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord - 1, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
+            worldObj.notifyBlocksOfNeighborChange(
+                    xCoord,
+                    yCoord - 1,
+                    zCoord,
+                    worldObj.getBlock(xCoord, yCoord, zCoord));
         } else {
-            worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord - 1, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
+            worldObj.notifyBlocksOfNeighborChange(
+                    xCoord,
+                    yCoord - 1,
+                    zCoord,
+                    worldObj.getBlock(xCoord, yCoord, zCoord));
         }
     }
 

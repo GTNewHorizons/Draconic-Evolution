@@ -1,14 +1,17 @@
 package com.brandon3055.draconicevolution.common.container;
 
-import cofh.api.energy.IEnergyContainerItem;
-import com.brandon3055.draconicevolution.common.inventory.SlotChargable;
-import com.brandon3055.draconicevolution.common.tileentities.TileEnergyInfuser;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
+import cofh.api.energy.IEnergyContainerItem;
+
+import com.brandon3055.draconicevolution.common.inventory.SlotChargable;
+import com.brandon3055.draconicevolution.common.tileentities.TileEnergyInfuser;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ContainerEnergyInfuser extends ContainerDataSync {
 
@@ -46,13 +49,14 @@ public class ContainerEnergyInfuser extends ContainerDataSync {
             ItemStack stack = slot.getStack();
             ItemStack result = stack.copy();
 
-            if (i >= 36) { //To player
+            if (i >= 36) { // To player
                 if (!mergeItemStack(stack, 0, 36, false)) {
                     return null;
                 }
-            } else if (stack.stackSize != 1 || !(stack.getItem() instanceof IEnergyContainerItem) || !mergeItemStack(stack, 36, 37, false)) {
-                return null;
-            }
+            } else if (stack.stackSize != 1 || !(stack.getItem() instanceof IEnergyContainerItem)
+                    || !mergeItemStack(stack, 36, 37, false)) {
+                        return null;
+                    }
 
             if (stack.stackSize == 0) {
                 slot.putStack(null);
@@ -67,7 +71,6 @@ public class ContainerEnergyInfuser extends ContainerDataSync {
 
         return null;
     }
-
 
     @Override
     public void detectAndSendChanges() {

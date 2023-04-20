@@ -1,5 +1,9 @@
 package com.brandon3055.draconicevolution.common;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.blocks.*;
 import com.brandon3055.draconicevolution.common.blocks.machine.*;
@@ -7,12 +11,10 @@ import com.brandon3055.draconicevolution.common.blocks.multiblock.*;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.lib.References;
 import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
 
 @GameRegistry.ObjectHolder(References.MODID)
 public class ModBlocks {
+
     public static BlockDE xRayBlock;
     public static BlockDE weatherController;
     public static BlockDE sunDial;
@@ -29,6 +31,7 @@ public class ModBlocks {
     public static BlockDE longRangeDislocator;
     public static BlockDE generator;
     public static BlockDE energyStorageCore;
+    public static BlockDE earthBlock;
     public static BlockDE draconiumBlock;
     public static BlockDE invisibleMultiblock;
     public static BlockDE energyPylon;
@@ -50,7 +53,9 @@ public class ModBlocks {
     public static BlockDE chaosCrystal;
     public static BlockDE upgradeModifier;
     public static Block safetyFlame;
-    public static Block chaosShardAtmos = new ChaosShardAtmos().setBlockName(References.RESOURCESPREFIX + "chaosShardAtmos").setBlockTextureName(References.RESOURCESPREFIX + "transparency");
+    public static Block chaosShardAtmos = new ChaosShardAtmos()
+            .setBlockName(References.RESOURCESPREFIX + "chaosShardAtmos")
+            .setBlockTextureName(References.RESOURCESPREFIX + "transparency");
 
     public static ItemStack resurrectionStone;
 
@@ -69,6 +74,7 @@ public class ModBlocks {
         customSpawner = new CustomSpawner();
         generator = new Generator();
         energyStorageCore = new EnergyStorageCore();
+        earthBlock = new Earth();
         draconiumBlock = new DraconiumBlock();
         invisibleMultiblock = new InvisibleMultiblock();
         energyPylon = new EnergyPylon();

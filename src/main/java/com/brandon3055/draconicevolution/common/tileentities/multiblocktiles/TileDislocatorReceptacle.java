@@ -1,8 +1,5 @@
 package com.brandon3055.draconicevolution.common.tileentities.multiblocktiles;
 
-import com.brandon3055.brandonscore.common.utills.Teleporter;
-import com.brandon3055.draconicevolution.common.items.tools.TeleporterMKI;
-import com.brandon3055.draconicevolution.common.utills.PortalHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -11,6 +8,10 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+
+import com.brandon3055.brandonscore.common.utills.Teleporter;
+import com.brandon3055.draconicevolution.common.items.tools.TeleporterMKI;
+import com.brandon3055.draconicevolution.common.utills.PortalHelper;
 
 /**
  * Created by Brandon on 22/5/2015.
@@ -39,7 +40,8 @@ public class TileDislocatorReceptacle extends TileEntity implements IInventory {
             isActive = false;
             return;
         }
-        isActive = structure.checkFrameIsValid(worldObj, xCoord, yCoord, zCoord) && structure.scanPortal(worldObj, xCoord, yCoord, zCoord, false, true);
+        isActive = structure.checkFrameIsValid(worldObj, xCoord, yCoord, zCoord)
+                && structure.scanPortal(worldObj, xCoord, yCoord, zCoord, false, true);
         worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
@@ -161,16 +163,15 @@ public class TileDislocatorReceptacle extends TileEntity implements IInventory {
     }
 
     @Override
-    public void openInventory() {
-    }
+    public void openInventory() {}
 
     @Override
-    public void closeInventory() {
-    }
+    public void closeInventory() {}
 
     @Override
     public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-        return itemstack != null && itemstack.getItem() instanceof TeleporterMKI && ((TeleporterMKI) itemstack.getItem()).getLocation(itemstack) != null;
+        return itemstack != null && itemstack.getItem() instanceof TeleporterMKI
+                && ((TeleporterMKI) itemstack.getItem()).getLocation(itemstack) != null;
     }
 
     @Override

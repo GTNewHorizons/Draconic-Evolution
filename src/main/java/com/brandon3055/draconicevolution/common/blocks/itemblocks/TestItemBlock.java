@@ -8,10 +8,11 @@ import net.minecraft.item.ItemStack;
  * Created by Brandon on 23/06/2014.
  */
 public class TestItemBlock extends ItemBlock {
+
     public TestItemBlock(Block block) {
         super(block);
         setHasSubtypes(true);
-        //this.hasSubtypes = true;
+        // this.hasSubtypes = true;
     }
 
     @Override

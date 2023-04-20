@@ -2,15 +2,6 @@ package com.brandon3055.draconicevolution.common.tileentities;
 
 import java.util.Random;
 
-import cofh.api.energy.IEnergyContainerItem;
-import cofh.api.energy.IEnergyReceiver;
-import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
-import com.brandon3055.draconicevolution.client.render.particle.ParticleEnergy;
-import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
-import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.utills.EnergyStorage;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -20,12 +11,27 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import cofh.api.energy.IEnergyContainerItem;
+import cofh.api.energy.IEnergyReceiver;
+
+import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
+import com.brandon3055.draconicevolution.client.render.particle.ParticleEnergy;
+import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
+import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.utills.EnergyStorage;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 /**
  * Created by Brandon on 27/06/2014.
  */
 public class TileEnergyInfuser extends TileObjectSync implements IEnergyReceiver, ISidedInventory {
+
     ItemStack[] items = new ItemStack[1];
-    public EnergyStorage energy = new EnergyStorage(BalanceConfigHandler.energyInfuserStorage, BalanceConfigHandler.energyInfuserMaxTransfer);
+    public EnergyStorage energy = new EnergyStorage(
+            BalanceConfigHandler.energyInfuserStorage,
+            BalanceConfigHandler.energyInfuserMaxTransfer);
     public boolean running = false;
     public boolean runningCach = false;
     private int tick = 0;
@@ -34,9 +40,10 @@ public class TileEnergyInfuser extends TileObjectSync implements IEnergyReceiver
      * True is energy was transferred this tick
      */
     public boolean transfer = false;
+
     public boolean transferCach = false;
 
-    //==============================================LOGIC=======================================================//
+    // ==============================================LOGIC=======================================================//
 
     @Override
     public void updateEntity() {
@@ -54,7 +61,6 @@ public class TileEnergyInfuser extends TileObjectSync implements IEnergyReceiver
         if (tick % 100 == 0) tryStartOrStop();
         if (tick % 400 == 0) detectAndSendChanges(true);
 
-
         if (running && tryStartOrStop()) {
             IEnergyContainerItem item = (IEnergyContainerItem) items[0].getItem();
             setTransfer(energy.extractEnergy(item.receiveEnergy(items[0], energy.getEnergyStored(), false), false) > 0);
@@ -65,7 +71,9 @@ public class TileEnergyInfuser extends TileObjectSync implements IEnergyReceiver
     }
 
     private boolean tryStartOrStop() {
-        if (items[0] != null && items[0].stackSize == 1 && items[0] != null && items[0].getItem() instanceof IEnergyContainerItem) {
+        if (items[0] != null && items[0].stackSize == 1
+                && items[0] != null
+                && items[0].getItem() instanceof IEnergyContainerItem) {
             IEnergyContainerItem item = (IEnergyContainerItem) items[0].getItem();
             if (item.getEnergyStored(items[0]) < item.getMaxEnergyStored(items[0])) {
                 running = true;
@@ -96,47 +104,111 @@ public class TileEnergyInfuser extends TileObjectSync implements IEnergyReceiver
             yRand = ((rand.nextFloat() - 0.5) / 2);
             radRand = 1 - rand.nextFloat() / 2;
             rotationF = rotation / 57F;
-            particle = new ParticleEnergy(worldObj, xCoord + 0.5 + radRand * Math.sin(rotationF), yCoord + y + yRand, zCoord + 0.5 + radRand * Math.cos(rotationF), xCoord + 0.5, yCoord + 0.7, zCoord + 0.5, 1);
+            particle = new ParticleEnergy(
+                    worldObj,
+                    xCoord + 0.5 + radRand * Math.sin(rotationF),
+                    yCoord + y + yRand,
+                    zCoord + 0.5 + radRand * Math.cos(rotationF),
+                    xCoord + 0.5,
+                    yCoord + 0.7,
+                    zCoord + 0.5,
+                    1);
             ParticleHandler.spawnCustomParticle(particle);
 
             yRand = ((rand.nextFloat() - 0.5) / 2);
             radRand = 1 - rand.nextFloat() / 2;
             rotationF = (rotation + 90) / 57F;
-            particle = new ParticleEnergy(worldObj, xCoord + 0.5 + radRand * Math.sin(rotationF), yCoord + y + yRand, zCoord + 0.5 + radRand * Math.cos(rotationF), xCoord + 0.5, yCoord + 0.7, zCoord + 0.5, 1);
+            particle = new ParticleEnergy(
+                    worldObj,
+                    xCoord + 0.5 + radRand * Math.sin(rotationF),
+                    yCoord + y + yRand,
+                    zCoord + 0.5 + radRand * Math.cos(rotationF),
+                    xCoord + 0.5,
+                    yCoord + 0.7,
+                    zCoord + 0.5,
+                    1);
             ParticleHandler.spawnCustomParticle(particle);
 
             yRand = ((rand.nextFloat() - 0.5) / 2);
             radRand = 1 - rand.nextFloat() / 2;
             rotationF = (rotation + 180) / 57F;
-            particle = new ParticleEnergy(worldObj, xCoord + 0.5 + radRand * Math.sin(rotationF), yCoord + y + yRand, zCoord + 0.5 + radRand * Math.cos(rotationF), xCoord + 0.5, yCoord + 0.7, zCoord + 0.5, 1);
+            particle = new ParticleEnergy(
+                    worldObj,
+                    xCoord + 0.5 + radRand * Math.sin(rotationF),
+                    yCoord + y + yRand,
+                    zCoord + 0.5 + radRand * Math.cos(rotationF),
+                    xCoord + 0.5,
+                    yCoord + 0.7,
+                    zCoord + 0.5,
+                    1);
             ParticleHandler.spawnCustomParticle(particle);
 
             yRand = ((rand.nextFloat() - 0.5) / 2);
             radRand = 1 - rand.nextFloat() / 2;
             rotationF = (rotation + 270) / 57F;
-            particle = new ParticleEnergy(worldObj, xCoord + 0.5 + radRand * Math.sin(rotationF), yCoord + y + yRand, zCoord + 0.5 + radRand * Math.cos(rotationF), xCoord + 0.5, yCoord + 0.7, zCoord + 0.5, 1);
+            particle = new ParticleEnergy(
+                    worldObj,
+                    xCoord + 0.5 + radRand * Math.sin(rotationF),
+                    yCoord + y + yRand,
+                    zCoord + 0.5 + radRand * Math.cos(rotationF),
+                    xCoord + 0.5,
+                    yCoord + 0.7,
+                    zCoord + 0.5,
+                    1);
             ParticleHandler.spawnCustomParticle(particle);
 
             y = 0.79f;
             radRand = 0.35;
             rotationF = rotation / 57F;
-            particle = new ParticleEnergy(worldObj, xCoord + 0.5 + radRand * Math.sin(rotationF), yCoord + y, zCoord + 0.5 + radRand * Math.cos(rotationF), xCoord + 0.5, yCoord + 0.7, zCoord + 0.5, 0);
+            particle = new ParticleEnergy(
+                    worldObj,
+                    xCoord + 0.5 + radRand * Math.sin(rotationF),
+                    yCoord + y,
+                    zCoord + 0.5 + radRand * Math.cos(rotationF),
+                    xCoord + 0.5,
+                    yCoord + 0.7,
+                    zCoord + 0.5,
+                    0);
             ParticleHandler.spawnCustomParticle(particle);
 
             rotationF = (rotation + 90) / 57F;
-            particle = new ParticleEnergy(worldObj, xCoord + 0.5 + radRand * Math.sin(rotationF), yCoord + y, zCoord + 0.5 + radRand * Math.cos(rotationF), xCoord + 0.5, yCoord + 0.7, zCoord + 0.5, 0);
+            particle = new ParticleEnergy(
+                    worldObj,
+                    xCoord + 0.5 + radRand * Math.sin(rotationF),
+                    yCoord + y,
+                    zCoord + 0.5 + radRand * Math.cos(rotationF),
+                    xCoord + 0.5,
+                    yCoord + 0.7,
+                    zCoord + 0.5,
+                    0);
             ParticleHandler.spawnCustomParticle(particle);
 
             rotationF = (rotation + 180) / 57F;
-            particle = new ParticleEnergy(worldObj, xCoord + 0.5 + radRand * Math.sin(rotationF), yCoord + y, zCoord + 0.5 + radRand * Math.cos(rotationF), xCoord + 0.5, yCoord + 0.7, zCoord + 0.5, 0);
+            particle = new ParticleEnergy(
+                    worldObj,
+                    xCoord + 0.5 + radRand * Math.sin(rotationF),
+                    yCoord + y,
+                    zCoord + 0.5 + radRand * Math.cos(rotationF),
+                    xCoord + 0.5,
+                    yCoord + 0.7,
+                    zCoord + 0.5,
+                    0);
             ParticleHandler.spawnCustomParticle(particle);
 
             rotationF = (rotation + 270) / 57F;
-            particle = new ParticleEnergy(worldObj, xCoord + 0.5 + radRand * Math.sin(rotationF), yCoord + y, zCoord + 0.5 + radRand * Math.cos(rotationF), xCoord + 0.5, yCoord + 0.7, zCoord + 0.5, 0);
+            particle = new ParticleEnergy(
+                    worldObj,
+                    xCoord + 0.5 + radRand * Math.sin(rotationF),
+                    yCoord + y,
+                    zCoord + 0.5 + radRand * Math.cos(rotationF),
+                    xCoord + 0.5,
+                    yCoord + 0.7,
+                    zCoord + 0.5,
+                    0);
             ParticleHandler.spawnCustomParticle(particle);
         }
     }
-    //==============================================ENERGY======================================================//
+    // ==============================================ENERGY======================================================//
 
     @Override
     public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
@@ -158,7 +230,7 @@ public class TileEnergyInfuser extends TileObjectSync implements IEnergyReceiver
         return true;
     }
 
-    //==========================================SYNCHRONIZATION==================================================//
+    // ==========================================SYNCHRONIZATION==================================================//
 
     @Override
     public Packet getDescriptionPacket() {
@@ -181,7 +253,6 @@ public class TileEnergyInfuser extends TileObjectSync implements IEnergyReceiver
         }
     }
 
-
     @SideOnly(Side.CLIENT)
     @Override
     public void receiveObjectFromServer(int index, Object object) {
@@ -189,7 +260,7 @@ public class TileEnergyInfuser extends TileObjectSync implements IEnergyReceiver
         if (index == 1) transfer = (Boolean) object;
     }
 
-    //==============================================INVENTORY====================================================//
+    // ==============================================INVENTORY====================================================//
 
     @Override
     public int getSizeInventory() {
@@ -277,7 +348,7 @@ public class TileEnergyInfuser extends TileObjectSync implements IEnergyReceiver
 
     @Override
     public int[] getAccessibleSlotsFromSide(int var1) {
-        return new int[]{0};
+        return new int[] { 0 };
     }
 
     @Override
@@ -289,12 +360,14 @@ public class TileEnergyInfuser extends TileObjectSync implements IEnergyReceiver
     public boolean canExtractItem(int slot, ItemStack item, int side) {
         if (item == null || !(item.getItem() instanceof IEnergyContainerItem)) return true;
 
-        if ((((IEnergyContainerItem) item.getItem()).getEnergyStored(item) >= ((IEnergyContainerItem) item.getItem()).getMaxEnergyStored(item)) || ((IEnergyContainerItem) item.getItem()).receiveEnergy(item, 1, true) == 0)
+        if ((((IEnergyContainerItem) item.getItem()).getEnergyStored(item)
+                >= ((IEnergyContainerItem) item.getItem()).getMaxEnergyStored(item))
+                || ((IEnergyContainerItem) item.getItem()).receiveEnergy(item, 1, true) == 0)
             return true;
         else return false;
     }
 
-    //===========================================================================================================//
+    // ===========================================================================================================//
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {

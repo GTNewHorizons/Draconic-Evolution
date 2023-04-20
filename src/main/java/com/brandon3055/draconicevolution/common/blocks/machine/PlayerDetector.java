@@ -1,7 +1,5 @@
 package com.brandon3055.draconicevolution.common.blocks.machine;
 
-import com.brandon3055.draconicevolution.common.blocks.BlockDE;
-import com.brandon3055.draconicevolution.common.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,13 +9,17 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+
 import com.brandon3055.draconicevolution.DraconicEvolution;
+import com.brandon3055.draconicevolution.common.ModBlocks;
+import com.brandon3055.draconicevolution.common.blocks.BlockDE;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.lib.Strings;
 import com.brandon3055.draconicevolution.common.tileentities.TilePlayerDetector;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class PlayerDetector extends BlockDE {
+
     IIcon side_inactive;
     IIcon side_active;
     IIcon top;
@@ -58,7 +60,8 @@ public class PlayerDetector extends BlockDE {
     }
 
     @Override
-    public boolean isBlockSolid(IBlockAccess p_149747_1_, int p_149747_2_, int p_149747_3_, int p_149747_4_, int p_149747_5_) {
+    public boolean isBlockSolid(IBlockAccess p_149747_1_, int p_149747_2_, int p_149747_3_, int p_149747_4_,
+            int p_149747_5_) {
         return true;
     }
 
@@ -105,7 +108,8 @@ public class PlayerDetector extends BlockDE {
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float p_149727_7_,
+            float p_149727_8_, float p_149727_9_) {
         TileEntity te = world.getTileEntity(x, y, z);
         TilePlayerDetector detector = (te != null && te instanceof TilePlayerDetector) ? (TilePlayerDetector) te : null;
         if (detector != null) {
@@ -121,8 +125,8 @@ public class PlayerDetector extends BlockDE {
             if (range < 1) range = 10;
             detector.setRange(range);
 
-            if (world.isRemote)
-                player.addChatMessage(new ChatComponentTranslation("msg.range.txt").appendSibling(new ChatComponentText(" " + range)));
+            if (world.isRemote) player.addChatMessage(
+                    new ChatComponentTranslation("msg.range.txt").appendSibling(new ChatComponentText(" " + range)));
         }
         return true;
     }

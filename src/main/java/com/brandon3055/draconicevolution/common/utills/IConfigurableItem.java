@@ -1,16 +1,18 @@
 package com.brandon3055.draconicevolution.common.utills;
 
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
+import java.util.List;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
-import java.util.List;
+import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
 
 /**
  * Created by Brandon on 29/12/2014.
  */
 public interface IConfigurableItem {
+
     List<ItemConfigField> getFields(ItemStack stack, int slot);
 
     public boolean hasProfiles();
@@ -20,7 +22,8 @@ public interface IConfigurableItem {
         public static NBTTagCompound getProfileCompound(ItemStack stack) {
             int profile = ItemNBTHelper.getInteger(stack, "ConfigProfile", 0);
             NBTTagCompound stackCompound = ItemNBTHelper.getCompound(stack);
-            if (!stackCompound.hasKey("ConfigProfiles") && stackCompound.getTagList("ConfigProfiles", 10).tagCount() < 5) {
+            if (!stackCompound.hasKey("ConfigProfiles")
+                    && stackCompound.getTagList("ConfigProfiles", 10).tagCount() < 5) {
                 NBTTagList profileList = new NBTTagList();
                 for (int i = 0; i < 5; i++) profileList.appendTag(new NBTTagCompound());
                 stackCompound.setTag("ConfigProfiles", profileList);
@@ -48,7 +51,6 @@ public interface IConfigurableItem {
         public static void setString(ItemStack stack, String tag, String s) {
             getProfileCompound(stack).setString(tag, s);
         }
-
 
         public static boolean getBoolean(ItemStack stack, String tag, boolean defaultExpected) {
             return getProfileCompound(stack).hasKey(tag) ? getProfileCompound(stack).getBoolean(tag) : defaultExpected;

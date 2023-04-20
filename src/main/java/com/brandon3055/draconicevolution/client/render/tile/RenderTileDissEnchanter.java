@@ -1,6 +1,5 @@
 package com.brandon3055.draconicevolution.client.render.tile;
 
-import com.brandon3055.draconicevolution.common.tileentities.TileDissEnchanter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -12,13 +11,17 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
 import org.lwjgl.opengl.GL11;
+
+import com.brandon3055.draconicevolution.common.tileentities.TileDissEnchanter;
 
 public class RenderTileDissEnchanter extends TileEntitySpecialRenderer {
 
-    //private final ResourceLocation texture = new ResourceLocation(References.MODID.toLowerCase(), "textures/models/EnergyInfuserTextureSheet.png");
+    // private final ResourceLocation texture = new ResourceLocation(References.MODID.toLowerCase(),
+    // "textures/models/EnergyInfuserTextureSheet.png");
 
-    //private static float pxl = 1F / 256F;
+    // private static float pxl = 1F / 256F;
 
     @Override
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float f) {
@@ -33,7 +36,7 @@ public class RenderTileDissEnchanter extends TileEntitySpecialRenderer {
 
     public void renderBlock(TileDissEnchanter tile, World world, int x, int y, int z, float f) {
         Tessellator tessellator = Tessellator.instance;
-        //bindTexture(texture);
+        // bindTexture(texture);
 
         tessellator.setColorRGBA(255, 255, 255, 255);
         tessellator.setBrightness(200);

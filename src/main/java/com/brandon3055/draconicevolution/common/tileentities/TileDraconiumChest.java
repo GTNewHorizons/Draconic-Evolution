@@ -1,14 +1,7 @@
 package com.brandon3055.draconicevolution.common.tileentities;
 
-import cofh.api.energy.IEnergyContainerItem;
-import cofh.api.energy.IEnergyReceiver;
-import com.brandon3055.brandonscore.common.utills.InventoryUtils;
-import com.brandon3055.draconicevolution.common.ModBlocks;
-import com.brandon3055.draconicevolution.common.blocks.DraconiumChest;
-import com.brandon3055.draconicevolution.common.container.ContainerDraconiumChest;
-import com.brandon3055.draconicevolution.common.lib.OreDoublingRegistry;
-import com.brandon3055.draconicevolution.common.utills.EnergyStorage;
-import com.brandon3055.draconicevolution.common.utills.ICustomItemData;
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -23,12 +16,22 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.List;
+import cofh.api.energy.IEnergyContainerItem;
+import cofh.api.energy.IEnergyReceiver;
+
+import com.brandon3055.brandonscore.common.utills.InventoryUtils;
+import com.brandon3055.draconicevolution.common.ModBlocks;
+import com.brandon3055.draconicevolution.common.blocks.DraconiumChest;
+import com.brandon3055.draconicevolution.common.container.ContainerDraconiumChest;
+import com.brandon3055.draconicevolution.common.lib.OreDoublingRegistry;
+import com.brandon3055.draconicevolution.common.utills.EnergyStorage;
+import com.brandon3055.draconicevolution.common.utills.ICustomItemData;
 
 /**
  * Created by Brandon on 27/06/2014.
  */
 public class TileDraconiumChest extends TileEntity implements ISidedInventory, IEnergyReceiver, ICustomItemData {
+
     ItemStack[] items = new ItemStack[240];
     ItemStack[] itemsCrafting = new ItemStack[10];
     private int ticksSinceSync = -1;
@@ -52,6 +55,7 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
      * How fast the furnace is smelting (used by flame animation) range:0 - 100
      */
     public int smeltingBurnSpeed;
+
     public final int smeltingMaxBurnSpeed = 50;
     public final int smeltingCompleateTime = 1600;
     public int smeltingAutoFeed = 0;
@@ -62,10 +66,20 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
     @Override
     public void updateEntity() {
         // Resynchronize clients with the server state
-        if (worldObj != null && !this.worldObj.isRemote && this.numUsingPlayers != 0 && (this.ticksSinceSync + this.xCoord + this.yCoord + this.zCoord) % 200 == 0) {
+        if (worldObj != null && !this.worldObj.isRemote
+                && this.numUsingPlayers != 0
+                && (this.ticksSinceSync + this.xCoord + this.yCoord + this.zCoord) % 200 == 0) {
             this.numUsingPlayers = 0;
             float var1 = 5.0F;
-            List<EntityPlayer> var2 = this.worldObj.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox((double) ((float) this.xCoord - var1), (double) ((float) this.yCoord - var1), (double) ((float) this.zCoord - var1), (double) ((float) (this.xCoord + 1) + var1), (double) ((float) (this.yCoord + 1) + var1), (double) ((float) (this.zCoord + 1) + var1)));
+            List<EntityPlayer> var2 = this.worldObj.getEntitiesWithinAABB(
+                    EntityPlayer.class,
+                    AxisAlignedBB.getBoundingBox(
+                            (double) ((float) this.xCoord - var1),
+                            (double) ((float) this.yCoord - var1),
+                            (double) ((float) this.zCoord - var1),
+                            (double) ((float) (this.xCoord + 1) + var1),
+                            (double) ((float) (this.yCoord + 1) + var1),
+                            (double) ((float) (this.zCoord + 1) + var1)));
 
             for (EntityPlayer var4 : var2) {
                 if (var4.openContainer instanceof ContainerDraconiumChest) {
@@ -75,7 +89,13 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
         }
 
         if (worldObj != null && !worldObj.isRemote && ticksSinceSync < 0) {
-            worldObj.addBlockEvent(xCoord, yCoord, zCoord, ModBlocks.draconiumChest, 3, ((numUsingPlayers << 3) & 0xF8) | (facing & 0x7));
+            worldObj.addBlockEvent(
+                    xCoord,
+                    yCoord,
+                    zCoord,
+                    ModBlocks.draconiumChest,
+                    3,
+                    ((numUsingPlayers << 3) & 0xF8) | (facing & 0x7));
         }
 
         this.ticksSinceSync++;
@@ -84,7 +104,13 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
         if (numUsingPlayers > 0 && lidAngle == 0.0F) {
             double d = (double) xCoord + 0.5D;
             double d1 = (double) zCoord + 0.5D;
-            worldObj.playSoundEffect(d, (double) yCoord + 0.5D, d1, "random.chestopen", 0.5F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
+            worldObj.playSoundEffect(
+                    d,
+                    (double) yCoord + 0.5D,
+                    d1,
+                    "random.chestopen",
+                    0.5F,
+                    worldObj.rand.nextFloat() * 0.1F + 0.9F);
         }
         if (numUsingPlayers == 0 && lidAngle > 0.0F || numUsingPlayers > 0 && lidAngle < 1.0F) {
             float f1 = lidAngle;
@@ -100,7 +126,13 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
             if (lidAngle < f2 && f1 >= f2) {
                 double d2 = (double) xCoord + 0.5D;
                 double d3 = (double) zCoord + 0.5D;
-                worldObj.playSoundEffect(d2, (double) yCoord + 0.5D, d3, "random.chestclosed", 0.5F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
+                worldObj.playSoundEffect(
+                        d2,
+                        (double) yCoord + 0.5D,
+                        d3,
+                        "random.chestclosed",
+                        0.5F,
+                        worldObj.rand.nextFloat() * 0.1F + 0.9F);
             }
             if (lidAngle < 0.0F) {
                 lidAngle = 0.0F;
@@ -110,10 +142,17 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
         updateEnergy();
     }
 
-    public void updateEnergy() {//todo if no charging item wait a sec before checking again
-        if (energy.getEnergyStored() < energy.getMaxEnergyStored() && getStackInSlot(239) != null && getStackInSlot(239).getItem() instanceof IEnergyContainerItem) {
+    public void updateEnergy() { // todo if no charging item wait a sec before checking again
+        if (energy.getEnergyStored() < energy.getMaxEnergyStored() && getStackInSlot(239) != null
+                && getStackInSlot(239).getItem() instanceof IEnergyContainerItem) {
             IEnergyContainerItem item = (IEnergyContainerItem) getStackInSlot(239).getItem();
-            item.extractEnergy(getStackInSlot(239), receiveEnergy(ForgeDirection.DOWN, item.extractEnergy(getStackInSlot(239), energy.getMaxReceive(), true), false), false);
+            item.extractEnergy(
+                    getStackInSlot(239),
+                    receiveEnergy(
+                            ForgeDirection.DOWN,
+                            item.extractEnergy(getStackInSlot(239), energy.getMaxReceive(), true),
+                            false),
+                    false);
         }
     }
 
@@ -132,19 +171,19 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
             requiresUpdate = false;
         }
 
-        //LogHelper.info("S.I.P: " + smeltInProgress + " S.S.D: " + updateSuspended + " C.F.R: " + canFurnaceRun());
+        // LogHelper.info("S.I.P: " + smeltInProgress + " S.S.D: " + updateSuspended + " C.F.R: " + canFurnaceRun());
         if (updateSuspended && (getTick() % 500) != 0) return;
 
         updateSuspended = false;
         inTick = true;
 
-        //======= Try to start the furnace ====================================================
+        // ======= Try to start the furnace ====================================================
         if (!smeltInProgress && (getTick() % 500) == 0 && energy.getEnergyStored() > 1000) {
             if (getFill() || getLock() || getAll()) feedNextItem();
             smeltInProgress = canFurnaceRun();
         }
-        //=====================================================================================
-        //======= Furnace running =============================================================
+        // =====================================================================================
+        // ======= Furnace running =============================================================
 
         if (smeltInProgress) {
             smeltingBurnSpeed = Math.min(energy.getEnergyStored() / 1000, smeltingMaxBurnSpeed);
@@ -171,12 +210,11 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
         inTick = false;
     }
 
-    private void confirmRunningState() {
-    }
+    private void confirmRunningState() {}
 
     private boolean canFurnaceRun() {
         boolean flag = false;
-        //====== Check if there is anything to smelt =========================================
+        // ====== Check if there is anything to smelt =========================================
         for (int i = 0; i < 5; i++) {
             if (getStackInSlot(234 + i) == null) continue;
             ItemStack stack = getStackInSlot(234 + i);
@@ -185,33 +223,34 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
                 break;
             }
         }
-        if (!flag) return false; //Return false if there is nothing to smelt
-        //=====================================================================================
-        //===== Confirm that the furnace can still run when lock mode is enabled ==============
+        if (!flag) return false; // Return false if there is nothing to smelt
+        // =====================================================================================
+        // ===== Confirm that the furnace can still run when lock mode is enabled ==============
         if (getLock()) {
             flag = false;
             for (int i = 0; i < 5; i++) {
                 ItemStack recipe = getStackInSlot(234 + i);
-                if (recipe == null || recipe.stackSize == 1)
-                    continue; //checks that there is more then one of at least one item in the input
+                if (recipe == null || recipe.stackSize == 1) continue; // checks that there is more then one of at least
+                                                                       // one item in the input
                 flag = true;
             }
             if (!flag) return false;
         }
-        //=====================================================================================
-        //====== Check if there is room for the output ========================================
+        // =====================================================================================
+        // ====== Check if there is room for the output ========================================
         for (int i = 0; i < 5; i++) {
             if (getStackInSlot(234 + i) == null) continue;
             ItemStack output = getResult(getStackInSlot(234 + i)).copy();
 
             for (int j = 0; j < getSizeInventory(); j++) {
-                //if (getStackInSlot(234 + j).stackSize >= getStackInSlot(234 + j).getMaxStackSize()) continue;todo consider?
+                // if (getStackInSlot(234 + j).stackSize >= getStackInSlot(234 + j).getMaxStackSize()) continue;todo
+                // consider?
                 InventoryUtils.insertItemIntoInventory(this, output, ForgeDirection.DOWN, j, false);
                 if (output.stackSize == 0) break;
             }
-            if (output.stackSize > 0) return false; //return false if the output could not be added to the inventory
+            if (output.stackSize > 0) return false; // return false if the output could not be added to the inventory
         }
-        //=====================================================================================
+        // =====================================================================================
         return true;
     }
 
@@ -229,14 +268,14 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
 
                 ItemStack result = getResult(recipe).copy();
 
-                //Try to merge with existing stacks todo needed?
+                // Try to merge with existing stacks todo needed?
                 for (int j = 0; j < getSizeInventory(); j++) {
                     if (getStackInSlot(j) == null) continue;
                     InventoryUtils.tryMergeStacks(result, getStackInSlot(j));
                 }
 
-                if (result.stackSize > 0)
-                    InventoryUtils.insertItemIntoInventory(this, result); //Insert stack into inventory
+                if (result.stackSize > 0) InventoryUtils.insertItemIntoInventory(this, result); // Insert stack into
+                                                                                                // inventory
 
                 if (result.stackSize == 0) {
                     recipe.stackSize--;
@@ -256,7 +295,7 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
     }
 
     public void feedNextItem() {
-        boolean[] stacksFull = new boolean[]{false, false, false, false, false};
+        boolean[] stacksFull = new boolean[] { false, false, false, false, false };
 
         for (int i = 0; i < getSizeInventory(); i++) {
             if (getStackInSlot(i) == null) continue;
@@ -310,7 +349,8 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
     }
 
     private boolean isSmeltable(ItemStack stack) {
-        return FurnaceRecipes.smelting().getSmeltingResult(stack) != null || OreDoublingRegistry.getOreResult(stack) != null;
+        return FurnaceRecipes.smelting().getSmeltingResult(stack) != null
+                || OreDoublingRegistry.getOreResult(stack) != null;
     }
 
     private ItemStack getResult(ItemStack stack) {
@@ -337,7 +377,13 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
 
     public void rotateAround(ForgeDirection axis) {
         setFacing((byte) ForgeDirection.getOrientation(facing).getRotation(axis).ordinal());
-        worldObj.addBlockEvent(xCoord, yCoord, zCoord, ModBlocks.draconiumChest, 3, ((numUsingPlayers << 3) & 0xF8) | (facing & 0x7));
+        worldObj.addBlockEvent(
+                xCoord,
+                yCoord,
+                zCoord,
+                ModBlocks.draconiumChest,
+                3,
+                ((numUsingPlayers << 3) & 0xF8) | (facing & 0x7));
     }
 
     public int getFacing() {
@@ -362,9 +408,9 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
         super.writeToNBT(compound);
 
         return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 1, compound);
-//		NBTTagCompound tagCompound = new NBTTagCompound();
-//		this.writeToNBT(tagCompound);
-//		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 1, tagCompound);
+        // NBTTagCompound tagCompound = new NBTTagCompound();
+        // this.writeToNBT(tagCompound);
+        // return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 1, tagCompound);
     }
 
     @Override
@@ -427,7 +473,8 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
 
     @Override
     public String getInventoryName() {
-        return hasCustomInventoryName() ? customName : StatCollector.translateToLocal(ModBlocks.draconiumChest.getUnlocalizedName() + ".name");
+        return hasCustomInventoryName() ? customName
+                : StatCollector.translateToLocal(ModBlocks.draconiumChest.getUnlocalizedName() + ".name");
     }
 
     public void setCustomName(String s) {
@@ -638,101 +685,100 @@ public class TileDraconiumChest extends TileEntity implements ISidedInventory, I
     public void markDirty() {
         super.markDirty();
         if (!worldObj.isRemote) requiresUpdate = true;
-
     }
 }
 
-
-//inTick = true;
-//		tick++;
+// inTick = true;
+// tick++;
 //
-//		boolean canSmelt = false;
-//		boolean flag = true;
+// boolean canSmelt = false;
+// boolean flag = true;
 //
-//		for (int i = 0; i < 5; i++) {
-//		if (getStackInSlot(234 + i) == null) continue;
-//		ItemStack stack = getStackInSlot(234 + i);
-//		if (isSmeltable(stack)) canSmelt = true;
-//		else flag = false;
-//		}
+// for (int i = 0; i < 5; i++) {
+// if (getStackInSlot(234 + i) == null) continue;
+// ItemStack stack = getStackInSlot(234 + i);
+// if (isSmeltable(stack)) canSmelt = true;
+// else flag = false;
+// }
 //
 //
-//		if (!flag) canSmelt = false;
+// if (!flag) canSmelt = false;
 //
-//		if (canSmelt) {//Check if there is room for the output
-//		for (int i = 0; i < 5; i++) {
+// if (canSmelt) {//Check if there is room for the output
+// for (int i = 0; i < 5; i++) {
 //
-//		if (getStackInSlot(234 + i) == null) continue;
-//		ItemStack output = getResult(getStackInSlot(234 + i)).copy();
+// if (getStackInSlot(234 + i) == null) continue;
+// ItemStack output = getResult(getStackInSlot(234 + i)).copy();
 //
-//		for (int j = 0; j < getSizeInventory(); j++) {
-//		InventoryUtils.insertItemIntoInventory(this, output, ForgeDirection.DOWN, j, false);
-//		if (output.stackSize == 0) break;
-//		}
+// for (int j = 0; j < getSizeInventory(); j++) {
+// InventoryUtils.insertItemIntoInventory(this, output, ForgeDirection.DOWN, j, false);
+// if (output.stackSize == 0) break;
+// }
 //
-//		if (output.stackSize > 0) {
-//		canSmelt = false;
-//		break;
-//		}
-//		}
-//		}
+// if (output.stackSize > 0) {
+// canSmelt = false;
+// break;
+// }
+// }
+// }
 //
-//		if (canSmelt && getLock()){ //Confirm that the firnace can still run when lock mode is enabled
-//		flag = false;
-//		for (int i = 0; i < 5; i++) {
+// if (canSmelt && getLock()){ //Confirm that the firnace can still run when lock mode is enabled
+// flag = false;
+// for (int i = 0; i < 5; i++) {
 //
-//		ItemStack recipe = getStackInSlot(234 + i);
+// ItemStack recipe = getStackInSlot(234 + i);
 //
-//		if (recipe == null || recipe.stackSize == 1) continue;
+// if (recipe == null || recipe.stackSize == 1) continue;
 //
-//		flag = true;
-//		}
-//		canSmelt = flag;
-//		}
+// flag = true;
+// }
+// canSmelt = flag;
+// }
 //
-//		flag = false;
-//		if (canSmelt && smeltingProgressTime >= smeltingCompleateTime) {
-//		int itemsToProccess = 5;
-//		int proccessAttempts = 0;
-//		do {
-//		for (int i = 0; i < 5; i++) {
+// flag = false;
+// if (canSmelt && smeltingProgressTime >= smeltingCompleateTime) {
+// int itemsToProccess = 5;
+// int proccessAttempts = 0;
+// do {
+// for (int i = 0; i < 5; i++) {
 //
-//		ItemStack recipe = getStackInSlot(234 + i);
+// ItemStack recipe = getStackInSlot(234 + i);
 //
-//		if (recipe == null || (getLock() && recipe.stackSize == 1)) continue;
+// if (recipe == null || (getLock() && recipe.stackSize == 1)) continue;
 //
-//		ItemStack result = getResult(recipe).copy();
+// ItemStack result = getResult(recipe).copy();
 //
-//		for (int j = 0; j < getSizeInventory(); j++) {
-//		if (getStackInSlot(j) == null) continue;
-//		InventoryUtils.tryMergeStacks(result, getStackInSlot(j));
-//		}
+// for (int j = 0; j < getSizeInventory(); j++) {
+// if (getStackInSlot(j) == null) continue;
+// InventoryUtils.tryMergeStacks(result, getStackInSlot(j));
+// }
 //
-//		if (result.stackSize > 0) InventoryUtils.insertItemIntoInventory(this, result);
+// if (result.stackSize > 0) InventoryUtils.insertItemIntoInventory(this, result);
 //
-//		if (result.stackSize == 0) {
-//		recipe.stackSize--;
-//		if (recipe.stackSize == 0) setInventorySlotContents(234 + i, null);
-//		itemsToProccess--;
-//		flag = true;
-//		}
+// if (result.stackSize == 0) {
+// recipe.stackSize--;
+// if (recipe.stackSize == 0) setInventorySlotContents(234 + i, null);
+// itemsToProccess--;
+// flag = true;
+// }
 //
-//		if (itemsToProccess == 0) break;
-//		}
+// if (itemsToProccess == 0) break;
+// }
 //
-//		proccessAttempts++;
+// proccessAttempts++;
 //
-//		} while (itemsToProccess > 0 && proccessAttempts < 5);
-//		}
+// } while (itemsToProccess > 0 && proccessAttempts < 5);
+// }
 //
-//		if ((flag && (getFill() || getLock() || getAll())) || (!canSmelt && (getLock() || getAll()) && (tick + xCoord + yCoord + zCoord) % 60 == 0)) feedNextItem();
+// if ((flag && (getFill() || getLock() || getAll())) || (!canSmelt && (getLock() || getAll()) && (tick + xCoord +
+// yCoord + zCoord) % 60 == 0)) feedNextItem();
 //
-//		if (canSmelt) {
-//		smeltingBurnSpeed = Math.min(energy.getEnergyStored() / 1000, smeltingMaxBurnSpeed);
-//		} else smeltingBurnSpeed = 0;
+// if (canSmelt) {
+// smeltingBurnSpeed = Math.min(energy.getEnergyStored() / 1000, smeltingMaxBurnSpeed);
+// } else smeltingBurnSpeed = 0;
 //
-//		if (canSmelt && smeltingProgressTime < smeltingCompleateTime) {
-//		smeltingProgressTime += smeltingBurnSpeed;
-//		energy.modifyEnergyStored(-smeltingBurnSpeed * 5);
-//		} else smeltingProgressTime = 0;
-//		inTick = false;
+// if (canSmelt && smeltingProgressTime < smeltingCompleateTime) {
+// smeltingProgressTime += smeltingBurnSpeed;
+// energy.modifyEnergyStored(-smeltingBurnSpeed * 5);
+// } else smeltingProgressTime = 0;
+// inTick = false;

@@ -1,23 +1,5 @@
 package com.brandon3055.draconicevolution.client.handler;
 
-import com.brandon3055.draconicevolution.client.gui.componentguis.GUIManual;
-import com.brandon3055.draconicevolution.client.utill.CustomResourceLocation;
-import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
-import com.google.common.io.ByteStreams;
-import com.google.gson.stream.JsonWriter;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.relauncher.ReflectionHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EffectRenderer;
-import net.minecraft.client.resources.FolderResourcePack;
-import net.minecraft.util.ResourceLocation;
-import org.apache.commons.io.FilenameUtils;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Field;
@@ -25,16 +7,39 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
+import javax.imageio.ImageIO;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EffectRenderer;
+import net.minecraft.client.resources.FolderResourcePack;
+import net.minecraft.util.ResourceLocation;
+
+import org.apache.commons.io.FilenameUtils;
+
+import com.brandon3055.draconicevolution.client.gui.componentguis.GUIManual;
+import com.brandon3055.draconicevolution.client.utill.CustomResourceLocation;
+import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.google.common.io.ByteStreams;
+import com.google.gson.stream.JsonWriter;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.ReflectionHelper;
+
 /**
  * Created by Brandon on 8/02/2015.
  */
 public class ResourceHandler {
+
     public static ResourceHandler instance = new ResourceHandler();
     private static ResourceLocation defaultParticles;
-    private static ResourceLocation particles = new ResourceLocation(References.RESOURCESPREFIX + "textures/particle/particles.png");
+    private static ResourceLocation particles = new ResourceLocation(
+            References.RESOURCESPREFIX + "textures/particle/particles.png");
     private static Map<String, ResourceLocation> cachedResources = new HashMap<String, ResourceLocation>();
     public static Map<String, CustomResourceLocation> downloadedImages = new HashMap<String, CustomResourceLocation>();
-
 
     private static String savePath;
     private static File saveFolder;
@@ -42,8 +47,7 @@ public class ResourceHandler {
     private static DownloadThread downloadThread;
     public static int downloadStatus = 0;
 
-
-    //-------------------- File Handling -----------------------//
+    // -------------------- File Handling -----------------------//
 
     @SubscribeEvent
     public void tick(TickEvent.ClientTickEvent event) {
@@ -59,16 +63,16 @@ public class ResourceHandler {
     public static void init(FMLPreInitializationEvent event) {
         FMLCommonHandler.instance().bus().register(instance);
 
-        if (event != null)
-            savePath = event.getModConfigurationDirectory().getParentFile().getAbsolutePath() + "/config/draconicevolution";
+        if (event != null) savePath = event.getModConfigurationDirectory().getParentFile().getAbsolutePath()
+                + "/config/draconicevolution";
         GUIManual.loadPages();
 
         downloadThread = new DownloadThread(GUIManual.imageURLs);
         downloadThread.start();
     }
 
-
     public static class DownloadThread extends Thread {
+
         private List<String> imageURLs;
         private boolean isFinished = false;
         private boolean wasSuccessful = true;
@@ -89,13 +93,16 @@ public class ResourceHandler {
                         String fileName = url.getFile();
 
                         BufferedImage bi = ImageIO.read(new File(getImagesFolder(), FilenameUtils.getName(fileName)));
-                        downloadedImages.put(FilenameUtils.getName(fileName), new CustomResourceLocation(FilenameUtils.getName(fileName), bi.getWidth(), bi.getHeight()));
-                    }
-                    catch (MalformedURLException e) {
+                        downloadedImages.put(
+                                FilenameUtils.getName(fileName),
+                                new CustomResourceLocation(
+                                        FilenameUtils.getName(fileName),
+                                        bi.getWidth(),
+                                        bi.getHeight()));
+                    } catch (MalformedURLException e) {
                         LogHelper.error("Image Read Failed");
                         e.printStackTrace();
-                    }
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         LogHelper.error("Image Read Failed");
                         e.printStackTrace();
                     }
@@ -122,8 +129,7 @@ public class ResourceHandler {
                 is.close();
                 os.close();
 
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 LogHelper.error("Download Failed");
                 e.printStackTrace();
                 return false;
@@ -136,8 +142,7 @@ public class ResourceHandler {
                 URL url = new URL(urlS);
                 String fileName = url.getFile();
                 return Arrays.asList(getImagesFolder().list()).contains(FilenameUtils.getName(fileName));
-            }
-            catch (MalformedURLException e) {
+            } catch (MalformedURLException e) {
                 LogHelper.error("Unable to check files existence. Invalid URL: " + urlS);
                 e.printStackTrace();
                 return false;
@@ -157,7 +162,6 @@ public class ResourceHandler {
         }
     }
 
-
     private static void addRSPack(boolean refreash) {
         File rspack = new File(getConfigFolder(), "/resources");
         if (!rspack.exists()) return;
@@ -173,8 +177,7 @@ public class ResourceHandler {
                 writer.endObject();
                 writer.endObject();
                 writer.close();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 LogHelper.error("Error creating pack.mcmeta");
                 e.printStackTrace();
             }
@@ -189,8 +192,7 @@ public class ResourceHandler {
             f.set(Minecraft.getMinecraft(), defaultResourcePacks);
             LogHelper.info("RS Added");
             if (refreash) Minecraft.getMinecraft().refreshResources();
-        }
-        catch (IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
     }
@@ -213,8 +215,7 @@ public class ResourceHandler {
         return imagesFolder;
     }
 
-    //----------------------------------------------------------//
-
+    // ----------------------------------------------------------//
 
     public static void bindTexture(ResourceLocation texture) {
         Minecraft.getMinecraft().renderEngine.bindTexture(texture);
@@ -226,10 +227,9 @@ public class ResourceHandler {
     public static void bindDefaultParticles() {
         if (defaultParticles == null) {
             try {
-                defaultParticles = (ResourceLocation) ReflectionHelper.getPrivateValue(EffectRenderer.class, null, "particleTextures", "field_110737_b");
-            }
-            catch (Exception e) {
-            }
+                defaultParticles = (ResourceLocation) ReflectionHelper
+                        .getPrivateValue(EffectRenderer.class, null, "particleTextures", "field_110737_b");
+            } catch (Exception e) {}
         }
         if (defaultParticles != null) bindTexture(defaultParticles);
     }
@@ -252,6 +252,4 @@ public class ResourceHandler {
     public static void bindResource(String rs) {
         bindTexture(ResourceHandler.getResource(rs));
     }
-
-
 }

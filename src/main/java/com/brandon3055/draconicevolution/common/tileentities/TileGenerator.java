@@ -1,12 +1,5 @@
 package com.brandon3055.draconicevolution.common.tileentities;
 
-import cofh.api.energy.IEnergyProvider;
-import cofh.api.energy.IEnergyReceiver;
-import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.utills.EnergyStorage;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,8 +14,19 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import cofh.api.energy.IEnergyProvider;
+import cofh.api.energy.IEnergyReceiver;
+
+import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.utills.EnergyStorage;
+
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class TileGenerator extends TileObjectSync implements ISidedInventory, IEnergyProvider {
-    //########### variables #############//
+
+    // ########### variables #############//
     private ItemStack[] items;
     public int burnTime = 1;
     public int burnTimeRemaining = 0;
@@ -34,9 +38,10 @@ public class TileGenerator extends TileObjectSync implements ISidedInventory, IE
      * Energy per burn tick
      */
     private int EPBT = 14;
+
     public EnergyStorage storage = new EnergyStorage(100000, 0, 1000);
 
-    //##################################//
+    // ##################################//
 
     public TileGenerator() {
         items = new ItemStack[1];
@@ -50,14 +55,24 @@ public class TileGenerator extends TileObjectSync implements ISidedInventory, IE
 
         if (burnTimeRemaining > 0 && storage.getEnergyStored() < storage.getMaxEnergyStored()) {
             burnTimeRemaining -= burnSpeed;
-            storage.setEnergyStored(storage.getEnergyStored() + Math.min(burnSpeed * EPBT, storage.getMaxEnergyStored() - storage.getEnergyStored()));
+            storage.setEnergyStored(
+                    storage.getEnergyStored()
+                            + Math.min(burnSpeed * EPBT, storage.getMaxEnergyStored() - storage.getEnergyStored()));
         } else if (burnTimeRemaining <= 0) tryRefuel();
 
         if ((storage.getEnergyStored() > 0)) {
             for (int i = 0; i < 6; i++) {
-                TileEntity tile = worldObj.getTileEntity(xCoord + ForgeDirection.getOrientation(i).offsetX, yCoord + ForgeDirection.getOrientation(i).offsetY, zCoord + ForgeDirection.getOrientation(i).offsetZ);
+                TileEntity tile = worldObj.getTileEntity(
+                        xCoord + ForgeDirection.getOrientation(i).offsetX,
+                        yCoord + ForgeDirection.getOrientation(i).offsetY,
+                        zCoord + ForgeDirection.getOrientation(i).offsetZ);
                 if (tile != null && tile instanceof IEnergyReceiver) {
-                    storage.extractEnergy(((IEnergyReceiver) tile).receiveEnergy(ForgeDirection.getOrientation(i).getOpposite(), storage.extractEnergy(storage.getMaxExtract(), true), false), false);
+                    storage.extractEnergy(
+                            ((IEnergyReceiver) tile).receiveEnergy(
+                                    ForgeDirection.getOrientation(i).getOpposite(),
+                                    storage.extractEnergy(storage.getMaxExtract(), true),
+                                    false),
+                            false);
                 }
             }
         }
@@ -65,7 +80,6 @@ public class TileGenerator extends TileObjectSync implements ISidedInventory, IE
         detectAndSentChanges(tick % 500 == 0);
         tick++;
     }
-
 
     public void tryRefuel() {
         if (burnTimeRemaining > 0 || storage.getEnergyStored() >= storage.getMaxEnergyStored()) return;
@@ -186,12 +200,10 @@ public class TileGenerator extends TileObjectSync implements ISidedInventory, IE
     }
 
     @Override
-    public void openInventory() {
-    }
+    public void openInventory() {}
 
     @Override
-    public void closeInventory() {
-    }
+    public void closeInventory() {}
 
     @Override
     public boolean isItemValidForSlot(int i, ItemStack stack) {

@@ -1,19 +1,22 @@
 package com.brandon3055.draconicevolution.client.gui.componentguis;
 
-import com.brandon3055.brandonscore.client.gui.guicomponents.*;
-import com.brandon3055.draconicevolution.common.container.ContainerAdvTool;
-import com.brandon3055.draconicevolution.common.lib.References;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+
 import org.lwjgl.opengl.GL11;
+
+import com.brandon3055.brandonscore.client.gui.guicomponents.*;
+import com.brandon3055.draconicevolution.common.container.ContainerAdvTool;
+import com.brandon3055.draconicevolution.common.lib.References;
 
 /**
  * Created by Brandon on 13/01/2015.
  */
 public class GUIToolInventory extends GUIBase {
 
-    private static final ResourceLocation inventoryTexture = new ResourceLocation(References.RESOURCESPREFIX + "textures/gui/ToolConfig.png");
+    private static final ResourceLocation inventoryTexture = new ResourceLocation(
+            References.RESOURCESPREFIX + "textures/gui/ToolConfig.png");
 
     private ContainerAdvTool container;
     private String inventoryName;
@@ -43,7 +46,8 @@ public class GUIToolInventory extends GUIBase {
 
         for (int i = 0; i < 5; i++) {
             c.addComponent(new ComponentSlotBackground(172, 18 + i * 21)).setGroup("INVENTORY");
-            c.addComponent(new ComponentTexturedRect(173, 20 + i * 21, 0, 89, 16, 14, inventoryTexture, true)).setGroup("INVENTORY");
+            c.addComponent(new ComponentTexturedRect(173, 20 + i * 21, 0, 89, 16, 14, inventoryTexture, true))
+                    .setGroup("INVENTORY");
         }
         return c;
     }
@@ -64,7 +68,8 @@ public class GUIToolInventory extends GUIBase {
             collection.addComponent(new ComponentSlotBackground(7 + x * 18, 18)).setGroup("INVENTORY");
         ComponentSlotBackground.addInventorySlots(collection, 7, 44, container.inventoryItemSlot);
         if (container.inventoryItemSlot > 35)
-            collection.addComponent(new ComponentItemRenderer(6, 18, container.inventoryTool.inventoryItem)).setGroup("INVENTORY");
+            collection.addComponent(new ComponentItemRenderer(6, 18, container.inventoryTool.inventoryItem))
+                    .setGroup("INVENTORY");
     }
 
     @Override

@@ -2,19 +2,19 @@ package com.brandon3055.draconicevolution.common.network;
 
 import com.brandon3055.draconicevolution.common.container.ContainerPlayerDetector;
 import com.brandon3055.draconicevolution.common.tileentities.TilePlayerDetectorAdvanced;
+
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
-
 public class PlayerDetectorStringPacket implements IMessage {
+
     private int index = 0;
     private String name = "";
 
-    public PlayerDetectorStringPacket() {
-    }
+    public PlayerDetectorStringPacket() {}
 
     public PlayerDetectorStringPacket(byte index, String name) {
         this.index = index;
@@ -37,7 +37,10 @@ public class PlayerDetectorStringPacket implements IMessage {
 
         @Override
         public IMessage onMessage(PlayerDetectorStringPacket message, MessageContext ctx) {
-            ContainerPlayerDetector container = (ctx.getServerHandler().playerEntity.openContainer instanceof ContainerPlayerDetector) ? (ContainerPlayerDetector) ctx.getServerHandler().playerEntity.openContainer : null;
+            ContainerPlayerDetector container = (ctx
+                    .getServerHandler().playerEntity.openContainer instanceof ContainerPlayerDetector)
+                            ? (ContainerPlayerDetector) ctx.getServerHandler().playerEntity.openContainer
+                            : null;
             TilePlayerDetectorAdvanced tile = (container != null) ? container.getTileDetector() : null;
 
             if (tile != null) {

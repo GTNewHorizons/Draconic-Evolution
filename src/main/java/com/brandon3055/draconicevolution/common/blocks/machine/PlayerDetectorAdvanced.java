@@ -1,15 +1,7 @@
 package com.brandon3055.draconicevolution.common.blocks.machine;
 
-import com.brandon3055.draconicevolution.DraconicEvolution;
-import com.brandon3055.draconicevolution.client.gui.GuiHandler;
-import com.brandon3055.draconicevolution.common.blocks.BlockCustomDrop;
-import com.brandon3055.draconicevolution.common.ModBlocks;
-import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.lib.Strings;
-import com.brandon3055.draconicevolution.common.tileentities.TilePlayerDetectorAdvanced;
-import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -22,9 +14,20 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.List;
+import com.brandon3055.draconicevolution.DraconicEvolution;
+import com.brandon3055.draconicevolution.client.gui.GuiHandler;
+import com.brandon3055.draconicevolution.common.ModBlocks;
+import com.brandon3055.draconicevolution.common.blocks.BlockCustomDrop;
+import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.lib.Strings;
+import com.brandon3055.draconicevolution.common.tileentities.TilePlayerDetectorAdvanced;
+
+import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class PlayerDetectorAdvanced extends BlockCustomDrop {
+
     IIcon side_inactive;
     IIcon side_active;
     IIcon top;
@@ -41,14 +44,16 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
     @SideOnly(Side.CLIENT)
     @Override
     public void registerBlockIcons(IIconRegister iconRegister) {
-        side_inactive = iconRegister.registerIcon(References.RESOURCESPREFIX + "advanced_player_detector_side_inactive");
+        side_inactive = iconRegister
+                .registerIcon(References.RESOURCESPREFIX + "advanced_player_detector_side_inactive");
         side_active = iconRegister.registerIcon(References.RESOURCESPREFIX + "advanced_player_detector_side_active");
         top = iconRegister.registerIcon(References.RESOURCESPREFIX + "machine_top_0");
         bottom = iconRegister.registerIcon(References.RESOURCESPREFIX + "machine_side");
     }
 
     @Override
-    public boolean isBlockSolid(IBlockAccess p_149747_1_, int p_149747_2_, int p_149747_3_, int p_149747_4_, int p_149747_5_) {
+    public boolean isBlockSolid(IBlockAccess p_149747_1_, int p_149747_2_, int p_149747_3_, int p_149747_4_,
+            int p_149747_5_) {
         return true;
     }
 
@@ -63,7 +68,9 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
         IIcon side_icon;
 
         TileEntity tile = world.getTileEntity(x, y, z);
-        TilePlayerDetectorAdvanced detector = (tile != null && tile instanceof TilePlayerDetectorAdvanced) ? (TilePlayerDetectorAdvanced) tile : null;
+        TilePlayerDetectorAdvanced detector = (tile != null && tile instanceof TilePlayerDetectorAdvanced)
+                ? (TilePlayerDetectorAdvanced) tile
+                : null;
         if (detector != null && detector.getStackInSlot(0) != null) {
             ItemStack stack = detector.getStackInSlot(0);
             Block block = Block.getBlockFromItem(stack.getItem());
@@ -94,9 +101,11 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_,
+            float p_149727_7_, float p_149727_8_, float p_149727_9_) {
         if (!world.isRemote) {
-            FMLNetworkHandler.openGui(player, DraconicEvolution.instance, GuiHandler.GUIID_PLAYERDETECTOR, world, x, y, z);
+            FMLNetworkHandler
+                    .openGui(player, DraconicEvolution.instance, GuiHandler.GUIID_PLAYERDETECTOR, world, x, y, z);
         }
         return true;
     }
@@ -115,7 +124,9 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
     @Override
     public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int meta) {
         TileEntity te = world.getTileEntity(x, y, z);
-        TilePlayerDetectorAdvanced detector = (te != null && te instanceof TilePlayerDetectorAdvanced) ? (TilePlayerDetectorAdvanced) te : null;
+        TilePlayerDetectorAdvanced detector = (te != null && te instanceof TilePlayerDetectorAdvanced)
+                ? (TilePlayerDetectorAdvanced) te
+                : null;
         if (detector != null) if (!detector.outputInverted) return detector.output ? 15 : 0;
         else return detector.output ? 0 : 15;
         else return 0;
@@ -124,7 +135,9 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
     @Override
     public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int meta) {
         TileEntity te = world.getTileEntity(x, y, z);
-        TilePlayerDetectorAdvanced detector = (te != null && te instanceof TilePlayerDetectorAdvanced) ? (TilePlayerDetectorAdvanced) te : null;
+        TilePlayerDetectorAdvanced detector = (te != null && te instanceof TilePlayerDetectorAdvanced)
+                ? (TilePlayerDetectorAdvanced) te
+                : null;
         if (detector != null) if (!detector.outputInverted) return detector.output ? 15 : 0;
         else return detector.output ? 0 : 15;
         else return 0;
@@ -141,14 +154,14 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
     }
 
     @Override
-    protected void getCustomTileEntityDrops(TileEntity te, List<ItemStack> droppes) {
-
-    }
+    protected void getCustomTileEntityDrops(TileEntity te, List<ItemStack> droppes) {}
 
     @Override
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z) {
         TileEntity te = world.getTileEntity(x, y, z);
-        TilePlayerDetectorAdvanced detector = (te != null && te instanceof TilePlayerDetectorAdvanced) ? (TilePlayerDetectorAdvanced) te : null;
+        TilePlayerDetectorAdvanced detector = (te != null && te instanceof TilePlayerDetectorAdvanced)
+                ? (TilePlayerDetectorAdvanced) te
+                : null;
         if (detector != null && detector.getStackInSlot(0) != null) {
             return detector.getStackInSlot(0);
         }

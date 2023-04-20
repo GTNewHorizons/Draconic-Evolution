@@ -4,13 +4,14 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
+
 import org.lwjgl.opengl.GL11;
 
 /**
- * ModelReactorPowerInjector - brandon3055
- * Created using Tabula 5.0.0
+ * ModelReactorPowerInjector - brandon3055 Created using Tabula 5.0.0
  */
 public class ModelReactorEnergyInjector extends ModelBase {
+
     public ModelRenderer BasePlate;
     public ModelRenderer shape14;
     public ModelRenderer coreSupports;
@@ -158,7 +159,7 @@ public class ModelReactorEnergyInjector extends ModelBase {
     public void render(Entity entity, float brightness, float f1, float f2, float f3, float f4, float f5) {
         this.support1.render(f5);
         this.BasePlate.render(f5);
-        //this.coreSupports.render(f5);
+        // this.coreSupports.render(f5);
 
         float lastBrightnessX = OpenGlHelper.lastBrightnessX;
         float lastBrightnessY = OpenGlHelper.lastBrightnessY;
@@ -166,7 +167,10 @@ public class ModelReactorEnergyInjector extends ModelBase {
         float b = brightness * 200F;
         float colour = Math.min(2F, (brightness * 2F) + 0.5F);
         if (brightness > 0F) GL11.glDisable(GL11.GL_LIGHTING);
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, Math.min(200F, lastBrightnessX + b), Math.min(200F, lastBrightnessY + b));
+        OpenGlHelper.setLightmapTextureCoords(
+                OpenGlHelper.lightmapTexUnit,
+                Math.min(200F, lastBrightnessX + b),
+                Math.min(200F, lastBrightnessY + b));
         GL11.glColor4f(colour, colour, colour, 1F);
         this.element1.render(f5);
         GL11.glColor4f(1F, 1F, 1F, 1F);

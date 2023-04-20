@@ -1,29 +1,31 @@
 package com.brandon3055.draconicevolution.common.network;
 
+import java.util.List;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+
 import com.brandon3055.brandonscore.common.lib.References;
 import com.brandon3055.brandonscore.common.utills.DataUtills;
 import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
 import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
 import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
+
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-
-import java.util.List;
 
 public class ItemConfigPacket implements IMessage {
+
     public byte datatype;
     public int slot;
     public Object value;
     public String name;
     public boolean renameProfile = false;
 
-    public ItemConfigPacket() {
-    }
+    public ItemConfigPacket() {}
 
     public ItemConfigPacket(ItemConfigField field) {
         this.datatype = (byte) field.datatype;
@@ -71,7 +73,10 @@ public class ItemConfigPacket implements IMessage {
             if (stack != null && stack.getItem() instanceof IConfigurableItem) {
 
                 if (message.renameProfile) {
-                    ItemNBTHelper.setString(stack, "ProfileName" + ItemNBTHelper.getInteger(stack, "ConfigProfile", 0), message.name);
+                    ItemNBTHelper.setString(
+                            stack,
+                            "ProfileName" + ItemNBTHelper.getInteger(stack, "ConfigProfile", 0),
+                            message.name);
                     return null;
                 }
 
@@ -80,10 +85,19 @@ public class ItemConfigPacket implements IMessage {
 
                 for (ItemConfigField field : fields) {
                     if (field.name.equals(message.name) && message.datatype == field.datatype) {
-                        ItemConfigField newValue = new ItemConfigField(message.datatype, message.value, message.slot, message.name);
+                        ItemConfigField newValue = new ItemConfigField(
+                                message.datatype,
+                                message.value,
+                                message.slot,
+                                message.name);
 
-                        if (newValue.castToDouble() <= field.castMaxToDouble() && newValue.castToDouble() >= field.castMinToDouble()) {
-                            DataUtills.writeObjectToCompound(IConfigurableItem.ProfileHelper.getProfileCompound(stack), message.value, message.datatype, message.name);
+                        if (newValue.castToDouble() <= field.castMaxToDouble()
+                                && newValue.castToDouble() >= field.castMinToDouble()) {
+                            DataUtills.writeObjectToCompound(
+                                    IConfigurableItem.ProfileHelper.getProfileCompound(stack),
+                                    message.value,
+                                    message.datatype,
+                                    message.name);
                         }
                     }
                 }

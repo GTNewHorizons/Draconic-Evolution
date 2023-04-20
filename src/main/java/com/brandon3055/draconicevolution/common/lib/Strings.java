@@ -1,6 +1,7 @@
 package com.brandon3055.draconicevolution.common.lib;
 
-public class Strings {//                                              public static Block name
+public class Strings { // public static Block name
+
     public static final String blockWeatherControllerName = "weatherController";
     public static final String tclogoName = "tclogo";
     public static final String xrayBlockName = "xRayBlock";
@@ -47,6 +48,7 @@ public class Strings {//                                              public sta
     public static final String longRangeDislocatorName = "longRangeDislocator";
     public static final String generatorName = "generator";
     public static final String energyStorageCoreName = "energyStorageCore";
+    public static final String earthName = "earth";
     public static final String draconiumBlockName = "draconium";
     public static final String invisibleMultiblockName = "invisibleMultiblock";
     public static final String energyPylonName = "energyPylon";

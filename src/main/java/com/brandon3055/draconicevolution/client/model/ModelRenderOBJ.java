@@ -1,18 +1,21 @@
 package com.brandon3055.draconicevolution.client.model;
 
-import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
+
 import org.lwjgl.opengl.GL11;
+
+import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 
 /**
  * Created by brandon3055 on 16/9/2015.
  */
 public class ModelRenderOBJ extends ModelRenderer {
+
     private IModelCustom model;
     private ResourceLocation texture;
     private int displayList;
@@ -38,13 +41,22 @@ public class ModelRenderOBJ extends ModelRenderer {
                 if (this.rotationPointX == 0.0F && this.rotationPointY == 0.0F && this.rotationPointZ == 0.0F) {
                     GL11.glCallList(this.displayList);
                 } else {
-                    GL11.glTranslatef(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
+                    GL11.glTranslatef(
+                            this.rotationPointX * scale,
+                            this.rotationPointY * scale,
+                            this.rotationPointZ * scale);
                     GL11.glCallList(this.displayList);
-                    GL11.glTranslatef(-this.rotationPointX * scale, -this.rotationPointY * scale, -this.rotationPointZ * scale);
+                    GL11.glTranslatef(
+                            -this.rotationPointX * scale,
+                            -this.rotationPointY * scale,
+                            -this.rotationPointZ * scale);
                 }
             } else {
                 GL11.glPushMatrix();
-                GL11.glTranslatef(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
+                GL11.glTranslatef(
+                        this.rotationPointX * scale,
+                        this.rotationPointY * scale,
+                        this.rotationPointZ * scale);
                 if (this.rotateAngleZ != 0.0F) {
                     GL11.glRotatef(this.rotateAngleZ * 57.295776F, 0.0F, 0.0F, 1.0F);
                 }
@@ -63,7 +75,6 @@ public class ModelRenderOBJ extends ModelRenderer {
 
             GL11.glTranslatef(-this.offsetX, -this.offsetY, -this.offsetZ);
         }
-
     }
 
     private void compileDisplayList(float scale) {
@@ -74,7 +85,7 @@ public class ModelRenderOBJ extends ModelRenderer {
 
         GL11.glPushMatrix();
         ResourceHandler.bindTexture(texture);
-        //scale = 1F/15F;
+        // scale = 1F/15F;
         GL11.glScalef(scale, scale, scale);
         GL11.glRotatef(180, -1, 0, 1);
         model.renderAll();
@@ -108,22 +119,27 @@ public class ModelRenderOBJ extends ModelRenderer {
             GL11.glCallList(this.displayList);
             GL11.glPopMatrix();
         }
-
     }
 
     @Override
     public void postRender(float scale) {
         if (!this.isHidden && this.showModel) {
-//			if(!this.compiled) {
-//				this.compileDisplayList(scale);
-//			}
+            // if(!this.compiled) {
+            // this.compileDisplayList(scale);
+            // }
 
             if (this.rotateAngleX == 0.0F && this.rotateAngleY == 0.0F && this.rotateAngleZ == 0.0F) {
                 if (this.rotationPointX != 0.0F || this.rotationPointY != 0.0F || this.rotationPointZ != 0.0F) {
-                    GL11.glTranslatef(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
+                    GL11.glTranslatef(
+                            this.rotationPointX * scale,
+                            this.rotationPointY * scale,
+                            this.rotationPointZ * scale);
                 }
             } else {
-                GL11.glTranslatef(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
+                GL11.glTranslatef(
+                        this.rotationPointX * scale,
+                        this.rotationPointY * scale,
+                        this.rotationPointZ * scale);
                 if (this.rotateAngleZ != 0.0F) {
                     GL11.glRotatef(this.rotateAngleZ * 57.295776F, 0.0F, 0.0F, 1.0F);
                 }
@@ -137,6 +153,5 @@ public class ModelRenderOBJ extends ModelRenderer {
                 }
             }
         }
-
     }
 }

@@ -3,6 +3,26 @@ package com.brandon3055.draconicevolution.common.items.armor;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.*;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
+import net.minecraftforge.common.ISpecialArmor;
+
+import thaumcraft.api.IVisDiscountGear;
+import thaumcraft.api.IWarpingGear;
+import thaumcraft.api.aspects.Aspect;
+
 import com.brandon3055.brandonscore.BrandonsCore;
 import com.brandon3055.brandonscore.common.utills.InfoHelper;
 import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
@@ -20,34 +40,31 @@ import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
 import com.brandon3055.draconicevolution.common.utills.IInventoryTool;
 import com.brandon3055.draconicevolution.common.utills.IUpgradableItem;
 import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
+
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnumEnchantmentType;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.*;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ISpecialArmor;
 
 /**
  * Created by Brandon on 3/07/2014.
  */
-public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurableItem, IInventoryTool, IUpgradableItem, ICustomArmor {
+@Optional.InterfaceList(
+        value = { @Optional.Interface(iface = "thaumcraft.api.IVisDiscountGear", modid = "Thaumcraft"),
+                @Optional.Interface(iface = "thaumcraft.api.IWarpingGear", modid = "Thaumcraft"), })
+public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurableItem, IInventoryTool, IUpgradableItem,
+        ICustomArmor, IVisDiscountGear, IWarpingGear {
+
     @SideOnly(Side.CLIENT)
     private IIcon helmIcon;
+
     @SideOnly(Side.CLIENT)
     private IIcon chestIcon;
+
     @SideOnly(Side.CLIENT)
     private IIcon leggsIcon;
+
     @SideOnly(Side.CLIENT)
     private IIcon bootsIcon;
 
@@ -75,7 +92,10 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
     @Override
     public String getUnlocalizedName() {
 
-        return String.format("item.%s%s", References.MODID.toLowerCase() + ":", super.getUnlocalizedName().substring(super.getUnlocalizedName().indexOf(".") + 1));
+        return String.format(
+                "item.%s%s",
+                References.MODID.toLowerCase() + ":",
+                super.getUnlocalizedName().substring(super.getUnlocalizedName().indexOf(".") + 1));
     }
 
     @Override
@@ -115,7 +135,8 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
     public String getArmorTexture(ItemStack stack, Entity entity, int slot, String type) {
         if (!ConfigHandler.useOldArmorModel)
             return References.RESOURCESPREFIX + "textures/models/armor/armorWyvern.png";
-        if (stack.getItem() == ModItems.wyvernHelm || stack.getItem() == ModItems.wyvernChest || stack.getItem() == ModItems.wyvernBoots) {
+        if (stack.getItem() == ModItems.wyvernHelm || stack.getItem() == ModItems.wyvernChest
+                || stack.getItem() == ModItems.wyvernBoots) {
             return References.RESOURCESPREFIX + "textures/models/armor/wyvern_layer_1.png";
         } else {
             return References.RESOURCESPREFIX + "textures/models/armor/wyvern_layer_2.png";
@@ -151,9 +172,10 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
         return 0;
     }
 
-    //region ISpecialArmor
+    // region ISpecialArmor
     @Override
-    public ArmorProperties getProperties(EntityLivingBase player, ItemStack armor, DamageSource source, double damage, int slot) {
+    public ArmorProperties getProperties(EntityLivingBase player, ItemStack armor, DamageSource source, double damage,
+            int slot) {
         if (source.isUnblockable() || source.isDamageAbsolute() || source.isMagicDamage())
             return new ArmorProperties(0, damageReduceAmount / 100D, 15);
         return new ArmorProperties(0, damageReduceAmount / 25D, 1000);
@@ -165,20 +187,25 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
     }
 
     @Override
-    public void damageArmor(EntityLivingBase entity, ItemStack stack, DamageSource source, int damage, int slot) {
-    }
-    //endregion
+    public void damageArmor(EntityLivingBase entity, ItemStack stack, DamageSource source, int damage, int slot) {}
+    // endregion
 
     @Override
-    public void onArmorTick(World world, EntityPlayer player, ItemStack stack) {
-
-    }
+    public void onArmorTick(World world, EntityPlayer player, ItemStack stack) {}
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer par2EntityPlayer, List list, boolean par4) {
+    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4) {
         InfoHelper.addEnergyAndLore(stack, list);
         ToolBase.holdCTRLForUpgrades(list, stack);
+        if (Loader.isModLoaded("Thaumcraft")) {
+            list.add("");
+            list.add(
+                    EnumChatFormatting.DARK_PURPLE + StatCollector.translateToLocal("tc.visdiscount")
+                            + ": "
+                            + this.getVisDiscount(stack, player, (Aspect) null)
+                            + "%");
+        }
     }
 
     @Override
@@ -229,10 +256,14 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
     public List<ItemConfigField> getFields(ItemStack stack, int slot) {
         List<ItemConfigField> list = new ArrayList<ItemConfigField>();
         if (armorType == 2) {
-            list.add(new ItemConfigField(References.FLOAT_ID, slot, "ArmorSpeedMult").setMinMaxAndIncromente(0f, 5f, 0.1f).readFromItem(stack, 0F).setModifier("PLUSPERCENT"));
+            list.add(
+                    new ItemConfigField(References.FLOAT_ID, slot, "ArmorSpeedMult")
+                            .setMinMaxAndIncromente(0f, 5f, 0.1f).readFromItem(stack, 0F).setModifier("PLUSPERCENT"));
             list.add(new ItemConfigField(References.BOOLEAN_ID, slot, "ArmorSprintOnly").readFromItem(stack, false));
         } else if (armorType == 3) {
-            list.add(new ItemConfigField(References.FLOAT_ID, slot, "ArmorJumpMult").setMinMaxAndIncromente(0f, 5f, 0.1f).readFromItem(stack, 0f).setModifier("PLUSPERCENT"));
+            list.add(
+                    new ItemConfigField(References.FLOAT_ID, slot, "ArmorJumpMult").setMinMaxAndIncromente(0f, 5f, 0.1f)
+                            .readFromItem(stack, 0f).setModifier("PLUSPERCENT"));
             list.add(new ItemConfigField(References.BOOLEAN_ID, slot, "ArmorSprintOnly").readFromItem(stack, false));
         }
         return list;
@@ -250,7 +281,11 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
 
     @Override
     public boolean isEnchantValid(Enchantment enchant) {
-        return enchant.type == EnumEnchantmentType.armor || (armorType == 0 && enchant.type == EnumEnchantmentType.armor_head) || (armorType == 1 && enchant.type == EnumEnchantmentType.armor_torso) || (armorType == 2 && enchant.type == EnumEnchantmentType.armor_legs) || (armorType == 3 && enchant.type == EnumEnchantmentType.armor_feet);
+        return enchant.type == EnumEnchantmentType.armor
+                || (armorType == 0 && enchant.type == EnumEnchantmentType.armor_head)
+                || (armorType == 1 && enchant.type == EnumEnchantmentType.armor_torso)
+                || (armorType == 2 && enchant.type == EnumEnchantmentType.armor_legs)
+                || (armorType == 3 && enchant.type == EnumEnchantmentType.armor_feet);
     }
 
     @SideOnly(Side.CLIENT)
@@ -311,19 +346,21 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
             }
         }
 
-
         return model;
     }
 
     @Override
     public List<EnumUpgrade> getUpgrades(ItemStack itemstack) {
-        return new ArrayList<EnumUpgrade>() {{
-            add(EnumUpgrade.RF_CAPACITY);
-            add(EnumUpgrade.SHIELD_CAPACITY);
-            add(EnumUpgrade.SHIELD_RECOVERY);
-            //	if (armorType == 2) add(EnumUpgrade.MOVE_SPEED);
-            //	if (armorType == 3) add(EnumUpgrade.JUMP_BOOST);
-        }};
+        return new ArrayList<EnumUpgrade>() {
+
+            {
+                add(EnumUpgrade.RF_CAPACITY);
+                add(EnumUpgrade.SHIELD_CAPACITY);
+                add(EnumUpgrade.SHIELD_RECOVERY);
+                // if (armorType == 2) add(EnumUpgrade.MOVE_SPEED);
+                // if (armorType == 3) add(EnumUpgrade.JUMP_BOOST);
+            }
+        };
     }
 
     @Override
@@ -340,9 +377,22 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
     public List<String> getUpgradeStats(ItemStack stack) {
         List<String> strings = new ArrayList<String>();
 
-        strings.add(InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.RFCapacity.txt") + ": " + InfoHelper.HITC() + Utills.formatNumber(getMaxEnergyStored(stack)));
-        strings.add(InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.ShieldCapacity.txt") + ": " + InfoHelper.HITC() + (int) getProtectionPoints(stack));
-        strings.add(InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.ShieldRecovery.txt") + ": " + InfoHelper.HITC() + Utills.round(getRecoveryPoints(stack) * 0.2D, 10) + " EPS");
+        strings.add(
+                InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.RFCapacity.txt")
+                        + ": "
+                        + InfoHelper.HITC()
+                        + Utills.formatNumber(getMaxEnergyStored(stack)));
+        strings.add(
+                InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.ShieldCapacity.txt")
+                        + ": "
+                        + InfoHelper.HITC()
+                        + (int) getProtectionPoints(stack));
+        strings.add(
+                InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.ShieldRecovery.txt")
+                        + ": "
+                        + InfoHelper.HITC()
+                        + Utills.round(getRecoveryPoints(stack) * 0.2D, 10)
+                        + " EPS");
 
         return strings;
     }
@@ -371,7 +421,7 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
         return 0;
     }
 
-    //region//----------------- ICustomArmor Start -----------------//
+    // region//----------------- ICustomArmor Start -----------------//
     @Override
     public float getProtectionPoints(ItemStack stack) {
         return EnumUpgrade.SHIELD_CAPACITY.getUpgradePoints(stack) * 20F;
@@ -385,14 +435,17 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
     @Override
     public float getSpeedModifier(ItemStack stack, EntityPlayer player) {
         if (IConfigurableItem.ProfileHelper.getBoolean(stack, "ArmorSprintOnly", false)) {
-            return player.isSprinting() ? IConfigurableItem.ProfileHelper.getFloat(stack, "ArmorSpeedMult", 0f) : IConfigurableItem.ProfileHelper.getFloat(stack, "ArmorSpeedMult", 0f) / 5F;
+            return player.isSprinting() ? IConfigurableItem.ProfileHelper.getFloat(stack, "ArmorSpeedMult", 0f)
+                    : IConfigurableItem.ProfileHelper.getFloat(stack, "ArmorSpeedMult", 0f) / 5F;
         } else return IConfigurableItem.ProfileHelper.getFloat(stack, "ArmorSpeedMult", 0f);
     }
 
     @Override
     public float getJumpModifier(ItemStack stack, EntityPlayer player) {
         if (IConfigurableItem.ProfileHelper.getBoolean(stack, "ArmorSprintOnly", false)) {
-            return player.isSprinting() || BrandonsCore.proxy.isCtrlDown() ? IConfigurableItem.ProfileHelper.getFloat(stack, "ArmorJumpMult", 0f) : IConfigurableItem.ProfileHelper.getFloat(stack, "ArmorJumpMult", 0f) / 5F;
+            return player.isSprinting() || BrandonsCore.proxy.isCtrlDown()
+                    ? IConfigurableItem.ProfileHelper.getFloat(stack, "ArmorJumpMult", 0f)
+                    : IConfigurableItem.ProfileHelper.getFloat(stack, "ArmorJumpMult", 0f) / 5F;
         } else return IConfigurableItem.ProfileHelper.getFloat(stack, "ArmorJumpMult", 0f);
     }
 
@@ -408,7 +461,7 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
 
     @Override
     public boolean[] hasFlight(ItemStack stack) {
-        return new boolean[]{false, false, false};
+        return new boolean[] { false, false, false };
     }
 
     @Override
@@ -426,10 +479,22 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
         return BalanceConfigHandler.wyvernArmorEnergyPerProtectionPoint;
     }
 
-    //endregion
+    // endregion
 
     @Override
     public boolean hasProfiles() {
         return false;
+    }
+
+    @Override
+    @Optional.Method(modid = "Thaumcraft")
+    public int getVisDiscount(ItemStack itemStack, EntityPlayer entityPlayer, Aspect aspect) {
+        return 10;
+    }
+
+    @Override
+    @Optional.Method(modid = "Thaumcraft")
+    public int getWarp(ItemStack itemStack, EntityPlayer entityPlayer) {
+        return 5;
     }
 }

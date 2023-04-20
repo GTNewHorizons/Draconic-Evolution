@@ -1,13 +1,14 @@
 package com.brandon3055.draconicevolution.common.container;
 
-import com.brandon3055.draconicevolution.common.inventory.SlotItemValid;
-import com.brandon3055.draconicevolution.common.tileentities.TileWeatherController;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
+import com.brandon3055.draconicevolution.common.inventory.SlotItemValid;
+import com.brandon3055.draconicevolution.common.tileentities.TileWeatherController;
 
 public class ContainerWeatherController extends Container {
 
@@ -34,7 +35,6 @@ public class ContainerWeatherController extends Container {
         return tileWC.isUseableByPlayer(player);
     }
 
-
     @Override
     public ItemStack transferStackInSlot(EntityPlayer player, int i) {
         Slot slot = getSlot(i);
@@ -47,9 +47,10 @@ public class ContainerWeatherController extends Container {
                 if (!mergeItemStack(stack, 0, 36, false)) {
                     return null;
                 }
-            } else if (!stack.getItem().equals(Items.emerald) || !mergeItemStack(stack, 36, 36 + tileWC.getSizeInventory(), false)) {
-                return null;
-            }
+            } else if (!stack.getItem().equals(Items.emerald)
+                    || !mergeItemStack(stack, 36, 36 + tileWC.getSizeInventory(), false)) {
+                        return null;
+                    }
 
             if (stack.stackSize == 0) {
                 slot.putStack(null);
@@ -68,5 +69,4 @@ public class ContainerWeatherController extends Container {
     public TileWeatherController getTileWC() {
         return tileWC;
     }
-
 }
