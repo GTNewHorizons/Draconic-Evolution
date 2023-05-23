@@ -1,10 +1,8 @@
 package com.brandon3055.draconicevolution.common.tileentities;
 
-import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -26,10 +24,10 @@ public class TilePlayerDetectorAdvanced extends TileEntity implements IInventory
     public boolean whiteList = false;
     public int range = 10;
     private int tick = 0;
-    private int scanRate = 5;
+    private final int scanRate = 5;
     public boolean output = false;
     public boolean outputInverted = false;
-    private List<EntityLiving> EntityList;
+    private List<EntityLivingBase> EntityList;
 
     public TilePlayerDetectorAdvanced() {
         for (int i = 0; i < names.length; i++) if (names[i] == null) names[i] = "";
@@ -57,12 +55,10 @@ public class TilePlayerDetectorAdvanced extends TileEntity implements IInventory
         findEntitys();
 
         boolean b = false;
-        Iterator<EntityLiving> i = EntityList.iterator();
-        while (i.hasNext()) {
-            Entity ent = i.next();
+        for (EntityLivingBase ent : EntityList) {
             if (!(ent instanceof EntityPlayer)) return false;
 
-            String name = ((EntityPlayer) ent).getCommandSenderName();
+            String name = ent.getCommandSenderName();
             if (whiteList) {
                 if (isPlayerListed(name)) return true;
             } else {
@@ -98,19 +94,13 @@ public class TilePlayerDetectorAdvanced extends TileEntity implements IInventory
 
     public void updateBlocks() {
         worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
-        worldObj.notifyBlocksOfNeighborChange(xCoord - 1, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
-        worldObj.notifyBlocksOfNeighborChange(xCoord + 1, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
-        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord - 1, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
-        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord + 1, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
-        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord - 1, worldObj.getBlock(xCoord, yCoord, zCoord));
-        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord + 1, worldObj.getBlock(xCoord, yCoord, zCoord));
     }
 
     public boolean isPlayerListed(String name) {
         if (name == null) return false;
 
-        for (int i = 0; i < names.length; i++) {
-            if (names[i].equals(name)) return true;
+        for (String listedName : names) {
+            if (listedName.equals(name)) return true;
         }
         return false;
     }

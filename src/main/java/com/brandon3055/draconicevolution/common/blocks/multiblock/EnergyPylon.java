@@ -83,6 +83,10 @@ public class EnergyPylon extends BlockDE { // todo fix sphere renderer
 
     @Override
     public void onNeighborBlockChange(World world, int x, int y, int z, Block p_149695_5_) {
+        updateBlockState(world, x, y, z);
+    }
+
+    private void updateBlockState(World world, int x, int y, int z) {
         int meta = world.getBlockMetadata(x, y, z);
         if (meta == 0) {
             if (world.getBlock(x, y + 1, z) == Blocks.glass) {
@@ -136,34 +140,7 @@ public class EnergyPylon extends BlockDE { // todo fix sphere renderer
 
     @Override
     public void onPostBlockPlaced(World world, int x, int y, int z, int p_149714_5_) {
-        int meta = world.getBlockMetadata(x, y, z);
-        if (meta == 0) {
-            if (world.getBlock(x, y + 1, z) == Blocks.glass) {
-                world.setBlockMetadataWithNotify(x, y, z, 1, 2);
-                world.setBlock(x, y + 1, z, ModBlocks.invisibleMultiblock, 2, 2);
-            } else if (world.getBlock(x, y - 1, z) == Blocks.glass) {
-                world.setBlockMetadataWithNotify(x, y, z, 2, 2);
-                world.setBlock(x, y - 1, z, ModBlocks.invisibleMultiblock, 2, 2);
-            }
-        } else {
-            TileEnergyPylon thisTile = (world.getTileEntity(x, y, z) != null
-                    && world.getTileEntity(x, y, z) instanceof TileEnergyPylon)
-                            ? (TileEnergyPylon) world.getTileEntity(x, y, z)
-                            : null;
-            if (thisTile == null || (meta == 1 && !isGlass(world, x, y + 1, z))
-                    || (meta == 2 && !isGlass(world, x, y - 1, z))) {
-                world.setBlockMetadataWithNotify(x, y, z, 0, 2);
-            }
-        }
-        TileEnergyPylon thisTile = (world.getTileEntity(x, y, z) != null
-                && world.getTileEntity(x, y, z) instanceof TileEnergyPylon)
-                        ? (TileEnergyPylon) world.getTileEntity(x, y, z)
-                        : null;
-        if (thisTile != null) {
-            thisTile.onActivated();
-        }
-        if (world.getBlockMetadata(x, y, z) == 0 && world.getTileEntity(x, y, z) != null)
-            world.removeTileEntity(x, y, z);
+        updateBlockState(world, x, y, z);
     }
 
     @Override

@@ -6,8 +6,8 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
+import com.brandon3055.draconicevolution.common.blocks.multiblock.InvisibleMultiblock;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper.TileLocation;
-import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
 import com.brandon3055.draconicevolution.common.utills.LogHelper;
 
 /**
@@ -23,33 +23,17 @@ public class TileInvisibleMultiblock extends TileEntity {
     }
 
     public boolean isMasterOnline() {
-        TileEnergyStorageCore tile = (worldObj.getTileEntity(master.getXCoord(), master.getYCoord(), master.getZCoord())
-                != null
-                && worldObj.getTileEntity(
-                        master.getXCoord(),
-                        master.getYCoord(),
-                        master.getZCoord()) instanceof TileEnergyStorageCore)
-                                ? (TileEnergyStorageCore) worldObj
-                                        .getTileEntity(master.getXCoord(), master.getYCoord(), master.getZCoord())
-                                : null;
-        if (tile == null) {
-            return false;
-        }
-        return tile.online;
+        TileEnergyStorageCore core = getMaster();
+        return core != null && core.online;
     }
 
     public TileEnergyStorageCore getMaster() {
         if (master == null) return null;
-        TileEnergyStorageCore tile = (worldObj.getTileEntity(master.getXCoord(), master.getYCoord(), master.getZCoord())
-                != null
-                && worldObj.getTileEntity(
-                        master.getXCoord(),
-                        master.getYCoord(),
-                        master.getZCoord()) instanceof TileEnergyStorageCore)
-                                ? (TileEnergyStorageCore) worldObj
-                                        .getTileEntity(master.getXCoord(), master.getYCoord(), master.getZCoord())
-                                : null;
-        return tile;
+        TileEntity tileEntity = worldObj.getTileEntity(master.getXCoord(), master.getYCoord(), master.getZCoord());
+        if (tileEntity instanceof TileEnergyStorageCore) {
+            return (TileEnergyStorageCore) tileEntity;
+        }
+        return null;
     }
 
     @Override
@@ -81,30 +65,9 @@ public class TileInvisibleMultiblock extends TileEntity {
     public void isStructureStillValid() {
         if (getMaster() == null) {
             LogHelper.error("{Tile} Master = null reverting!");
-            revert();
+            InvisibleMultiblock.revert(worldObj, xCoord, yCoord, zCoord);
             return;
         }
-        if (!getMaster().isOnline()) revert();
-    }
-
-    private void revert() {
-        int meta = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-        if (meta == 0) {
-            worldObj.setBlock(
-                    xCoord,
-                    yCoord,
-                    zCoord,
-                    BalanceConfigHandler.energyStorageStructureOuterBlock,
-                    BalanceConfigHandler.energyStorageStructureOuterBlockMetadata,
-                    3);
-        } else if (meta == 1) {
-            worldObj.setBlock(
-                    xCoord,
-                    yCoord,
-                    zCoord,
-                    BalanceConfigHandler.energyStorageStructureBlock,
-                    BalanceConfigHandler.energyStorageStructureBlockMetadata,
-                    3);
-        }
+        if (!getMaster().isOnline()) InvisibleMultiblock.revert(worldObj, xCoord, yCoord, zCoord);
     }
 }

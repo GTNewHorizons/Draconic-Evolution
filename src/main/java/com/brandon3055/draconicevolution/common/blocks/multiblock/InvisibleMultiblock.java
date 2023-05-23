@@ -181,7 +181,7 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
         }
     }
 
-    private void revert(World world, int x, int y, int z) {
+    public static void revert(World world, int x, int y, int z) {
         int meta = world.getBlockMetadata(x, y, z);
         if (meta == 0) {
             world.setBlock(
@@ -205,8 +205,7 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
     @Override
     public void breakBlock(World world, int x, int y, int z, Block p_149749_5_, int meta) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        TileInvisibleMultiblock thisTile = (tile != null && tile instanceof TileInvisibleMultiblock)
-                ? (TileInvisibleMultiblock) tile
+        TileInvisibleMultiblock thisTile = (tile instanceof TileInvisibleMultiblock) ? (TileInvisibleMultiblock) tile
                 : null;
         if (thisTile != null && thisTile.getMaster() != null && thisTile.getMaster().isOnline()) {
             world.setBlockMetadataWithNotify(x, y, z, 0, 2);
@@ -270,7 +269,7 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
 
     @Override
     public List<String> getDisplayData(World world, int x, int y, int z) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
 
         int meta = world.getBlockMetadata(x, y, z);
         if (meta == 0 || meta == 1) {
@@ -291,7 +290,6 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
 
             list.add(InfoHelper.HITC() + ModBlocks.energyStorageCore.getLocalizedName());
             list.add("Tier: " + InfoHelper.ITC() + (master.getTier() + 1));
-            String BN = String.valueOf(master.getEnergyStored());
             list.add(
                     StatCollector.translateToLocal("info.de.charge.txt") + ": "
                             + InfoHelper.ITC()
