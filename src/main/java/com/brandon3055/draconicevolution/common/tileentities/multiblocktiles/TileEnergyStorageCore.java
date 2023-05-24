@@ -1,12 +1,17 @@
 package com.brandon3055.draconicevolution.common.tileentities.multiblocktiles;
 
+import java.util.List;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.StatCollector;
 
+import com.brandon3055.brandonscore.common.utills.InfoHelper;
+import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper.TileLocation;
 import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
@@ -14,6 +19,7 @@ import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.TileObjectSync;
 import com.brandon3055.draconicevolution.common.tileentities.TileParticleGenerator;
 import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.integration.ModHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
 import gregtech.api.GregTech_API;
@@ -968,6 +974,29 @@ public class TileEnergyStorageCore extends TileObjectSync {
         long energyExtracted = Math.min(energy, energyToExtract);
         energy -= energyExtracted;
         return energyExtracted * GregTech_API.mRFtoEU / 100;
+    }
+
+    public void addDisplayInformation(List<String> information) {
+        information.add(StatCollector.translateToLocal("info.de.tier.txt") + ": " + InfoHelper.ITC() + (tier + 1));
+        information.add(
+                StatCollector.translateToLocal("info.de.charge.txt") + ": "
+                        + InfoHelper.ITC()
+                        + Utills.formatNumber(energy)
+                        + " / "
+                        + Utills.formatNumber(capacity)
+                        + " ["
+                        + Utills.addCommas(energy)
+                        + " RF]");
+        if (ModHelper.isGregTechInstalled) {
+            long electricEnergyAvailable = energy * GregTech_API.mRFtoEU / 100;
+            information.add(
+                    StatCollector.translateToLocal("info.de.charge.eu.txt") + ": "
+                            + InfoHelper.ITC()
+                            + Utills.formatNumber(electricEnergyAvailable)
+                            + " ["
+                            + Utills.addCommas(electricEnergyAvailable)
+                            + " EU]");
+        }
     }
 
     public long getEnergyStored() {

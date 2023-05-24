@@ -15,17 +15,17 @@ import cpw.mods.fml.common.registry.GameRegistry;
  */
 public class ModHelper {
 
-    private static boolean isTConInstalled;
-    private static boolean isAvaritiaInstalled;
+    public static final boolean isTConInstalled;
+    public static final boolean isAvaritiaInstalled;
     // private static boolean isRotaryCraftInstalled;
-    private static boolean isGregTechInstalled;
+    public static final boolean isGregTechInstalled;
 
     private static Item cleaver;
     private static Item avaritiaSword;
     // private static Item bedrockSword;
 
-    private static Class bwores;
-    private static Class GTores;
+    private static Class<?> bwores;
+    private static Class<?> GTores;
 
     static {
         isTConInstalled = Loader.isModLoaded("TConstruct");

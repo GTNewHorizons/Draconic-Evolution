@@ -15,11 +15,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import com.brandon3055.brandonscore.common.utills.InfoHelper;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.blocks.BlockDE;
 import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
@@ -108,14 +106,12 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
             float p_149727_7_, float p_149727_8_, float p_149727_9_) {
         int meta = world.getBlockMetadata(x, y, z);
         if (meta == 0 || meta == 1) {
-            TileInvisibleMultiblock thisTile = (world.getTileEntity(x, y, z) != null
-                    && world.getTileEntity(x, y, z) instanceof TileInvisibleMultiblock)
-                            ? (TileInvisibleMultiblock) world.getTileEntity(x, y, z)
-                            : null;
-            if (thisTile == null) {
+            TileEntity tile = world.getTileEntity(x, y, z);
+            if (!(tile instanceof TileInvisibleMultiblock)) {
                 LogHelper.error("Missing Tile Entity (TileInvisibleMultiblock)");
                 return false;
             }
+            TileInvisibleMultiblock thisTile = (TileInvisibleMultiblock) tile;
             TileEnergyStorageCore master = thisTile.getMaster();
             if (master == null) {
                 onNeighborBlockChange(world, x, y, z, this);
@@ -123,17 +119,11 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
             }
             if (!world.isRemote) {
                 world.markBlockForUpdate(master.xCoord, master.yCoord, master.zCoord);
-                player.addChatComponentMessage(new ChatComponentText("Tier:" + (master.getTier() + 1)));
-                String BN = String.valueOf(master.getEnergyStored());
-                player.addChatComponentMessage(
-                        new ChatComponentText(
-                                StatCollector.translateToLocal("info.de.charge.txt") + ": "
-                                        + Utills.formatNumber(master.getEnergyStored())
-                                        + " / "
-                                        + Utills.formatNumber(master.getMaxEnergyStored())
-                                        + " ["
-                                        + BN
-                                        + " RF]"));
+                List<String> information = new ArrayList<>();
+                master.addDisplayInformation(information);
+                for (String line : information) {
+                    player.addChatComponentMessage(new ChatComponentText(line));
+                }
             }
             return true;
         } else if (meta == 2) {
@@ -269,41 +259,26 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
 
     @Override
     public List<String> getDisplayData(World world, int x, int y, int z) {
-        List<String> list = new ArrayList<>();
+        List<String> information = new ArrayList<>();
 
         int meta = world.getBlockMetadata(x, y, z);
         if (meta == 0 || meta == 1) {
-            TileInvisibleMultiblock thisTile = (world.getTileEntity(x, y, z) != null
-                    && world.getTileEntity(x, y, z) instanceof TileInvisibleMultiblock)
-                            ? (TileInvisibleMultiblock) world.getTileEntity(x, y, z)
-                            : null;
-            if (thisTile == null) {
+            TileEntity tile = world.getTileEntity(x, y, z);
+            if (!(tile instanceof TileInvisibleMultiblock)) {
                 LogHelper.error("Missing Tile Entity (TileInvisibleMultiblock getDisplayData)");
-                return list;
+                return information;
             }
-
+            TileInvisibleMultiblock thisTile = (TileInvisibleMultiblock) tile;
             TileEnergyStorageCore master = thisTile.getMaster();
-
             if (master == null) {
-                return list;
+                return information;
             }
-
-            list.add(InfoHelper.HITC() + ModBlocks.energyStorageCore.getLocalizedName());
-            list.add("Tier: " + InfoHelper.ITC() + (master.getTier() + 1));
-            list.add(
-                    StatCollector.translateToLocal("info.de.charge.txt") + ": "
-                            + InfoHelper.ITC()
-                            + Utills.formatNumber(master.getEnergyStored())
-                            + " / "
-                            + Utills.formatNumber(master.getMaxEnergyStored())
-                            + " ["
-                            + Utills.addCommas(master.getEnergyStored())
-                            + " RF]");
-
-            return list;
+            information.add(InfoHelper.HITC() + ModBlocks.energyStorageCore.getLocalizedName());
+            master.addDisplayInformation(information);
+            return information;
         }
 
-        return list;
+        return information;
     }
 
     @Override

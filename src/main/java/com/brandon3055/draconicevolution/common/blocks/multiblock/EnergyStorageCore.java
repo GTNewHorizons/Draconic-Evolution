@@ -10,13 +10,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.brandon3055.brandonscore.common.utills.InfoHelper;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.blocks.BlockDE;
@@ -72,27 +70,19 @@ public class EnergyStorageCore extends BlockDE implements IHudDisplayBlock {
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_,
             float p_149727_7_, float p_149727_8_, float p_149727_9_) {
-        TileEnergyStorageCore tile = (world.getTileEntity(x, y, z) != null
-                && world.getTileEntity(x, y, z) instanceof TileEnergyStorageCore)
-                        ? (TileEnergyStorageCore) world.getTileEntity(x, y, z)
-                        : null;
-        if (tile == null) {
-            LogHelper.error("Missing Tile Entity (EnergyStorageCore)");
-            return false;
-        }
-
         if (!world.isRemote) {
-            player.addChatComponentMessage(new ChatComponentText("Tier:" + (tile.getTier() + 1)));
-            String BN = String.valueOf(tile.getEnergyStored());
-            player.addChatComponentMessage(
-                    new ChatComponentText(
-                            StatCollector.translateToLocal("info.de.charge.txt") + ": "
-                                    + Utills.formatNumber(tile.getEnergyStored())
-                                    + " / "
-                                    + Utills.formatNumber(tile.getMaxEnergyStored())
-                                    + " ["
-                                    + BN
-                                    + " RF]"));
+            TileEntity tile = world.getTileEntity(x, y, z);
+            if (!(tile instanceof TileEnergyStorageCore)) {
+                LogHelper.error("Missing Tile Entity (EnergyStorageCore)");
+                return false;
+            }
+            TileEnergyStorageCore core = (TileEnergyStorageCore) tile;
+
+            List<String> information = new ArrayList<>();
+            core.addDisplayInformation(information);
+            for (String line : information) {
+                player.addChatComponentMessage(new ChatComponentText(line));
+            }
         }
         return true;
     }
@@ -166,30 +156,16 @@ public class EnergyStorageCore extends BlockDE implements IHudDisplayBlock {
 
     @Override
     public List<String> getDisplayData(World world, int x, int y, int z) {
-        List<String> list = new ArrayList<String>();
+        List<String> information = new ArrayList<>();
 
-        TileEnergyStorageCore tile = (world.getTileEntity(x, y, z) != null
-                && world.getTileEntity(x, y, z) instanceof TileEnergyStorageCore)
-                        ? (TileEnergyStorageCore) world.getTileEntity(x, y, z)
-                        : null;
-        if (tile == null) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (!(tile instanceof TileEnergyStorageCore)) {
             LogHelper.error("Missing Tile Entity (EnergyStorageCore getDisplayData)");
-            return list;
+            return information;
         }
-
-        list.add(InfoHelper.HITC() + getLocalizedName());
-        list.add("Tier: " + InfoHelper.ITC() + (tile.getTier() + 1));
-        String BN = String.valueOf(tile.getEnergyStored());
-        list.add(
-                StatCollector.translateToLocal("info.de.charge.txt") + ": "
-                        + InfoHelper.ITC()
-                        + Utills.formatNumber(tile.getEnergyStored())
-                        + " / "
-                        + Utills.formatNumber(tile.getMaxEnergyStored())
-                        + " ["
-                        + BN
-                        + " RF]");
-
-        return list;
+        TileEnergyStorageCore core = (TileEnergyStorageCore) tile;
+        information.add(InfoHelper.HITC() + getLocalizedName());
+        core.addDisplayInformation(information);
+        return information;
     }
 }
