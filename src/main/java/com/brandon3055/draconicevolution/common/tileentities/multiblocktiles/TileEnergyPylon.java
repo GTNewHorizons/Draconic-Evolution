@@ -97,9 +97,15 @@ public class TileEnergyPylon extends TileObjectSync
                             energyContainer.getInputAmperage(),
                             (energyContainer.getEUCapacity() - energyContainer.getStoredEU()) / voltage);
                     if (amperage > 0) {
-                        long amperesDrained = drainEnergyUnits(voltage, amperage);
-                        if (amperesDrained > 0) {
-                            energyContainer.injectEnergyUnits(direction.getOpposite(), voltage, amperesDrained);
+                        long energyExtracted = extractElectricEnergy(voltage, amperage);
+                        if (energyExtracted > 0) {
+                            if (energyExtracted >= voltage) {
+                                amperage = energyExtracted / voltage;
+                            } else {
+                                voltage = energyExtracted;
+                                amperage = 1;
+                            }
+                            energyContainer.injectEnergyUnits(direction.getOpposite(), voltage, amperage);
                         }
                     }
                 }
@@ -452,14 +458,14 @@ public class TileEnergyPylon extends TileObjectSync
         return (long) Math.ceil((double) energyReceived / voltage);
     }
 
-    private long drainEnergyUnits(long voltage, long amperage) {
+    private long extractElectricEnergy(long voltage, long amperage) {
         TileEnergyStorageCore core = getMaster();
         if (core == null || !core.isOnline()) {
             return 0;
         }
         long energyExtracted = core.extractElectricEnergy(voltage, amperage);
         if (energyExtracted > 0) particleRate = (byte) Math.min(20, energyExtracted < 500 ? 1 : energyExtracted / 500);
-        return (long) Math.ceil((double) energyExtracted / voltage);
+        return energyExtracted;
     }
 
     @Override
