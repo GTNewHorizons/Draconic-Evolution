@@ -23,14 +23,19 @@ import com.brandon3055.draconicevolution.integration.computers.IDEPeripheral;
 
 import cofh.api.energy.IEnergyHandler;
 import cofh.api.energy.IEnergyReceiver;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import gregtech.api.interfaces.tileentity.IBasicEnergyContainer;
+import gregtech.api.interfaces.tileentity.IEnergyConnected;
 
 /**
  * Created by Brandon on 28/07/2014.
  */
-public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, IExtendedRFStorage, IDEPeripheral {
+@Optional.Interface(iface = "gregtech.api.interfaces.tileentity.IEnergyConnected", modid = "gregtech")
+public class TileEnergyPylon extends TileObjectSync
+        implements IEnergyConnected, IEnergyHandler, IExtendedRFStorage, IDEPeripheral {
 
     public boolean active = false;
     public boolean lastTickActive = false;
@@ -85,6 +90,18 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
                     int energyReceived = ((IEnergyReceiver) tile)
                             .receiveEnergy(direction.getOpposite(), energyToExtract, false);
                     extractEnergy(direction, energyReceived, false);
+                } else if (tile instanceof IBasicEnergyContainer) {
+                    IBasicEnergyContainer energyContainer = (IBasicEnergyContainer) tile;
+                    long voltage = energyContainer.getInputVoltage();
+                    long amperage = Math.min(
+                            energyContainer.getInputAmperage(),
+                            (energyContainer.getEUCapacity() - energyContainer.getStoredEU()) / voltage);
+                    if (amperage > 0) {
+                        long amperesDrained = drainEnergyUnits(voltage, amperage);
+                        if (amperesDrained > 0) {
+                            energyContainer.injectEnergyUnits(direction.getOpposite(), voltage, amperesDrained);
+                        }
+                    }
                 }
             }
         }
@@ -418,5 +435,62 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
         if (method.equals("getEnergyStored")) return new Object[] { getExtendedStorage() };
         else if (method.equals("getMaxEnergyStored")) return new Object[] { getExtendedCapacity() };
         return new Object[0];
+    }
+
+    @Override
+    @Optional.Method(modid = "gregtech")
+    public long injectEnergyUnits(ForgeDirection side, long voltage, long amperage) {
+        if (!reciveEnergy) {
+            return 0;
+        }
+        TileEnergyStorageCore core = getMaster();
+        if (core == null || !core.isOnline()) {
+            return 0;
+        }
+        long energyReceived = core.receiveElectricEnergy(voltage, amperage);
+        if (energyReceived > 0) particleRate = (byte) Math.min(20, energyReceived < 500 ? 1 : energyReceived / 500);
+        return (long) Math.ceil((double) energyReceived / voltage);
+    }
+
+    private long drainEnergyUnits(long voltage, long amperage) {
+        TileEnergyStorageCore core = getMaster();
+        if (core == null || !core.isOnline()) {
+            return 0;
+        }
+        long energyExtracted = core.extractElectricEnergy(voltage, amperage);
+        if (energyExtracted > 0) particleRate = (byte) Math.min(20, energyExtracted < 500 ? 1 : energyExtracted / 500);
+        return (long) Math.ceil((double) energyExtracted / voltage);
+    }
+
+    @Override
+    @Optional.Method(modid = "gregtech")
+    public boolean inputEnergyFrom(ForgeDirection side) {
+        if (!reciveEnergy) {
+            return false;
+        }
+        TileEnergyStorageCore core = getMaster();
+        return core != null && core.isOnline();
+    }
+
+    @Override
+    @Optional.Method(modid = "gregtech")
+    public boolean outputsEnergyTo(ForgeDirection side) {
+        if (reciveEnergy) {
+            return false;
+        }
+        TileEnergyStorageCore core = getMaster();
+        return core != null && core.isOnline();
+    }
+
+    @Override
+    @Optional.Method(modid = "gregtech")
+    public byte getColorization() {
+        return -1;
+    }
+
+    @Override
+    @Optional.Method(modid = "gregtech")
+    public byte setColorization(byte aColor) {
+        return -1;
     }
 }

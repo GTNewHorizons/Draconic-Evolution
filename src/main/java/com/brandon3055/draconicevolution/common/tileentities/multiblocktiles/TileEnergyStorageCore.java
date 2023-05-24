@@ -16,6 +16,7 @@ import com.brandon3055.draconicevolution.common.tileentities.TileParticleGenerat
 import com.brandon3055.draconicevolution.common.utills.LogHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
+import gregtech.api.GregTech_API;
 
 /**
  * Created by Brandon on 25/07/2014.
@@ -898,6 +899,13 @@ public class TileEnergyStorageCore extends TileObjectSync {
         return (int) energyReceived;
     }
 
+    public long receiveElectricEnergy(long voltage, long amperage) {
+        long energyToReceive = voltage * amperage * GregTech_API.mEUtoRF / 100;
+        long energyReceived = Math.min(capacity - energy, energyToReceive);
+        energy += energyReceived;
+        return energyReceived * 100 / GregTech_API.mEUtoRF;
+    }
+
     public int extractEnergy(int maxExtract, boolean simulate) {
         long energyExtracted = Math.min(energy, maxExtract);
 
@@ -905,6 +913,13 @@ public class TileEnergyStorageCore extends TileObjectSync {
             energy -= energyExtracted;
         }
         return (int) energyExtracted;
+    }
+
+    public long extractElectricEnergy(long voltage, long amperage) {
+        long energyToExtract = voltage * amperage * 100 / GregTech_API.mRFtoEU;
+        long energyExtracted = Math.min(energy, energyToExtract);
+        energy -= energyExtracted;
+        return energyExtracted * GregTech_API.mRFtoEU / 100;
     }
 
     public long getEnergyStored() {
