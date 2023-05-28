@@ -9,7 +9,7 @@ dependencies {
     compileOnly("com.github.GTNewHorizons:OpenComputers:1.9.5-GTNH:api") {
         transitive = false
     }
-    compileOnly("com.github.GTNewHorizons:NotEnoughItems:2.3.50-GTNH:dev") {
+    compileOnly("com.github.GTNewHorizons:NotEnoughItems:2.3.53-GTNH:dev") {
         transitive = false
     }
     compileOnly("com.github.GTNewHorizons:CodeChickenLib:1.1.8:dev") {
