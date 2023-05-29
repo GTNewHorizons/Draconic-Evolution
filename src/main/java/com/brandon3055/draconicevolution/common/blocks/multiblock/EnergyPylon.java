@@ -83,7 +83,6 @@ public class EnergyPylon extends BlockDE { // todo fix sphere renderer
     }
 
     private void updateBlockState(World world, int x, int y, int z) {
-        TileEntity tile = world.getTileEntity(x, y, z);
         int metadata = world.getBlockMetadata(x, y, z);
         if (metadata == 0) {
             if (world.getBlock(x, y + 1, z) == Blocks.glass) {
@@ -96,12 +95,14 @@ public class EnergyPylon extends BlockDE { // todo fix sphere renderer
                 world.setBlock(x, y - 1, z, ModBlocks.invisibleMultiblock, 2, 2);
             }
         } else {
+            TileEntity tile = world.getTileEntity(x, y, z);
             if (!(tile instanceof TileEnergyPylon) || (metadata == 1 && isGlassMissing(world, x, y + 1, z))
                     || (metadata == 2 && isGlassMissing(world, x, y - 1, z))) {
                 metadata = 0;
                 world.setBlockMetadataWithNotify(x, y, z, metadata, 2);
             }
         }
+        TileEntity tile = world.getTileEntity(x, y, z);
         if (tile instanceof TileEnergyPylon) {
             ((TileEnergyPylon) tile).onActivated();
             if (metadata == 0) {
