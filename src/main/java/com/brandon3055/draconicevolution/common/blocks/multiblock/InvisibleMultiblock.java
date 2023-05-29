@@ -1,6 +1,6 @@
 package com.brandon3055.draconicevolution.common.blocks.multiblock;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -15,11 +15,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-import com.brandon3055.brandonscore.common.utills.InfoHelper;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.blocks.BlockDE;
 import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
@@ -39,11 +36,31 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
 
+    public static void revertStructure(World world, int x, int y, int z) {
+        int metadata = world.getBlockMetadata(x, y, z);
+        if (metadata == 0) {
+            world.setBlock(
+                    x,
+                    y,
+                    z,
+                    BalanceConfigHandler.energyStorageStructureOuterBlock,
+                    BalanceConfigHandler.energyStorageStructureOuterBlockMetadata,
+                    3);
+        } else if (metadata == 1) {
+            world.setBlock(
+                    x,
+                    y,
+                    z,
+                    BalanceConfigHandler.energyStorageStructureBlock,
+                    BalanceConfigHandler.energyStorageStructureBlockMetadata,
+                    3);
+        }
+    }
+
     public InvisibleMultiblock() {
         super(Material.iron);
         this.setHardness(10F);
         this.setResistance(2000F);
-        // this.setCreativeTab(DraconicEvolution.getCreativeTab(2));
         this.setBlockName(Strings.invisibleMultiblockName);
         ModBlocks.register(this);
     }
@@ -77,16 +94,15 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
 
     @Override
     public TileEntity createTileEntity(World world, int metadata) {
-        if (metadata == 0 || metadata == 1) return new TileInvisibleMultiblock();
-        else return null;
+        return metadata == 0 || metadata == 1 ? new TileInvisibleMultiblock() : null;
     }
 
     @Override
-    public Item getItemDropped(int meta, Random p_149650_2_, int var2) {
-        if (meta == 0) {
+    public Item getItemDropped(int metadata, Random random, int fortune) {
+        if (metadata == 0) {
             return Item.getItemFromBlock(BalanceConfigHandler.energyStorageStructureOuterBlock);
         }
-        if (meta == 1) {
+        if (metadata == 1) {
             return Item.getItemFromBlock(BalanceConfigHandler.energyStorageStructureBlock);
         }
         return null;
@@ -104,47 +120,37 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_,
-            float p_149727_7_, float p_149727_8_, float p_149727_9_) {
-        int meta = world.getBlockMetadata(x, y, z);
-        if (meta == 0 || meta == 1) {
-            TileInvisibleMultiblock thisTile = (world.getTileEntity(x, y, z) != null
-                    && world.getTileEntity(x, y, z) instanceof TileInvisibleMultiblock)
-                            ? (TileInvisibleMultiblock) world.getTileEntity(x, y, z)
-                            : null;
-            if (thisTile == null) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float subX,
+            float subY, float subZ) {
+        int metadata = world.getBlockMetadata(x, y, z);
+        if (metadata == 0 || metadata == 1) {
+            TileEntity tile = world.getTileEntity(x, y, z);
+            if (!(tile instanceof TileInvisibleMultiblock)) {
                 LogHelper.error("Missing Tile Entity (TileInvisibleMultiblock)");
                 return false;
             }
-            TileEnergyStorageCore master = thisTile.getMaster();
-            if (master == null) {
+            TileInvisibleMultiblock multiblock = (TileInvisibleMultiblock) tile;
+            TileEnergyStorageCore core = multiblock.getMaster();
+            if (core == null) {
                 onNeighborBlockChange(world, x, y, z, this);
                 return false;
             }
             if (!world.isRemote) {
-                world.markBlockForUpdate(master.xCoord, master.yCoord, master.zCoord);
-                player.addChatComponentMessage(new ChatComponentText("Tier:" + (master.getTier() + 1)));
-                String BN = String.valueOf(master.getEnergyStored());
-                player.addChatComponentMessage(
-                        new ChatComponentText(
-                                StatCollector.translateToLocal("info.de.charge.txt") + ": "
-                                        + Utills.formatNumber(master.getEnergyStored())
-                                        + " / "
-                                        + Utills.formatNumber(master.getMaxEnergyStored())
-                                        + " ["
-                                        + BN
-                                        + " RF]"));
+                world.markBlockForUpdate(core.xCoord, core.yCoord, core.zCoord);
+                List<String> information = core.getDisplayInformation(false);
+                for (String message : information) {
+                    player.addChatComponentMessage(new ChatComponentText(message));
+                }
             }
             return true;
-        } else if (meta == 2) {
-            TileEnergyPylon pylon = (world.getTileEntity(x, y + 1, z) != null
-                    && world.getTileEntity(x, y + 1, z) instanceof TileEnergyPylon)
-                            ? (TileEnergyPylon) world.getTileEntity(x, y + 1, z)
-                            : (world.getTileEntity(x, y - 1, z) != null
-                                    && world.getTileEntity(x, y - 1, z) instanceof TileEnergyPylon)
-                                            ? (TileEnergyPylon) world.getTileEntity(x, y - 1, z)
-                                            : null;
-            if (pylon == null) return false;
+        } else if (metadata == 2) {
+            TileEntity tileAbove = world.getTileEntity(x, y + 1, z);
+            TileEntity tileBelow = world.getTileEntity(x, y - 1, z);
+            TileEnergyPylon pylon = tileAbove instanceof TileEnergyPylon ? (TileEnergyPylon) tileAbove
+                    : tileBelow instanceof TileEnergyPylon ? (TileEnergyPylon) tileBelow : null;
+            if (pylon == null) {
+                return false;
+            }
             pylon.reciveEnergy = !pylon.reciveEnergy;
             world.markBlockForUpdate(pylon.xCoord, pylon.yCoord, pylon.zCoord);
             pylon.onActivated();
@@ -154,87 +160,68 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
     }
 
     @Override
-    public void onNeighborBlockChange(World world, int x, int y, int z, Block p_149695_5_) {
-        int meta = world.getBlockMetadata(x, y, z);
-        if (meta == 0 || meta == 1) {
-            TileInvisibleMultiblock thisTile = (world.getTileEntity(x, y, z) != null
-                    && world.getTileEntity(x, y, z) instanceof TileInvisibleMultiblock)
-                            ? (TileInvisibleMultiblock) world.getTileEntity(x, y, z)
-                            : null;
-            if (thisTile == null) {
+    public void onNeighborBlockChange(World world, int x, int y, int z, Block neighbor) {
+        int metadata = world.getBlockMetadata(x, y, z);
+        if (metadata == 0 || metadata == 1) {
+            TileEntity tile = world.getTileEntity(x, y, z);
+            if (!(tile instanceof TileInvisibleMultiblock)) {
                 LogHelper.error("Missing Tile Entity (TileInvisibleMultiblock)");
-                revert(world, x, y, z);
+                revertStructure(world, x, y, z);
                 return;
             }
-            TileEnergyStorageCore master = thisTile.getMaster();
-            if (master == null) {
+            TileInvisibleMultiblock multiblock = (TileInvisibleMultiblock) tile;
+            TileEnergyStorageCore core = multiblock.getMaster();
+            if (core == null) {
                 LogHelper.error("Master = null reverting!");
-                revert(world, x, y, z);
+                revertStructure(world, x, y, z);
                 return;
             }
-            if (master.isOnline()) master.isStructureStillValid(thisTile.getMaster().getTier() == 1);
-            if (!master.isOnline()) revert(world, x, y, z);
-        } else if (meta == 2) {
+            if (core.isOnline()) {
+                core.isStructureStillValid(core.getTier() == 1);
+            } else {
+                revertStructure(world, x, y, z);
+            }
+        } else if (metadata == 2) {
             if (world.getBlock(x, y + 1, z) != ModBlocks.energyPylon
                     && world.getBlock(x, y - 1, z) != ModBlocks.energyPylon)
                 world.setBlock(x, y, z, Blocks.glass);
         }
     }
 
-    private void revert(World world, int x, int y, int z) {
-        int meta = world.getBlockMetadata(x, y, z);
-        if (meta == 0) {
-            world.setBlock(
-                    x,
-                    y,
-                    z,
-                    BalanceConfigHandler.energyStorageStructureOuterBlock,
-                    BalanceConfigHandler.energyStorageStructureOuterBlockMetadata,
-                    3);
-        } else if (meta == 1) {
-            world.setBlock(
-                    x,
-                    y,
-                    z,
-                    BalanceConfigHandler.energyStorageStructureBlock,
-                    BalanceConfigHandler.energyStorageStructureBlockMetadata,
-                    3);
-        }
-    }
-
     @Override
-    public void breakBlock(World world, int x, int y, int z, Block p_149749_5_, int meta) {
+    public void breakBlock(World world, int x, int y, int z, Block blockBroken, int metadata) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        TileInvisibleMultiblock thisTile = (tile != null && tile instanceof TileInvisibleMultiblock)
-                ? (TileInvisibleMultiblock) tile
-                : null;
-        if (thisTile != null && thisTile.getMaster() != null && thisTile.getMaster().isOnline()) {
-            world.setBlockMetadataWithNotify(x, y, z, 0, 2);
-
-            thisTile.getMaster().isStructureStillValid(thisTile.getMaster().getTier() == 1);
+        if (tile instanceof TileInvisibleMultiblock) {
+            TileInvisibleMultiblock multiblock = (TileInvisibleMultiblock) tile;
+            TileEnergyStorageCore core = multiblock.getMaster();
+            if (core != null && core.isOnline()) {
+                world.setBlockMetadataWithNotify(x, y, z, 0, 2);
+                core.isStructureStillValid(core.getTier() == 1);
+            }
         }
-        super.breakBlock(world, x, y, z, p_149749_5_, meta);
+        super.breakBlock(world, x, y, z, blockBroken, metadata);
     }
 
     @Override
     public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
-        int meta = world.getBlockMetadata(x, y, z);
-        if (meta == 0 || meta == 1) {
-            TileInvisibleMultiblock thisTile = (world.getTileEntity(x, y, z) != null
-                    && world.getTileEntity(x, y, z) instanceof TileInvisibleMultiblock)
-                            ? (TileInvisibleMultiblock) world.getTileEntity(x, y, z)
-                            : null;
-            if (thisTile != null && thisTile.getMaster() != null) {
-                return AxisAlignedBB.getBoundingBox(
-                        thisTile.getMaster().xCoord,
-                        thisTile.getMaster().yCoord,
-                        thisTile.getMaster().zCoord,
-                        thisTile.getMaster().xCoord + 0.5,
-                        thisTile.getMaster().yCoord + 0.5,
-                        thisTile.getMaster().zCoord + 0.5);
+        int metadata = world.getBlockMetadata(x, y, z);
+        if (metadata == 0 || metadata == 1) {
+            TileEntity tile = world.getTileEntity(x, y, z);
+            if (tile instanceof TileInvisibleMultiblock) {
+                TileInvisibleMultiblock multiblock = (TileInvisibleMultiblock) tile;
+                TileEnergyStorageCore core = multiblock.getMaster();
+                if (core != null) {
+                    return AxisAlignedBB.getBoundingBox(
+                            core.xCoord,
+                            core.yCoord,
+                            core.zCoord,
+                            core.xCoord + 0.5,
+                            core.yCoord + 0.5,
+                            core.zCoord + 0.5);
+                }
             }
             return super.getSelectedBoundingBoxFromPool(world, x, y, z);
-        } else if (meta == 2) {
+        } else if (metadata == 2) {
             return AxisAlignedBB.getBoundingBox(x + 0.49, y + 0.49, z + 0.49, x + 0.51, y + 0.51, z + 0.51);
         }
         return super.getSelectedBoundingBoxFromPool(world, x, y, z);
@@ -242,9 +229,8 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
 
     @Override
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
-
-        int meta = world.getBlockMetadata(x, y, z);
-        if (meta == 2) {
+        int metadata = world.getBlockMetadata(x, y, z);
+        if (metadata == 2) {
             return AxisAlignedBB.getBoundingBox(x, y, z, x, y, z);
         }
         return super.getCollisionBoundingBoxFromPool(world, x, y, z);
@@ -270,46 +256,19 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
 
     @Override
     public List<String> getDisplayData(World world, int x, int y, int z) {
-        List<String> list = new ArrayList<String>();
-
-        int meta = world.getBlockMetadata(x, y, z);
-        if (meta == 0 || meta == 1) {
-            TileInvisibleMultiblock thisTile = (world.getTileEntity(x, y, z) != null
-                    && world.getTileEntity(x, y, z) instanceof TileInvisibleMultiblock)
-                            ? (TileInvisibleMultiblock) world.getTileEntity(x, y, z)
-                            : null;
-            if (thisTile == null) {
+        int metadata = world.getBlockMetadata(x, y, z);
+        if (metadata == 0 || metadata == 1) {
+            TileEntity tile = world.getTileEntity(x, y, z);
+            if (!(tile instanceof TileInvisibleMultiblock)) {
                 LogHelper.error("Missing Tile Entity (TileInvisibleMultiblock getDisplayData)");
-                return list;
+                return Collections.emptyList();
             }
-
-            TileEnergyStorageCore master = thisTile.getMaster();
-
-            if (master == null) {
-                return list;
+            TileInvisibleMultiblock multiblock = (TileInvisibleMultiblock) tile;
+            TileEnergyStorageCore core = multiblock.getMaster();
+            if (core != null) {
+                return core.getDisplayInformation(true);
             }
-
-            list.add(InfoHelper.HITC() + ModBlocks.energyStorageCore.getLocalizedName());
-            list.add("Tier: " + InfoHelper.ITC() + (master.getTier() + 1));
-            String BN = String.valueOf(master.getEnergyStored());
-            list.add(
-                    StatCollector.translateToLocal("info.de.charge.txt") + ": "
-                            + InfoHelper.ITC()
-                            + Utills.formatNumber(master.getEnergyStored())
-                            + " / "
-                            + Utills.formatNumber(master.getMaxEnergyStored())
-                            + " ["
-                            + Utills.addCommas(master.getEnergyStored())
-                            + " RF]");
-
-            return list;
         }
-
-        return list;
-    }
-
-    @Override
-    public String getUnlocalizedName() {
-        return super.getUnlocalizedName();
+        return Collections.emptyList();
     }
 }

@@ -6,8 +6,8 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
+import com.brandon3055.draconicevolution.common.blocks.multiblock.InvisibleMultiblock;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper.TileLocation;
-import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
 import com.brandon3055.draconicevolution.common.utills.LogHelper;
 
 /**
@@ -23,46 +23,24 @@ public class TileInvisibleMultiblock extends TileEntity {
     }
 
     public boolean isMasterOnline() {
-        TileEnergyStorageCore tile = (worldObj.getTileEntity(master.getXCoord(), master.getYCoord(), master.getZCoord())
-                != null
-                && worldObj.getTileEntity(
-                        master.getXCoord(),
-                        master.getYCoord(),
-                        master.getZCoord()) instanceof TileEnergyStorageCore)
-                                ? (TileEnergyStorageCore) worldObj
-                                        .getTileEntity(master.getXCoord(), master.getYCoord(), master.getZCoord())
-                                : null;
-        if (tile == null) {
-            return false;
-        }
-        return tile.online;
+        TileEntity tile = master.getTileEntity(worldObj);
+        return tile instanceof TileEnergyStorageCore && ((TileEnergyStorageCore) tile).isOnline();
     }
 
     public TileEnergyStorageCore getMaster() {
-        if (master == null) return null;
-        TileEnergyStorageCore tile = (worldObj.getTileEntity(master.getXCoord(), master.getYCoord(), master.getZCoord())
-                != null
-                && worldObj.getTileEntity(
-                        master.getXCoord(),
-                        master.getYCoord(),
-                        master.getZCoord()) instanceof TileEnergyStorageCore)
-                                ? (TileEnergyStorageCore) worldObj
-                                        .getTileEntity(master.getXCoord(), master.getYCoord(), master.getZCoord())
-                                : null;
-        return tile;
+        TileEntity tile = master.getTileEntity(worldObj);
+        return tile instanceof TileEnergyStorageCore ? (TileEnergyStorageCore) tile : null;
     }
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
-        // if (master != null)
         master.writeToNBT(compound, "Key");
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        // if (master != null)
         master.readFromNBT(compound, "Key");
     }
 
@@ -79,32 +57,14 @@ public class TileInvisibleMultiblock extends TileEntity {
     }
 
     public void isStructureStillValid() {
-        if (getMaster() == null) {
+        TileEnergyStorageCore core = getMaster();
+        if (core == null) {
             LogHelper.error("{Tile} Master = null reverting!");
-            revert();
+            InvisibleMultiblock.revertStructure(worldObj, xCoord, yCoord, zCoord);
             return;
         }
-        if (!getMaster().isOnline()) revert();
-    }
-
-    private void revert() {
-        int meta = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-        if (meta == 0) {
-            worldObj.setBlock(
-                    xCoord,
-                    yCoord,
-                    zCoord,
-                    BalanceConfigHandler.energyStorageStructureOuterBlock,
-                    BalanceConfigHandler.energyStorageStructureOuterBlockMetadata,
-                    3);
-        } else if (meta == 1) {
-            worldObj.setBlock(
-                    xCoord,
-                    yCoord,
-                    zCoord,
-                    BalanceConfigHandler.energyStorageStructureBlock,
-                    BalanceConfigHandler.energyStorageStructureBlockMetadata,
-                    3);
+        if (!core.isOnline()) {
+            InvisibleMultiblock.revertStructure(worldObj, xCoord, yCoord, zCoord);
         }
     }
 }
