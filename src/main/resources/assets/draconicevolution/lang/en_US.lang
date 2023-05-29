@@ -382,6 +382,7 @@ achievement.draconicevolution.manual=Knowledge to the Max!
 achievement.draconicevolution.manual.desc=Craft the Draconic Tablet
 
 //InfoHelper ----------------------------------------------------------------------------------------------------------------------------------------
+info.de.tier.txt=Tier
 info.de.charge.txt=Charge
 info.de.hold.txt=Hold
 info.de.shift.txt=Shift
