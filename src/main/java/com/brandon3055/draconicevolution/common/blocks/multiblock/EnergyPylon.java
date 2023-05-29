@@ -78,7 +78,7 @@ public class EnergyPylon extends BlockDE { // todo fix sphere renderer
     }
 
     @Override
-    public void onNeighborBlockChange(World world, int x, int y, int z, Block p_149695_5_) {
+    public void onNeighborBlockChange(World world, int x, int y, int z, Block neighbor) {
         updateBlockState(world, x, y, z);
     }
 
@@ -115,17 +115,17 @@ public class EnergyPylon extends BlockDE { // todo fix sphere renderer
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_,
-            float p_149727_7_, float p_149727_8_, float p_149727_9_) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float subX,
+            float subY, float subZ) {
         int metadata = world.getBlockMetadata(x, y, z);
         if (metadata == 0) return false;
         TileEntity tile = world.getTileEntity(x, y, z);
         if (tile instanceof TileEnergyPylon) {
-            TileEnergyPylon energyPylon = (TileEnergyPylon) tile;
+            TileEnergyPylon pylon = (TileEnergyPylon) tile;
             if (player.isSneaking()) {
-                energyPylon.nextCore();
+                pylon.nextCore();
             } else {
-                energyPylon.onActivated();
+                pylon.onActivated();
             }
             return true;
         }
@@ -133,7 +133,7 @@ public class EnergyPylon extends BlockDE { // todo fix sphere renderer
     }
 
     @Override
-    public void onPostBlockPlaced(World world, int x, int y, int z, int p_149714_5_) {
+    public void onPostBlockPlaced(World world, int x, int y, int z, int metadata) {
         updateBlockState(world, x, y, z);
     }
 
@@ -143,11 +143,11 @@ public class EnergyPylon extends BlockDE { // todo fix sphere renderer
     }
 
     @Override
-    public int getComparatorInputOverride(World world, int x, int y, int z, int meta) {
+    public int getComparatorInputOverride(World world, int x, int y, int z, int side) {
         TileEntity tile = world.getTileEntity(x, y, z);
         if (tile instanceof TileEnergyPylon) {
-            TileEnergyPylon energyPylon = (TileEnergyPylon) tile;
-            return (int) (energyPylon.getEnergyStored() / energyPylon.getMaxEnergyStored() * 15D);
+            TileEnergyPylon pylon = (TileEnergyPylon) tile;
+            return (int) (pylon.getEnergyStored() / pylon.getMaxEnergyStored() * 15D);
         }
         return 0;
     }
