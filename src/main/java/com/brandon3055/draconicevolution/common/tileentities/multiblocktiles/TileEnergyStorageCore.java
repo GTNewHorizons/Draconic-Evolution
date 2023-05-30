@@ -145,60 +145,26 @@ public class TileEnergyStorageCore extends TileObjectSync {
 
     private boolean setTier() {
         final int range = 5;
-        int xPos = 0;
-        int xNeg = 0;
-        int yPos = 0;
-        int yNeg = 0;
-        int zPos = 0;
-        int zNeg = 0;
 
-        for (int x = 0; x <= range; x++) {
-            if (isOuterBlock(xCoord + x, yCoord, zCoord)) {
-                xPos = x;
-                break;
+        int[] outerBlocksDistances = new int[6];
+        for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+            for (int distance = 1; distance <= range; distance++) {
+                int x = xCoord + direction.offsetX * distance;
+                int y = yCoord + direction.offsetY * distance;
+                int z = zCoord + direction.offsetZ * distance;
+                if (isOuterBlock(x, y, z)) {
+                    outerBlocksDistances[direction.ordinal()] = distance;
+                    break;
+                }
+            }
+        }
+        for (int i = 1; i < outerBlocksDistances.length; i++) {
+            if (outerBlocksDistances[i] != outerBlocksDistances[0]) {
+                return false;
             }
         }
 
-        for (int x = 0; x <= range; x++) {
-            if (isOuterBlock(xCoord - x, yCoord, zCoord)) {
-                xNeg = x;
-                break;
-            }
-        }
-
-        for (int y = 0; y <= range; y++) {
-            if (isOuterBlock(xCoord, yCoord + y, zCoord)) {
-                yPos = y;
-                break;
-            }
-        }
-
-        for (int y = 0; y <= range; y++) {
-            if (isOuterBlock(xCoord, yCoord - y, zCoord)) {
-                yNeg = y;
-                break;
-            }
-        }
-
-        for (int z = 0; z <= range; z++) {
-            if (isOuterBlock(xCoord, yCoord, zCoord + z)) {
-                zPos = z;
-                break;
-            }
-        }
-
-        for (int z = 0; z <= range; z++) {
-            if (isOuterBlock(xCoord, yCoord, zCoord - z)) {
-                zNeg = z;
-                break;
-            }
-        }
-
-        if (xPos != xNeg || yPos != yNeg || zPos != zNeg || xPos != yPos || xPos != zPos) {
-            return false;
-        }
-
-        tier = xPos;
+        tier = outerBlocksDistances[0];
         if (tier > 1) {
             tier++;
         }
