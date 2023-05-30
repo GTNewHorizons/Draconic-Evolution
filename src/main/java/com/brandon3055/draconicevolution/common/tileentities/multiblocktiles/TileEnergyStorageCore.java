@@ -11,10 +11,12 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.StatCollector;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import com.brandon3055.brandonscore.common.utills.InfoHelper;
 import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.common.ModBlocks;
+import com.brandon3055.draconicevolution.common.blocks.multiblock.InvisibleMultiblock;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper.TileLocation;
 import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
 import com.brandon3055.draconicevolution.common.lib.References;
@@ -28,6 +30,8 @@ import cpw.mods.fml.common.network.NetworkRegistry;
  * Created by Brandon on 25/07/2014.
  */
 public class TileEnergyStorageCore extends TileObjectSync {
+
+    public static final int STABILIZER_SEARCH_DISTANCE = 11;
 
     @FunctionalInterface
     private interface IBlockAction {
@@ -51,7 +55,9 @@ public class TileEnergyStorageCore extends TileObjectSync {
 
     @Override
     public void updateEntity() {
-        if (!online) return;
+        if (!online) {
+            return;
+        }
         if (worldObj.isRemote) {
             modelRotation += 0.5;
             return;
@@ -70,7 +76,7 @@ public class TileEnergyStorageCore extends TileObjectSync {
         return tryActivate(true);
     }
 
-    public boolean tryActivate(boolean isInCreativeMode) {
+    public boolean tryActivate(boolean isCreativeMode) {
         if (!findStabilizers()) {
             return false;
         }
@@ -79,7 +85,7 @@ public class TileEnergyStorageCore extends TileObjectSync {
         }
 
         online = false;
-        boolean isStructureValid = isInCreativeMode ? scanStructure(this::setInnerBlock, this::setOuterBlock)
+        boolean isStructureValid = isCreativeMode ? scanStructure(this::setInnerBlock, this::setOuterBlock)
                 : scanStructure(this::isInnerBlock, this::isOuterBlock);
         if (isStructureValid) {
             if (scanStructure(this::activateInnerBlock, this::activateOuterBlock)) {
@@ -110,23 +116,7 @@ public class TileEnergyStorageCore extends TileObjectSync {
             for (int y = yCoord - 1; y <= yCoord + 1; y++) {
                 for (int z = zCoord - 1; z <= zCoord + 1; z++) {
                     if (worldObj.getBlock(x, y, z) == ModBlocks.invisibleMultiblock) {
-                        if (worldObj.getBlockMetadata(x, y, z) == 0) {
-                            worldObj.setBlock(
-                                    x,
-                                    y,
-                                    z,
-                                    BalanceConfigHandler.energyStorageStructureOuterBlock,
-                                    BalanceConfigHandler.energyStorageStructureOuterBlockMetadata,
-                                    3);
-                        } else if (worldObj.getBlockMetadata(x, y, z) == 1) {
-                            worldObj.setBlock(
-                                    x,
-                                    y,
-                                    z,
-                                    BalanceConfigHandler.energyStorageStructureBlock,
-                                    BalanceConfigHandler.energyStorageStructureBlockMetadata,
-                                    3);
-                        }
+                        InvisibleMultiblock.revertStructure(worldObj, x, y, z);
                     }
                 }
             }
@@ -134,56 +124,23 @@ public class TileEnergyStorageCore extends TileObjectSync {
     }
 
     private boolean findStabilizers() {
-        boolean flag = true;
-        for (int x = xCoord; x <= xCoord + 11; x++) {
-            if (worldObj.getBlock(x, yCoord, zCoord) == ModBlocks.particleGenerator) {
-                if (worldObj.getBlockMetadata(x, yCoord, zCoord) == 1) {
-                    flag = false;
+        final ForgeDirection[] horizontalDirections = new ForgeDirection[] { ForgeDirection.EAST, ForgeDirection.SOUTH,
+                ForgeDirection.WEST, ForgeDirection.NORTH };
+        int stabilizersCount = 0;
+        for (ForgeDirection direction : horizontalDirections) {
+            for (int distance = 1; distance <= STABILIZER_SEARCH_DISTANCE; distance++) {
+                int x = xCoord + direction.offsetX * distance;
+                int z = zCoord + direction.offsetZ * distance;
+                if (worldObj.getBlock(x, yCoord, z) == ModBlocks.particleGenerator) {
+                    if (worldObj.getBlockMetadata(x, yCoord, z) == 1) {
+                        return false;
+                    }
+                    stabilizers[stabilizersCount++] = new TileLocation(x, yCoord, z);
                     break;
                 }
-                stabilizers[0] = new TileLocation(x, yCoord, zCoord);
-                break;
-            } else if (x == xCoord + 11) {
-                flag = false;
             }
         }
-        for (int x = xCoord; x >= xCoord - 11; x--) {
-            if (worldObj.getBlock(x, yCoord, zCoord) == ModBlocks.particleGenerator) {
-                if (worldObj.getBlockMetadata(x, yCoord, zCoord) == 1) {
-                    flag = false;
-                    break;
-                }
-                stabilizers[1] = new TileLocation(x, yCoord, zCoord);
-                break;
-            } else if (x == xCoord - 11) {
-                flag = false;
-            }
-        }
-        for (int z = zCoord; z <= zCoord + 11; z++) {
-            if (worldObj.getBlock(xCoord, yCoord, z) == ModBlocks.particleGenerator) {
-                if (worldObj.getBlockMetadata(xCoord, yCoord, z) == 1) {
-                    flag = false;
-                    break;
-                }
-                stabilizers[2] = new TileLocation(xCoord, yCoord, z);
-                break;
-            } else if (z == zCoord + 11) {
-                flag = false;
-            }
-        }
-        for (int z = zCoord; z >= zCoord - 11; z--) {
-            if (worldObj.getBlock(xCoord, yCoord, z) == ModBlocks.particleGenerator) {
-                if (worldObj.getBlockMetadata(xCoord, yCoord, z) == 1) {
-                    flag = false;
-                    break;
-                }
-                stabilizers[3] = new TileLocation(xCoord, yCoord, z);
-                break;
-            } else if (z == zCoord - 11) {
-                flag = false;
-            }
-        }
-        return flag;
+        return stabilizersCount == 4;
     }
 
     private boolean setTier() {
@@ -450,10 +407,6 @@ public class TileEnergyStorageCore extends TileObjectSync {
 
     private void activateStabilizers() {
         for (TileLocation stabilizer : stabilizers) {
-            if (stabilizer == null) {
-                LogHelper.error("activateStabilizers: detected null stabilizer!");
-                return;
-            }
             TileEntity tile = stabilizer.getTileEntity(worldObj);
             if (!(tile instanceof TileParticleGenerator)) {
                 LogHelper.error("Missing Tile Entity (Particle Generator)");
@@ -503,29 +456,22 @@ public class TileEnergyStorageCore extends TileObjectSync {
 
     public void deactivateStabilizers() {
         for (TileLocation stabilizer : stabilizers) {
-            if (stabilizer != null) {
-                TileEntity tile = stabilizer.getTileEntity(worldObj);
-                if (tile instanceof TileParticleGenerator) {
-                    TileParticleGenerator generator = (TileParticleGenerator) tile;
-                    generator.stabalizerMode = false;
-                    worldObj.setBlockMetadataWithNotify(
-                            stabilizer.getXCoord(),
-                            stabilizer.getYCoord(),
-                            stabilizer.getZCoord(),
-                            0,
-                            2);
-                }
-            } else {
-                LogHelper.error("deactivateStabilizers: detected null stabilizer!");
+            TileEntity tile = stabilizer.getTileEntity(worldObj);
+            if (tile instanceof TileParticleGenerator) {
+                TileParticleGenerator generator = (TileParticleGenerator) tile;
+                generator.stabalizerMode = false;
+                worldObj.setBlockMetadataWithNotify(
+                        stabilizer.getXCoord(),
+                        stabilizer.getYCoord(),
+                        stabilizer.getZCoord(),
+                        0,
+                        2);
             }
         }
     }
 
     private boolean areStabilizersActive() {
         for (TileLocation stabilizer : stabilizers) {
-            if (stabilizer == null) {
-                return false;
-            }
             TileEntity tile = stabilizer.getTileEntity(worldObj);
             if (!(tile instanceof TileParticleGenerator)) {
                 return false;
@@ -556,7 +502,7 @@ public class TileEnergyStorageCore extends TileObjectSync {
         compound.setShort("Tier", (short) tier);
         compound.setLong("EnergyL", energy);
         for (int i = 0; i < stabilizers.length; i++) {
-            if (stabilizers[i] != null) stabilizers[i].writeToNBT(compound, String.valueOf(i));
+            stabilizers[i].writeToNBT(compound, String.valueOf(i));
         }
     }
 
@@ -567,7 +513,7 @@ public class TileEnergyStorageCore extends TileObjectSync {
         energy = compound.getLong("EnergyL");
         if (compound.hasKey("Energy")) energy = (long) compound.getDouble("Energy");
         for (int i = 0; i < stabilizers.length; i++) {
-            if (stabilizers[i] != null) stabilizers[i].readFromNBT(compound, String.valueOf(i));
+            stabilizers[i].readFromNBT(compound, String.valueOf(i));
         }
         initializeCapacity();
         super.readFromNBT(compound);
