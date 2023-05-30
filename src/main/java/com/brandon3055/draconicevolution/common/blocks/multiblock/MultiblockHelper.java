@@ -1,5 +1,6 @@
 package com.brandon3055.draconicevolution.common.blocks.multiblock;
 
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
@@ -58,6 +59,14 @@ public class MultiblockHelper {
         public void setZCoord(int z) {
             posZ = z;
             initialized = true;
+        }
+
+        public Block getBlock(World world) {
+            return world.getBlock(posX, posY, posZ);
+        }
+
+        public int getBlockMetadata(World world) {
+            return world.getBlockMetadata(posX, posY, posZ);
         }
 
         public TileEntity getTileEntity(World world) {
