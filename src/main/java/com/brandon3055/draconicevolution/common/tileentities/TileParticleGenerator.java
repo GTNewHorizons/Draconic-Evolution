@@ -85,76 +85,81 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
     @SideOnly(Side.CLIENT)
     @Override
     public void updateEntity() {
-        if (!worldObj.isRemote) return;
+        if (!worldObj.isRemote) {
+            return;
+        }
         rotation += 0.5F;
         if (stabalizerMode) {
-
             spawnStabilizerParticle();
+            return;
         }
-        if (stabalizerMode) return;
 
-        if (signal && !inverted) active = true;
-        else if (!signal && inverted) active = true;
-        else active = false;
+        active = signal != inverted;
 
-        if (tick >= spawn_rate && active && particles_enabled) {
-            tick = 0;
+        if (tick < spawn_rate || !active || !particles_enabled) {
+            tick++;
+            return;
+        }
 
-            Random rand = worldObj.rand;
+        tick = 0;
+        Random rand = worldObj.rand;
 
-            float MX = motion_x + (random_motion_x * rand.nextFloat());
-            float MY = motion_y + (random_motion_y * rand.nextFloat());
-            float MZ = motion_z + (random_motion_z * rand.nextFloat());
-            float SCALE = scale + (random_scale * rand.nextFloat());
-            double spawnX = xCoord + spawn_x + (random_spawn_x * rand.nextFloat());
-            double spawnY = yCoord + spawn_y + (random_spawn_y * rand.nextFloat());
-            double spawnZ = zCoord + spawn_z + (random_spawn_z * rand.nextFloat());
+        float motionX = motion_x + (random_motion_x * rand.nextFloat());
+        float motionY = motion_y + (random_motion_y * rand.nextFloat());
+        float motionZ = motion_z + (random_motion_z * rand.nextFloat());
+        float scale = this.scale + (random_scale * rand.nextFloat());
+        double spawnX = xCoord + spawn_x + (random_spawn_x * rand.nextFloat());
+        double spawnY = yCoord + spawn_y + (random_spawn_y * rand.nextFloat());
+        double spawnZ = zCoord + spawn_z + (random_spawn_z * rand.nextFloat());
 
-            ParticleCustom particle = new ParticleCustom(
-                    worldObj,
-                    spawnX + 0.5,
-                    spawnY + 0.5,
-                    spawnZ + 0.5,
-                    MX,
-                    MY,
-                    MZ,
-                    SCALE,
-                    collide,
-                    this.selected_particle);
-            particle.red = this.red + rand.nextInt(random_red + 1);
-            particle.green = this.green + rand.nextInt(random_green + 1);
-            particle.blue = this.blue + rand.nextInt(random_blue + 1);
-            particle.maxAge = this.life + rand.nextInt(random_life + 1);
-            particle.fadeTime = this.fade;
-            particle.fadeLength = this.fade;
-            particle.gravity = this.gravity;
+        ParticleCustom particle = new ParticleCustom(
+                worldObj,
+                spawnX + 0.5,
+                spawnY + 0.5,
+                spawnZ + 0.5,
+                motionX,
+                motionY,
+                motionZ,
+                scale,
+                collide,
+                this.selected_particle);
+        particle.red = this.red + rand.nextInt(random_red + 1);
+        particle.green = this.green + rand.nextInt(random_green + 1);
+        particle.blue = this.blue + rand.nextInt(random_blue + 1);
+        particle.maxAge = this.life + rand.nextInt(random_life + 1);
+        particle.fadeTime = this.fade;
+        particle.fadeLength = this.fade;
+        particle.gravity = this.gravity;
 
-            ParticleHandler.spawnCustomParticle(particle, 256);
+        ParticleHandler.spawnCustomParticle(particle, 256);
 
-        } else tick++;
     }
 
     @SideOnly(Side.CLIENT)
     private void spawnStabilizerParticle() {
-        if (getMaster() == null || worldObj.getTotalWorldTime() % (20) != 1) return;
+        TileEnergyStorageCore core = getMaster();
+        if (core == null || worldObj.getTotalWorldTime() % 20 != 1) {
+            return;
+        }
 
         double x = xCoord + 0.5;
         double y = yCoord + 0.5;
         double z = zCoord + 0.5;
-        int direction = 0;
+        int direction;
 
-        if (getMaster().xCoord > xCoord) direction = 0;
-        else if (getMaster().xCoord < xCoord) direction = 1;
-        else if (getMaster().zCoord > zCoord) direction = 2;
-        else if (getMaster().zCoord < zCoord) direction = 3;
+        if (core.xCoord != xCoord) {
+            direction = core.xCoord > xCoord ? 0 : 1;
+        } else {
+            direction = core.zCoord > zCoord ? 2 : 3;
+        }
 
         Particles.EnergyBeamParticle particle = new Particles.EnergyBeamParticle(
                 worldObj,
                 x,
                 y,
                 z,
-                getMaster().xCoord + 0.5,
-                getMaster().zCoord + 0.5,
+                core.xCoord + 0.5,
+                core.zCoord + 0.5,
                 direction,
                 false);
         Particles.EnergyBeamParticle particle2 = new Particles.EnergyBeamParticle(
@@ -162,8 +167,8 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
                 x,
                 y,
                 z,
-                getMaster().xCoord + 0.5,
-                getMaster().zCoord + 0.5,
+                core.xCoord + 0.5,
+                core.zCoord + 0.5,
                 direction,
                 true);
         ParticleHandler.spawnCustomParticle(particle, 60);
@@ -205,21 +210,12 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
     }
 
     public TileEnergyStorageCore getMaster() {
-        if (master == null) return null;
-        TileEnergyStorageCore tile = (worldObj.getTileEntity(master.getXCoord(), master.getYCoord(), master.getZCoord())
-                != null
-                && worldObj.getTileEntity(
-                        master.getXCoord(),
-                        master.getYCoord(),
-                        master.getZCoord()) instanceof TileEnergyStorageCore)
-                                ? (TileEnergyStorageCore) worldObj
-                                        .getTileEntity(master.getXCoord(), master.getYCoord(), master.getZCoord())
-                                : null;
-        return tile;
+        TileEntity tile = master.getTileEntity(worldObj);
+        return tile instanceof TileEnergyStorageCore ? (TileEnergyStorageCore) tile : null;
     }
 
     public void setMaster(TileLocation master) {
-        this.master = master;
+        this.master = master != null ? master : new TileLocation();
     }
 
     @Override
@@ -345,8 +341,11 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
     @Override
     public Object[] callMethod(String method, Object... args) {
         if (method.startsWith("setGeneratorProperty")) {
-            if (args.length != 2) return new Object[] { false };
-            else if (!(args[0] instanceof String)) return new Object[] { false };
+            if (args.length != 2) {
+                return new Object[] { false };
+            } else if (!(args[0] instanceof String)) {
+                return new Object[] { false };
+            }
 
             /* Particles */
             if (args[0].equals("particles_enabled") && args[1] instanceof Boolean) {
@@ -399,7 +398,7 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
                 fade = limit(((Double) args[1]).intValue(), 0, 100);
             } else if (args[0].equals("spawn_rate") && args[1] instanceof Double) {
                 spawn_rate = limit(((Double) args[1]).intValue(), 1, 200);
-            } else if (args[0].equals("collide") && args[1] instanceof Double) {
+            } else if (args[0].equals("collide") && args[1] instanceof Boolean) {
                 collide = (Boolean) args[1];
             } else if (args[0].equals("selected_particle") && args[1] instanceof Double) {
                 selected_particle = limit(((Double) args[1]).intValue(), 1, selected_max);
@@ -434,7 +433,7 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
             worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
             return new Object[] { true };
         } else if (method.startsWith("getGeneratorState")) {
-            Map<Object, Object> map = new HashMap<Object, Object>();
+            Map<Object, Object> map = new HashMap<>();
 
             /* Particles */
             map.put("particles_enabled", particles_enabled);
