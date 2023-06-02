@@ -27,27 +27,37 @@ public class TileDislocatorReceptacle extends TileEntity implements IInventory {
 
     @Override
     public void updateEntity() {
-        if (worldObj.isRemote) return;
-        if (coolDown > 0) coolDown--;
-        if (ticksTillStart > -1) ticksTillStart--;
-        if (ticksTillStart == 0)
+        if (worldObj.isRemote) {
+            return;
+        }
+        if (coolDown > 0) {
+            coolDown--;
+        }
+        if (ticksTillStart > -1) {
+            ticksTillStart--;
+        }
+        if (ticksTillStart == 0) {
             worldObj.scheduleBlockUpdate(xCoord, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord), 1);
+        }
     }
 
     public void validateActivePortal() {
-        if (updating) return;
-        if (structure == null) {
-            isActive = false;
+        if (updating) {
             return;
         }
-        isActive = structure.checkFrameIsValid(worldObj, xCoord, yCoord, zCoord)
+
+        final boolean isActiveBeforeValidation = isActive;
+        isActive = structure != null && structure.checkFrameIsValid(worldObj, xCoord, yCoord, zCoord)
                 && structure.scanPortal(worldObj, xCoord, yCoord, zCoord, false, true);
-        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        if (isActive != isActiveBeforeValidation) {
+            worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        }
     }
 
     public void updateState() {
-        if (structure == null || !isActive)
+        if (structure == null || !isActive) {
             structure = PortalHelper.getValidStructure(worldObj, xCoord, yCoord, zCoord);
+        }
         if (structure == null) {
             isActive = false;
             worldObj.notifyBlockChange(xCoord, yCoord, zCoord, blockType);
@@ -55,25 +65,30 @@ public class TileDislocatorReceptacle extends TileEntity implements IInventory {
             return;
         }
 
+        final boolean isActiveBeforeUpdate = isActive;
         if (isActive) {
-            if (getStackInSlot(0) == null || !structure.checkFrameIsValid(worldObj, xCoord, yCoord, zCoord))
+            if (dislocator == null || !structure.checkFrameIsValid(worldObj, xCoord, yCoord, zCoord)) {
                 isActive = false;
+            }
         } else {
-            boolean frameValid = structure.checkFrameIsValid(worldObj, xCoord, yCoord, zCoord);
-            boolean portalEmpty = structure.scanPortal(worldObj, xCoord, yCoord, zCoord, false, false);
+            boolean isFrameValid = structure.checkFrameIsValid(worldObj, xCoord, yCoord, zCoord);
+            boolean isPortalEmpty = structure.scanPortal(worldObj, xCoord, yCoord, zCoord, false, false);
 
-            if (getLocation() != null && frameValid && portalEmpty) {
+            if (getLocation() != null && isFrameValid && isPortalEmpty) {
                 isActive = true;
                 structure.scanPortal(worldObj, xCoord, yCoord, zCoord, true, false);
             }
         }
-        worldObj.notifyBlockChange(xCoord, yCoord, zCoord, blockType);
-        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        if (isActive != isActiveBeforeUpdate) {
+            worldObj.notifyBlockChange(xCoord, yCoord, zCoord, blockType);
+            worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        }
     }
 
     public Teleporter.TeleportLocation getLocation() {
-        if (getStackInSlot(0) != null && getStackInSlot(0).getItem() instanceof TeleporterMKI)
-            return ((TeleporterMKI) getStackInSlot(0).getItem()).getLocation(getStackInSlot(0));
+        if (dislocator != null && dislocator.getItem() instanceof TeleporterMKI) {
+            return ((TeleporterMKI) dislocator.getItem()).getLocation(dislocator);
+        }
         return null;
     }
 
@@ -100,40 +115,40 @@ public class TileDislocatorReceptacle extends TileEntity implements IInventory {
     }
 
     @Override
-    public ItemStack decrStackSize(int i, int count) {
-        ItemStack itemstack = getStackInSlot(i);
-
-        if (itemstack != null) {
-            if (itemstack.stackSize <= count) {
-                setInventorySlotContents(i, null);
-            } else {
-                itemstack = itemstack.splitStack(count);
-                if (itemstack.stackSize == 0) {
-                    setInventorySlotContents(i, null);
-                }
+    public ItemStack decrStackSize(int index, int count) {
+        ItemStack stack = null;
+        if (index == 0 && dislocator != null) {
+            stack = dislocator;
+            if (count >= 1) {
+                setInventorySlotContents(index, null);
             }
         }
-        if (isActive) updateState();
-        else ticksTillStart = 1;
-        return itemstack;
+        return stack;
     }
 
     @Override
-    public ItemStack getStackInSlotOnClosing(int i) {
-        ItemStack item = getStackInSlot(i);
-        if (item != null) setInventorySlotContents(i, null);
-        return item;
-    }
-
-    @Override
-    public void setInventorySlotContents(int i, ItemStack itemstack) {
-        if (i != 0) return;
-        dislocator = itemstack;
-        if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
-            itemstack.stackSize = getInventoryStackLimit();
+    public ItemStack getStackInSlotOnClosing(int index) {
+        ItemStack stack = getStackInSlot(index);
+        if (stack != null) {
+            setInventorySlotContents(index, null);
         }
-        if (isActive) updateState();
-        else ticksTillStart = 1;
+        return stack;
+    }
+
+    @Override
+    public void setInventorySlotContents(int index, ItemStack stack) {
+        if (index != 0) {
+            return;
+        }
+        dislocator = stack;
+        if (stack != null && stack.stackSize > getInventoryStackLimit()) {
+            stack.stackSize = getInventoryStackLimit();
+        }
+        if (isActive) {
+            updateState();
+        } else {
+            ticksTillStart = 1;
+        }
     }
 
     @Override
@@ -169,9 +184,10 @@ public class TileDislocatorReceptacle extends TileEntity implements IInventory {
     public void closeInventory() {}
 
     @Override
-    public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-        return itemstack != null && itemstack.getItem() instanceof TeleporterMKI
-                && ((TeleporterMKI) itemstack.getItem()).getLocation(itemstack) != null;
+    public boolean isItemValidForSlot(int index, ItemStack stack) {
+        return index == 0 && stack != null
+                && stack.getItem() instanceof TeleporterMKI
+                && ((TeleporterMKI) stack.getItem()).getLocation(stack) != null;
     }
 
     @Override
