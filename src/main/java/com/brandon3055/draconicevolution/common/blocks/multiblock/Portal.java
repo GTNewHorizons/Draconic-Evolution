@@ -35,8 +35,8 @@ public class Portal extends BlockDE implements ITileEntityProvider {
         ModBlocks.register(this);
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
+    @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister iconRegister) {
         blockIcon = iconRegister.registerIcon(References.RESOURCESPREFIX + "transparency");
     }
@@ -47,8 +47,7 @@ public class Portal extends BlockDE implements ITileEntityProvider {
     }
 
     @Override
-    public AxisAlignedBB getSelectedBoundingBoxFromPool(World p_149633_1_, int p_149633_2_, int p_149633_3_,
-            int p_149633_4_) {
+    public AxisAlignedBB getSelectedBoundingBoxFromPool(World worldIn, int x, int y, int z) {
         return AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0);
     }
 
@@ -63,26 +62,35 @@ public class Portal extends BlockDE implements ITileEntityProvider {
     }
 
     @Override
-    public TileEntity createNewTileEntity(World world, int i) {
+    public boolean hasTileEntity(int metadata) {
+        return true;
+    }
+
+    @Override
+    public TileEntity createNewTileEntity(World world, int metadata) {
         return new TilePortalBlock();
     }
 
     @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World p_149668_1_, int p_149668_2_, int p_149668_3_,
-            int p_149668_4_) {
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World worldIn, int x, int y, int z) {
         return null;
     }
 
     @Override
     public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
-        if (world.isRemote) return;
-        if (getMaster(world, x, y, z) == null) {
+        if (world.isRemote) {
+            return;
+        }
+        TileDislocatorReceptacle receptacle = getMaster(world, x, y, z);
+        if (receptacle == null) {
             world.setBlockToAir(x, y, z);
             return;
         }
 
-        if (getMaster(world, x, y, z).isActive) getMaster(world, x, y, z).validateActivePortal();
-        if (!getMaster(world, x, y, z).isActive && !getMaster(world, x, y, z).updating) {
+        if (receptacle.isActive) {
+            receptacle.validateActivePortal();
+        }
+        if (!receptacle.isActive && !receptacle.updating) {
             world.setBlockToAir(x, y, z);
             return;
         }
@@ -91,29 +99,37 @@ public class Portal extends BlockDE implements ITileEntityProvider {
 
     @Override
     public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity) {
-        if (world.isRemote) return;
-        TileDislocatorReceptacle tile = getMaster(world, x, y, z);
-        if (tile != null && tile.isActive && tile.getLocation() != null) {
-            if (tile.coolDown > 0) return;
-            tile.coolDown = 1;
-            tile.getLocation().sendEntityToCoords(entity);
-        } else if (tile != null) tile.validateActivePortal();
-        else world.setBlockToAir(x, y, z);
+        if (world.isRemote) {
+            return;
+        }
+        TileDislocatorReceptacle receptacle = getMaster(world, x, y, z);
+        if (receptacle == null) {
+            world.setBlockToAir(x, y, z);
+            return;
+        }
+        if (receptacle.isActive && receptacle.getLocation() != null) {
+            if (receptacle.coolDown > 0) {
+                return;
+            }
+            receptacle.coolDown = 1;
+            receptacle.getLocation().sendEntityToCoords(entity);
+        } else {
+            receptacle.validateActivePortal();
+        }
     }
 
     private TileDislocatorReceptacle getMaster(World world, int x, int y, int z) {
-        return world.getTileEntity(x, y, z) instanceof TilePortalBlock
-                ? ((TilePortalBlock) world.getTileEntity(x, y, z)).getMaster()
-                : null;
+        TileEntity tile = world.getTileEntity(x, y, z);
+        return tile instanceof TilePortalBlock ? ((TilePortalBlock) tile).getMaster() : null;
     }
 
     @Override
-    public Item getItemDropped(int p_149650_1_, Random p_149650_2_, int p_149650_3_) {
+    public Item getItemDropped(int metadata, Random random, int fortune) {
         return null;
     }
 
-    private boolean isPortalOrFrame(IBlockAccess access, int x, int y, int z) {
-        Block block = access.getBlock(x, y, z);
+    private boolean isPortalOrFrame(IBlockAccess world, int x, int y, int z) {
+        Block block = world.getBlock(x, y, z);
         return block == ModBlocks.portal || block == ModBlocks.infusedObsidian
                 || block == ModBlocks.dislocatorReceptacle;
     }
@@ -124,22 +140,21 @@ public class Portal extends BlockDE implements ITileEntityProvider {
     }
 
     private void updateMetadata(World world, int x, int y, int z) {
-        if (world.isRemote || world.getBlockMetadata(x, y, z) != 0) return;
-        int meta = 0;
+        if (world.isRemote || world.getBlockMetadata(x, y, z) != 0) {
+            return;
+        }
+        int metadata = 0;
+        boolean hasPortalsAlongXAxis = isPortalOrFrame(world, x + 1, y, z) && isPortalOrFrame(world, x - 1, y, z);
+        boolean hasPortalsAlongYAxis = isPortalOrFrame(world, x, y + 1, z) && isPortalOrFrame(world, x, y - 1, z);
+        boolean hasPortalsAlongZAxis = isPortalOrFrame(world, x, y, z + 1) && isPortalOrFrame(world, x, y, z - 1);
 
-        if (isPortalOrFrame(world, x, y + 1, z) && isPortalOrFrame(world, x, y - 1, z)
-                && isPortalOrFrame(world, x + 1, y, z)
-                && isPortalOrFrame(world, x - 1, y, z))
-            meta = 1;
-        else if (isPortalOrFrame(world, x, y + 1, z) && isPortalOrFrame(world, x, y - 1, z)
-                && isPortalOrFrame(world, x, y, z + 1)
-                && isPortalOrFrame(world, x, y, z - 1))
-            meta = 2;
-        else if (isPortalOrFrame(world, x + 1, y, z) && isPortalOrFrame(world, x - 1, y, z)
-                && isPortalOrFrame(world, x, y, z + 1)
-                && isPortalOrFrame(world, x, y, z - 1))
-            meta = 3;
-
-        world.setBlockMetadataWithNotify(x, y, z, meta, 2);
+        if (hasPortalsAlongXAxis && hasPortalsAlongYAxis) {
+            metadata = 1;
+        } else if (hasPortalsAlongYAxis && hasPortalsAlongZAxis) {
+            metadata = 2;
+        } else if (hasPortalsAlongXAxis && hasPortalsAlongZAxis) {
+            metadata = 3;
+        }
+        world.setBlockMetadataWithNotify(x, y, z, metadata, 2);
     }
 }
