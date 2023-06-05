@@ -1,30 +1,53 @@
 package com.brandon3055.draconicevolution.common.blocks.multiblock;
 
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper.TileLocation;
+import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
+
 /**
  * Created by Brandon on 23/7/2015.
  */
 public interface IReactorPart {
 
-    public static int RMODE_TEMP = 0;
-    public static int RMODE_TEMP_INV = 1;
-    public static int RMODE_FIELD = 2;
-    public static int RMODE_FIELD_INV = 3;
-    public static int RMODE_SAT = 4;
-    public static int RMODE_SAT_INV = 5;
-    public static int RMODE_FUEL = 6;
-    public static int RMODE_FUEL_INV = 7;
+    int RMODE_TEMP = 0;
+    int RMODE_TEMP_INV = 1;
+    int RMODE_FIELD = 2;
+    int RMODE_FIELD_INV = 3;
+    int RMODE_SAT = 4;
+    int RMODE_SAT_INV = 5;
+    int RMODE_FUEL = 6;
+    int RMODE_FUEL_INV = 7;
 
-    public MultiblockHelper.TileLocation getMaster();
+    static int getComparatorOutput(IBlockAccess world, int x, int y, int z) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (tile instanceof IReactorPart) {
+            IReactorPart part = (IReactorPart) tile;
+            TileReactorCore core = part.getMaster();
+            if (core != null) {
+                return core.getComparatorOutput(part.getRedstoneMode());
+            }
+        }
+        return 0;
+    }
 
-    public void shutDown();
+    TileLocation getMasterLocation();
 
-    public boolean checkForMaster();
+    TileReactorCore getMaster();
 
-    public boolean isActive();
+    void setUp(TileLocation masterLocation);
 
-    public String getRedstoneModeString();
+    void shutDown();
 
-    public void changeRedstoneMode();
+    boolean isActive();
 
-    public int getRedstoneMode();
+    ForgeDirection getFacing();
+
+    int getRedstoneMode();
+
+    void changeRedstoneMode();
+
+    String getRedstoneModeAsString();
 }
