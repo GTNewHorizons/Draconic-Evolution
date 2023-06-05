@@ -1,8 +1,8 @@
 package com.brandon3055.draconicevolution.common.blocks.multiblock;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -19,7 +19,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 /**
  * Created by Brandon on 16/6/2015.
  */
-public class ReactorCore extends BlockDE {
+public class ReactorCore extends BlockDE implements ITileEntityProvider {
 
     public ReactorCore() {
         this.setCreativeTab(DraconicEvolution.tabBlocksItems);
@@ -29,8 +29,8 @@ public class ReactorCore extends BlockDE {
         ModBlocks.register(this);
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
+    @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister iconRegister) {
         blockIcon = iconRegister.registerIcon(References.RESOURCESPREFIX + "transparency");
     }
@@ -56,40 +56,29 @@ public class ReactorCore extends BlockDE {
     }
 
     @Override
-    public TileEntity createTileEntity(World world, int metadata) {
+    public TileEntity createNewTileEntity(World world, int metadata) {
         return new TileReactorCore();
     }
 
     @Override
     public void onBlockAdded(World world, int x, int y, int z) {
-        TileReactorCore tile = world.getTileEntity(x, y, z) instanceof TileReactorCore
-                ? (TileReactorCore) world.getTileEntity(x, y, z)
-                : null;
-        if (tile != null) tile.onPlaced();
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (tile instanceof TileReactorCore) {
+            ((TileReactorCore) tile).onPlaced();
+        }
     }
 
     @Override
-    public AxisAlignedBB getSelectedBoundingBoxFromPool(World p_149633_1_, int x, int y, int z) {
-
-        return AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1); // super.getSelectedBoundingBoxFromPool(p_149633_1_, x,
-                                                               // y, z);
+    public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
+        return AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1);
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_,
-            float p_149727_7_, float p_149727_8_, float p_149727_9_) {
-        // TileReactorCore tile = world.getTileEntity(x, y, z) instanceof TileReactorCore ? (TileReactorCore)
-        // world.getTileEntity(x, y, z) : null;
-        // if (tile != null) return tile.onStructureRightClicked(player);
-        return false;
-    }
-
-    @Override
-    public void breakBlock(World world, int x, int y, int z, Block p_149749_5_, int p_149749_6_) {
-        TileReactorCore tile = world.getTileEntity(x, y, z) instanceof TileReactorCore
-                ? (TileReactorCore) world.getTileEntity(x, y, z)
-                : null;
-        if (tile != null) tile.onBroken();
-        super.breakBlock(world, x, y, z, p_149749_5_, p_149749_6_);
+    public void breakBlock(World world, int x, int y, int z, Block blockBroken, int metadata) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (tile instanceof TileReactorCore) {
+            ((TileReactorCore) tile).onBroken();
+        }
+        super.breakBlock(world, x, y, z, blockBroken, metadata);
     }
 }
