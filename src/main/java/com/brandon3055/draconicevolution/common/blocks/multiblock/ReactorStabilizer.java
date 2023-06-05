@@ -1,6 +1,7 @@
 package com.brandon3055.draconicevolution.common.blocks.multiblock;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,7 +25,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 /**
  * Created by Brandon on 5/7/2015.
  */
-public class ReactorStabilizer extends BlockDE {
+public class ReactorStabilizer extends BlockDE implements ITileEntityProvider {
 
     public ReactorStabilizer() {
         this.setCreativeTab(DraconicEvolution.tabBlocksItems);
@@ -32,8 +33,8 @@ public class ReactorStabilizer extends BlockDE {
         ModBlocks.register(this);
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
+    @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister iconRegister) {
         blockIcon = iconRegister.registerIcon(References.RESOURCESPREFIX + "transparency");
     }
@@ -44,27 +45,21 @@ public class ReactorStabilizer extends BlockDE {
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_,
-            float p_149727_7_, float p_149727_8_, float p_149727_9_) {
-        if (!player.isSneaking()) {
-            TileReactorStabilizer tile = world.getTileEntity(x, y, z) instanceof TileReactorStabilizer
-                    ? (TileReactorStabilizer) world.getTileEntity(x, y, z)
-                    : null;
-            TileEntity core = null;
-            if (tile != null) core = tile.getMaster().getTileEntity(world);
-            if (core instanceof TileReactorCore) {
-                ((TileReactorCore) core).onStructureRightClicked(player);
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float subX,
+            float subY, float subZ) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (tile instanceof IReactorPart) {
+            IReactorPart part = (IReactorPart) tile;
+            if (player.isSneaking()) {
+                part.changeRedstoneMode();
+                if (!world.isRemote) {
+                    player.addChatComponentMessage(new ChatComponentText(part.getRedstoneModeAsString()));
+                }
                 return true;
             }
-        } else if (!world.isRemote) {
-            IReactorPart tile = world.getTileEntity(x, y, z) instanceof IReactorPart
-                    ? (IReactorPart) world.getTileEntity(x, y, z)
-                    : null;
-            if (tile != null) {
-                tile.changeRedstoneMode();
-                if (!world.isRemote)
-                    player.addChatComponentMessage(new ChatComponentText(tile.getRedstoneModeString()));
-                return true;
+            TileReactorCore core = part.getMaster();
+            if (core != null) {
+                return core.onStructureRightClicked(player);
             }
         }
         return false;
@@ -86,48 +81,41 @@ public class ReactorStabilizer extends BlockDE {
     }
 
     @Override
-    public TileEntity createTileEntity(World world, int metadata) {
+    public TileEntity createNewTileEntity(World world, int metadata) {
         return new TileReactorStabilizer();
     }
 
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack stack) {
-        int d = Utills.determineOrientation(x, y, z, entity);
-        TileReactorStabilizer tile = world.getTileEntity(x, y, z) instanceof TileReactorStabilizer
-                ? (TileReactorStabilizer) world.getTileEntity(x, y, z)
-                : null;
-        if (tile != null) {
-            if (entity.isSneaking()) tile.facingDirection = ForgeDirection.getOrientation(d).getOpposite().ordinal();
-            else tile.facingDirection = ForgeDirection.getOrientation(d).ordinal();
-            tile.onPlaced();
+        int facing = Utills.determineOrientation(x, y, z, entity);
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (tile instanceof TileReactorStabilizer) {
+            TileReactorStabilizer stabilizer = (TileReactorStabilizer) tile;
+            stabilizer.facingDirection = entity.isSneaking()
+                    ? ForgeDirection.getOrientation(facing).getOpposite().ordinal()
+                    : ForgeDirection.getOrientation(facing).ordinal();
+            stabilizer.onPlaced();
         }
     }
 
     @Override
-    public void breakBlock(World world, int x, int y, int z, Block p_149749_5_, int p_149749_6_) {
-        TileReactorStabilizer tile = world.getTileEntity(x, y, z) instanceof TileReactorStabilizer
-                ? (TileReactorStabilizer) world.getTileEntity(x, y, z)
-                : null;
-        TileEntity core = null;
-        if (tile != null) core = tile.getMaster().getTileEntity(world);
-        super.breakBlock(world, x, y, z, p_149749_5_, p_149749_6_);
-        if (core instanceof TileReactorCore) ((TileReactorCore) core).validateStructure();
+    public void breakBlock(World world, int x, int y, int z, Block blockBroken, int metadata) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        TileReactorCore core = tile instanceof IReactorPart ? ((IReactorPart) tile).getMaster() : null;
+        super.breakBlock(world, x, y, z, blockBroken, metadata);
+        if (core != null) {
+            core.updateReactorParts(false);
+            core.validateStructure();
+        }
     }
 
+    @Override
     public boolean hasComparatorInputOverride() {
         return true;
     }
 
     @Override
-    public int getComparatorInputOverride(World world, int x, int y, int z, int p_149736_5_) {
-        IReactorPart tile = world.getTileEntity(x, y, z) instanceof IReactorPart
-                ? (IReactorPart) world.getTileEntity(x, y, z)
-                : null;
-        if (tile == null) return 0;
-        TileReactorCore core = tile.getMaster().getTileEntity(world) instanceof TileReactorCore
-                ? (TileReactorCore) tile.getMaster().getTileEntity(world)
-                : null;
-        if (core != null) return core.getComparatorOutput(tile.getRedstoneMode());
-        return 0;
+    public int getComparatorInputOverride(World world, int x, int y, int z, int side) {
+        return IReactorPart.getComparatorOutput(world, x, y, z);
     }
 }
