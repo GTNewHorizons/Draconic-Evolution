@@ -1,29 +1,33 @@
 package com.brandon3055.draconicevolution.common.container;
 
-import java.util.Iterator;
+import java.util.Set;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.inventory.GenericInventory;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
+import com.brandon3055.draconicevolution.common.utills.OreDictionaryHelper;
 
 /**
  * Created by brandon3055 on 30/7/2015.
  */
 public class ContainerReactor extends ContainerDataSync {
 
-    private TileReactorCore reactor;
-    private EntityPlayer player;
-    private GenericInventory ioSlots = new GenericInventory() {
+    private static final int MaximumFuelStorage = 10368;
+    private static final int NuggetFuelAmount = 16;
+    private static final int IngotFuelAmount = NuggetFuelAmount * 9;
+    private static final int BlockFuelAmount = IngotFuelAmount * 9;
+    private final TileReactorCore core;
+    private final EntityPlayer player;
+    private final GenericInventory ioSlots = new GenericInventory() {
 
-        private ItemStack[] items = new ItemStack[2];
+        private final ItemStack[] items = new ItemStack[2];
 
         @Override
         public ItemStack[] getStorage() {
@@ -31,53 +35,44 @@ public class ContainerReactor extends ContainerDataSync {
         }
 
         @Override
-        public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-            return true;
-            // return itemstack != null && (itemstack.getItem() == ModItems.draconicIngot || itemstack.getItem() ==
-            // Item.getItemFromBlock(ModBlocks.draconicBlock));
-        }
-
-        @Override
         public int getInventoryStackLimit() {
-            return 1; // super.getInventoryStackLimit();
+            return 1;
         }
 
         @Override
-        public void setInventorySlotContents(int i, ItemStack stack) {
-            if (i == 0 && stack != null
-                    && (stack.getItem() == ModItems.draconicIngot
-                            || stack.getItem() == Item.getItemFromBlock(ModBlocks.draconicBlock)
-                            || (stack.getItem() == ModItems.nugget && stack.getItemDamage() == 1))) {
-                if (stack.getItem() == ModItems.nugget) reactor.reactorFuel += stack.stackSize * 16;
-                if (stack.getItem() == ModItems.draconicIngot) reactor.reactorFuel += stack.stackSize * 144;
-                if (stack.getItem() == Item.getItemFromBlock(ModBlocks.draconicBlock))
-                    reactor.reactorFuel += stack.stackSize * 1296;
-                reactor.validateStructure();
-            } else getStorage()[i] = stack;
+        public void setInventorySlotContents(int slot, ItemStack stack) {
+            if (slot == 0) {
+                Set<String> oreNames = OreDictionaryHelper.getOreNames(stack);
+                if (oreNames.contains("blockDraconiumAwakened")) {
+                    core.reactorFuel += stack.stackSize * BlockFuelAmount;
+                } else if (oreNames.contains("ingotDraconiumAwakened")) {
+                    core.reactorFuel += stack.stackSize * IngotFuelAmount;
+                } else if (oreNames.contains("nuggetDraconiumAwakened")) {
+                    core.reactorFuel += stack.stackSize * NuggetFuelAmount;
+                }
+            } else {
+                items[slot] = stack;
+            }
+        }
+
+        @Override
+        public void markDirty() {
+            super.markDirty();
+            core.markDirty();
         }
     };
 
-    // Syncing //todo sort out syncing
-    public int LTConversionUnit = -1;
-    public int LTReactionIntensity = -1;
-    // public int LTMaxReactIntensity = -1;
-    // public int LTFieldStrength = -1;
-    // public int LTMaxFieldStrength = -1;
-    // public int LTEnergySaturation = -1;
-    // public int LTMaxEnergySaturation = -1;
-    // public int LTFuelConversion = -1;
+    private int conversionUnitCache = -1;
+    private int tempDrainFactorCache = -1;
+    private int generationRateCache = -1;
+    private int fieldDrainCache = -1;
+    private int fuelUseRateCache = -1;
+    private boolean isOfflineCache;
 
-    public double LTTempDrainFactor = -1;
-    public double LTGenerationRate = -1;
-    public int LTFieldDrain = -1;
-    public double LTFuelUseRate = -1;
-    public boolean LTOffline;
-    // #######
-
-    public ContainerReactor(EntityPlayer player, TileReactorCore reactor) {
-        this.reactor = reactor;
+    public ContainerReactor(EntityPlayer player, TileReactorCore core) {
+        this.core = core;
         this.player = player;
-        this.LTOffline = reactor.reactorState == TileReactorCore.STATE_OFFLINE;
+        this.isOfflineCache = core.reactorState == TileReactorCore.STATE_OFFLINE;
 
         for (int x = 0; x < 9; x++) {
             addSlotToContainer(new Slot(player.inventory, x, 44 + 18 * x, 198));
@@ -89,10 +84,19 @@ public class ContainerReactor extends ContainerDataSync {
             }
         }
 
-        if (reactor.reactorState == TileReactorCore.STATE_OFFLINE) {
-            addSlotToContainer(new SlotInsert(ioSlots, 0, 15, 140, reactor));
-            addSlotToContainer(new SlotExtract(ioSlots, 1, 217, 140));
+        if (core.reactorState == TileReactorCore.STATE_OFFLINE) {
+            addFuelSlots();
         }
+    }
+
+    private void addFuelSlots() {
+        addSlotToContainer(new SlotInsert(ioSlots, 0, 15, 140, core));
+        addSlotToContainer(new SlotExtract(ioSlots, 1, 217, 140));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void removeFuelSlots() {
+        inventorySlots.removeIf(o -> o instanceof SlotExtract || o instanceof SlotInsert);
     }
 
     @Override
@@ -116,158 +120,141 @@ public class ContainerReactor extends ContainerDataSync {
     }
 
     @Override
-    public void detectAndSendChanges() { // todo check what values are being synced by the tile and remove them from
-                                         // here
-
-        if (LTOffline && reactor.reactorState != TileReactorCore.STATE_OFFLINE) {
-            Iterator i = inventorySlots.iterator();
-            while (i.hasNext()) {
-                Object o = i.next();
-                if (o instanceof SlotExtract || o instanceof SlotInsert) i.remove();
-            }
+    public void detectAndSendChanges() {
+        if (isOfflineCache && core.reactorState != TileReactorCore.STATE_OFFLINE) {
+            removeFuelSlots();
             sendObjectToClient(null, 99, 1);
-        } else if (!LTOffline && reactor.reactorState == TileReactorCore.STATE_OFFLINE) {
-            addSlotToContainer(new SlotInsert(ioSlots, 0, 15, 140, reactor));
-            addSlotToContainer(new SlotExtract(ioSlots, 1, 217, 140));
+        } else if (!isOfflineCache && core.reactorState == TileReactorCore.STATE_OFFLINE) {
+            addFuelSlots();
             sendObjectToClient(null, 98, 1);
         }
-        LTOffline = reactor.reactorState == TileReactorCore.STATE_OFFLINE;
+        isOfflineCache = core.reactorState == TileReactorCore.STATE_OFFLINE;
 
-        if (reactor.conversionUnit != LTConversionUnit)
-            LTConversionUnit = (Integer) sendObjectToClient(null, 0, (int) (reactor.conversionUnit * 100));
-        // if ((int)reactor.reactionTemperature != LTReactionIntensity)LTReactionIntensity = (Integer)
-        // sendObjectToClient(null, 1, (int) reactor.reactionTemperature);
-        // if ((int)reactor.maxReactTemperature != LTMaxReactIntensity)LTMaxReactIntensity = (Integer)
-        // sendObjectToClient(null, 2, (int) reactor.maxReactTemperature);
-        // if ((int)reactor.fieldCharge != LTFieldStrength) LTFieldStrength = (Integer) sendObjectToClient(null,
-        // 3, (int) reactor.fieldCharge);
-        // if ((int)reactor.maxFieldCharge != LTMaxFieldStrength) LTMaxFieldStrength = (Integer)
-        // sendObjectToClient(null, 7, (int) reactor.maxFieldCharge);
-        // if (reactor.energySaturation != LTEnergySaturation) LTEnergySaturation = (Integer)
-        // sendObjectToClient(null, 4, reactor.energySaturation);
-        // if (reactor.maxEnergySaturation != LTMaxEnergySaturation) LTMaxEnergySaturation = (Integer)
-        // sendObjectToClient(null, 5, reactor.maxEnergySaturation);
-        // if (reactor.convertedFuel != LTFuelConversion) LTFuelConversion = (Integer) sendObjectToClient(null,
-        // 6, reactor.convertedFuel);
-        /* if (reactor.tempDrainFactor != LTTempDrainFactor) LTTempDrainFactor = (Integer) */
-        sendObjectToClient(null, 8, (int) (reactor.tempDrainFactor * 1000D));
-        if (reactor.generationRate != LTGenerationRate)
-            LTGenerationRate = (Integer) sendObjectToClient(null, 9, (int) (reactor.generationRate));
-        if (reactor.fieldDrain != LTFieldDrain)
-            LTFieldDrain = (Integer) sendObjectToClient(null, 10, reactor.fieldDrain);
-        /* if (reactor.fuelUseRate != LTFuelUseRate) LTFuelUseRate = (Integer) */
-        sendObjectToClient(null, 11, (int) (reactor.fuelUseRate * 1000000D));
+        int conversionUnit = (int) (core.conversionUnit * 100);
+        if (conversionUnit != conversionUnitCache) {
+            conversionUnitCache = (int) sendObjectToClient(null, 0, conversionUnit);
+        }
+        int tempDrainFactor = (int) (core.tempDrainFactor * 1000);
+        if (tempDrainFactor != tempDrainFactorCache) {
+            tempDrainFactorCache = (int) sendObjectToClient(null, 8, tempDrainFactor);
+        }
+        int generationRate = (int) core.generationRate;
+        if (generationRate != generationRateCache) {
+            generationRateCache = (int) sendObjectToClient(null, 9, generationRate);
+        }
+        if (core.fieldDrain != fieldDrainCache) {
+            fieldDrainCache = (int) sendObjectToClient(null, 10, core.fieldDrain);
+        }
+        int fuelUseRate = (int) (core.fuelUseRate * 1000000);
+        if (fuelUseRate != fuelUseRateCache) {
+            fuelUseRateCache = (int) sendObjectToClient(null, 11, fuelUseRate);
+        }
 
         super.detectAndSendChanges();
     }
 
     @Override
     public void receiveSyncData(int index, int value) {
-        if (index == 0) reactor.conversionUnit = (double) value / 100D;
-        // else if (index == 1) reactor.reactionTemperature = value;
-        // else if (index == 2) reactor.maxReactTemperature = value;
-        // else if (index == 3) reactor.fieldCharge = value;
-        // else if (index == 4) reactor.energySaturation = value;
-        // else if (index == 5) reactor.maxEnergySaturation = value;
-        // else if (index == 6) reactor.convertedFuel = value;
-        // else if (index == 7) reactor.maxFieldCharge = value;
-        else if (index == 8) reactor.tempDrainFactor = value / 1000D;
-        else if (index == 9) reactor.generationRate = value;
-        else if (index == 10) reactor.fieldDrain = value;
-        else if (index == 11) reactor.fuelUseRate = value / 1000000D;
-        if (index == 20) reactor.processButtonPress(value);
+        if (index == 0) {
+            core.conversionUnit = (double) value / 100D;
+        } else if (index == 8) {
+            core.tempDrainFactor = value / 1000D;
+        } else if (index == 9) {
+            core.generationRate = value;
+        } else if (index == 10) {
+            core.fieldDrain = value;
+        } else if (index == 11) {
+            core.fuelUseRate = value / 1000000D;
+        }
+        if (index == 20) {
+            core.processButtonPress(value);
+        }
         if (index == 99) {
-            Iterator i = inventorySlots.iterator();
-            while (i.hasNext()) {
-                Object o = i.next();
-                if (o instanceof SlotExtract || o instanceof SlotInsert) i.remove();
-            }
+            removeFuelSlots();
         } else if (index == 98) {
-            addSlotToContainer(new SlotInsert(ioSlots, 0, 15, 140, reactor));
-            addSlotToContainer(new SlotExtract(ioSlots, 1, 217, 140));
+            addFuelSlots();
         }
     }
 
     @Override
-    public ItemStack slotClick(int slot, int button, int p_75144_3_, EntityPlayer player1) {
-        if (slot == 37 && player1.inventory.getItemStack() == null) {
-            if (reactor.reactorFuel / 144 >= 64) {
-                int i = reactor.reactorFuel / 1296;
-                int i2 = Math.min(64, i);
-                ioSlots.getStorage()[1] = new ItemStack(ModBlocks.draconicBlock, i2);
-                reactor.reactorFuel -= i2 * 1296;
-            } else if (reactor.reactorFuel >= 144) {
-                int i = reactor.reactorFuel / 144;
-                int i2 = Math.min(64, i);
-                ioSlots.getStorage()[1] = new ItemStack(ModItems.draconicIngot, i2);
-                reactor.reactorFuel -= i2 * 144;
-            } else if (reactor.reactorFuel >= 16) {
-                int i = reactor.reactorFuel / 16;
-                int i2 = Math.min(64, i);
-                ioSlots.getStorage()[1] = new ItemStack(ModItems.nugget, i2, 1);
-                reactor.reactorFuel -= i2 * 16;
-            } else if (reactor.convertedFuel / 144 >= 64) {
-                int i = reactor.convertedFuel / 1296;
-                int i2 = Math.min(64, i);
-                ioSlots.getStorage()[1] = new ItemStack(ModItems.chaosFragment, i2, 2);
-                reactor.convertedFuel -= i2 * 1296;
-            } else if (reactor.convertedFuel >= 144) {
-                int i = reactor.convertedFuel / 144;
-                int i2 = Math.min(64, i);
-                ioSlots.getStorage()[1] = new ItemStack(ModItems.chaosFragment, i2, 1);
-                reactor.convertedFuel -= i2 * 144;
-            } else if (reactor.convertedFuel >= 16) {
-                int i = reactor.convertedFuel / 16;
-                int i2 = Math.min(64, i);
-                ioSlots.getStorage()[1] = new ItemStack(ModItems.chaosFragment, i2, 0);
-                reactor.convertedFuel -= i2 * 16;
+    public ItemStack slotClick(int slot, int button, int mode, EntityPlayer player) {
+        if (slot == 37 && player.inventory.getItemStack() == null) {
+            if (core.reactorFuel / IngotFuelAmount >= 64) {
+                int stackSize = core.reactorFuel / BlockFuelAmount;
+                stackSize = Math.min(64, stackSize);
+                ioSlots.setInventorySlotContents(1, new ItemStack(ModBlocks.draconicBlock, stackSize));
+                core.reactorFuel -= stackSize * BlockFuelAmount;
+            } else if (core.reactorFuel >= IngotFuelAmount) {
+                int stackSize = core.reactorFuel / IngotFuelAmount;
+                stackSize = Math.min(64, stackSize);
+                ioSlots.setInventorySlotContents(1, new ItemStack(ModItems.draconicIngot, stackSize));
+                core.reactorFuel -= stackSize * IngotFuelAmount;
+            } else if (core.reactorFuel >= NuggetFuelAmount) {
+                int stackSize = core.reactorFuel / NuggetFuelAmount;
+                ioSlots.setInventorySlotContents(1, new ItemStack(ModItems.nugget, stackSize, 1));
+                core.reactorFuel -= stackSize * NuggetFuelAmount;
+            } else if (core.convertedFuel / IngotFuelAmount >= 64) {
+                int stackSize = core.convertedFuel / BlockFuelAmount;
+                stackSize = Math.min(64, stackSize);
+                ioSlots.setInventorySlotContents(1, new ItemStack(ModItems.chaosFragment, stackSize, 2));
+                core.convertedFuel -= stackSize * BlockFuelAmount;
+            } else if (core.convertedFuel >= IngotFuelAmount) {
+                int stackSize = core.convertedFuel / IngotFuelAmount;
+                stackSize = Math.min(64, stackSize);
+                ioSlots.setInventorySlotContents(1, new ItemStack(ModItems.chaosFragment, stackSize, 1));
+                core.convertedFuel -= stackSize * IngotFuelAmount;
+            } else if (core.convertedFuel >= NuggetFuelAmount) {
+                int stackSize = core.convertedFuel / NuggetFuelAmount;
+                ioSlots.setInventorySlotContents(1, new ItemStack(ModItems.chaosFragment, stackSize, 0));
+                core.convertedFuel -= stackSize * NuggetFuelAmount;
             }
         }
-        return super.slotClick(slot, button, p_75144_3_, player1);
+        return super.slotClick(slot, button, mode, player);
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer p_82846_1_, int p_82846_2_) {
+    public ItemStack transferStackInSlot(EntityPlayer player, int index) {
         return null;
     }
 
     public static class SlotInsert extends Slot {
 
-        private int numberAllowed = -1;
-        private TileReactorCore reactor;
+        private int stackSizeLimit = 0;
+        private final TileReactorCore core;
 
-        public SlotInsert(IInventory iInventory, int iSlot, int x, int y, TileReactorCore reactor) {
-            super(iInventory, iSlot, x, y);
-            this.reactor = reactor;
+        public SlotInsert(IInventory inventory, int slot, int x, int y, TileReactorCore core) {
+            super(inventory, slot, x, y);
+            this.core = core;
         }
 
         @Override
         public boolean isItemValid(ItemStack stack) {
-            if (stack == null) return false;
-            else if (stack.getItem() == ModItems.nugget && stack.getItemDamage() == 1)
-                numberAllowed = (10368 - (reactor.reactorFuel + reactor.convertedFuel)) / 16;
-            else if (stack.getItem() == ModItems.draconicIngot)
-                numberAllowed = (10368 - (reactor.reactorFuel + reactor.convertedFuel)) / 144;
-            else if (stack.getItem() == Item.getItemFromBlock(ModBlocks.draconicBlock))
-                numberAllowed = (10368 - (reactor.reactorFuel + reactor.convertedFuel)) / 1296;
-            else return false;
-
-            return numberAllowed > 0;
+            if (stack == null) {
+                return false;
+            }
+            Set<String> oreNames = OreDictionaryHelper.getOreNames(stack);
+            if (oreNames.contains("nuggetDraconiumAwakened")) {
+                stackSizeLimit = (MaximumFuelStorage - (core.reactorFuel + core.convertedFuel)) / NuggetFuelAmount;
+            } else if (oreNames.contains("ingotDraconiumAwakened")) {
+                stackSizeLimit = (MaximumFuelStorage - (core.reactorFuel + core.convertedFuel)) / IngotFuelAmount;
+            } else if (oreNames.contains("blockDraconiumAwakened")) {
+                stackSizeLimit = (MaximumFuelStorage - (core.reactorFuel + core.convertedFuel)) / BlockFuelAmount;
+            } else {
+                return false;
+            }
+            return stackSizeLimit > 0;
         }
 
         @Override
         public int getSlotStackLimit() {
-            return numberAllowed;
+            return stackSizeLimit;
         }
     }
 
     public static class SlotExtract extends Slot {
 
-        private GenericInventory inventory;
-
-        public SlotExtract(GenericInventory iInventory, int iSlot, int x, int y) {
-            super(iInventory, iSlot, x, y);
-            inventory = iInventory;
+        public SlotExtract(GenericInventory inventory, int slot, int x, int y) {
+            super(inventory, slot, x, y);
         }
 
         @Override
