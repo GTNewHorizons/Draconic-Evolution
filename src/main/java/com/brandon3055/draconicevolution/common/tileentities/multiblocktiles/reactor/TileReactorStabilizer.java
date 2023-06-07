@@ -29,7 +29,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
     public float coreSpeed = 1F;
     public float ringSpeed = 1F;
     public float modelIllumination = 0F;
-    public int facingDirection = ForgeDirection.UP.ordinal();
+    public ForgeDirection facing = ForgeDirection.UP;
     public TileLocation masterLocation = new TileLocation();
     public boolean isValid = false;
     public int tick = 0;
@@ -51,7 +51,6 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
         TileReactorCore core = getMaster();
         if (core != null) {
             if (core.reactorState == TileReactorCore.STATE_ONLINE) {
-                ForgeDirection facing = ForgeDirection.getOrientation(facingDirection);
                 ForgeDirection back = facing.getOpposite();
                 TileEntity tile = worldObj
                         .getTileEntity(xCoord + back.offsetX, yCoord + back.offsetY, zCoord + back.offsetZ);
@@ -98,7 +97,6 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
     }
 
     public void onPlaced() {
-        ForgeDirection facing = ForgeDirection.getOrientation(facingDirection);
         for (int distance = 1; distance <= TileReactorCore.MAX_SLAVE_RANGE; distance++) {
             TileLocation location = new TileLocation(
                     xCoord + facing.offsetX * distance,
@@ -148,7 +146,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
 
     @Override
     public ForgeDirection getFacing() {
-        return ForgeDirection.getOrientation(facingDirection);
+        return facing;
     }
 
     @Override
@@ -174,7 +172,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
     public Packet getDescriptionPacket() {
         NBTTagCompound compound = new NBTTagCompound();
         masterLocation.writeToNBT(compound, "Master");
-        compound.setInteger("Facing", facingDirection);
+        compound.setInteger("Facing", facing.ordinal());
         compound.setBoolean("IsValid", isValid);
         return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, compound);
     }
@@ -183,7 +181,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
         NBTTagCompound compound = pkt.func_148857_g();
         masterLocation.readFromNBT(compound, "Master");
-        facingDirection = compound.getInteger("Facing");
+        facing = ForgeDirection.getOrientation(compound.getInteger("Facing"));
         isValid = compound.getBoolean("IsValid");
         super.onDataPacket(net, pkt);
     }
@@ -192,7 +190,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
     public void writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         masterLocation.writeToNBT(compound, "Master");
-        compound.setInteger("Facing", facingDirection);
+        compound.setInteger("Facing", facing.ordinal());
         compound.setBoolean("IsValid", isValid);
         compound.setInteger("RedstoneMode", redstoneMode);
     }
@@ -201,7 +199,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         masterLocation.readFromNBT(compound, "Master");
-        facingDirection = compound.getInteger("Facing");
+        facing = ForgeDirection.getOrientation(compound.getInteger("Facing"));
         isValid = compound.getBoolean("IsValid");
         redstoneMode = compound.getInteger("RedstoneMode");
     }
@@ -223,7 +221,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
 
     @Override
     public boolean canConnectEnergy(ForgeDirection from) {
-        return from == ForgeDirection.getOrientation(facingDirection).getOpposite();
+        return from == facing.getOpposite();
     }
 
     @Override

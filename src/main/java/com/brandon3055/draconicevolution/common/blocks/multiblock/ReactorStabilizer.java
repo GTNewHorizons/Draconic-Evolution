@@ -87,13 +87,11 @@ public class ReactorStabilizer extends BlockDE implements ITileEntityProvider {
 
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack stack) {
-        int facing = Utills.determineOrientation(x, y, z, entity);
+        ForgeDirection facing = ForgeDirection.getOrientation(Utills.determineOrientation(x, y, z, entity));
         TileEntity tile = world.getTileEntity(x, y, z);
         if (tile instanceof TileReactorStabilizer) {
             TileReactorStabilizer stabilizer = (TileReactorStabilizer) tile;
-            stabilizer.facingDirection = entity.isSneaking()
-                    ? ForgeDirection.getOrientation(facing).getOpposite().ordinal()
-                    : ForgeDirection.getOrientation(facing).ordinal();
+            stabilizer.facing = entity.isSneaking() ? facing.getOpposite() : facing;
             stabilizer.onPlaced();
         }
     }
