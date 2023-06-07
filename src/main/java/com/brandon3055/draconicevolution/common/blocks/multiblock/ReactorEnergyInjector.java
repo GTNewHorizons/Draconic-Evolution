@@ -56,23 +56,23 @@ public class ReactorEnergyInjector extends BlockDE implements ITileEntityProvide
         TileEntity tile = world.getTileEntity(x, y, z);
         if (tile instanceof TileReactorEnergyInjector) {
             TileReactorEnergyInjector injector = (TileReactorEnergyInjector) tile;
-            switch (injector.facingDirection) {
-                case 0:
-                    this.setBlockBounds(0F, 0.885F, 0F, 1F, 1F, 1F);
+            switch (injector.facing) {
+                case DOWN:
+                    this.setBlockBounds(0F, 0.875F, 0F, 1F, 1F, 1F);
                     break;
-                case 1:
+                case UP:
                     this.setBlockBounds(0F, 0F, 0F, 1F, 0.125F, 1F);
                     break;
-                case 2:
-                    this.setBlockBounds(0F, 0F, 0.885F, 1F, 1F, 1F);
+                case NORTH:
+                    this.setBlockBounds(0F, 0F, 0.875F, 1F, 1F, 1F);
                     break;
-                case 3:
+                case SOUTH:
                     this.setBlockBounds(0F, 0F, 0F, 1F, 1F, 0.125F);
                     break;
-                case 4:
-                    this.setBlockBounds(0.885F, 0F, 0F, 1F, 1F, 1F);
+                case WEST:
+                    this.setBlockBounds(0.875F, 0F, 0F, 1F, 1F, 1F);
                     break;
-                case 5:
+                case EAST:
                     this.setBlockBounds(0F, 0F, 0F, 0.125F, 1F, 1F);
                     break;
             }
@@ -96,13 +96,11 @@ public class ReactorEnergyInjector extends BlockDE implements ITileEntityProvide
 
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack stack) {
-        int facing = Utills.determineOrientation(x, y, z, entity);
+        ForgeDirection facing = ForgeDirection.getOrientation(Utills.determineOrientation(x, y, z, entity));
         TileEntity tile = world.getTileEntity(x, y, z);
         if (tile instanceof TileReactorEnergyInjector) {
             TileReactorEnergyInjector injector = (TileReactorEnergyInjector) tile;
-            injector.facingDirection = entity.isSneaking()
-                    ? ForgeDirection.getOrientation(facing).getOpposite().ordinal()
-                    : ForgeDirection.getOrientation(facing).ordinal();
+            injector.facing = entity.isSneaking() ? facing.getOpposite() : facing;
             injector.onPlaced();
         }
     }

@@ -25,7 +25,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileReactorEnergyInjector extends TileEntity implements IReactorPart, IEnergyReceiver, IDEPeripheral {
 
     public float modelIllumination = 1F;
-    public int facingDirection = ForgeDirection.UP.ordinal();
+    public ForgeDirection facing = ForgeDirection.UP;
     public TileLocation masterLocation = new TileLocation();
     public boolean isValid = false;
 
@@ -62,7 +62,6 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
     }
 
     public void onPlaced() {
-        ForgeDirection facing = ForgeDirection.getOrientation(facingDirection);
         for (int distance = 1; distance <= TileReactorCore.MAX_SLAVE_RANGE; distance++) {
             int targetX = xCoord + facing.offsetX * distance;
             int targetY = yCoord + facing.offsetY * distance;
@@ -108,7 +107,7 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
 
     @Override
     public ForgeDirection getFacing() {
-        return ForgeDirection.getOrientation(facingDirection);
+        return facing;
     }
 
     @Override
@@ -134,7 +133,7 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
     public Packet getDescriptionPacket() {
         NBTTagCompound compound = new NBTTagCompound();
         masterLocation.writeToNBT(compound, "Master");
-        compound.setInteger("Facing", facingDirection);
+        compound.setInteger("Facing", facing.ordinal());
         compound.setBoolean("IsValid", isValid);
         return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, compound);
     }
@@ -143,7 +142,7 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
         NBTTagCompound compound = pkt.func_148857_g();
         masterLocation.readFromNBT(compound, "Master");
-        facingDirection = compound.getInteger("Facing");
+        facing = ForgeDirection.getOrientation(compound.getInteger("Facing"));
         isValid = compound.getBoolean("IsValid");
         super.onDataPacket(net, pkt);
     }
@@ -152,7 +151,7 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
     public void writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         masterLocation.writeToNBT(compound, "Master");
-        compound.setInteger("Facing", facingDirection);
+        compound.setInteger("Facing", facing.ordinal());
         compound.setBoolean("IsValid", isValid);
         compound.setInteger("RedstoneMode", redstoneMode);
     }
@@ -161,7 +160,7 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         masterLocation.readFromNBT(compound, "Master");
-        facingDirection = compound.getInteger("Facing");
+        facing = ForgeDirection.getOrientation(compound.getInteger("Facing"));
         isValid = compound.getBoolean("IsValid");
         redstoneMode = compound.getInteger("RedstoneMode");
     }
@@ -195,7 +194,7 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
 
     @Override
     public boolean canConnectEnergy(ForgeDirection from) {
-        return from == ForgeDirection.getOrientation(facingDirection).getOpposite();
+        return from == facing.getOpposite();
     }
 
     @Override

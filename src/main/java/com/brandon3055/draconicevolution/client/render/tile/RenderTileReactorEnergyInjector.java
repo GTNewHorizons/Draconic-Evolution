@@ -2,6 +2,7 @@ package com.brandon3055.draconicevolution.client.render.tile;
 
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -21,34 +22,40 @@ public class RenderTileReactorEnergyInjector extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslated(x + 0.5, y + 0.5, z + 0.5);
 
-        renderCore((TileReactorEnergyInjector) tileEntity, partialTick);
+        renderCore((TileReactorEnergyInjector) tileEntity);
 
         GL11.glPopMatrix();
     }
 
-    public static void renderCore(TileReactorEnergyInjector tile, float partialTick) {
+    public static void renderCore(TileReactorEnergyInjector injector) {
         GL11.glPushMatrix();
         float scale = (1F / 16F);
 
-        switch (tile.facingDirection) {
-            case 1:
-                GL11.glRotated(180, -1, 0, 0);
+        int angle = 90;
+        ForgeDirection axis = injector.facing;
+        switch (injector.facing) {
+            case UP:
+                angle = 180;
+                // it's intended to fall through
+            case SOUTH:
+                axis = ForgeDirection.WEST;
                 break;
-            case 2:
-                GL11.glRotated(90, 1, 0, 0);
+            case NORTH:
+                axis = ForgeDirection.EAST;
                 break;
-            case 3:
-                GL11.glRotated(90, -1, 0, 0);
+            case WEST:
+                axis = ForgeDirection.NORTH;
                 break;
-            case 4:
-                GL11.glRotated(90, 0, 0, -1);
+            case EAST:
+                axis = ForgeDirection.SOUTH;
                 break;
-            case 5:
-                GL11.glRotated(90, 0, 0, 1);
+        }
+        if (injector.facing != ForgeDirection.DOWN) {
+            GL11.glRotated(angle, axis.offsetX, axis.offsetY, axis.offsetZ);
         }
 
         ResourceHandler.bindResource("textures/models/ModelReactorPowerInjector.png");
-        modelReactorEnergyInjector.render(null, tile.modelIllumination, 0F, 0F, 0F, 0F, scale);
+        modelReactorEnergyInjector.render(null, injector.modelIllumination, 0F, 0F, 0F, 0F, scale);
 
         GL11.glPopMatrix();
     }
