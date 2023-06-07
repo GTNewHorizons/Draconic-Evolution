@@ -34,8 +34,7 @@ public interface IReactorPart {
             return Values[(ordinal() + 1) % Values.length];
         }
 
-        @Override
-        public String toString() {
+        public String toLocalizedString() {
             return StatCollector.translateToLocal("msg.de.reactorRSMode." + ordinal() + ".txt");
         }
     }

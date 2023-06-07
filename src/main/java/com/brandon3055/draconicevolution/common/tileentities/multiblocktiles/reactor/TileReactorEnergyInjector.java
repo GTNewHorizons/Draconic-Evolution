@@ -61,7 +61,7 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
     }
 
     public void onPlaced() {
-        for (int distance = 1; distance <= TileReactorCore.MAX_SLAVE_RANGE; distance++) {
+        for (int distance = 1; distance <= TileReactorCore.MAXIMUM_PART_DISTANCE; distance++) {
             int targetX = xCoord + facing.offsetX * distance;
             int targetY = yCoord + facing.offsetY * distance;
             int targetZ = zCoord + facing.offsetZ * distance;

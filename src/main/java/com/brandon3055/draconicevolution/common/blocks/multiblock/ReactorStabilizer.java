@@ -53,7 +53,7 @@ public class ReactorStabilizer extends BlockDE implements ITileEntityProvider {
             if (player.isSneaking()) {
                 part.changeComparatorMode();
                 if (!world.isRemote) {
-                    player.addChatComponentMessage(new ChatComponentText(part.getComparatorMode().toString()));
+                    player.addChatComponentMessage(new ChatComponentText(part.getComparatorMode().toLocalizedString()));
                 }
                 return true;
             }

@@ -113,7 +113,7 @@ public class ReactorEnergyInjector extends BlockDE implements ITileEntityProvide
             IReactorPart part = (IReactorPart) tile;
             part.changeComparatorMode();
             if (!world.isRemote) {
-                player.addChatComponentMessage(new ChatComponentText(part.getComparatorMode().toString()));
+                player.addChatComponentMessage(new ChatComponentText(part.getComparatorMode().toLocalizedString()));
             }
             return true;
         }

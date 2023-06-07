@@ -17,6 +17,7 @@ import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 import com.brandon3055.draconicevolution.common.container.ContainerReactor;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
+import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore.ReactorState;
 
 /**
  * Created by brandon3055 on 30/7/2015.
@@ -99,7 +100,7 @@ public class GUIReactor extends GUIBase {
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
         // Draw I/O Slots
-        if (core.reactorState == TileReactorCore.STATE_OFFLINE) {
+        if (core.reactorState == ReactorState.OFFLINE) {
             RenderHelper.enableGUIStandardItemLighting();
             drawTexturedModalRect(guiLeft + 14, guiTop + 139, 14, ySize, 18, 18);
             drawTexturedModalRect(guiLeft + 216, guiTop + 139, 32, ySize, 18, 18);
@@ -265,35 +266,33 @@ public class GUIReactor extends GUIBase {
     private void drawStatus() {
         String status = StatCollector.translateToLocal("gui.de.status.txt") + ": ";
         switch (core.reactorState) {
-            case TileReactorCore.STATE_OFFLINE:
+            case OFFLINE:
                 status += EnumChatFormatting.DARK_GRAY;
                 break;
-            case TileReactorCore.STATE_START:
-            case TileReactorCore.STATE_STOP:
+            case STARTING:
+            case STOPPING:
                 status += EnumChatFormatting.RED;
                 break;
-            case TileReactorCore.STATE_ONLINE:
+            case ONLINE:
                 status += EnumChatFormatting.DARK_GREEN;
                 break;
-            case TileReactorCore.STATE_INVALID:
+            case INVALID:
                 status += EnumChatFormatting.DARK_RED;
                 break;
         }
-        status += StatCollector.translateToLocal(
-                core.reactorState == TileReactorCore.STATE_START && core.canStart() ? "gui.de.status1_5.txt"
-                        : "gui.de.status" + core.reactorState + ".txt");
+        status += core.reactorState.toLocalizedString(core.canStart());
         fontRendererObj.drawString(status, xSize - 5 - fontRendererObj.getStringWidth(status), 125, 0);
     }
 
     @Override
     public void updateScreen() {
-        collection.getComponent("DEACTIVATE").setEnabled(
-                core.reactorState == TileReactorCore.STATE_START || core.reactorState == TileReactorCore.STATE_ONLINE);
+        collection.getComponent("DEACTIVATE")
+                .setEnabled(core.reactorState == ReactorState.STARTING || core.reactorState == ReactorState.ONLINE);
         collection.getComponent("CHARGE").setEnabled(
-                (core.reactorState == TileReactorCore.STATE_OFFLINE
-                        || (core.reactorState == TileReactorCore.STATE_STOP && !core.canStart())) && core.canCharge());
+                (core.reactorState == ReactorState.OFFLINE
+                        || (core.reactorState == ReactorState.STOPPING && !core.canStart())) && core.canCharge());
         collection.getComponent("ACTIVATE").setEnabled(
-                (core.reactorState == TileReactorCore.STATE_START || core.reactorState == TileReactorCore.STATE_STOP)
+                (core.reactorState == ReactorState.STARTING || core.reactorState == ReactorState.STOPPING)
                         && core.canStart());
         super.updateScreen();
     }

@@ -12,6 +12,7 @@ import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.inventory.GenericInventory;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
+import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore.ReactorState;
 import com.brandon3055.draconicevolution.common.utills.OreDictionaryHelper;
 
 /**
@@ -72,7 +73,7 @@ public class ContainerReactor extends ContainerDataSync {
     public ContainerReactor(EntityPlayer player, TileReactorCore core) {
         this.core = core;
         this.player = player;
-        this.isOfflineCache = core.reactorState == TileReactorCore.STATE_OFFLINE;
+        this.isOfflineCache = core.reactorState == ReactorState.OFFLINE;
 
         for (int x = 0; x < 9; x++) {
             addSlotToContainer(new Slot(player.inventory, x, 44 + 18 * x, 198));
@@ -84,7 +85,7 @@ public class ContainerReactor extends ContainerDataSync {
             }
         }
 
-        if (core.reactorState == TileReactorCore.STATE_OFFLINE) {
+        if (core.reactorState == ReactorState.OFFLINE) {
             addFuelSlots();
         }
     }
@@ -121,14 +122,14 @@ public class ContainerReactor extends ContainerDataSync {
 
     @Override
     public void detectAndSendChanges() {
-        if (isOfflineCache && core.reactorState != TileReactorCore.STATE_OFFLINE) {
+        if (isOfflineCache && core.reactorState != ReactorState.OFFLINE) {
             removeFuelSlots();
             sendObjectToClient(null, 99, 1);
-        } else if (!isOfflineCache && core.reactorState == TileReactorCore.STATE_OFFLINE) {
+        } else if (!isOfflineCache && core.reactorState == ReactorState.OFFLINE) {
             addFuelSlots();
             sendObjectToClient(null, 98, 1);
         }
-        isOfflineCache = core.reactorState == TileReactorCore.STATE_OFFLINE;
+        isOfflineCache = core.reactorState == ReactorState.OFFLINE;
 
         int conversionUnit = (int) (core.conversionUnit * 100);
         if (conversionUnit != conversionUnitCache) {

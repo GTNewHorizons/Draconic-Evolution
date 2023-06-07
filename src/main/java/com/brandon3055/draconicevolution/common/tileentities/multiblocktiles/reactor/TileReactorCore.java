@@ -10,6 +10,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.brandon3055.brandonscore.BrandonsCore;
@@ -36,14 +37,29 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 public class TileReactorCore extends TileObjectSync {
 
-    public static final int MAX_SLAVE_RANGE = 10;
-    public static final int STATE_OFFLINE = 0;
-    public static final int STATE_START = 1;
-    public static final int STATE_ONLINE = 2;
-    public static final int STATE_STOP = 3;
-    public static final int STATE_INVALID = 4;
+    public static final int MAXIMUM_PART_DISTANCE = 10;
 
-    public int reactorState = 0;
+    public enum ReactorState {
+
+        OFFLINE,
+        STARTING,
+        ONLINE,
+        STOPPING,
+        INVALID;
+
+        private static ReactorState[] Values = values();
+
+        public static ReactorState getState(int ordinal) {
+            return ordinal >= 0 && ordinal < Values.length ? Values[ordinal] : INVALID;
+        }
+
+        public String toLocalizedString(boolean canStart) {
+            return StatCollector.translateToLocal(
+                    this == STARTING && canStart ? "gui.de.status1_5.txt" : "gui.de.status" + ordinal() + ".txt");
+        }
+    }
+
+    public ReactorState reactorState = ReactorState.OFFLINE;
     public float renderRotation = 0;
     public float renderSpeed = 0;
     public boolean isStructureValid = false;
@@ -100,14 +116,14 @@ public class TileReactorCore extends TileObjectSync {
         }
 
         switch (reactorState) {
-            case STATE_OFFLINE:
+            case OFFLINE:
                 offlineTick();
                 break;
-            case STATE_START:
+            case STARTING:
                 startingTick();
                 break;
-            case STATE_ONLINE:
-            case STATE_STOP:
+            case ONLINE:
+            case STOPPING:
                 runTick();
                 break;
         }
@@ -186,9 +202,9 @@ public class TileReactorCore extends TileObjectSync {
         // This puts all the numbers together and gets the value to raise or lower the temp by this tick. This is
         // dealing with very big numbers so the result is divided by 10000
         double riseAmount = (tempRiseExpo - tempRiseResist * (1D - conversion) + conversion * 1000) / 10000;
-        if (reactorState == STATE_STOP) {
+        if (reactorState == ReactorState.STOPPING) {
             if (reactionTemperature <= 2001) {
-                reactorState = STATE_OFFLINE;
+                reactorState = ReactorState.OFFLINE;
                 startupInitialized = false;
                 return;
             }
@@ -266,7 +282,7 @@ public class TileReactorCore extends TileObjectSync {
     public void updateReactorParts(boolean shouldSetUp) {
         stabilizerLocations.clear();
         for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-            for (int distance = 1; distance <= MAX_SLAVE_RANGE; distance++) {
+            for (int distance = 1; distance <= MAXIMUM_PART_DISTANCE; distance++) {
                 int targetX = xCoord + direction.offsetX * distance;
                 int targetY = yCoord + direction.offsetY * distance;
                 int targetZ = zCoord + direction.offsetZ * distance;
@@ -309,11 +325,11 @@ public class TileReactorCore extends TileObjectSync {
 
         isStructureValid = stabilizersCount == 4;
         if (isStructureValid) {
-            if (reactorState == STATE_INVALID) {
-                reactorState = STATE_OFFLINE;
+            if (reactorState == ReactorState.INVALID) {
+                reactorState = ReactorState.OFFLINE;
             }
         } else {
-            reactorState = STATE_INVALID;
+            reactorState = ReactorState.INVALID;
             if (reactionTemperature >= 2000) {
                 goBoom();
             }
@@ -331,7 +347,7 @@ public class TileReactorCore extends TileObjectSync {
 
     public void onBroken() {
         for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-            for (int distance = 1; distance <= MAX_SLAVE_RANGE; distance++) {
+            for (int distance = 1; distance <= MAXIMUM_PART_DISTANCE; distance++) {
                 TileEntity tile = worldObj.getTileEntity(
                         xCoord + direction.offsetX * distance,
                         yCoord + direction.offsetY * distance,
@@ -359,7 +375,7 @@ public class TileReactorCore extends TileObjectSync {
 
     public int injectEnergy(int energyToInject) {
         int energyInjected = 0;
-        if (reactorState == STATE_START) {
+        if (reactorState == ReactorState.STARTING) {
             if (!startupInitialized) {
                 return 0;
             }
@@ -379,7 +395,7 @@ public class TileReactorCore extends TileObjectSync {
                     reactionTemperature = 2000;
                 }
             }
-        } else if (reactorState == STATE_ONLINE || reactorState == STATE_STOP) {
+        } else if (reactorState == ReactorState.ONLINE || reactorState == ReactorState.STOPPING) {
             energyInjected = energyToInject;
             fieldCharge += energyInjected * (1D - fieldCharge / maxFieldCharge);
             if (fieldCharge > maxFieldCharge) {
@@ -397,20 +413,21 @@ public class TileReactorCore extends TileObjectSync {
     }
 
     public boolean canCharge() {
-        return isStructureValid && reactorState != STATE_ONLINE && convertedFuel + reactorFuel + conversionUnit >= 144;
+        return isStructureValid && reactorState != ReactorState.ONLINE
+                && convertedFuel + reactorFuel + conversionUnit >= 144;
     }
 
     public boolean canStop() {
-        return isStructureValid && reactorState != STATE_OFFLINE;
+        return isStructureValid && reactorState != ReactorState.OFFLINE;
     }
 
     public void processButtonPress(int button) {
         if (button == 0 && canCharge()) {
-            reactorState = STATE_START;
+            reactorState = ReactorState.STARTING;
         } else if (button == 1 && canStart()) {
-            reactorState = STATE_ONLINE;
+            reactorState = ReactorState.ONLINE;
         } else if (button == 2 && canStop()) {
-            reactorState = STATE_STOP;
+            reactorState = ReactorState.STOPPING;
         }
     }
 
@@ -467,8 +484,8 @@ public class TileReactorCore extends TileObjectSync {
                     startupInitialized,
                     targetPoint);
         }
-        if (reactorStateCache != reactorState) {
-            reactorStateCache = (int) sendObjectToClient(References.INT_ID, 3, reactorState, targetPoint);
+        if (reactorStateCache != reactorState.ordinal()) {
+            reactorStateCache = (int) sendObjectToClient(References.INT_ID, 3, reactorState.ordinal(), targetPoint);
         }
         if (reactorFuelCache != reactorFuel) {
             reactorFuelCache = (int) sendObjectToClient(References.INT_ID, 4, reactorFuel, targetPoint);
@@ -558,7 +575,7 @@ public class TileReactorCore extends TileObjectSync {
                 startupInitialized = (boolean) object;
                 break;
             case 3:
-                reactorState = (int) object;
+                reactorState = ReactorState.getState((int) object);
                 break;
             case 4:
                 reactorFuel = (int) object;
@@ -626,7 +643,7 @@ public class TileReactorCore extends TileObjectSync {
         }
         if (stabilizerList.tagCount() > 0) compound.setTag("Stabilizers", stabilizerList);
 
-        compound.setByte("State", (byte) reactorState);
+        compound.setByte("State", (byte) reactorState.ordinal());
         compound.setBoolean("isStructureValid", isStructureValid);
         compound.setBoolean("startupInitialized", startupInitialized);
         compound.setInteger("energySaturation", energySaturation);
@@ -653,7 +670,7 @@ public class TileReactorCore extends TileObjectSync {
             }
         }
 
-        reactorState = compound.getByte("State");
+        reactorState = ReactorState.getState(compound.getByte("State"));
         isStructureValid = compound.getBoolean("isStructureValid");
         startupInitialized = compound.getBoolean("startupInitialized");
         energySaturation = compound.getInteger("energySaturation");
@@ -683,42 +700,30 @@ public class TileReactorCore extends TileObjectSync {
             map.put("generationRate", (int) generationRate);
             map.put("fieldDrainRate", fieldDrain);
             map.put("fuelConversionRate", (int) Math.round(fuelUseRate * 1000000D));
-            switch (reactorState) {
-                case STATE_OFFLINE:
-                    map.put("status", "offline");
-                    break;
-                case STATE_START:
-                    map.put("status", canStart() ? "charged" : "charging");
-                    break;
-                case STATE_ONLINE:
-                    map.put("status", "online");
-                    break;
-                case STATE_STOP:
-                    map.put("status", "stopping");
-                    break;
-                default:
-                    map.put("status", "invalid");
-                    break;
+            if (reactorState == ReactorState.STARTING) {
+                map.put("status", canStart() ? "charged" : "charging");
+            } else {
+                map.put("status", reactorState.name().toLowerCase());
             }
             return new Object[] { map };
         }
         if (methodName.equals("chargeReactor")) {
             if (canCharge()) {
-                reactorState = STATE_START;
+                reactorState = ReactorState.STARTING;
                 return new Object[] { true };
             }
             return new Object[] { false };
         }
         if (methodName.equals("activateReactor")) {
             if (canStart()) {
-                reactorState = STATE_ONLINE;
+                reactorState = ReactorState.ONLINE;
                 return new Object[] { true };
             }
             return new Object[] { false };
         }
         if (methodName.equals("stopReactor")) {
             if (canStop()) {
-                reactorState = STATE_STOP;
+                reactorState = ReactorState.STOPPING;
                 return new Object[] { true };
             }
             return new Object[] { false };

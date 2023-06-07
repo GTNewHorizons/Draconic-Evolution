@@ -11,6 +11,7 @@ import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.render.particle.ParticleReactorBeam;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.IReactorPart;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper.TileLocation;
+import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore.ReactorState;
 import com.brandon3055.draconicevolution.integration.computers.IDEPeripheral;
 
 import cofh.api.energy.IEnergyProvider;
@@ -49,7 +50,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
 
         TileReactorCore core = getMaster();
         if (core != null) {
-            if (core.reactorState == TileReactorCore.STATE_ONLINE) {
+            if (core.reactorState == ReactorState.ONLINE) {
                 ForgeDirection back = facing.getOpposite();
                 TileEntity tile = worldObj
                         .getTileEntity(xCoord + back.offsetX, yCoord + back.offsetY, zCoord + back.offsetZ);
@@ -96,7 +97,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
     }
 
     public void onPlaced() {
-        for (int distance = 1; distance <= TileReactorCore.MAX_SLAVE_RANGE; distance++) {
+        for (int distance = 1; distance <= TileReactorCore.MAXIMUM_PART_DISTANCE; distance++) {
             TileLocation location = new TileLocation(
                     xCoord + facing.offsetX * distance,
                     yCoord + facing.offsetY * distance,
