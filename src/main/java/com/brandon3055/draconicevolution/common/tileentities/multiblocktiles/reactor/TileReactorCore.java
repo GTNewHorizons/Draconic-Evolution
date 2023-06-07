@@ -389,7 +389,6 @@ public class TileReactorCore extends TileObjectSync {
     }
 
     public boolean canStart() {
-        validateStructure();
         return isStructureValid && reactionTemperature >= 2000
                 && fieldCharge >= maxFieldCharge / 2
                 && energySaturation >= maxEnergySaturation / 2
@@ -397,12 +396,10 @@ public class TileReactorCore extends TileObjectSync {
     }
 
     public boolean canCharge() {
-        validateStructure();
         return isStructureValid && reactorState != STATE_ONLINE && convertedFuel + reactorFuel + conversionUnit >= 144;
     }
 
     public boolean canStop() {
-        validateStructure();
         return isStructureValid && reactorState != STATE_OFFLINE;
     }
 
