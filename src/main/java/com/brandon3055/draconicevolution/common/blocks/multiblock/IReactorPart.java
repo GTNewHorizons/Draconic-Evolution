@@ -1,6 +1,7 @@
 package com.brandon3055.draconicevolution.common.blocks.multiblock;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -12,14 +13,32 @@ import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.rea
  */
 public interface IReactorPart {
 
-    int RMODE_TEMP = 0;
-    int RMODE_TEMP_INV = 1;
-    int RMODE_FIELD = 2;
-    int RMODE_FIELD_INV = 3;
-    int RMODE_SAT = 4;
-    int RMODE_SAT_INV = 5;
-    int RMODE_FUEL = 6;
-    int RMODE_FUEL_INV = 7;
+    enum ComparatorMode {
+
+        TEMPERATURE,
+        TEMPERATURE_INVERTED,
+        FIELD_CHARGE,
+        FIELD_CHARGE_INVERTED,
+        ENERGY_SATURATION,
+        ENERGY_SATURATION_INVERTED,
+        CONVERTED_FUEL,
+        CONVERTED_FUEL_INVERTED;
+
+        private static final ComparatorMode[] Values = values();
+
+        public static ComparatorMode getMode(int ordinal) {
+            return ordinal >= 0 && ordinal < Values.length ? Values[ordinal] : TEMPERATURE;
+        }
+
+        public ComparatorMode next() {
+            return Values[(ordinal() + 1) % Values.length];
+        }
+
+        @Override
+        public String toString() {
+            return StatCollector.translateToLocal("msg.de.reactorRSMode." + ordinal() + ".txt");
+        }
+    }
 
     static int getComparatorOutput(IBlockAccess world, int x, int y, int z) {
         TileEntity tile = world.getTileEntity(x, y, z);
@@ -27,7 +46,7 @@ public interface IReactorPart {
             IReactorPart part = (IReactorPart) tile;
             TileReactorCore core = part.getMaster();
             if (core != null) {
-                return core.getComparatorOutput(part.getRedstoneMode());
+                return core.getComparatorOutput(part.getComparatorMode());
             }
         }
         return 0;
@@ -45,9 +64,7 @@ public interface IReactorPart {
 
     ForgeDirection getFacing();
 
-    int getRedstoneMode();
+    ComparatorMode getComparatorMode();
 
-    void changeRedstoneMode();
-
-    String getRedstoneModeAsString();
+    void changeComparatorMode();
 }
