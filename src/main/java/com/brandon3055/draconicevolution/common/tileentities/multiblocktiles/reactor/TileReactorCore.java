@@ -20,6 +20,7 @@ import com.brandon3055.draconicevolution.client.ReactorSound;
 import com.brandon3055.draconicevolution.client.gui.GuiHandler;
 import com.brandon3055.draconicevolution.client.render.particle.Particles;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.IReactorPart;
+import com.brandon3055.draconicevolution.common.blocks.multiblock.IReactorPart.ComparatorMode;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper.TileLocation;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.lib.References;
@@ -496,47 +497,47 @@ public class TileReactorCore extends TileObjectSync {
         }
     }
 
-    public int getComparatorOutput(int redstoneMode) {
-        switch (redstoneMode) {
-            case IReactorPart.RMODE_TEMP:
-                return toRedstoneStrength(reactionTemperature, maxReactTemperature, redstoneMode);
-            case IReactorPart.RMODE_TEMP_INV:
-                return 15 - toRedstoneStrength(reactionTemperature, maxReactTemperature, redstoneMode);
-            case IReactorPart.RMODE_FIELD:
-                return toRedstoneStrength(fieldCharge, maxFieldCharge, redstoneMode);
-            case IReactorPart.RMODE_FIELD_INV:
-                return 15 - toRedstoneStrength(fieldCharge, maxFieldCharge, redstoneMode);
-            case IReactorPart.RMODE_SAT:
-                return toRedstoneStrength(energySaturation, maxEnergySaturation, redstoneMode);
-            case IReactorPart.RMODE_SAT_INV:
-                return 15 - toRedstoneStrength(energySaturation, maxEnergySaturation, redstoneMode);
-            case IReactorPart.RMODE_FUEL:
-                return toRedstoneStrength(convertedFuel + conversionUnit, reactorFuel - conversionUnit, redstoneMode);
-            case IReactorPart.RMODE_FUEL_INV:
+    public int getComparatorOutput(ComparatorMode comparatorMode) {
+        switch (comparatorMode) {
+            case TEMPERATURE:
+                return toRedstoneStrength(reactionTemperature, maxReactTemperature, comparatorMode);
+            case TEMPERATURE_INVERTED:
+                return 15 - toRedstoneStrength(reactionTemperature, maxReactTemperature, comparatorMode);
+            case FIELD_CHARGE:
+                return toRedstoneStrength(fieldCharge, maxFieldCharge, comparatorMode);
+            case FIELD_CHARGE_INVERTED:
+                return 15 - toRedstoneStrength(fieldCharge, maxFieldCharge, comparatorMode);
+            case ENERGY_SATURATION:
+                return toRedstoneStrength(energySaturation, maxEnergySaturation, comparatorMode);
+            case ENERGY_SATURATION_INVERTED:
+                return 15 - toRedstoneStrength(energySaturation, maxEnergySaturation, comparatorMode);
+            case CONVERTED_FUEL:
+                return toRedstoneStrength(convertedFuel + conversionUnit, reactorFuel - conversionUnit, comparatorMode);
+            case CONVERTED_FUEL_INVERTED:
                 return 15 - toRedstoneStrength(
                         convertedFuel + conversionUnit,
                         reactorFuel - conversionUnit,
-                        redstoneMode);
+                        comparatorMode);
         }
         return 0;
     }
 
-    private int toRedstoneStrength(double value, double maxValue, int mode) {
+    private int toRedstoneStrength(double value, double maxValue, ComparatorMode comparatorMode) {
         if (maxValue == 0) {
             return 0;
         }
         double proportion = value / maxValue;
         int redstoneStrength = (int) (proportion * 15D);
-        switch (mode) {
-            case IReactorPart.RMODE_FIELD:
-            case IReactorPart.RMODE_FIELD_INV: {
+        switch (comparatorMode) {
+            case FIELD_CHARGE:
+            case FIELD_CHARGE_INVERTED: {
                 if (proportion < 0.1) {
                     redstoneStrength = 0;
                 }
                 break;
             }
-            case IReactorPart.RMODE_FUEL:
-            case IReactorPart.RMODE_FUEL_INV: {
+            case CONVERTED_FUEL:
+            case CONVERTED_FUEL_INVERTED: {
                 if (proportion > 0.9) {
                     redstoneStrength = 15;
                 }

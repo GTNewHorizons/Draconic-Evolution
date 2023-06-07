@@ -5,7 +5,6 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.brandon3055.draconicevolution.DraconicEvolution;
@@ -33,7 +32,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
     public TileLocation masterLocation = new TileLocation();
     public boolean isValid = false;
     public int tick = 0;
-    private int redstoneMode = IReactorPart.RMODE_TEMP;
+    private ComparatorMode comparatorMode = ComparatorMode.TEMPERATURE;
     private int comparatorOutputCache = -1;
 
     @SideOnly(Side.CLIENT)
@@ -62,7 +61,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
                 }
             }
 
-            int comparatorOutput = core.getComparatorOutput(redstoneMode);
+            int comparatorOutput = core.getComparatorOutput(comparatorMode);
             if (comparatorOutput != comparatorOutputCache) {
                 comparatorOutputCache = comparatorOutput;
                 worldObj.notifyBlocksOfNeighborChange(
@@ -150,22 +149,13 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public ComparatorMode getComparatorMode() {
+        return comparatorMode;
     }
 
     @Override
-    public void changeRedstoneMode() {
-        if (redstoneMode == IReactorPart.RMODE_FUEL_INV) {
-            redstoneMode = IReactorPart.RMODE_TEMP;
-        } else {
-            redstoneMode++;
-        }
-    }
-
-    @Override
-    public String getRedstoneModeAsString() {
-        return StatCollector.translateToLocal("msg.de.reactorRSMode." + redstoneMode + ".txt");
+    public void changeComparatorMode() {
+        comparatorMode = comparatorMode.next();
     }
 
     @Override
@@ -192,7 +182,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
         masterLocation.writeToNBT(compound, "Master");
         compound.setInteger("Facing", facing.ordinal());
         compound.setBoolean("IsValid", isValid);
-        compound.setInteger("RedstoneMode", redstoneMode);
+        compound.setInteger("RedstoneMode", comparatorMode.ordinal());
     }
 
     @Override
@@ -201,7 +191,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
         masterLocation.readFromNBT(compound, "Master");
         facing = ForgeDirection.getOrientation(compound.getInteger("Facing"));
         isValid = compound.getBoolean("IsValid");
-        redstoneMode = compound.getInteger("RedstoneMode");
+        comparatorMode = ComparatorMode.getMode(compound.getInteger("RedstoneMode"));
     }
 
     @Override

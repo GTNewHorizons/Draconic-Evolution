@@ -51,9 +51,9 @@ public class ReactorStabilizer extends BlockDE implements ITileEntityProvider {
         if (tile instanceof IReactorPart) {
             IReactorPart part = (IReactorPart) tile;
             if (player.isSneaking()) {
-                part.changeRedstoneMode();
+                part.changeComparatorMode();
                 if (!world.isRemote) {
-                    player.addChatComponentMessage(new ChatComponentText(part.getRedstoneModeAsString()));
+                    player.addChatComponentMessage(new ChatComponentText(part.getComparatorMode().toString()));
                 }
                 return true;
             }

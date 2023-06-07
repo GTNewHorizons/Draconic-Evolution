@@ -6,7 +6,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.brandon3055.draconicevolution.DraconicEvolution;
@@ -32,7 +31,7 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
     @SideOnly(Side.CLIENT)
     private ParticleReactorBeam beam;
 
-    private int redstoneMode = IReactorPart.RMODE_TEMP;
+    private ComparatorMode comparatorMode = ComparatorMode.TEMPERATURE;
     private int comparatorOutputCache = -1;
 
     @Override
@@ -44,7 +43,7 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
 
         TileReactorCore core = getMaster();
         if (core != null) {
-            int comparatorOutput = core.getComparatorOutput(redstoneMode);
+            int comparatorOutput = core.getComparatorOutput(comparatorMode);
             if (comparatorOutput != comparatorOutputCache) {
                 comparatorOutputCache = comparatorOutput;
                 worldObj.notifyBlocksOfNeighborChange(
@@ -111,22 +110,13 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public ComparatorMode getComparatorMode() {
+        return comparatorMode;
     }
 
     @Override
-    public void changeRedstoneMode() {
-        if (redstoneMode == IReactorPart.RMODE_FUEL_INV) {
-            redstoneMode = IReactorPart.RMODE_TEMP;
-        } else {
-            redstoneMode++;
-        }
-    }
-
-    @Override
-    public String getRedstoneModeAsString() {
-        return StatCollector.translateToLocal("msg.de.reactorRSMode." + redstoneMode + ".txt");
+    public void changeComparatorMode() {
+        comparatorMode = comparatorMode.next();
     }
 
     @Override
@@ -153,7 +143,7 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
         masterLocation.writeToNBT(compound, "Master");
         compound.setInteger("Facing", facing.ordinal());
         compound.setBoolean("IsValid", isValid);
-        compound.setInteger("RedstoneMode", redstoneMode);
+        compound.setInteger("RedstoneMode", comparatorMode.ordinal());
     }
 
     @Override
@@ -162,7 +152,7 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
         masterLocation.readFromNBT(compound, "Master");
         facing = ForgeDirection.getOrientation(compound.getInteger("Facing"));
         isValid = compound.getBoolean("IsValid");
-        redstoneMode = compound.getInteger("RedstoneMode");
+        comparatorMode = ComparatorMode.getMode(compound.getInteger("RedstoneMode"));
     }
 
     @Override

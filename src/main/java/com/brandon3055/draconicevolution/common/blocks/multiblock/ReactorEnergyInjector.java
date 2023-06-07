@@ -111,9 +111,9 @@ public class ReactorEnergyInjector extends BlockDE implements ITileEntityProvide
         TileEntity tile = world.getTileEntity(x, y, z);
         if (tile instanceof IReactorPart && player.isSneaking()) {
             IReactorPart part = (IReactorPart) tile;
-            part.changeRedstoneMode();
+            part.changeComparatorMode();
             if (!world.isRemote) {
-                player.addChatComponentMessage(new ChatComponentText(part.getRedstoneModeAsString()));
+                player.addChatComponentMessage(new ChatComponentText(part.getComparatorMode().toString()));
             }
             return true;
         }
