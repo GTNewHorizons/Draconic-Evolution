@@ -3,7 +3,6 @@ package com.brandon3055.draconicevolution.client.render.particle;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MathHelper;
 
 import org.lwjgl.opengl.GL11;
 
@@ -11,7 +10,6 @@ import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.IReactorPart;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
-import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorEnergyInjector;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorStabilizer;
 
 import cpw.mods.fml.relauncher.Side;
@@ -23,16 +21,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ParticleReactorBeam extends EntityFX {
 
-    /**
-     * Particle Type 0 = Energy Ring, 1 = single particle
-     */
-    private boolean renderParticle = true;
-
-    private TileEntity tile;
-    private boolean isInjectorBeam = false;
+    private final TileEntity tile;
 
     public ParticleReactorBeam(TileEntity tile) {
-        super(tile.getWorldObj(), tile.xCoord + 0.5, tile.yCoord + 0.5, tile.zCoord + 0.5, 0.0D, 0.0D, 0.0D);
+        super(tile.getWorldObj(), tile.xCoord + 0.5, tile.yCoord + 0.5, tile.zCoord + 0.5, 0.0, 0.0, 0.0);
         this.tile = tile;
         this.particleRed = 1F;
         this.particleGreen = 1F;
@@ -43,16 +35,16 @@ public class ParticleReactorBeam extends EntityFX {
         this.motionZ = 0.0D;
         this.particleMaxAge = 4;
         this.setSize(1F, 1F);
-        isInjectorBeam = tile instanceof TileReactorEnergyInjector;
     }
 
-    public void update(boolean render) {
-        for (this.renderParticle = render; this.particleMaxAge - this.particleAge < 4; ++this.particleMaxAge) {}
+    public void update() {
+        if (this.particleMaxAge - this.particleAge < 4) {
+            this.particleMaxAge = this.particleAge + 4;
+        }
     }
 
     @Override
     public void onUpdate() {
-
         this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
@@ -65,137 +57,102 @@ public class ParticleReactorBeam extends EntityFX {
     @Override
     public void renderParticle(Tessellator tessellator, float partialTick, float rotX, float rotXZ, float rotZ,
             float rotYZ, float rotXY) {
-        if (!((IReactorPart) tile).isActive()) return;
+        if (!((IReactorPart) tile).isActive()) {
+            return;
+        }
         tessellator.draw();
         GL11.glPushMatrix();
         GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glAlphaFunc(GL11.GL_GREATER, 0.0F);
 
-        float xx = (float) (this.prevPosX + (this.posX - this.prevPosX) * (double) partialTick - interpPosX);
-        float yy = (float) (this.prevPosY + (this.posY - this.prevPosY) * (double) partialTick - interpPosY);
-        float zz = (float) (this.prevPosZ + (this.posZ - this.prevPosZ) * (double) partialTick - interpPosZ);
-        GL11.glTranslated((double) xx, (double) yy, (double) zz);
+        double shiftX = this.prevPosX + (this.posX - this.prevPosX) * partialTick - interpPosX;
+        double shiftY = this.prevPosY + (this.posY - this.prevPosY) * partialTick - interpPosY;
+        double shiftZ = this.prevPosZ + (this.posZ - this.prevPosZ) * partialTick - interpPosZ;
+        GL11.glTranslated(shiftX, shiftY, shiftZ);
 
         // Common Fields
-        MultiblockHelper.TileLocation master = ((IReactorPart) tile).getMaster();
-        float offsetX = (float) (master.posX - tile.xCoord);
-        float offsetY = (float) ((double) master.posY - tile.yCoord);
-        float offsetZ = (float) (master.posZ - tile.zCoord);
-        float length = MathHelper.sqrt_float(offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ);
+        MultiblockHelper.TileLocation master = ((IReactorPart) tile).getMasterLocation();
+        double offsetX = master.posX - tile.xCoord;
+        double offsetY = master.posY - tile.yCoord;
+        double offsetZ = master.posZ - tile.zCoord;
+        double offsetLength = Math.sqrt(offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ);
+        double diagonalLength = Math.sqrt(offsetX * offsetX + offsetZ * offsetZ);
 
         // Rotate beam to face target
-        float f7 = MathHelper.sqrt_float(offsetX * offsetX + offsetZ * offsetZ);
-        GL11.glRotatef(
-                (float) (-Math.atan2((double) offsetZ, (double) offsetX)) * 180.0F / (float) Math.PI - 90.0F,
-                0.0F,
-                1.0F,
-                0.0F);
-        GL11.glRotatef(
-                (float) (-Math.atan2((double) f7, (double) offsetY)) * 180.0F / (float) Math.PI - 90.0F,
-                1.0F,
-                0.0F,
-                0.0F);
+        GL11.glRotated(Math.toDegrees(-Math.atan2(offsetZ, offsetX)) - 90.0, 0.0, 1.0, 0.0);
+        GL11.glRotated(Math.toDegrees(-Math.atan2(diagonalLength, offsetY)) - 90.0, 1.0, 0.0, 0.0);
 
-        TileReactorCore reactor = ((IReactorPart) tile).getMaster().getTileEntity(worldObj) instanceof TileReactorCore
-                ? (TileReactorCore) ((IReactorPart) tile).getMaster().getTileEntity(worldObj)
-                : null;
+        TileReactorCore core = ((IReactorPart) tile).getMaster();
 
-        if (tile instanceof TileReactorStabilizer && reactor != null)
-            renderStabilizerEffect(tessellator, reactor, offsetX, offsetY, offsetZ, length, partialTick);
-        else if (reactor != null) {
-
+        if (tile instanceof TileReactorStabilizer && core != null)
+            renderStabilizerEffect(tessellator, core, offsetLength, partialTick);
+        else if (core != null) {
             GL11.glShadeModel(GL11.GL_SMOOTH);
-            GL11.glTranslated(0, 0, 0.3);
-            // GL11.glPushMatrix();
-            GL11.glRotatef(((float) particleAge + partialTick) * 20F, 0, 0, 1);
+            GL11.glTranslated(0.0, 0.0, 0.3);
+            GL11.glRotatef(((float) particleAge + partialTick) * 20F, 0F, 0F, 1F);
             ResourceHandler.bindResource("textures/particle/reactorEnergyBeam.png");
-            // float sizeOrigin = 0.5F;
-            // float sizeTarget = 0.2F;
-            float sizeOrigin = 0.5F;
+            double sizeOrigin = 0.5;
 
             int color = 0xFF2200;
-            int alpha = (int) (200D * reactor.renderSpeed);
+            int alpha = (int) (200.0 * core.renderSpeed);
 
-            float speed = 20F;
-            float texV2 = 0.0F + ((float) particleAge + partialTick) * 0.01F * speed;
-            float texV1 = MathHelper.sqrt_float(offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ)
-                    + ((float) particleAge + partialTick) * 0.01F * speed;
+            double speed = 20.0;
+            double texV2 = ((double) particleAge + partialTick) * 0.01 * speed;
+            double texV1 = offsetLength + texV2;
 
-            tessellator.startDrawing(5);
+            tessellator.startDrawing(GL11.GL_TRIANGLE_STRIP);
             tessellator.setBrightness(200);
 
-            float sizeTarget = 0.1F;
+            double sizeTarget = 0.1;
 
-            byte b0 = 16;
-            length = 0F;
-            for (int i = 0; i <= b0; ++i) {
-                float verX = MathHelper.sin((float) (i % b0) * (float) Math.PI * 2.3F / (float) b0) * sizeTarget;
-                float verY = MathHelper.cos((float) (i % b0) * (float) Math.PI * 2.3F / (float) b0) * sizeTarget;
-                float texU = (float) (i % b0) * 1.0F / (float) b0;
-                tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, (color & 0xFF), 0);
+            final int raysCount = 16;
+            for (int ray = 0; ray <= raysCount; ++ray) {
+                double texU = (double) ray / raysCount;
+                double verX = Math.sin(texU * Math.PI * 2.3) * sizeTarget;
+                double verY = Math.cos(texU * Math.PI * 2.3) * sizeTarget;
 
-                tessellator.addVertexWithUV(
-                        (double) (verX * sizeOrigin),
-                        (double) (verY * sizeOrigin),
-                        -0.55D,
-                        (double) texU,
-                        (double) texV1);
-                tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, (color & 0xFF), alpha);
-                tessellator
-                        .addVertexWithUV((double) verX, (double) verY, (double) length, (double) texU, (double) texV2);
+                tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, color & 0xFF, 0);
+                tessellator.addVertexWithUV(verX * sizeOrigin, verY * sizeOrigin, -0.55, texU, texV1);
+                tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, color & 0xFF, alpha);
+                tessellator.addVertexWithUV(verX, verY, offsetLength, texU, texV2);
             }
 
-            length = MathHelper.sqrt_float(offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ)
-                    - (float) (reactor.getCoreDiameter() / 2D)
-                    - 0.3F;
-            sizeTarget = (float) (reactor.getCoreDiameter() / 2 * 0.2D);
-            sizeOrigin = 0.1F / sizeTarget;
+            offsetLength -= core.getCoreRadius() + 0.3;
+            sizeTarget = core.getCoreRadius() * 0.2;
+            sizeOrigin = 0.1 / sizeTarget;
 
-            for (int i = 0; i <= b0; ++i) {
-                float verX = MathHelper.sin((float) (i % b0) * (float) Math.PI * 2.13F / (float) b0) * sizeTarget;
-                float verY = MathHelper.cos((float) (i % b0) * (float) Math.PI * 2.13F / (float) b0) * sizeTarget;
-                float texU = (float) (i % b0) * 1.0F / (float) b0;
-                tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, (color & 0xFF), alpha);
+            for (int ray = 0; ray <= raysCount; ray++) {
+                double texU = (double) ray / raysCount;
+                double verX = Math.sin(texU * Math.PI * 2.13) * sizeTarget;
+                double verY = Math.cos(texU * Math.PI * 2.13) * sizeTarget;
 
-                tessellator.addVertexWithUV(
-                        (double) (verX * sizeOrigin),
-                        (double) (verY * sizeOrigin),
-                        0.0D,
-                        (double) texU,
-                        (double) texV1);
+                tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, color & 0xFF, alpha);
+                tessellator.addVertexWithUV(verX * sizeOrigin, verY * sizeOrigin, 0.0, texU, texV1);
                 tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, (color & 0xFF), 0);
-                tessellator
-                        .addVertexWithUV((double) verX, (double) verY, (double) length, (double) texU, (double) texV2);
+                tessellator.addVertexWithUV(verX, verY, offsetLength, texU, texV2);
             }
 
             tessellator.draw();
-            // GL11.glPopMatrix();
-            GL11.glRotatef(((float) particleAge + partialTick) * -30F, 0, 0, 1);
+            GL11.glRotatef(((float) particleAge + partialTick) * -30F, 0F, 0F, 1F);
 
-            tessellator.startDrawing(5);
+            tessellator.startDrawing(GL11.GL_TRIANGLE_STRIP);
             tessellator.setBrightness(200);
             color = 0xFF4400;
 
-            sizeTarget = (float) (reactor.getCoreDiameter() / 2 * 0.6D);
-            sizeOrigin = 0.1F / sizeTarget;
-            length += 0.4F;
+            sizeTarget = core.getCoreRadius() * 0.6;
+            sizeOrigin = 0.1 / sizeTarget;
+            offsetLength += 0.4;
             GL11.glTranslated(0, 0, -0.1);
 
-            for (int i = 0; i <= b0; ++i) {
-                float verX = MathHelper.sin((float) (i % b0) * (float) Math.PI * 2.13F / (float) b0) * sizeTarget;
-                float verY = MathHelper.cos((float) (i % b0) * (float) Math.PI * 2.13F / (float) b0) * sizeTarget;
-                float texU = (float) (i % b0) * 1.0F / (float) b0;
-                tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, (color & 0xFF), alpha / 2);
+            for (int ray = 0; ray <= raysCount; ray++) {
+                double texU = (double) ray / raysCount;
+                double verX = Math.sin(texU * Math.PI * 2.13F) * sizeTarget;
+                double verY = Math.cos(texU * Math.PI * 2.13F) * sizeTarget;
 
-                tessellator.addVertexWithUV(
-                        (double) (verX * sizeOrigin),
-                        (double) (verY * sizeOrigin),
-                        0.0D,
-                        (double) texU,
-                        (double) texV1);
-                tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, (color & 0xFF), 0);
-                tessellator
-                        .addVertexWithUV((double) verX, (double) verY, (double) length, (double) texU, (double) texV2);
+                tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, color & 0xFF, alpha / 2);
+                tessellator.addVertexWithUV(verX * sizeOrigin, verY * sizeOrigin, 0.0, texU, texV1);
+                tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, color & 0xFF, 0);
+                tessellator.addVertexWithUV(verX, verY, offsetLength, texU, texV2);
             }
 
             tessellator.draw();
@@ -208,44 +165,28 @@ public class ParticleReactorBeam extends EntityFX {
         tessellator.startDrawingQuads();
     }
 
-    private void renderStabilizerEffect(Tessellator tessellator, TileReactorCore reactor, float offsetX, float offsetY,
-            float offsetZ, float length, float partialTick) {
+    private void renderStabilizerEffect(Tessellator tessellator, TileReactorCore core, double offsetLength,
+            float partialTick) {
         GL11.glShadeModel(GL11.GL_SMOOTH);
 
         // Draw Beams
         GL11.glPushMatrix();
-        GL11.glTranslated(0, 0, -0.35);
+        GL11.glTranslated(0.0, 0.0, -0.35);
         ResourceHandler.bindResource("textures/particle/reactorBeam.png");
-        drawBeam(
-                tessellator,
-                reactor,
-                1F,
-                0.355F,
-                0.8F,
-                offsetX,
-                offsetY,
-                offsetZ,
-                particleAge,
-                partialTick,
-                true,
-                false,
-                0x00ffff);
+        drawBeam(tessellator, core, 1.0, 0.355, 0.8, offsetLength, partialTick, true, false, 0x00ffff);
         GL11.glPopMatrix();
 
         GL11.glPushMatrix();
-        GL11.glTranslated(0, 0, 0.45);
-        float coreSize = (float) (reactor.getCoreDiameter() / 2) * 0.9F;
-        float s = 0.355F;
+        GL11.glTranslated(0.0, 0.0, 0.45);
+        double coreSize = core.getCoreRadius() * 0.9;
+        double scale = 0.355;
         drawBeam(
                 tessellator,
-                reactor,
-                s / coreSize,
+                core,
+                scale / coreSize,
                 coreSize,
-                length - (float) (reactor.getCoreDiameter() / 2.5D),
-                offsetX,
-                offsetY,
-                offsetZ,
-                particleAge,
+                offsetLength - core.getCoreDiameter() / 2.5,
+                offsetLength,
                 partialTick,
                 false,
                 false,
@@ -253,37 +194,21 @@ public class ParticleReactorBeam extends EntityFX {
         GL11.glPopMatrix();
 
         GL11.glPushMatrix();
-        GL11.glTranslated(0, 0, -0.35);
-        drawBeam(
-                tessellator,
-                reactor,
-                1F,
-                0.263F,
-                0.8F,
-                offsetX,
-                offsetY,
-                offsetZ,
-                particleAge,
-                partialTick,
-                true,
-                true,
-                0xff6600);
+        GL11.glTranslated(0.0, 0.0, -0.35);
+        drawBeam(tessellator, core, 1.0, 0.263, 0.8, offsetLength, partialTick, true, true, 0xff6600);
         GL11.glPopMatrix();
 
         GL11.glPushMatrix();
-        GL11.glTranslated(0, 0, 0.45);
-        coreSize = (float) (reactor.getCoreDiameter() / 2) * 0.4F;
-        s = 0.263F;
+        GL11.glTranslated(0.0, 0.0, 0.45);
+        coreSize = core.getCoreRadius() * 0.4;
+        scale = 0.263;
         drawBeam(
                 tessellator,
-                reactor,
-                s / coreSize,
+                core,
+                scale / coreSize,
                 coreSize,
-                length - 0.5F,
-                offsetX,
-                offsetY,
-                offsetZ,
-                particleAge,
+                offsetLength - 0.5,
+                offsetLength,
                 partialTick,
                 false,
                 true,
@@ -297,160 +222,36 @@ public class ParticleReactorBeam extends EntityFX {
      * Size Origin is the fraction of size start Target So if size target is 10 and size origin is 0.5 origin will
      * actually be 5
      */
-    private void drawBeam(Tessellator tessellator, TileReactorCore reactor, float sizeOrigin, float sizeTarget,
-            float length, float offsetX, float offsetY, float offsetZ, int tick, float partialTick,
-            boolean reverseTransparency, boolean reverseDirection, int color) {
-        float speed = 3F;
-        float texV2 = -0.1F + ((float) tick + partialTick) * (reverseDirection ? -0.01F : 0.01F) * speed;
-        float texV1 = MathHelper.sqrt_float(offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ) / 32.0F
-                + ((float) tick + partialTick) * (reverseDirection ? -0.01F : 0.01F) * speed;
+    private void drawBeam(Tessellator tessellator, TileReactorCore core, double sizeOrigin, double sizeTarget,
+            double length, double offsetLength, float partialTick, boolean reverseTransparency,
+            boolean reverseDirection, int color) {
+        final double speed = 3.0;
+        final double tickOffset = ((double) particleAge + partialTick) * (reverseDirection ? -0.01 : 0.01) * speed;
 
-        tessellator.startDrawing(5);
+        double texV1 = offsetLength / 32.0 + tickOffset;
+        double texV2 = -0.1 + tickOffset;
+
+        tessellator.startDrawing(GL11.GL_TRIANGLE_STRIP);
         tessellator.setBrightness(200);
 
-        byte b0 = 16;
-        for (int i = 0; i <= b0; ++i) {
-            float verX = MathHelper.sin((float) (i % b0) * (float) Math.PI * 2.13325F / (float) b0) * sizeTarget;
-            float verY = MathHelper.cos((float) (i % b0) * (float) Math.PI * 2.13325F / (float) b0) * sizeTarget;
-            float texU = (float) (i % b0) * 1.0F / (float) b0;
+        final int raysCount = 16;
+        for (int ray = 0; ray <= raysCount; ++ray) {
+            double texU = (double) ray / raysCount;
+            double verX = Math.sin(texU * Math.PI * 2.13325) * sizeTarget;
+            double verY = Math.cos(texU * Math.PI * 2.13325) * sizeTarget;
             tessellator.setColorRGBA(
                     (color & 0xFF0000) >> 16,
                     (color & 0xFF00) >> 8,
-                    (color & 0xFF),
-                    reverseTransparency ? 0 : (int) (255D * reactor.renderSpeed));
-            tessellator.addVertexWithUV(
-                    (double) (verX * sizeOrigin),
-                    (double) (verY * sizeOrigin),
-                    0.0D,
-                    (double) texU,
-                    (double) texV1);
+                    color & 0xFF,
+                    reverseTransparency ? 0 : (int) (255.0 * core.renderSpeed));
+            tessellator.addVertexWithUV(verX * sizeOrigin, verY * sizeOrigin, 0.0, texU, texV1);
             tessellator.setColorRGBA(
                     (color & 0xFF0000) >> 16,
                     (color & 0xFF00) >> 8,
-                    (color & 0xFF),
-                    reverseTransparency ? (int) (255D * reactor.renderSpeed) : 0);
-            tessellator.addVertexWithUV((double) verX, (double) verY, (double) length, (double) texU, (double) texV2);
+                    color & 0xFF,
+                    reverseTransparency ? (int) (255.0 * core.renderSpeed) : 0);
+            tessellator.addVertexWithUV(verX, verY, length, texU, texV2);
         }
-
         tessellator.draw();
     }
 }
-
-// @Override
-// public void renderParticle(Tessellator tessellator, float partialTick, float rotX, float rotXZ, float rotZ, float
-// rotYZ, float rotXY) {
-// if (!((IIsSlave)tile).isActive()) return;
-// tessellator.draw();
-// GL11.glPushMatrix();
-// GL11.glDisable(GL11.GL_CULL_FACE);
-// GL11.glAlphaFunc(GL11.GL_GREATER, 0.0F);
-//
-// float xx = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)partialTick - interpPosX);
-// float yy = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTick - interpPosY);
-// float zz = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)partialTick - interpPosZ);
-// GL11.glTranslated((double)xx, (double)yy, (double)zz);
-//
-// //Common Fields
-// MultiblockHelper.TileLocation master = ((IIsSlave)tile).getMaster();
-// float offsetX = (float)(master.posX - tile.xCoord);
-// float offsetY = (float)((double)master.posY - tile.yCoord);
-// float offsetZ = (float)(master.posZ - tile.zCoord);
-// float length = MathHelper.sqrt_float(offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ);
-//
-//
-// //Rotate beam to face target
-// float f7 = MathHelper.sqrt_float(offsetX * offsetX + offsetZ * offsetZ);
-// GL11.glRotatef((float) (-Math.atan2((double) offsetZ, (double) offsetX)) * 180.0F / (float) Math.PI - 90.0F, 0.0F,
-// 1.0F, 0.0F);
-// GL11.glRotatef((float)(-Math.atan2((double)f7, (double)offsetY)) * 180.0F / (float)Math.PI - 90.0F, 1.0F, 0.0F,
-// 0.0F);
-//
-// if (tile instanceof TileReactorStabilizer) renderStabilizerEffect(tessellator, offsetX, offsetY, offsetZ, length,
-// partialTick);
-// else {
-// GL11.glShadeModel(GL11.GL_SMOOTH);
-// GL11.glTranslated(0, 0, 0.3);
-// //GL11.glPushMatrix();
-// GL11.glRotatef(((float)particleAge + partialTick)*20F, 0, 0, 1);
-// ResourceHandler.bindResource("textures/particle/reactorEnergyBeam.png");
-//// float sizeOrigin = 0.5F;
-//// float sizeTarget = 0.2F;
-// float sizeTarget = 0.2F;
-// float sizeOrigin = 0.5F;
-//
-// int color = 0xFF2200;
-// int alpha = 200;
-// length -= 1;
-//
-// float speed = 20F;
-// float texV2 = 0.0F + ((float)particleAge + partialTick) * 0.01F * speed;
-// float texV1 = MathHelper.sqrt_float(offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ) +
-// ((float)particleAge + partialTick) * 0.01F * speed;
-//
-// tessellator.startDrawing(5);
-// tessellator.setBrightness(200);
-//
-// byte b0 = 16;
-// for (int i = 0; i <= b0; ++i)
-// {
-// float verX = MathHelper.sin((float)(i % b0) * (float)Math.PI * 2.13F / (float)b0) * sizeTarget;
-// float verY = MathHelper.cos((float)(i % b0) * (float)Math.PI * 2.13F / (float)b0) * sizeTarget;
-// float texU = (float)(i % b0) * 1.0F / (float)b0;
-// tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, (color & 0xFF), alpha);
-//
-// tessellator.addVertexWithUV((double)(verX * sizeOrigin), (double)(verY * sizeOrigin), 0.0D, (double)texU,
-// (double)texV1);
-// tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, (color & 0xFF), 0);
-// tessellator.addVertexWithUV((double)verX, (double)verY, (double)length, (double)texU, (double)texV2);
-// }
-//
-// sizeTarget = 0.1F;
-//
-// length = 0F;
-// for (int i = 0; i <= b0; ++i)
-// {
-// float verX = MathHelper.sin((float)(i % b0) * (float)Math.PI * 2.3F / (float)b0) * sizeTarget;
-// float verY = MathHelper.cos((float)(i % b0) * (float)Math.PI * 2.3F / (float)b0) * sizeTarget;
-// float texU = (float)(i % b0) * 1.0F / (float)b0;
-// tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, (color & 0xFF), 0);
-//
-// tessellator.addVertexWithUV((double)(verX * sizeOrigin), (double)(verY * sizeOrigin), -0.55D, (double)texU,
-// (double)texV1);
-// tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, (color & 0xFF), alpha);
-// tessellator.addVertexWithUV((double)verX, (double)verY, (double)length, (double)texU, (double)texV2);
-// }
-//
-// tessellator.draw();
-// //GL11.glPopMatrix();
-// GL11.glRotatef(((float)particleAge + partialTick)*-30F, 0, 0, 1);
-//
-// tessellator.startDrawing(5);
-// tessellator.setBrightness(200);
-// color = 0xFF4400;
-// sizeOrigin = 0.15F;
-// sizeTarget = 0.6F;
-// length = MathHelper.sqrt_float(offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ) - 1;
-// GL11.glTranslated(0, 0, -0.1);
-//
-// for (int i = 0; i <= b0; ++i)
-// {
-// float verX = MathHelper.sin((float)(i % b0) * (float)Math.PI * 2.13F / (float)b0) * sizeTarget;
-// float verY = MathHelper.cos((float)(i % b0) * (float)Math.PI * 2.13F / (float)b0) * sizeTarget;
-// float texU = (float)(i % b0) * 1.0F / (float)b0;
-// tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, (color & 0xFF), alpha/2);
-//
-// tessellator.addVertexWithUV((double)(verX * sizeOrigin), (double)(verY * sizeOrigin), 0.0D, (double)texU,
-// (double)texV1);
-// tessellator.setColorRGBA((color & 0xFF0000) >> 16, (color & 0xFF00) >> 8, (color & 0xFF), 0);
-// tessellator.addVertexWithUV((double)verX, (double)verY, (double)length, (double)texU, (double)texV2);
-// }
-//
-// tessellator.draw();
-// GL11.glShadeModel(GL11.GL_FLAT);
-// }
-//
-// GL11.glPopMatrix();
-// GL11.glEnable(GL11.GL_CULL_FACE);
-// ResourceHandler.bindDefaultParticles();
-// tessellator.startDrawingQuads();
-// }

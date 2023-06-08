@@ -333,7 +333,7 @@ public class ClientProxy extends CommonProxy {
             beam.setDead();
             return null;
         } else {
-            beam.update(render);
+            beam.update();
         }
         return beam;
     }
