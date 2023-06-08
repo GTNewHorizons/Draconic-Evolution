@@ -47,7 +47,7 @@ public class TileReactorCore extends TileObjectSync {
         STOPPING,
         INVALID;
 
-        private static ReactorState[] Values = values();
+        private static final ReactorState[] Values = values();
 
         public static ReactorState getState(int ordinal) {
             return ordinal >= 0 && ordinal < Values.length ? Values[ordinal] : INVALID;
@@ -84,21 +84,6 @@ public class TileReactorCore extends TileObjectSync {
 
     @SideOnly(Side.CLIENT)
     private ReactorSound reactorSound;
-
-    // TODO DONT FORGET TO ACTUALLY FINISH ALL THESE THINGS!!!!
-    // Check //-Bounding box
-    // Check //-Custom player collision
-    // Check //-Finish stabilizer place and break mechanics
-    // Check //-Have the GUI tell you if the structure is invalid
-    // Check //-Config
-    // TODO things for later
-    // -GUI info (maby speed up gui sync via the container)
-    // -GUI warning red bars
-    // -Maby get around to setting the angle of the stabiliser elements
-    // Check //-SOUND!!!!!
-    // Check //-CC Integration
-    // Check //-Redstone
-    // -Add reactor and gates to tablet
 
     public List<TileLocation> stabilizerLocations = new ArrayList<>();
 
@@ -227,11 +212,6 @@ public class TileReactorCore extends TileObjectSync {
         // exponentially
         tempDrainFactor = reactionTemperature > 8000 ? 1 + (Math.pow(reactionTemperature - 8000, 2) * 0.0000025)
                 : reactionTemperature > 2000 ? 1 : reactionTemperature > 1000 ? (reactionTemperature - 1000) / 1000 : 0;
-        // todo add to guiInfo
-        // -temp drain factor
-        // -mass
-        // -generation
-        // -field drain
 
         // Field Drain Calculation
         // (baseMaxRFt/make smaller to increase field power drain)
@@ -437,7 +417,7 @@ public class TileReactorCore extends TileObjectSync {
         return Math.cbrt(volume / (4D / 3D * Math.PI));
     }
 
-    public double getCoreDiameter() { // todo adjust so the core dose not expand before 1000>2000c
+    public double getCoreDiameter() {
         return getCoreRadius() * 2;
     }
 
