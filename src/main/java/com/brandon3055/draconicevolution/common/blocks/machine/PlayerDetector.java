@@ -1,6 +1,7 @@
 package com.brandon3055.draconicevolution.common.blocks.machine;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -18,11 +19,18 @@ import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.lib.Strings;
 import com.brandon3055.draconicevolution.common.tileentities.TilePlayerDetector;
 
-public class PlayerDetector extends BlockDE {
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
+public class PlayerDetector extends BlockDE implements ITileEntityProvider {
+
+    @SideOnly(Side.CLIENT)
     IIcon side_inactive;
+    @SideOnly(Side.CLIENT)
     IIcon side_active;
+    @SideOnly(Side.CLIENT)
     IIcon top;
+    @SideOnly(Side.CLIENT)
     IIcon bottom;
 
     public PlayerDetector() {
@@ -33,6 +41,7 @@ public class PlayerDetector extends BlockDE {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister iconRegister) {
         side_inactive = iconRegister.registerIcon(References.RESOURCESPREFIX + "player_detector_side_inactive");
         side_active = iconRegister.registerIcon(References.RESOURCESPREFIX + "player_detector_side_active");
@@ -40,28 +49,39 @@ public class PlayerDetector extends BlockDE {
         bottom = iconRegister.registerIcon(References.RESOURCESPREFIX + "machine_side");
     }
 
+    @Override
+    @SideOnly(Side.CLIENT)
     public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
+        if (side == 0) {
+            return bottom;
+        }
+        if (side == 1) {
+            return top;
+        }
         IIcon side_icon;
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile != null && tile instanceof TilePlayerDetector && ((TilePlayerDetector) tile).output)
+        if (tile instanceof TilePlayerDetector && ((TilePlayerDetector) tile).shouldOutput()) {
             side_icon = side_active;
-        else side_icon = side_inactive;
-
-        if (side == 0) return bottom;
-        else if (side == 1) return top;
-        else return side_icon;
+        } else {
+            side_icon = side_inactive;
+        }
+        return side_icon;
     }
 
     @Override
-    public IIcon getIcon(int side, int meta) {
-        if (side == 0) return bottom;
-        else if (side == 1) return top;
-        else return side_active;
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon(int side, int metadata) {
+        if (side == 0) {
+            return bottom;
+        }
+        if (side == 1) {
+            return top;
+        }
+        return side_active;
     }
 
     @Override
-    public boolean isBlockSolid(IBlockAccess p_149747_1_, int p_149747_2_, int p_149747_3_, int p_149747_4_,
-            int p_149747_5_) {
+    public boolean isBlockSolid(IBlockAccess world, int x, int y, int z, int side) {
         return true;
     }
 
@@ -71,19 +91,18 @@ public class PlayerDetector extends BlockDE {
     }
 
     @Override
-    public boolean hasTileEntity(int meta) {
+    public boolean hasTileEntity(int metadata) {
         return true;
     }
 
     @Override
-    public TileEntity createTileEntity(World world, int metadata) {
+    public TileEntity createNewTileEntity(World world, int metadata) {
         return new TilePlayerDetector();
     }
 
     @Override
     public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
-        if (side == 0 || side == 1) return false;
-        else return true;
+        return side >= 0;
     }
 
     @Override
@@ -92,27 +111,22 @@ public class PlayerDetector extends BlockDE {
     }
 
     @Override
-    public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int meta) {
-        TileEntity te = world.getTileEntity(x, y, z);
-        TilePlayerDetector detector = (te != null && te instanceof TilePlayerDetector) ? (TilePlayerDetector) te : null;
-        if (detector != null) return detector.output ? 15 : 0;
-        else return 0;
+    public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int side) {
+        return isProvidingStrongPower(world, x, y, z, side);
     }
 
     @Override
-    public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int meta) {
-        TileEntity te = world.getTileEntity(x, y, z);
-        TilePlayerDetector detector = (te != null && te instanceof TilePlayerDetector) ? (TilePlayerDetector) te : null;
-        if (detector != null) return detector.output ? 15 : 0;
-        else return 0;
+    public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int side) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        return tile instanceof TilePlayerDetector && ((TilePlayerDetector) tile).shouldOutput() ? 15 : 0;
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float p_149727_7_,
-            float p_149727_8_, float p_149727_9_) {
-        TileEntity te = world.getTileEntity(x, y, z);
-        TilePlayerDetector detector = (te != null && te instanceof TilePlayerDetector) ? (TilePlayerDetector) te : null;
-        if (detector != null) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float subX,
+            float subY, float subZ) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (tile instanceof TilePlayerDetector) {
+            TilePlayerDetector detector = (TilePlayerDetector) tile;
             int range = detector.getRange();
 
             if (player.isSneaking()) {
@@ -121,25 +135,27 @@ public class PlayerDetector extends BlockDE {
                 range++;
             }
 
-            if (range > 10) range = 1;
-            if (range < 1) range = 10;
             detector.setRange(range);
 
-            if (world.isRemote) player.addChatMessage(
-                    new ChatComponentTranslation("msg.range.txt").appendSibling(new ChatComponentText(" " + range)));
+            if (world.isRemote) {
+                player.addChatMessage(
+                        new ChatComponentTranslation("msg.range.txt")
+                                .appendSibling(new ChatComponentText(" " + detector.getRange())));
+            }
         }
         return true;
     }
 
     @Override
-    public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
-        super.breakBlock(world, x, y, z, block, meta);
-
-        world.notifyBlocksOfNeighborChange(x - 1, y, z, world.getBlock(x, y, z));
-        world.notifyBlocksOfNeighborChange(x + 1, y, z, world.getBlock(x, y, z));
-        world.notifyBlocksOfNeighborChange(x, y - 1, z, world.getBlock(x, y, z));
-        world.notifyBlocksOfNeighborChange(x, y + 1, z, world.getBlock(x, y, z));
-        world.notifyBlocksOfNeighborChange(x, y, z - 1, world.getBlock(x, y, z));
-        world.notifyBlocksOfNeighborChange(x, y, z + 1, world.getBlock(x, y, z));
+    public void breakBlock(World world, int x, int y, int z, Block blockBroken, int metadata) {
+        super.breakBlock(world, x, y, z, blockBroken, metadata);
+        world.notifyBlocksOfNeighborChange(x, y, z, blockBroken);
+        for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+            world.notifyBlocksOfNeighborChange(
+                    x + direction.offsetX,
+                    y + direction.offsetY,
+                    z + direction.offsetZ,
+                    blockBroken);
+        }
     }
 }
