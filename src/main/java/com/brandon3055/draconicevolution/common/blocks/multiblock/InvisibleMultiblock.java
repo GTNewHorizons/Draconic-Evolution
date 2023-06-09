@@ -151,7 +151,7 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
             if (pylon == null) {
                 return false;
             }
-            pylon.reciveEnergy = !pylon.reciveEnergy;
+            pylon.isReceivingEnergy = !pylon.isReceivingEnergy;
             world.markBlockForUpdate(pylon.xCoord, pylon.yCoord, pylon.zCoord);
             pylon.onActivated();
             return true;
@@ -177,7 +177,7 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
                 return;
             }
             if (core.isOnline()) {
-                core.isStructureStillValid(core.getTier() == 1);
+                core.validateStructure(core.getTier() == 1);
             } else {
                 revertStructure(world, x, y, z);
             }
@@ -196,7 +196,7 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
             TileEnergyStorageCore core = multiblock.getMaster();
             if (core != null && core.isOnline()) {
                 world.setBlockMetadataWithNotify(x, y, z, 0, 2);
-                core.isStructureStillValid(core.getTier() == 1);
+                core.validateStructure(core.getTier() == 1);
             }
         }
         super.breakBlock(world, x, y, z, blockBroken, metadata);

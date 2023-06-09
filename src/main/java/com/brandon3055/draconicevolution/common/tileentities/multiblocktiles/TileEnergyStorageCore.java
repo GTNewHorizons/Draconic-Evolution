@@ -62,20 +62,12 @@ public class TileEnergyStorageCore extends TileObjectSync {
             modelRotation += 0.5;
             return;
         }
-        detectAndRendChanges();
+        detectAndSendChanges();
     }
 
     /**
      * ######################MultiBlock Methods#######################
      */
-    public boolean tryActivate() {
-        return tryActivate(false);
-    }
-
-    public boolean creativeActivate() {
-        return tryActivate(true);
-    }
-
     public boolean tryActivate(boolean isCreativeMode) {
         if (!findStabilizers()) {
             return false;
@@ -99,7 +91,7 @@ public class TileEnergyStorageCore extends TileObjectSync {
         return false;
     }
 
-    public boolean isStructureStillValid(boolean update) {
+    public void validateStructure(boolean update) {
         online = areStabilizersActive() && scanStructure(this::isInnerBlock, this::isOuterBlock);
         worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
         if (!online) {
@@ -108,7 +100,6 @@ public class TileEnergyStorageCore extends TileObjectSync {
                 reIntegrate();
             }
         }
-        return online;
     }
 
     private void reIntegrate() {
@@ -553,12 +544,14 @@ public class TileEnergyStorageCore extends TileObjectSync {
         return 40960.0D;
     }
 
-    private void detectAndRendChanges() {
-        if (lastTickCapacity != energy) lastTickCapacity = (Long) sendObjectToClient(
-                References.LONG_ID,
-                0,
-                energy,
-                new NetworkRegistry.TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 20));
+    private void detectAndSendChanges() {
+        if (lastTickCapacity != energy) {
+            lastTickCapacity = (long) sendObjectToClient(
+                    References.LONG_ID,
+                    0,
+                    energy,
+                    new NetworkRegistry.TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 20));
+        }
     }
 
     @Override

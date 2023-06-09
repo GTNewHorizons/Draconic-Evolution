@@ -202,7 +202,7 @@ public class ParticleGenerator extends BlockDE {
                 TileParticleGenerator generator = (TileParticleGenerator) tile;
                 if (generator.getMaster() != null) {
                     world.setBlockMetadataWithNotify(x, y, z, 0, 2);
-                    generator.getMaster().isStructureStillValid(true);
+                    generator.getMaster().validateStructure(true);
                 }
             }
         }

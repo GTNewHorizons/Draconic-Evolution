@@ -103,7 +103,7 @@ public class EnergyStorageCore extends BlockDE implements IHudDisplayBlock {
         if (tile instanceof TileEnergyStorageCore) {
             TileEnergyStorageCore core = (TileEnergyStorageCore) tile;
             if (core.isOnline() && core.getTier() == 0) {
-                core.isStructureStillValid(false);
+                core.validateStructure(false);
             }
         }
     }

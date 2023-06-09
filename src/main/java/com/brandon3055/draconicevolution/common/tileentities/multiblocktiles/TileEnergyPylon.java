@@ -34,8 +34,8 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
 
     public boolean active = false;
     public boolean lastTickActive = false;
-    public boolean reciveEnergy = false; // Power Flow to system
-    public boolean lastTickReciveEnergy = false;
+    public boolean isReceivingEnergy = false; // Power Flow to system
+    public boolean isReceivedEnergyLastTick = false;
     public float modelRotation = 0;
     public float modelScale = 0;
     private List<TileLocation> coreLocations = new ArrayList<>();
@@ -50,9 +50,9 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
         if (worldObj.isRemote) {
             if (active) {
                 modelRotation += 1.5;
-                modelScale += reciveEnergy ? 0.01F : -0.01F;
+                modelScale += isReceivingEnergy ? 0.01F : -0.01F;
                 if (modelScale < 0) {
-                    modelScale = reciveEnergy ? 0F : 10000F;
+                    modelScale = isReceivingEnergy ? 0F : 10000F;
                 }
                 spawnParticles();
             } else {
@@ -74,7 +74,7 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
             }
         }
 
-        if (active && !reciveEnergy) {
+        if (active && !isReceivingEnergy) {
             for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
                 TileEntity tile = worldObj
                         .getTileEntity(xCoord + side.offsetX, yCoord + side.offsetY, zCoord + side.offsetZ);
@@ -181,7 +181,7 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
         double targetY = cYCoord + 0.5;
         double targetZ = zCoord + 0.5;
         if (rand.nextFloat() < 0.05F) {
-            EnergyTransferParticle passiveParticle = reciveEnergy
+            EnergyTransferParticle passiveParticle = isReceivingEnergy
                     ? new EnergyTransferParticle(worldObj, targetX, targetY, targetZ, sourceX, sourceY, sourceZ, true)
                     : new EnergyTransferParticle(worldObj, sourceX, sourceY, sourceZ, targetX, targetY, targetZ, true);
             ParticleHandler.spawnCustomParticle(passiveParticle, 35);
@@ -193,7 +193,7 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
                     sourceX = x + 0.5 - disMod + (rand.nextFloat() * (disMod * 2));
                     sourceY = y + 0.5 - disMod + (rand.nextFloat() * (disMod * 2));
                     sourceZ = z + 0.5 - disMod + (rand.nextFloat() * (disMod * 2));
-                    EnergyTransferParticle passiveParticle = reciveEnergy
+                    EnergyTransferParticle passiveParticle = isReceivingEnergy
                             ? new EnergyTransferParticle(
                                     worldObj,
                                     targetX,
@@ -232,7 +232,7 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         active = compound.getBoolean("Active");
-        reciveEnergy = compound.getBoolean("Input");
+        isReceivingEnergy = compound.getBoolean("Input");
         int i = compound.getInteger("Cores");
         List<TileLocation> list = new ArrayList<>();
         for (int j = 0; j < i; j++) {
@@ -250,7 +250,7 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
 
         super.writeToNBT(compound);
         compound.setBoolean("Active", active);
-        compound.setBoolean("Input", reciveEnergy);
+        compound.setBoolean("Input", isReceivingEnergy);
         int i = coreLocations.size();
         compound.setInteger("Cores", i);
         for (int j = 0; j < i; j++) {
@@ -281,7 +281,7 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
     @Override
     public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
         if (getMaster() == null) return 0;
-        int received = reciveEnergy ? getMaster().receiveEnergy(maxReceive, simulate) : 0;
+        int received = isReceivingEnergy ? getMaster().receiveEnergy(maxReceive, simulate) : 0;
         if (!simulate && received > 0) particleRate = (byte) Math.min(20, received < 500 ? 1 : received / 500);
         return received;
     }
@@ -289,7 +289,7 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
     @Override
     public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
         if (getMaster() == null || !getMaster().isOnline()) return 0;
-        int extracted = reciveEnergy ? 0 : getMaster().extractEnergy(maxExtract, simulate);
+        int extracted = isReceivingEnergy ? 0 : getMaster().extractEnergy(maxExtract, simulate);
         if (!simulate && extracted > 0) particleRate = (byte) Math.min(20, extracted < 500 ? 1 : extracted / 500);
         return extracted;
     }
@@ -317,10 +317,10 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
                 0,
                 active,
                 new NetworkRegistry.TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 256));
-        if (lastTickReciveEnergy != reciveEnergy) lastTickReciveEnergy = (Boolean) sendObjectToClient(
+        if (isReceivedEnergyLastTick != isReceivingEnergy) isReceivedEnergyLastTick = (Boolean) sendObjectToClient(
                 References.BOOLEAN_ID,
                 1,
-                reciveEnergy,
+                isReceivingEnergy,
                 new NetworkRegistry.TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 256));
         if (lastTickParticleRate != particleRate)
             lastTickParticleRate = (Byte) sendObjectToClient(References.BYTE_ID, 2, particleRate);
@@ -334,7 +334,7 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
                 active = (Boolean) object;
                 break;
             case 1:
-                reciveEnergy = (Boolean) object;
+                isReceivingEnergy = (Boolean) object;
                 break;
             case 2:
                 particleRate = (Byte) object;
