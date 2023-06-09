@@ -1,37 +1,24 @@
 package com.brandon3055.draconicevolution.common.container;
 
-import java.util.Iterator;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-import com.brandon3055.draconicevolution.client.gui.GUIPlayerDetector;
 import com.brandon3055.draconicevolution.common.inventory.SlotOpaqueBlock;
 import com.brandon3055.draconicevolution.common.tileentities.TilePlayerDetectorAdvanced;
 
 public class ContainerPlayerDetector extends Container {
 
-    private TilePlayerDetectorAdvanced tileDetector;
-    private GUIPlayerDetector gui = null;
+    private boolean shouldShowInventory = true;
+    private final TilePlayerDetectorAdvanced detector;
 
-    public ContainerPlayerDetector(InventoryPlayer invPlayer, TilePlayerDetectorAdvanced tileDetector) {
-        this.tileDetector = tileDetector;
+    public ContainerPlayerDetector(InventoryPlayer playerInventory, TilePlayerDetectorAdvanced detector) {
+        this.detector = detector;
 
-        bindPlayerInventory(invPlayer);
-        addContainerSlots(tileDetector);
-        updateContainerSlots();
-    }
-
-    public ContainerPlayerDetector(InventoryPlayer invPlayer, TilePlayerDetectorAdvanced tileDetector,
-            GUIPlayerDetector gui) {
-        this.tileDetector = tileDetector;
-        this.gui = gui;
-
-        bindPlayerInventory(invPlayer);
-        addContainerSlots(tileDetector);
+        bindPlayerInventory(playerInventory);
+        addContainerSlots(detector);
         updateContainerSlots();
     }
 
@@ -52,40 +39,27 @@ public class ContainerPlayerDetector extends Container {
     }
 
     public void updateContainerSlots() {
-        if (gui == null) {
-            return;
-        }
-
-        Iterator<Slot> i1 = inventorySlots.iterator();
-        while (i1.hasNext()) {
-            Slot sl = i1.next();
-            if (sl instanceof SlotOpaqueBlock) {
-                if (gui.showInvSlots) {
-                    sl.xDisplayPosition = 143;
-                    sl.yDisplayPosition = 20;
+        for (Slot slot : (Iterable<Slot>) inventorySlots) {
+            if (slot instanceof SlotOpaqueBlock) {
+                if (shouldShowInventory) {
+                    slot.xDisplayPosition = 143;
+                    slot.yDisplayPosition = 20;
                 } else {
-                    sl.xDisplayPosition = -1000;
-                    sl.yDisplayPosition = -1000;
+                    slot.xDisplayPosition = -1000;
+                    slot.yDisplayPosition = -1000;
                 }
             } else {
-                if (gui.showInvSlots) {
-                    if (sl.slotNumber < 9) {
-                        sl.xDisplayPosition = 8 + 18 * sl.slotNumber;
-                        sl.yDisplayPosition = 174;
-                    } else if (sl.slotNumber < 18) {
-                        sl.xDisplayPosition = 8 + 18 * (sl.slotNumber - 9);
-                        sl.yDisplayPosition = 116 + 0 * 18;
-                    } else if (sl.slotNumber < 27) {
-                        sl.xDisplayPosition = 8 + 18 * (sl.slotNumber - 18);
-                        sl.yDisplayPosition = 116 + 1 * 18;
-                    } else if (sl.slotNumber < 36) {
-                        sl.xDisplayPosition = 8 + 18 * (sl.slotNumber - 27);
-                        sl.yDisplayPosition = 116 + 2 * 18;
+                if (shouldShowInventory) {
+                    if (slot.slotNumber < 9) {
+                        slot.xDisplayPosition = 8 + 18 * slot.slotNumber;
+                        slot.yDisplayPosition = 174;
+                    } else if (slot.slotNumber < 36) {
+                        slot.xDisplayPosition = 8 + 18 * (slot.slotNumber % 9);
+                        slot.yDisplayPosition = 116 + (slot.slotNumber / 9 - 1) * 18;
                     }
-
                 } else {
-                    sl.xDisplayPosition = -1000;
-                    sl.yDisplayPosition = -1000;
+                    slot.xDisplayPosition = -1000;
+                    slot.yDisplayPosition = -1000;
                 }
             }
         }
@@ -93,53 +67,24 @@ public class ContainerPlayerDetector extends Container {
 
     @Override
     public boolean canInteractWith(EntityPlayer player) {
-        return tileDetector.isUseableByPlayer(player);
+        return detector.isUseableByPlayer(player);
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer player, int i) {
-        // Slot slot = getSlot(i);
-        //
-        //
-        // if (slot != null && slot.getHasStack())
-        // {
-        // ItemStack stack = slot.getStack();
-        // ItemStack result = stack.copy();
-        // Block block = Block.getBlockFromItem(stack.getItem());
-        //
-        // if (i >= 36){
-        // if (!mergeItemStack(stack, 0, 36, false)){
-        // return null;
-        // }
-        // }else if (!(block.isOpaqueCube() && block.renderAsNormalBlock()) || !mergeItemStack(stack, 36, 36 +
-        // tileDetector.getSizeInventory(), false)){
-        // return null;
-        // }
-        //
-        // if (stack.stackSize == 0) {
-        // slot.putStack(null);
-        // }else{
-        // slot.onSlotChanged();
-        // }
-        //
-        // slot.onPickupFromSlot(player, stack);
-        //
-        // return result;
-        // }
-
+    public ItemStack transferStackInSlot(EntityPlayer player, int slot) {
         return null;
     }
 
-    public TilePlayerDetectorAdvanced getTileDetector() {
-        return tileDetector;
+    public boolean shouldShowInventory() {
+        return shouldShowInventory;
     }
 
-    @Override
-    public ItemStack slotClick(int slot, int button, int par3, EntityPlayer par4EntityPlayer) {
-        return super.slotClick(slot, button, par3, par4EntityPlayer);
-        // if (par3 == 4)
-        // return super.slotClick(slot, button, 0, par4EntityPlayer);
-        // else
-        // return super.slotClick(slot, button, par3, par4EntityPlayer);
+    public void setShouldShowInventory(boolean shouldShow) {
+        shouldShowInventory = shouldShow;
+        updateContainerSlots();
+    }
+
+    public TilePlayerDetectorAdvanced getDetector() {
+        return detector;
     }
 }

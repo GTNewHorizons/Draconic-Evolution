@@ -40,9 +40,7 @@ public class PlayerDetectorButtonPacket implements IMessage {
                     .getServerHandler().playerEntity.openContainer instanceof ContainerPlayerDetector)
                             ? (ContainerPlayerDetector) ctx.getServerHandler().playerEntity.openContainer
                             : null;
-            TilePlayerDetectorAdvanced tile = (container != null)
-                    ? ((ContainerPlayerDetector) container).getTileDetector()
-                    : null;
+            TilePlayerDetectorAdvanced tile = (container != null) ? container.getDetector() : null;
 
             if (tile != null) {
                 switch (message.index) {
@@ -50,10 +48,10 @@ public class PlayerDetectorButtonPacket implements IMessage {
                         tile.range = message.value;
                         break;
                     case 1:
-                        tile.whiteList = message.value == 1;
+                        tile.isInWhiteListMode = message.value == 1;
                         break;
                     case 2:
-                        tile.outputInverted = message.value == 1;
+                        tile.isOutputInverted = message.value == 1;
                         break;
                 }
                 ctx.getServerHandler().playerEntity.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
