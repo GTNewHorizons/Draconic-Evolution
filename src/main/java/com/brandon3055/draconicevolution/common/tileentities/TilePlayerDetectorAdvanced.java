@@ -1,10 +1,8 @@
 package com.brandon3055.draconicevolution.common.tileentities;
 
-import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -16,101 +14,107 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import com.brandon3055.draconicevolution.common.container.ContainerPlayerDetector;
 
 public class TilePlayerDetectorAdvanced extends TileEntity implements IInventory {
 
+    public static final int MAXIMUM_RANGE = 20;
+    public static final int MINIMUM_RANGE = 1;
+    private static final int ScanRate = 5;
+
     public String[] names = new String[42];
-    private ItemStack[] items;
-    public boolean whiteList = false;
+    public boolean isInWhiteListMode = false;
+    public boolean isOutputInverted = false;
     public int range = 10;
+    private final ItemStack[] items;
     private int tick = 0;
-    private int scanRate = 5;
-    public boolean output = false;
-    public boolean outputInverted = false;
-    private List<EntityLiving> EntityList;
+    private boolean shouldOutput = false;
+    private List<EntityLivingBase> entityList;
 
     public TilePlayerDetectorAdvanced() {
-        for (int i = 0; i < names.length; i++) if (names[i] == null) names[i] = "";
-
+        for (int i = 0; i < names.length; i++) {
+            if (names[i] == null) {
+                names[i] = "";
+            }
+        }
         items = new ItemStack[1];
     }
 
     @Override
     public void updateEntity() {
-        if (worldObj.isRemote) return;
-
-        if (tick >= scanRate) {
-
-            tick = 0;
-
-            if (shouldEmit()) {
-                if (!output) setOutput(true);
-            } else {
-                if (output) setOutput(false);
-            }
-        } else tick++;
-    }
-
-    public boolean shouldEmit() {
-        findEntitys();
-
-        boolean b = false;
-        Iterator<EntityLiving> i = EntityList.iterator();
-        while (i.hasNext()) {
-            Entity ent = i.next();
-            if (!(ent instanceof EntityPlayer)) return false;
-
-            String name = ((EntityPlayer) ent).getCommandSenderName();
-            if (whiteList) {
-                if (isPlayerListed(name)) return true;
-            } else {
-                if (!isPlayerListed(name)) return true;
-            }
+        if (worldObj.isRemote) {
+            return;
         }
-        return b;
+
+        if (tick >= ScanRate) {
+            tick = 0;
+            if (shouldEmit()) {
+                if (!shouldOutput) setShouldOutput(true);
+            } else {
+                if (shouldOutput) setShouldOutput(false);
+            }
+        } else {
+            tick++;
+        }
     }
 
-    private void findEntitys() {
-        double x1 = xCoord + 0.5 - range;
-        double y1 = yCoord + 0.5 - range;
-        double z1 = zCoord + 0.5 - range;
-        double x2 = xCoord + 0.5 + range;
-        double y2 = yCoord + 0.5 + range;
-        double z2 = zCoord + 0.5 + range;
+    private boolean shouldEmit() {
+        findEntities();
 
-        // System.out.println(x1 + " " + y1 + " " + z1 + " " + x2 + " " + y2 + " " + z2);
-
-        // ScanBox = AxisAlignedBB.getBoundingBox(x1, y1, z1, x2, y2, z2);
-        // ScanBox = AxisAlignedBB.getAABBPool().getAABB(xCoord + 0.5 - range, yCoord + 0.5 - range, zCoord + 0.5 -
-        // range, xCoord + 0.5 + range, yCoord + 0.5 + range, zCoord + 0.5 + range);
-        EntityList = worldObj
-                .getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(x1, y1, z1, x2, y2, z2));
-        // System.out.println(EntityList);
+        for (EntityLivingBase entity : entityList) {
+            if (!(entity instanceof EntityPlayer)) {
+                return false;
+            }
+            String name = entity.getCommandSenderName();
+            return (isInWhiteListMode == isPlayerListed(name)) != isOutputInverted;
+        }
+        return isOutputInverted;
     }
 
-    private void setOutput(boolean out) {
-        output = out;
-        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+    private void findEntities() {
+        double startX = xCoord + 0.5 - range;
+        double startY = yCoord + 0.5 - range;
+        double startZ = zCoord + 0.5 - range;
+        double endX = xCoord + 0.5 + range;
+        double endY = yCoord + 0.5 + range;
+        double endZ = zCoord + 0.5 + range;
+        entityList = worldObj.getEntitiesWithinAABB(
+                EntityPlayer.class,
+                AxisAlignedBB.getBoundingBox(startX, startY, startZ, endX, endY, endZ));
+    }
+
+    public boolean shouldOutput() {
+        return shouldOutput;
+    }
+
+    public void setShouldOutput(boolean shouldOutputSignal) {
+        shouldOutput = shouldOutputSignal;
         updateBlocks();
     }
 
-    public void updateBlocks() {
-        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
-        worldObj.notifyBlocksOfNeighborChange(xCoord - 1, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
-        worldObj.notifyBlocksOfNeighborChange(xCoord + 1, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
-        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord - 1, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
-        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord + 1, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
-        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord - 1, worldObj.getBlock(xCoord, yCoord, zCoord));
-        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord + 1, worldObj.getBlock(xCoord, yCoord, zCoord));
+    private void updateBlocks() {
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, blockType);
+        for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+            worldObj.notifyBlocksOfNeighborChange(
+                    xCoord + direction.offsetX,
+                    yCoord + direction.offsetY,
+                    zCoord + direction.offsetZ,
+                    blockType);
+        }
     }
 
-    public boolean isPlayerListed(String name) {
-        if (name == null) return false;
+    private boolean isPlayerListed(String name) {
+        if (name == null) {
+            return false;
+        }
 
-        for (int i = 0; i < names.length; i++) {
-            if (names[i].equals(name)) return true;
+        for (String listedName : names) {
+            if (listedName.equals(name)) {
+                return true;
+            }
         }
         return false;
     }
@@ -121,39 +125,40 @@ public class TilePlayerDetectorAdvanced extends TileEntity implements IInventory
     }
 
     @Override
-    public ItemStack getStackInSlot(int i) {
-        return items[i];
+    public ItemStack getStackInSlot(int slot) {
+        return items[slot];
     }
 
     @Override
-    public ItemStack decrStackSize(int i, int count) {
-        ItemStack itemstack = getStackInSlot(i);
-
-        if (itemstack != null) {
-            if (itemstack.stackSize <= count) {
-                setInventorySlotContents(i, null);
+    public ItemStack decrStackSize(int slot, int count) {
+        ItemStack stack = items[slot];
+        if (stack != null) {
+            if (stack.stackSize <= count) {
+                setInventorySlotContents(slot, null);
             } else {
-                itemstack = itemstack.splitStack(count);
-                if (itemstack.stackSize == 0) {
-                    setInventorySlotContents(i, null);
+                stack = stack.splitStack(count);
+                if (stack.stackSize == 0) {
+                    setInventorySlotContents(slot, null);
                 }
             }
         }
-        return itemstack;
+        return stack;
     }
 
     @Override
-    public ItemStack getStackInSlotOnClosing(int i) {
-        ItemStack item = getStackInSlot(i);
-        if (item != null) setInventorySlotContents(i, null);
-        return item;
+    public ItemStack getStackInSlotOnClosing(int slot) {
+        ItemStack stack = getStackInSlot(slot);
+        if (stack != null) {
+            setInventorySlotContents(slot, null);
+        }
+        return stack;
     }
 
     @Override
-    public void setInventorySlotContents(int i, ItemStack itemstack) {
-        items[i] = itemstack;
-        if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
-            itemstack.stackSize = getInventoryStackLimit();
+    public void setInventorySlotContents(int slot, ItemStack stack) {
+        items[slot] = stack;
+        if (stack != null && stack.stackSize > getInventoryStackLimit()) {
+            stack.stackSize = getInventoryStackLimit();
         }
         worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
@@ -191,7 +196,7 @@ public class TilePlayerDetectorAdvanced extends TileEntity implements IInventory
     public void closeInventory() {}
 
     @Override
-    public boolean isItemValidForSlot(int i, ItemStack itemstack) {
+    public boolean isItemValidForSlot(int slot, ItemStack stack) {
         return false;
     }
 
@@ -206,11 +211,10 @@ public class TilePlayerDetectorAdvanced extends TileEntity implements IInventory
     @Override
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
         readFromNBT(pkt.func_148857_g());
-        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
-    public Container getGuiContainer(InventoryPlayer inventoryplayer) {
-        return new ContainerPlayerDetector(inventoryplayer, this);
+    public Container getGuiContainer(InventoryPlayer playerInventory) {
+        return new ContainerPlayerDetector(playerInventory, this);
     }
 
     @Override
@@ -232,10 +236,10 @@ public class TilePlayerDetectorAdvanced extends TileEntity implements IInventory
             compound.setString("Name_" + i, name);
         }
 
-        compound.setBoolean("WhiteList", whiteList);
-        compound.setBoolean("Output", output);
+        compound.setBoolean("WhiteList", isInWhiteListMode);
+        compound.setBoolean("Output", shouldOutput);
         compound.setInteger("Range", range);
-        compound.setBoolean("OutputInverted", outputInverted);
+        compound.setBoolean("OutputInverted", isOutputInverted);
 
         super.writeToNBT(compound);
     }
@@ -251,10 +255,10 @@ public class TilePlayerDetectorAdvanced extends TileEntity implements IInventory
 
         for (int i = 0; i < names.length; i++) names[i] = compound.getString("Name_" + i);
 
-        whiteList = compound.getBoolean("WhiteList");
+        isInWhiteListMode = compound.getBoolean("WhiteList");
         range = compound.getInteger("Range");
-        output = compound.getBoolean("Output");
-        outputInverted = compound.getBoolean("OutputInverted");
+        shouldOutput = compound.getBoolean("Output");
+        isOutputInverted = compound.getBoolean("OutputInverted");
 
         super.readFromNBT(compound);
     }

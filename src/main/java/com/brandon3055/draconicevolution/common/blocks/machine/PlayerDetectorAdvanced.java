@@ -28,9 +28,13 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class PlayerDetectorAdvanced extends BlockCustomDrop {
 
+    @SideOnly(Side.CLIENT)
     IIcon side_inactive;
+    @SideOnly(Side.CLIENT)
     IIcon side_active;
+    @SideOnly(Side.CLIENT)
     IIcon top;
+    @SideOnly(Side.CLIENT)
     IIcon bottom;
 
     public PlayerDetectorAdvanced() {
@@ -41,8 +45,8 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
         ModBlocks.register(this);
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
+    @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister iconRegister) {
         side_inactive = iconRegister
                 .registerIcon(References.RESOURCESPREFIX + "advanced_player_detector_side_inactive");
@@ -52,8 +56,7 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
     }
 
     @Override
-    public boolean isBlockSolid(IBlockAccess p_149747_1_, int p_149747_2_, int p_149747_3_, int p_149747_4_,
-            int p_149747_5_) {
+    public boolean isBlockSolid(IBlockAccess world, int x, int y, int z, int side) {
         return true;
     }
 
@@ -62,47 +65,51 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
         return true;
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
+    @SideOnly(Side.CLIENT)
     public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-        IIcon side_icon;
-
         TileEntity tile = world.getTileEntity(x, y, z);
-        TilePlayerDetectorAdvanced detector = (tile != null && tile instanceof TilePlayerDetectorAdvanced)
-                ? (TilePlayerDetectorAdvanced) tile
-                : null;
-        if (detector != null && detector.getStackInSlot(0) != null) {
-            ItemStack stack = detector.getStackInSlot(0);
-            Block block = Block.getBlockFromItem(stack.getItem());
-            if (block != null && block.renderAsNormalBlock()) return block.getIcon(side, stack.getItemDamage());
-        } else {
-            if (detector != null && detector.output) side_icon = side_active;
-            else side_icon = side_inactive;
-
-            if (side == 0) return bottom;
-            else if (side == 1) return top;
-            else return side_icon;
+        if (tile instanceof TilePlayerDetectorAdvanced) {
+            TilePlayerDetectorAdvanced detector = (TilePlayerDetectorAdvanced) tile;
+            if (detector.getStackInSlot(0) != null) {
+                ItemStack stack = detector.getStackInSlot(0);
+                Block block = Block.getBlockFromItem(stack.getItem());
+                if (block != null && block.renderAsNormalBlock()) {
+                    return block.getIcon(side, stack.getItemDamage());
+                }
+            } else {
+                if (side == 0) {
+                    return bottom;
+                }
+                if (side == 1) {
+                    return top;
+                }
+                return detector.shouldOutput() ? side_active : side_inactive;
+            }
         }
-
-        return null;
+        return side_active;
     }
 
+    @Override
     @SideOnly(Side.CLIENT)
-    @Override
-    public IIcon getIcon(int side, int meta) {
-        if (side == 0) return bottom;
-        else if (side == 1) return top;
-        else return side_active;
+    public IIcon getIcon(int side, int metadata) {
+        if (side == 0) {
+            return bottom;
+        }
+        if (side == 1) {
+            return top;
+        }
+        return side_active;
     }
 
     @Override
-    public TileEntity createNewTileEntity(World var1, int var2) {
+    public TileEntity createNewTileEntity(World world, int metadata) {
         return new TilePlayerDetectorAdvanced();
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_,
-            float p_149727_7_, float p_149727_8_, float p_149727_9_) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float subX,
+            float subY, float subZ) {
         if (!world.isRemote) {
             FMLNetworkHandler
                     .openGui(player, DraconicEvolution.instance, GuiHandler.GUIID_PLAYERDETECTOR, world, x, y, z);
@@ -112,8 +119,7 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
 
     @Override
     public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
-        if (side == 0 || side == 1) return false;
-        else return true;
+        return side >= 0;
     }
 
     @Override
@@ -122,25 +128,15 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
     }
 
     @Override
-    public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int meta) {
-        TileEntity te = world.getTileEntity(x, y, z);
-        TilePlayerDetectorAdvanced detector = (te != null && te instanceof TilePlayerDetectorAdvanced)
-                ? (TilePlayerDetectorAdvanced) te
-                : null;
-        if (detector != null) if (!detector.outputInverted) return detector.output ? 15 : 0;
-        else return detector.output ? 0 : 15;
-        else return 0;
+    public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int side) {
+        return isProvidingStrongPower(world, x, y, z, side);
     }
 
     @Override
-    public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int meta) {
-        TileEntity te = world.getTileEntity(x, y, z);
-        TilePlayerDetectorAdvanced detector = (te != null && te instanceof TilePlayerDetectorAdvanced)
-                ? (TilePlayerDetectorAdvanced) te
-                : null;
-        if (detector != null) if (!detector.outputInverted) return detector.output ? 15 : 0;
-        else return detector.output ? 0 : 15;
-        else return 0;
+    public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int side) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        return tile instanceof TilePlayerDetectorAdvanced && ((TilePlayerDetectorAdvanced) tile).shouldOutput() ? 15
+                : 0;
     }
 
     @Override
@@ -154,17 +150,30 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
     }
 
     @Override
-    protected void getCustomTileEntityDrops(TileEntity te, List<ItemStack> droppes) {}
+    protected void getCustomTileEntityDrops(TileEntity tile, List<ItemStack> drops) {}
 
     @Override
-    public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z) {
-        TileEntity te = world.getTileEntity(x, y, z);
-        TilePlayerDetectorAdvanced detector = (te != null && te instanceof TilePlayerDetectorAdvanced)
-                ? (TilePlayerDetectorAdvanced) te
-                : null;
-        if (detector != null && detector.getStackInSlot(0) != null) {
-            return detector.getStackInSlot(0);
+    public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (tile instanceof TilePlayerDetectorAdvanced) {
+            ItemStack stackInSlot = ((TilePlayerDetectorAdvanced) tile).getStackInSlot(0);
+            if (stackInSlot != null) {
+                return stackInSlot;
+            }
         }
-        return super.getPickBlock(target, world, x, y, z);
+        return super.getPickBlock(target, world, x, y, z, player);
+    }
+
+    @Override
+    public void breakBlock(World world, int x, int y, int z, Block blockBroken, int metadata) {
+        super.breakBlock(world, x, y, z, blockBroken, metadata);
+        world.notifyBlocksOfNeighborChange(x, y, z, blockBroken);
+        for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+            world.notifyBlocksOfNeighborChange(
+                    x + direction.offsetX,
+                    y + direction.offsetY,
+                    z + direction.offsetZ,
+                    blockBroken);
+        }
     }
 }
