@@ -20,7 +20,7 @@ public class RenderTileEnergyPylon extends TileEntitySpecialRenderer {
     private static final ResourceLocation model_texture = new ResourceLocation(
             References.MODID.toLowerCase(),
             "textures/models/pylon_sphere_texture.png");
-    private IModelCustom model;
+    private final IModelCustom model;
 
     public RenderTileEnergyPylon() {
         model = AdvancedModelLoader
@@ -30,10 +30,14 @@ public class RenderTileEnergyPylon extends TileEntitySpecialRenderer {
     @Override
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float timeSinceLastTick) {
 
-        if (tile == null || !(tile instanceof TileEnergyPylon)) return;
+        if (!(tile instanceof TileEnergyPylon)) {
+            return;
+        }
         TileEnergyPylon pylon = (TileEnergyPylon) tile;
-        if (!pylon.active) return;
-        float scale = pylon.modelScale + (timeSinceLastTick *= !pylon.reciveEnergy ? -0.01F : 0.01F);
+        if (!pylon.active) {
+            return;
+        }
+        float scale = pylon.modelScale + (timeSinceLastTick *= !pylon.isReceivingEnergy ? -0.01F : 0.01F);
         float rotation = pylon.modelRotation + (timeSinceLastTick / 2F);
 
         GL11.glPushMatrix();
@@ -59,37 +63,10 @@ public class RenderTileEnergyPylon extends TileEntitySpecialRenderer {
         GL11.glDepthMask(false);
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 200F, 200F);
 
-        GL11.glPushMatrix();
-        float scale1 = scale % 1F;
-        GL11.glScalef(scale1, scale1, scale1);
-        GL11.glRotatef(rotation * 0.5F, 0F, -1F, -0.5F);
-        GL11.glColor4d(1D, 1D, 1D, 1F - (scale1));
-        model.renderAll();
-        GL11.glPopMatrix();
-
-        GL11.glPushMatrix();
-        float scale2 = (scale + 0.25F) % 1F;
-        GL11.glScalef(scale2, scale2, scale2);
-        GL11.glRotatef(rotation * 0.5F, 0F, -1F, -0.5F);
-        GL11.glColor4f(1F, 1F, 1F, 1F - (scale2));
-        model.renderAll();
-        GL11.glPopMatrix();
-
-        GL11.glPushMatrix();
-        float scale3 = (scale + 0.5F) % 1F;
-        GL11.glScalef(scale3, scale3, scale3);
-        GL11.glRotatef(rotation * 0.5F, 0F, -1F, -0.5F);
-        GL11.glColor4f(1F, 1F, 1F, 1F - (scale3));
-        model.renderAll();
-        GL11.glPopMatrix();
-
-        GL11.glPushMatrix();
-        float scale4 = (scale + 0.75F) % 1F;
-        GL11.glScalef(scale4, scale4, scale4);
-        GL11.glRotatef(rotation * 0.5F, 0F, -1F, -0.5F);
-        GL11.glColor4f(1F, 1F, 1F, 1F - (scale4));
-        model.renderAll();
-        GL11.glPopMatrix();
+        renderPass(scale % 1F, rotation);
+        renderPass((scale + 0.25F) % 1F, rotation);
+        renderPass((scale + 0.5F) % 1F, rotation);
+        renderPass((scale + 0.75F) % 1F, rotation);
 
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -100,5 +77,12 @@ public class RenderTileEnergyPylon extends TileEntitySpecialRenderer {
         GL11.glPopMatrix();
     }
 
-    // private void renderSphere()
+    private void renderPass(float scale, float rotation) {
+        GL11.glPushMatrix();
+        GL11.glScalef(scale, scale, scale);
+        GL11.glRotatef(rotation * 0.5F, 0F, -1F, -0.5F);
+        GL11.glColor4f(1F, 1F, 1F, 1F - scale);
+        model.renderAll();
+        GL11.glPopMatrix();
+    }
 }
