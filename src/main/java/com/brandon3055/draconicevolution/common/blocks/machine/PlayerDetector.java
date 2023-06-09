@@ -149,7 +149,6 @@ public class PlayerDetector extends BlockDE implements ITileEntityProvider {
     @Override
     public void breakBlock(World world, int x, int y, int z, Block blockBroken, int metadata) {
         super.breakBlock(world, x, y, z, blockBroken, metadata);
-        world.notifyBlocksOfNeighborChange(x, y, z, blockBroken);
         for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
             world.notifyBlocksOfNeighborChange(
                     x + direction.offsetX,
