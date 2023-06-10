@@ -1,5 +1,6 @@
 package com.brandon3055.draconicevolution.common.blocks;
 
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -26,9 +27,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 /**
  * Created by Brandon on 27/08/2014.
  */
-public class CKeyStone extends BlockDE {
+public class CKeyStone extends BlockDE implements ITileEntityProvider {
 
-    private IIcon blockIcon1;
+    @SideOnly(Side.CLIENT)
+    private IIcon blockIconActive;
 
     public CKeyStone() {
         this.setBlockUnbreakable();
@@ -43,43 +45,41 @@ public class CKeyStone extends BlockDE {
     }
 
     @Override
-    public TileEntity createTileEntity(World world, int metadata) {
+    public TileEntity createNewTileEntity(World world, int metadata) {
         return new TileCKeyStone();
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
+    @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister iconRegister) {
         blockIcon = iconRegister.registerIcon(References.RESOURCESPREFIX + "key_stone_inactive");
-        blockIcon1 = iconRegister.registerIcon(References.RESOURCESPREFIX + "key_stone_active");
+        blockIconActive = iconRegister.registerIcon(References.RESOURCESPREFIX + "key_stone_active");
     }
 
+    @Override
     @SideOnly(Side.CLIENT)
-    @Override
-    public IIcon getIcon(int side, int meta) {
-        if (side == 0 || side == 1) return Blocks.furnace.getIcon(side, meta);
-        else return blockIcon1;
+    public IIcon getIcon(int side, int metadata) {
+        return side == 0 || side == 1 ? Blocks.furnace.getIcon(side, metadata) : blockIconActive;
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-        if (side == 0 || side == 1) return Blocks.furnace.getIcon(side, 0);
-        TileCKeyStone tile = world.getTileEntity(x, y, z) != null
-                && world.getTileEntity(x, y, z) instanceof TileCKeyStone ? (TileCKeyStone) world.getTileEntity(x, y, z)
-                        : null;
-        if (tile != null) return tile.isActivated ? blockIcon1 : blockIcon;
-        else return blockIcon;
+        if (side == 0 || side == 1) {
+            return Blocks.furnace.getIcon(side, 0);
+        }
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (tile instanceof TileCKeyStone) {
+            return ((TileCKeyStone) tile).isActivated ? blockIconActive : blockIcon;
+        }
+        return blockIcon;
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_,
-            float p_149727_7_, float p_149727_8_, float p_149727_9_) {
-        TileCKeyStone tile = world.getTileEntity(x, y, z) != null
-                && world.getTileEntity(x, y, z) instanceof TileCKeyStone ? (TileCKeyStone) world.getTileEntity(x, y, z)
-                        : null;
-
-        if (tile != null) return tile.onActivated(player.getHeldItem(), player);
-        return false;
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float subX,
+            float subY, float subZ) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        return tile instanceof TileCKeyStone && ((TileCKeyStone) tile).onActivated(player.getHeldItem(), player);
     }
 
     @Override
@@ -94,26 +94,17 @@ public class CKeyStone extends BlockDE {
 
     @Override
     public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int meta) {
-        TileCKeyStone tile = world.getTileEntity(x, y, z) != null
-                && world.getTileEntity(x, y, z) instanceof TileCKeyStone ? (TileCKeyStone) world.getTileEntity(x, y, z)
-                        : null;
-        if (tile != null) return tile.isActivated ? 15 : 0;
-        return 0;
-    }
-
-    @Override
-    public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int meta) {
-        return 0;
+        TileEntity tile = world.getTileEntity(x, y, z);
+        return tile instanceof TileCKeyStone && ((TileCKeyStone) tile).isActivated ? 15 : 0;
     }
 
     @Override
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) {
-        TileCKeyStone tile = world.getTileEntity(x, y, z) != null
-                && world.getTileEntity(x, y, z) instanceof TileCKeyStone ? (TileCKeyStone) world.getTileEntity(x, y, z)
-                        : null;
-        if (tile != null) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (tile instanceof TileCKeyStone) {
+            TileCKeyStone keyStone = (TileCKeyStone) tile;
             ItemStack key = new ItemStack(ModItems.key);
-            ItemNBTHelper.setInteger(key, "KeyCode", tile.getKeyCode());
+            ItemNBTHelper.setInteger(key, "KeyCode", keyStone.getKeyCode());
             ItemNBTHelper.setInteger(key, "X", x);
             ItemNBTHelper.setInteger(key, "Y", y);
             ItemNBTHelper.setInteger(key, "Z", z);
@@ -123,8 +114,7 @@ public class CKeyStone extends BlockDE {
     }
 
     @Override
-    public boolean isBlockSolid(IBlockAccess p_149747_1_, int p_149747_2_, int p_149747_3_, int p_149747_4_,
-            int p_149747_5_) {
+    public boolean isBlockSolid(IBlockAccess world, int x, int y, int z, int side) {
         return true;
     }
 

@@ -69,7 +69,8 @@ public class TilePlayerDetector extends TileEntity {
                     xCoord + direction.offsetX,
                     yCoord + direction.offsetY,
                     zCoord + direction.offsetZ,
-                    blockType);
+                    blockType,
+                    direction.getOpposite().ordinal());
         }
     }
 

@@ -172,7 +172,8 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
                     x + direction.offsetX,
                     y + direction.offsetY,
                     z + direction.offsetZ,
-                    blockBroken);
+                    blockBroken,
+                    direction.getOpposite().ordinal());
         }
     }
 }

@@ -154,7 +154,8 @@ public class PlayerDetector extends BlockDE implements ITileEntityProvider {
                     x + direction.offsetX,
                     y + direction.offsetY,
                     z + direction.offsetZ,
-                    blockBroken);
+                    blockBroken,
+                    direction.getOpposite().ordinal());
         }
     }
 }
