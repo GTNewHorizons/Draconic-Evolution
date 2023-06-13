@@ -178,7 +178,7 @@ public class GUIParticleGenerator extends GuiScreen {
         this.particleGenerator = particleGenerator;
         this.properties = new HashMap<>();
         syncWithServer();
-        this.updateScreen();
+        updateScreen();
     }
 
     private static final String[] InfoText = {
@@ -433,7 +433,7 @@ public class GUIParticleGenerator extends GuiScreen {
         properties.put(13, new FloatProperty(1, "Random:", particleGenerator.randomMotionX, -5F, 5F, 1000F));
         properties.put(14, new FloatProperty(1, "Random:", particleGenerator.randomMotionY, -5F, 5F, 1000F));
         properties.put(15, new FloatProperty(1, "Random:", particleGenerator.randomMotionZ, -5F, 5F, 1000F));
-        properties.put(16, new FloatProperty(1, "Random:", particleGenerator.randomScale, 0.01F, 50F, 100F));
+        properties.put(16, new FloatProperty(1, "Random:", particleGenerator.randomScale, 0F, 50F, 100F));
         properties.put(17, new IntegerProperty(1, "Random:", particleGenerator.randomLife, 0, 1000));
 
         properties.put(20, new FloatProperty(2, "Spawn X:", particleGenerator.spawnX, -50F, 50F, 10F));
