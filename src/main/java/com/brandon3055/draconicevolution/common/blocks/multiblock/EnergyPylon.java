@@ -1,6 +1,7 @@
 package com.brandon3055.draconicevolution.common.blocks.multiblock;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,7 +24,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 /**
  * Created by Brandon on 28/07/2014.
  */
-public class EnergyPylon extends BlockDE { // todo fix sphere renderer
+public class EnergyPylon extends BlockDE implements ITileEntityProvider {
 
     @SideOnly(Side.CLIENT)
     public IIcon icon_active_face;
@@ -47,7 +48,7 @@ public class EnergyPylon extends BlockDE { // todo fix sphere renderer
     }
 
     @Override
-    public TileEntity createTileEntity(World world, int metadata) {
+    public TileEntity createNewTileEntity(World world, int metadata) {
         return metadata == 1 || metadata == 2 ? new TileEnergyPylon() : null;
     }
 

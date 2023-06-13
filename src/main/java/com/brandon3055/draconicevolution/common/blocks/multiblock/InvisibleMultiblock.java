@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,7 +35,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 /**
  * Created by Brandon on 25/07/2014.
  */
-public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
+public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock, ITileEntityProvider {
 
     public static void revertStructure(World world, int x, int y, int z) {
         int metadata = world.getBlockMetadata(x, y, z);
@@ -93,7 +94,7 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock {
     }
 
     @Override
-    public TileEntity createTileEntity(World world, int metadata) {
+    public TileEntity createNewTileEntity(World world, int metadata) {
         return metadata == 0 || metadata == 1 ? new TileInvisibleMultiblock() : null;
     }
 

@@ -3,6 +3,7 @@ package com.brandon3055.draconicevolution.common.blocks;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -27,7 +28,7 @@ import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ParticleGenerator extends BlockDE {
+public class ParticleGenerator extends BlockDE implements ITileEntityProvider {
 
     public static Block instance;
 
@@ -39,8 +40,8 @@ public class ParticleGenerator extends BlockDE {
         ModBlocks.register(this);
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
+    @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister iconRegister) {
         blockIcon = iconRegister.registerIcon(References.RESOURCESPREFIX + "machine_side");
     }
@@ -77,8 +78,8 @@ public class ParticleGenerator extends BlockDE {
         return true;
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
+    @SideOnly(Side.CLIENT)
     public int getRenderType() {
         return -1;
     }
@@ -97,8 +98,8 @@ public class ParticleGenerator extends BlockDE {
         return true;
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
+    @SideOnly(Side.CLIENT)
     public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int metadata) {
         if (!world.isRemote) {
             return;
@@ -161,7 +162,7 @@ public class ParticleGenerator extends BlockDE {
     }
 
     @Override
-    public TileEntity createTileEntity(World world, int metadata) {
+    public TileEntity createNewTileEntity(World world, int metadata) {
         return new TileParticleGenerator();
     }
 
