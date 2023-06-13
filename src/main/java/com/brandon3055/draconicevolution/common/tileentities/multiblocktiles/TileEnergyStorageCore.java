@@ -370,7 +370,7 @@ public class TileEnergyStorageCore extends TileObjectSync {
                 return;
             }
             TileParticleGenerator generator = (TileParticleGenerator) tile;
-            generator.stabalizerMode = true;
+            generator.isInStabilizerMode = true;
             generator.setMaster(new TileLocation(xCoord, yCoord, zCoord));
             worldObj.setBlockMetadataWithNotify(
                     stabilizer.getXCoord(),
@@ -416,7 +416,7 @@ public class TileEnergyStorageCore extends TileObjectSync {
             TileEntity tile = stabilizer.getTileEntity(worldObj);
             if (tile instanceof TileParticleGenerator) {
                 TileParticleGenerator generator = (TileParticleGenerator) tile;
-                generator.stabalizerMode = false;
+                generator.isInStabilizerMode = false;
                 worldObj.setBlockMetadataWithNotify(
                         stabilizer.getXCoord(),
                         stabilizer.getYCoord(),
@@ -434,7 +434,7 @@ public class TileEnergyStorageCore extends TileObjectSync {
                 return false;
             }
             TileParticleGenerator generator = (TileParticleGenerator) tile;
-            if (!generator.stabalizerMode || stabilizer.getBlockMetadata(worldObj) != 1) {
+            if (!generator.isInStabilizerMode || stabilizer.getBlockMetadata(worldObj) != 1) {
                 return false;
             }
             TileEnergyStorageCore core = generator.getMaster();

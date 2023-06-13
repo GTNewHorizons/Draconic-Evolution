@@ -23,80 +23,80 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
 
-    public boolean particles_enabled = true;
+    public static final int MAXIMUM_PARTICLE_INDEX = 3;
+    public boolean isParticlesEnabled = true;
 
     public int red = 0;
     public int green = 0;
     public int blue = 0;
-    public int random_red = 0;
-    public int random_green = 0;
-    public int random_blue = 0;
-    public float motion_x = 0.0F;
-    public float motion_y = 0.0F;
-    public float motion_z = 0.0F;
-    public float random_motion_x = 0.0F;
-    public float random_motion_y = 0.0F;
-    public float random_motion_z = 0.0F;
+    public int randomRed = 0;
+    public int randomGreen = 0;
+    public int randomBlue = 0;
+    public float motionX = 0.0F;
+    public float motionY = 0.0F;
+    public float motionZ = 0.0F;
+    public float randomMotionX = 0.0F;
+    public float randomMotionY = 0.0F;
+    public float randomMotionZ = 0.0F;
     public float scale = 1F;
-    public float random_scale = 0F;
+    public float randomScale = 0F;
     public int life = 100;
-    public int random_life = 0;
-    public float spawn_x = 0;
-    public float spawn_y = 0;
-    public float spawn_z = 0;
-    public float random_spawn_x = 0;
-    public float random_spawn_y = 0;
-    public float random_spawn_z = 0;
+    public int randomLife = 0;
+    public float spawnX = 0;
+    public float spawnY = 0;
+    public float spawnZ = 0;
+    public float randomSpawnX = 0;
+    public float randomSpawnY = 0;
+    public float randomSpawnZ = 0;
     public int page = 1;
     public int fade = 0;
-    public int spawn_rate = 1;
-    public boolean collide = false;
-    public int selected_particle = 1;
-    public int selected_max = 3;
+    public int spawnRate = 1;
+    public boolean canParticleCollide = false;
+    public int selectedParticle = 1;
     public float gravity = 0F;
-    public boolean active = true;
-    public boolean signal = false;
-    public boolean inverted = false;
+    public boolean isActive = true;
+    public boolean hasRedstoneSignal = false;
+    public boolean isInverted = false;
     TileLocation master = new TileLocation();
     public float rotation = 0;
-    public boolean stabalizerMode = false;
+    public boolean isInStabilizerMode = false;
 
     // beam
-    public boolean beam_enabled = false;
-    public boolean render_core = false;
+    public boolean isBeamEnabled = false;
+    public boolean shouldRenderCore = false;
 
-    public int beam_red = 0;
-    public int beam_green = 0;
-    public int beam_blue = 0;
-    public float beam_scale = 1F;
-    public float beam_pitch = 0F;
-    public float beam_yaw = 0F;
-    public float beam_length = 0F;
-    public float beam_rotation = 0F;
+    public int beamRed = 0;
+    public int beamGreen = 0;
+    public int beamBlue = 0;
+    public float beamScale = 1F;
+    public float beamPitch = 0F;
+    public float beamYaw = 0F;
+    public float beamLength = 0F;
+    public float beamRotation = 0F;
 
     private int tick = 0;
 
-    @SideOnly(Side.SERVER)
     @Override
+    @SideOnly(Side.SERVER)
     public boolean canUpdate() {
         return false;
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
+    @SideOnly(Side.CLIENT)
     public void updateEntity() {
         if (!worldObj.isRemote) {
             return;
         }
         rotation += 0.5F;
-        if (stabalizerMode) {
+        if (isInStabilizerMode) {
             spawnStabilizerParticle();
             return;
         }
 
-        active = signal != inverted;
+        isActive = hasRedstoneSignal != isInverted;
 
-        if (tick < spawn_rate || !active || !particles_enabled) {
+        if (tick < spawnRate || !isActive || !isParticlesEnabled) {
             tick++;
             return;
         }
@@ -104,13 +104,13 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
         tick = 0;
         Random rand = worldObj.rand;
 
-        float motionX = motion_x + (random_motion_x * rand.nextFloat());
-        float motionY = motion_y + (random_motion_y * rand.nextFloat());
-        float motionZ = motion_z + (random_motion_z * rand.nextFloat());
-        float scale = this.scale + (random_scale * rand.nextFloat());
-        double spawnX = xCoord + spawn_x + (random_spawn_x * rand.nextFloat());
-        double spawnY = yCoord + spawn_y + (random_spawn_y * rand.nextFloat());
-        double spawnZ = zCoord + spawn_z + (random_spawn_z * rand.nextFloat());
+        float motionX = this.motionX + (randomMotionX * rand.nextFloat());
+        float motionY = this.motionY + (randomMotionY * rand.nextFloat());
+        float motionZ = this.motionZ + (randomMotionZ * rand.nextFloat());
+        float scale = this.scale + (randomScale * rand.nextFloat());
+        double spawnX = xCoord + this.spawnX + (randomSpawnX * rand.nextFloat());
+        double spawnY = yCoord + this.spawnY + (randomSpawnY * rand.nextFloat());
+        double spawnZ = zCoord + this.spawnZ + (randomSpawnZ * rand.nextFloat());
 
         ParticleCustom particle = new ParticleCustom(
                 worldObj,
@@ -121,12 +121,12 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
                 motionY,
                 motionZ,
                 scale,
-                collide,
-                this.selected_particle);
-        particle.red = this.red + rand.nextInt(random_red + 1);
-        particle.green = this.green + rand.nextInt(random_green + 1);
-        particle.blue = this.blue + rand.nextInt(random_blue + 1);
-        particle.maxAge = this.life + rand.nextInt(random_life + 1);
+                canParticleCollide,
+                this.selectedParticle);
+        particle.red = this.red + rand.nextInt(randomRed + 1);
+        particle.green = this.green + rand.nextInt(randomGreen + 1);
+        particle.blue = this.blue + rand.nextInt(randomBlue + 1);
+        particle.maxAge = this.life + rand.nextInt(randomLife + 1);
         particle.fadeTime = this.fade;
         particle.fadeLength = this.fade;
         particle.gravity = this.gravity;
@@ -176,7 +176,7 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
     }
 
     public void toggleInverted() {
-        inverted = !inverted;
+        isInverted = !isInverted;
     }
 
     @Override
@@ -195,7 +195,7 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         master.writeToNBT(compound, "Key");
-        compound.setBoolean("StabalizerMode", stabalizerMode);
+        compound.setBoolean("StabalizerMode", isInStabilizerMode);
         getBlockNBT(compound);
 
         super.writeToNBT(compound);
@@ -204,7 +204,7 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         master.readFromNBT(compound, "Key");
-        stabalizerMode = compound.getBoolean("StabalizerMode");
+        isInStabilizerMode = compound.getBoolean("StabalizerMode");
         setBlockNBT(compound);
         super.readFromNBT(compound);
     }
@@ -227,92 +227,92 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
         compound.setInteger("Red", red);
         compound.setInteger("Green", green);
         compound.setInteger("Blue", blue);
-        compound.setInteger("RandomRed", random_red);
-        compound.setInteger("RandomGreen", random_green);
-        compound.setInteger("RandomBlue", random_blue);
-        compound.setFloat("MotionX", motion_x);
-        compound.setFloat("MotionY", motion_y);
-        compound.setFloat("MotionZ", motion_z);
-        compound.setFloat("RandomMotionX", random_motion_x);
-        compound.setFloat("RandomMotionY", random_motion_y);
-        compound.setFloat("RandomMotionZ", random_motion_z);
+        compound.setInteger("RandomRed", randomRed);
+        compound.setInteger("RandomGreen", randomGreen);
+        compound.setInteger("RandomBlue", randomBlue);
+        compound.setFloat("MotionX", motionX);
+        compound.setFloat("MotionY", motionY);
+        compound.setFloat("MotionZ", motionZ);
+        compound.setFloat("RandomMotionX", randomMotionX);
+        compound.setFloat("RandomMotionY", randomMotionY);
+        compound.setFloat("RandomMotionZ", randomMotionZ);
         compound.setFloat("Scale", scale);
-        compound.setFloat("RandomScale", random_scale);
+        compound.setFloat("RandomScale", randomScale);
         compound.setInteger("Life", life);
-        compound.setInteger("RandomLife", random_life);
-        compound.setFloat("SpawnX", spawn_x);
-        compound.setFloat("SpawnY", spawn_y);
-        compound.setFloat("SpawnZ", spawn_z);
-        compound.setFloat("RandomSpawnX", random_spawn_x);
-        compound.setFloat("RandomSpawnY", random_spawn_y);
-        compound.setFloat("RandomSpawnZ", random_spawn_z);
+        compound.setInteger("RandomLife", randomLife);
+        compound.setFloat("SpawnX", spawnX);
+        compound.setFloat("SpawnY", spawnY);
+        compound.setFloat("SpawnZ", spawnZ);
+        compound.setFloat("RandomSpawnX", randomSpawnX);
+        compound.setFloat("RandomSpawnY", randomSpawnY);
+        compound.setFloat("RandomSpawnZ", randomSpawnZ);
         compound.setInteger("Page", page);
-        compound.setInteger("SpawnRate", spawn_rate);
-        compound.setBoolean("CanCollide", collide);
+        compound.setInteger("SpawnRate", spawnRate);
+        compound.setBoolean("CanCollide", canParticleCollide);
         compound.setInteger("Fade", fade);
-        compound.setInteger("SelectedParticle", selected_particle);
+        compound.setInteger("SelectedParticle", selectedParticle);
         compound.setFloat("Gravity", gravity);
-        compound.setBoolean("Active", active);
-        compound.setBoolean("Signal", signal);
-        compound.setBoolean("Inverted", inverted);
-        compound.setBoolean("particles_enabled", particles_enabled);
+        compound.setBoolean("Active", isActive);
+        compound.setBoolean("Signal", hasRedstoneSignal);
+        compound.setBoolean("Inverted", isInverted);
+        compound.setBoolean("particles_enabled", isParticlesEnabled);
 
-        compound.setBoolean("beam_enabled", beam_enabled);
-        compound.setBoolean("render_core", render_core);
-        compound.setInteger("beam_red", beam_red);
-        compound.setInteger("beam_green", beam_green);
-        compound.setInteger("beam_blue", beam_blue);
-        compound.setFloat("beam_scale", beam_scale);
-        compound.setFloat("beam_pitch", beam_pitch);
-        compound.setFloat("beam_yaw", beam_yaw);
-        compound.setFloat("beam_length", beam_length);
-        compound.setFloat("beam_rotation", beam_rotation);
+        compound.setBoolean("beam_enabled", isBeamEnabled);
+        compound.setBoolean("render_core", shouldRenderCore);
+        compound.setInteger("beam_red", beamRed);
+        compound.setInteger("beam_green", beamGreen);
+        compound.setInteger("beam_blue", beamBlue);
+        compound.setFloat("beam_scale", beamScale);
+        compound.setFloat("beam_pitch", beamPitch);
+        compound.setFloat("beam_yaw", beamYaw);
+        compound.setFloat("beam_length", beamLength);
+        compound.setFloat("beam_rotation", beamRotation);
     }
 
     public void setBlockNBT(NBTTagCompound compound) {
         red = compound.getInteger("Red");
         green = compound.getInteger("Green");
         blue = compound.getInteger("Blue");
-        random_red = compound.getInteger("RandomRed");
-        random_green = compound.getInteger("RandomGreen");
-        random_blue = compound.getInteger("RandomBlue");
-        motion_x = compound.getFloat("MotionX");
-        motion_y = compound.getFloat("MotionY");
-        motion_z = compound.getFloat("MotionZ");
-        random_motion_x = compound.getFloat("RandomMotionX");
-        random_motion_y = compound.getFloat("RandomMotionY");
-        random_motion_z = compound.getFloat("RandomMotionZ");
+        randomRed = compound.getInteger("RandomRed");
+        randomGreen = compound.getInteger("RandomGreen");
+        randomBlue = compound.getInteger("RandomBlue");
+        motionX = compound.getFloat("MotionX");
+        motionY = compound.getFloat("MotionY");
+        motionZ = compound.getFloat("MotionZ");
+        randomMotionX = compound.getFloat("RandomMotionX");
+        randomMotionY = compound.getFloat("RandomMotionY");
+        randomMotionZ = compound.getFloat("RandomMotionZ");
         scale = compound.getFloat("Scale");
-        random_scale = compound.getFloat("RandomScale");
+        randomScale = compound.getFloat("RandomScale");
         life = compound.getInteger("Life");
-        random_life = compound.getInteger("RandomLife");
-        spawn_x = compound.getFloat("SpawnX");
-        spawn_y = compound.getFloat("SpawnY");
-        spawn_z = compound.getFloat("SpawnZ");
-        random_spawn_x = compound.getFloat("RandomSpawnX");
-        random_spawn_y = compound.getFloat("RandomSpawnY");
-        random_spawn_z = compound.getFloat("RandomSpawnZ");
+        randomLife = compound.getInteger("RandomLife");
+        spawnX = compound.getFloat("SpawnX");
+        spawnY = compound.getFloat("SpawnY");
+        spawnZ = compound.getFloat("SpawnZ");
+        randomSpawnX = compound.getFloat("RandomSpawnX");
+        randomSpawnY = compound.getFloat("RandomSpawnY");
+        randomSpawnZ = compound.getFloat("RandomSpawnZ");
         page = compound.getInteger("Page");
-        spawn_rate = compound.getInteger("SpawnRate");
-        collide = compound.getBoolean("CanCollide");
+        spawnRate = compound.getInteger("SpawnRate");
+        canParticleCollide = compound.getBoolean("CanCollide");
         fade = compound.getInteger("Fade");
-        selected_particle = compound.getInteger("SelectedParticle");
+        selectedParticle = compound.getInteger("SelectedParticle");
         gravity = compound.getFloat("Gravity");
-        active = compound.getBoolean("Active");
-        signal = compound.getBoolean("Signal");
-        inverted = compound.getBoolean("Inverted");
-        particles_enabled = compound.getBoolean("particles_enabled");
+        isActive = compound.getBoolean("Active");
+        hasRedstoneSignal = compound.getBoolean("Signal");
+        isInverted = compound.getBoolean("Inverted");
+        isParticlesEnabled = compound.getBoolean("particles_enabled");
 
-        beam_enabled = compound.getBoolean("beam_enabled");
-        render_core = compound.getBoolean("render_core");
-        beam_red = compound.getInteger("beam_red");
-        beam_green = compound.getInteger("beam_green");
-        beam_blue = compound.getInteger("beam_blue");
-        beam_scale = compound.getFloat("beam_scale");
-        beam_pitch = compound.getFloat("beam_pitch");
-        beam_yaw = compound.getFloat("beam_yaw");
-        beam_length = compound.getFloat("beam_length");
-        beam_rotation = compound.getFloat("beam_rotation");
+        isBeamEnabled = compound.getBoolean("beam_enabled");
+        shouldRenderCore = compound.getBoolean("render_core");
+        beamRed = compound.getInteger("beam_red");
+        beamGreen = compound.getInteger("beam_green");
+        beamBlue = compound.getInteger("beam_blue");
+        beamScale = compound.getFloat("beam_scale");
+        beamPitch = compound.getFloat("beam_pitch");
+        beamYaw = compound.getFloat("beam_yaw");
+        beamLength = compound.getFloat("beam_length");
+        beamRotation = compound.getFloat("beam_rotation");
     }
 
     @SideOnly(Side.CLIENT)
@@ -349,7 +349,7 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
 
             /* Particles */
             if (args[0].equals("particles_enabled") && args[1] instanceof Boolean) {
-                particles_enabled = (Boolean) args[1];
+                isParticlesEnabled = (boolean) args[1];
             } else if (args[0].equals("red") && args[1] instanceof Double) {
                 red = limit(((Double) args[1]).intValue(), 0, 255);
             } else if (args[0].equals("green") && args[1] instanceof Double) {
@@ -357,75 +357,75 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
             } else if (args[0].equals("blue") && args[1] instanceof Double) {
                 blue = limit(((Double) args[1]).intValue(), 0, 255);
             } else if (args[0].equals("random_red") && args[1] instanceof Double) {
-                random_red = limit(((Double) args[1]).intValue(), 0, 255);
+                randomRed = limit(((Double) args[1]).intValue(), 0, 255);
             } else if (args[0].equals("random_green") && args[1] instanceof Double) {
-                random_green = limit(((Double) args[1]).intValue(), 0, 255);
+                randomGreen = limit(((Double) args[1]).intValue(), 0, 255);
             } else if (args[0].equals("random_blue") && args[1] instanceof Double) {
-                random_blue = limit(((Double) args[1]).intValue(), 0, 255);
+                randomBlue = limit(((Double) args[1]).intValue(), 0, 255);
             } else if (args[0].equals("motion_x") && args[1] instanceof Double) {
-                motion_x = (float) limit((Double) args[1], -5F, 5F);
+                motionX = (float) limit((Double) args[1], -5F, 5F);
             } else if (args[0].equals("motion_y") && args[1] instanceof Double) {
-                motion_y = (float) limit((Double) args[1], -5F, 5F);
+                motionY = (float) limit((Double) args[1], -5F, 5F);
             } else if (args[0].equals("motion_z") && args[1] instanceof Double) {
-                motion_z = (float) limit((Double) args[1], -5F, 5F);
+                motionZ = (float) limit((Double) args[1], -5F, 5F);
             } else if (args[0].equals("random_motion_x") && args[1] instanceof Double) {
-                random_motion_x = (float) limit((Double) args[1], -5F, 5F);
+                randomMotionX = (float) limit((Double) args[1], -5F, 5F);
             } else if (args[0].equals("random_motion_y") && args[1] instanceof Double) {
-                random_motion_y = (float) limit((Double) args[1], -5F, 5F);
+                randomMotionY = (float) limit((Double) args[1], -5F, 5F);
             } else if (args[0].equals("random_motion_z") && args[1] instanceof Double) {
-                random_motion_z = (float) limit((Double) args[1], -5F, 5F);
+                randomMotionZ = (float) limit((Double) args[1], -5F, 5F);
             } else if (args[0].equals("scale") && args[1] instanceof Double) {
                 scale = (float) limit((Double) args[1], 0.01F, 50F);
             } else if (args[0].equals("random_scale") && args[1] instanceof Double) {
-                random_scale = (float) limit((Double) args[1], 0.01F, 50F);
+                randomScale = (float) limit((Double) args[1], 0.01F, 50F);
             } else if (args[0].equals("life") && args[1] instanceof Double) {
                 life = limit(((Double) args[1]).intValue(), 0, 1000);
             } else if (args[0].equals("random_life") && args[1] instanceof Double) {
-                random_life = limit(((Double) args[1]).intValue(), 0, 1000);
+                randomLife = limit(((Double) args[1]).intValue(), 0, 1000);
             } else if (args[0].equals("spawn_x") && args[1] instanceof Double) {
-                spawn_x = (float) limit((Double) args[1], -50F, 50F);
+                spawnX = (float) limit((Double) args[1], -50F, 50F);
             } else if (args[0].equals("spawn_y") && args[1] instanceof Double) {
-                spawn_y = (float) limit((Double) args[1], -50F, 50F);
+                spawnY = (float) limit((Double) args[1], -50F, 50F);
             } else if (args[0].equals("spawn_z") && args[1] instanceof Double) {
-                spawn_z = (float) limit((Double) args[1], -50F, 50F);
+                spawnZ = (float) limit((Double) args[1], -50F, 50F);
             } else if (args[0].equals("random_spawn_x") && args[1] instanceof Double) {
-                random_spawn_x = (float) limit((Double) args[1], -50F, 50F);
+                randomSpawnX = (float) limit((Double) args[1], -50F, 50F);
             } else if (args[0].equals("random_spawn_y") && args[1] instanceof Double) {
-                random_spawn_y = (float) limit((Double) args[1], -50F, 50F);
+                randomSpawnY = (float) limit((Double) args[1], -50F, 50F);
             } else if (args[0].equals("random_spawn_z") && args[1] instanceof Double) {
-                random_spawn_z = (float) limit((Double) args[1], -50F, 50F);
+                randomSpawnZ = (float) limit((Double) args[1], -50F, 50F);
             } else if (args[0].equals("fade") && args[1] instanceof Double) {
                 fade = limit(((Double) args[1]).intValue(), 0, 100);
             } else if (args[0].equals("spawn_rate") && args[1] instanceof Double) {
-                spawn_rate = limit(((Double) args[1]).intValue(), 1, 200);
+                spawnRate = limit(((Double) args[1]).intValue(), 1, 200);
             } else if (args[0].equals("collide") && args[1] instanceof Boolean) {
-                collide = (Boolean) args[1];
+                canParticleCollide = (Boolean) args[1];
             } else if (args[0].equals("selected_particle") && args[1] instanceof Double) {
-                selected_particle = limit(((Double) args[1]).intValue(), 1, selected_max);
+                selectedParticle = limit(((Double) args[1]).intValue(), 1, MAXIMUM_PARTICLE_INDEX);
             } else if (args[0].equals("gravity") && args[1] instanceof Double) {
                 gravity = (float) limit((Double) args[1], -5F, 5F);
             }
             /* Beam */
             else if (args[0].equals("beam_enabled") && args[1] instanceof Boolean) {
-                beam_enabled = (Boolean) args[1];
+                isBeamEnabled = (Boolean) args[1];
             } else if (args[0].equals("render_core") && args[1] instanceof Boolean) {
-                render_core = (Boolean) args[1];
+                shouldRenderCore = (Boolean) args[1];
             } else if (args[0].equals("beam_red") && args[1] instanceof Double) {
-                beam_red = limit(((Double) args[1]).intValue(), 0, 255);
+                beamRed = limit(((Double) args[1]).intValue(), 0, 255);
             } else if (args[0].equals("beam_green") && args[1] instanceof Double) {
-                beam_green = limit(((Double) args[1]).intValue(), 0, 255);
+                beamGreen = limit(((Double) args[1]).intValue(), 0, 255);
             } else if (args[0].equals("beam_blue") && args[1] instanceof Double) {
-                beam_blue = limit(((Double) args[1]).intValue(), 0, 255);
+                beamBlue = limit(((Double) args[1]).intValue(), 0, 255);
             } else if (args[0].equals("beam_scale") && args[1] instanceof Double) {
-                beam_scale = (float) limit((Double) args[1], -0F, 5F);
+                beamScale = (float) limit((Double) args[1], -0F, 5F);
             } else if (args[0].equals("beam_pitch") && args[1] instanceof Double) {
-                beam_pitch = (float) limit((Double) args[1], -180F, 180F);
+                beamPitch = (float) limit((Double) args[1], -180F, 180F);
             } else if (args[0].equals("beam_yaw") && args[1] instanceof Double) {
-                beam_yaw = (float) limit((Double) args[1], -180F, 180F);
+                beamYaw = (float) limit((Double) args[1], -180F, 180F);
             } else if (args[0].equals("beam_length") && args[1] instanceof Double) {
-                beam_length = (float) limit((Double) args[1], -0F, 320F);
+                beamLength = (float) limit((Double) args[1], -0F, 320F);
             } else if (args[0].equals("beam_rotation") && args[1] instanceof Double) {
-                beam_rotation = (float) limit((Double) args[1], -1F, 1F);
+                beamRotation = (float) limit((Double) args[1], -1F, 1F);
             } else {
                 return new Object[] { false };
             }
@@ -436,91 +436,91 @@ public class TileParticleGenerator extends TileEntity implements IDEPeripheral {
             Map<Object, Object> map = new HashMap<>();
 
             /* Particles */
-            map.put("particles_enabled", particles_enabled);
+            map.put("particles_enabled", isParticlesEnabled);
             map.put("red", red);
             map.put("green", green);
             map.put("blue", blue);
-            map.put("random_red", random_red);
-            map.put("random_green", random_green);
-            map.put("random_blue", random_blue);
-            map.put("motion_x", motion_x);
-            map.put("motion_y", motion_y);
-            map.put("motion_z", motion_z);
-            map.put("random_motion_x", random_motion_x);
-            map.put("random_motion_y", random_motion_y);
-            map.put("random_motion_z", random_motion_z);
+            map.put("random_red", randomRed);
+            map.put("random_green", randomGreen);
+            map.put("random_blue", randomBlue);
+            map.put("motion_x", motionX);
+            map.put("motion_y", motionY);
+            map.put("motion_z", motionZ);
+            map.put("random_motion_x", randomMotionX);
+            map.put("random_motion_y", randomMotionY);
+            map.put("random_motion_z", randomMotionZ);
             map.put("scale", scale);
-            map.put("random_scale", random_scale);
+            map.put("random_scale", randomScale);
             map.put("life", life);
-            map.put("random_life", random_life);
-            map.put("spawn_x", spawn_x);
-            map.put("spawn_y", spawn_y);
-            map.put("spawn_z", spawn_z);
-            map.put("random_spawn_x", random_spawn_x);
-            map.put("random_spawn_y", random_spawn_y);
-            map.put("random_spawn_z", random_spawn_z);
+            map.put("random_life", randomLife);
+            map.put("spawn_x", spawnX);
+            map.put("spawn_y", spawnY);
+            map.put("spawn_z", spawnZ);
+            map.put("random_spawn_x", randomSpawnX);
+            map.put("random_spawn_y", randomSpawnY);
+            map.put("random_spawn_z", randomSpawnZ);
             map.put("fade", fade);
-            map.put("spawn_rate", spawn_rate);
-            map.put("collide", collide);
-            map.put("selected_particle", selected_particle);
+            map.put("spawn_rate", spawnRate);
+            map.put("collide", canParticleCollide);
+            map.put("selected_particle", selectedParticle);
             map.put("gravity", gravity);
 
             /* Beam */
-            map.put("beam_enabled", beam_enabled);
-            map.put("render_core", render_core);
-            map.put("beam_red", beam_red);
-            map.put("beam_green", beam_green);
-            map.put("beam_blue", beam_blue);
-            map.put("beam_scale", beam_scale);
-            map.put("beam_pitch", beam_pitch);
-            map.put("beam_yaw", beam_yaw);
-            map.put("beam_length", beam_length);
-            map.put("beam_rotation", beam_rotation);
+            map.put("beam_enabled", isBeamEnabled);
+            map.put("render_core", shouldRenderCore);
+            map.put("beam_red", beamRed);
+            map.put("beam_green", beamGreen);
+            map.put("beam_blue", beamBlue);
+            map.put("beam_scale", beamScale);
+            map.put("beam_pitch", beamPitch);
+            map.put("beam_yaw", beamYaw);
+            map.put("beam_length", beamLength);
+            map.put("beam_rotation", beamRotation);
 
             return new Object[] { map };
         } else if (method.startsWith("resetGeneratorState")) {
-            particles_enabled = true;
+            isParticlesEnabled = true;
             red = 0;
             green = 0;
             blue = 0;
-            random_red = 0;
-            random_green = 0;
-            random_blue = 0;
-            motion_x = 0.0F;
-            motion_y = 0.0F;
-            motion_z = 0.0F;
-            random_motion_x = 0.0F;
-            random_motion_y = 0.0F;
-            random_motion_z = 0.0F;
+            randomRed = 0;
+            randomGreen = 0;
+            randomBlue = 0;
+            motionX = 0.0F;
+            motionY = 0.0F;
+            motionZ = 0.0F;
+            randomMotionX = 0.0F;
+            randomMotionY = 0.0F;
+            randomMotionZ = 0.0F;
             scale = 1F;
-            random_scale = 0F;
+            randomScale = 0F;
             life = 100;
-            random_life = 0;
-            spawn_x = 0;
-            spawn_y = 0;
-            spawn_z = 0;
-            random_spawn_x = 0;
-            random_spawn_y = 0;
-            random_spawn_z = 0;
+            randomLife = 0;
+            spawnX = 0;
+            spawnY = 0;
+            spawnZ = 0;
+            randomSpawnX = 0;
+            randomSpawnY = 0;
+            randomSpawnZ = 0;
             page = 1;
             fade = 0;
-            spawn_rate = 1;
-            collide = false;
-            selected_particle = 1;
+            spawnRate = 1;
+            canParticleCollide = false;
+            selectedParticle = 1;
             gravity = 0F;
 
             // beam
-            beam_enabled = false;
-            render_core = false;
+            isBeamEnabled = false;
+            shouldRenderCore = false;
 
-            beam_red = 0;
-            beam_green = 0;
-            beam_blue = 0;
-            beam_scale = 1F;
-            beam_pitch = 0F;
-            beam_yaw = 0F;
-            beam_length = 0F;
-            beam_rotation = 0F;
+            beamRed = 0;
+            beamGreen = 0;
+            beamBlue = 0;
+            beamScale = 1F;
+            beamPitch = 0F;
+            beamYaw = 0F;
+            beamLength = 0F;
+            beamRotation = 0F;
 
             worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
             return new Object[] { true };

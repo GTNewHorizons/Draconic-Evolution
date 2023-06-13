@@ -54,8 +54,8 @@ public class RenderTileParticleGen extends TileEntitySpecialRenderer {
     public void renderBlock(TileParticleGenerator tl, float f3) {
         Tessellator tessellator = Tessellator.instance;
 
-        boolean inverted = tl.inverted;
-        boolean stabilizerMode = tl.stabalizerMode;
+        boolean inverted = tl.isInverted;
+        boolean stabilizerMode = tl.isInStabilizerMode;
 
         GL11.glPushMatrix();
 
@@ -104,7 +104,7 @@ public class RenderTileParticleGen extends TileEntitySpecialRenderer {
             drawEnergyBeam(tessellator, tl, f3);
         }
 
-        if (tl.beam_enabled) preRenderBeam(tessellator, tl, f3);
+        if (tl.isBeamEnabled) preRenderBeam(tessellator, tl, f3);
     }
 
     private void drawEnergyBeam(Tessellator tess, TileParticleGenerator gen, float f) {
@@ -144,12 +144,12 @@ public class RenderTileParticleGen extends TileEntitySpecialRenderer {
         GL11.glColor4f(0.0F, 2.0F, 0.0F, 1F);
         GL11.glTranslated(0.5, 0, 0.5);
         GL11.glScalef(0.4F, 0.4F, 0.4F);
-        if (!tile.stabalizerMode) {
-            float red = (float) tile.beam_red / 255F;
-            float green = (float) tile.beam_green / 255F;
-            float blue = (float) tile.beam_blue / 255F;
+        if (!tile.isInStabilizerMode) {
+            float red = (float) tile.beamRed / 255F;
+            float green = (float) tile.beamGreen / 255F;
+            float blue = (float) tile.beamBlue / 255F;
             GL11.glColor4f(red, green, blue, 1F);
-            GL11.glScalef(tile.beam_scale, tile.beam_scale, tile.beam_scale);
+            GL11.glScalef(tile.beamScale, tile.beamScale, tile.beamScale);
         }
 
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 200, 200);
@@ -166,10 +166,10 @@ public class RenderTileParticleGen extends TileEntitySpecialRenderer {
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDepthMask(false);
         GL11.glColor4f(0.0F, 1.0F, 1.0F, 0.5F);
-        if (!tile.stabalizerMode) {
-            float red = (float) tile.beam_red / 255F;
-            float green = (float) tile.beam_green / 255F;
-            float blue = (float) tile.beam_blue / 255F;
+        if (!tile.isInStabilizerMode) {
+            float red = (float) tile.beamRed / 255F;
+            float green = (float) tile.beamGreen / 255F;
+            float blue = (float) tile.beamBlue / 255F;
             GL11.glColor4f(red, green, blue, 0.5F);
         }
         GL11.glEnable(GL11.GL_BLEND);
@@ -491,17 +491,17 @@ public class RenderTileParticleGen extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
 
         GL11.glTranslated(0, 0.5, 0.5);
-        GL11.glRotatef(90F + gen.beam_pitch, 1F, 0F, 0F);
+        GL11.glRotatef(90F + gen.beamPitch, 1F, 0F, 0F);
         GL11.glTranslated(0, 0, -0.5);
 
         GL11.glTranslated(0.5, 0, 0);
-        GL11.glRotatef(gen.beam_yaw, 0F, 0F, 1F);
+        GL11.glRotatef(gen.beamYaw, 0F, 0F, 1F);
         GL11.glTranslated(-0.5, 0, 0);
 
         renderBeam(tess, gen, f);
         GL11.glPopMatrix();
 
-        if (gen.render_core) {
+        if (gen.shouldRenderCore) {
             GL11.glPushMatrix();
             GL11.glTranslated(0, 0.5, 0);
             renderStabilizerSphere(gen);
@@ -513,10 +513,10 @@ public class RenderTileParticleGen extends TileEntitySpecialRenderer {
         int x = 0;
         int y = 0;
         int z = 0;
-        double length = tile.beam_length;
-        float red = (float) tile.beam_red / 255F;
-        float green = (float) tile.beam_green / 255F;
-        float blue = (float) tile.beam_blue / 255F;
+        double length = tile.beamLength;
+        float red = (float) tile.beamRed / 255F;
+        float green = (float) tile.beamGreen / 255F;
+        float blue = (float) tile.beamBlue / 255F;
 
         GL11.glPushMatrix();
         GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
@@ -533,14 +533,14 @@ public class RenderTileParticleGen extends TileEntitySpecialRenderer {
         // float time = (float)tile.getWorldObj().getTotalWorldTime() + f;
         float time = tile.rotation + f;
         float upMot = -time * 0.2F - (float) MathHelper.floor_float(-time * 0.1F);
-        float rotValue = tile.beam_rotation * (tile.rotation + f * 0.5F);
+        float rotValue = tile.beamRotation * (tile.rotation + f * 0.5F);
         double rotation = rotValue;
 
         tess.startDrawingQuads();
         tess.setBrightness(200);
-        tess.setColorRGBA(tile.beam_red, tile.beam_green, tile.beam_blue, 32);
+        tess.setColorRGBA(tile.beamRed, tile.beamGreen, tile.beamBlue, 32);
 
-        double scale = (double) tile.beam_scale * 0.2D;
+        double scale = (double) tile.beamScale * 0.2D;
         double d7 = 0.5D + Math.cos(rotation + 2.356194490192345D) * scale; // x point 1
         double d9 = 0.5D + Math.sin(rotation + 2.356194490192345D) * scale; // z point 1
         double d11 = 0.5D + Math.cos(rotation + (Math.PI / 4D)) * scale; // x point 2
@@ -620,10 +620,10 @@ public class RenderTileParticleGen extends TileEntitySpecialRenderer {
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
         GL11.glDepthMask(false);
         GL11.glTranslated(0.5, 0, 0.5);
-        GL11.glScalef(tile.beam_scale, 1f, tile.beam_scale);
+        GL11.glScalef(tile.beamScale, 1f, tile.beamScale);
         GL11.glTranslated(-0.5, -0, -0.5);
         tess.startDrawingQuads();
-        tess.setColorRGBA(tile.beam_red, tile.beam_green, tile.beam_blue, 32);
+        tess.setColorRGBA(tile.beamRed, tile.beamGreen, tile.beamBlue, 32);
         double d30 = 0.2D;
         double d4 = 0.2D;
         double d6 = 0.8D;

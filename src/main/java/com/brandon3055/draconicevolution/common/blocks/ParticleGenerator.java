@@ -87,7 +87,7 @@ public class ParticleGenerator extends BlockDE {
     public void onNeighborBlockChange(final World world, final int x, final int y, final int z, final Block block) {
         TileEntity tile = world.getTileEntity(x, y, z);
         if (tile instanceof TileParticleGenerator) {
-            ((TileParticleGenerator) tile).signal = world.isBlockIndirectlyGettingPowered(x, y, z);
+            ((TileParticleGenerator) tile).hasRedstoneSignal = world.isBlockIndirectlyGettingPowered(x, y, z);
             world.markBlockForUpdate(x, y, z);
         }
     }

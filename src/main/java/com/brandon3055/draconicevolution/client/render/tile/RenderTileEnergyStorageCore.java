@@ -20,24 +20,28 @@ import cpw.mods.fml.client.FMLClientHandler;
  */
 public class RenderTileEnergyStorageCore extends TileEntitySpecialRenderer {
 
-    private static final ResourceLocation iner_model_texture = new ResourceLocation(
+    private static final ResourceLocation InnerModelTexture = new ResourceLocation(
             References.MODID.toLowerCase(),
             "textures/models/power_sphere_layer_1.png");
-    private static final ResourceLocation outer_model_texture = new ResourceLocation(
+    private static final ResourceLocation OuterModelTexture = new ResourceLocation(
             References.MODID.toLowerCase(),
             "textures/models/power_sphere_layer_2.png");
-    private IModelCustom iner_model;
+    private final IModelCustom innerModel;
 
     public RenderTileEnergyStorageCore() {
-        iner_model = AdvancedModelLoader
+        innerModel = AdvancedModelLoader
                 .loadModel(new ResourceLocation(References.MODID.toLowerCase(), "models/power_sphere_layer_1.obj"));
     }
 
     @Override
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float timeSinceLastTick) {
-        if (tile == null || !(tile instanceof TileEnergyStorageCore)) return;
+        if (!(tile instanceof TileEnergyStorageCore)) {
+            return;
+        }
         TileEnergyStorageCore core = (TileEnergyStorageCore) tile;
-        if (!core.isOnline()) return;
+        if (!core.isOnline()) {
+            return;
+        }
         float scale = 0;
         float rotation = core.modelRotation + (timeSinceLastTick / 2F);
 
@@ -71,44 +75,29 @@ public class RenderTileEnergyStorageCore extends TileEntitySpecialRenderer {
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glTranslated(x + 0.5, y + 0.5, z + 0.5);
-        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(iner_model_texture);
+        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(InnerModelTexture);
 
-        double colour = (double) ((TileEnergyStorageCore) tile).getEnergyStored()
-                / (double) ((TileEnergyStorageCore) tile).getMaxEnergyStored();
+        double color = (double) core.getEnergyStored() / core.getMaxEnergyStored();
         float brightness = (float) Math.abs(Math.sin((float) Minecraft.getSystemTime() / 3000f) * 100f);
 
-        colour = 1f - colour;
+        color = 1f - color;
         GL11.glScalef(scale, scale, scale);
         GL11.glPushMatrix();
         GL11.glRotatef(rotation, 0F, 1F, 0.5F);
-        GL11.glColor4d(1F, colour * 0.3f, colour * 0.7f, 1F);
+        GL11.glColor4d(1F, color * 0.3f, color * 0.7f, 1F);
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 80f + brightness, 80f + brightness);
-        iner_model.renderAll();
+        innerModel.renderAll();
         GL11.glPopMatrix();
-
-        // GL11.glPushMatrix();
-        // GL11.glScalef(0.8F, 0.8F, 0.8F);
-        // GL11.glColor4d(1F, 1f, 0.2f, 1F);
-        // GL11.glRotatef(rotation, 0F, 1F, 0.5F);
-        // //iner_model.renderAll();
-        // GL11.glPopMatrix();
-        //
-        // GL11.glPushMatrix();
-        // GL11.glScalef(0.9F, 0.9F, 0.9F);
-        // GL11.glColor4d(1F, 0f, 0.2f, 1F);
-        // GL11.glRotatef(rotation, 0F, 1F, 0.5F);
-        // //iner_model.renderAll();
-        // GL11.glPopMatrix();
 
         GL11.glScalef(1.1F, 1.1F, 1.1F);
         GL11.glDepthMask(false);
-        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(outer_model_texture);
+        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(OuterModelTexture);
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 200F, 200F);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glRotatef(rotation * 0.5F, 0F, -1F, -0.5F);
         GL11.glColor4f(0.5F, 2F, 2F, 0.7F);
-        iner_model.renderAll();
+        innerModel.renderAll();
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glDepthMask(true);
         GL11.glEnable(GL11.GL_LIGHTING);
