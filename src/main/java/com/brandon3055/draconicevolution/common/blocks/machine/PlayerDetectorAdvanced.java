@@ -69,8 +69,7 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TilePlayerDetectorAdvanced) {
-            TilePlayerDetectorAdvanced detector = (TilePlayerDetectorAdvanced) tile;
+        if (tile instanceof TilePlayerDetectorAdvanced detector) {
             if (detector.getStackInSlot(0) != null) {
                 ItemStack stack = detector.getStackInSlot(0);
                 Block block = Block.getBlockFromItem(stack.getItem());
@@ -135,8 +134,7 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
     @Override
     public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int side) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        return tile instanceof TilePlayerDetectorAdvanced && ((TilePlayerDetectorAdvanced) tile).shouldOutput() ? 15
-                : 0;
+        return tile instanceof TilePlayerDetectorAdvanced detector && detector.shouldOutput() ? 15 : 0;
     }
 
     @Override
@@ -155,8 +153,8 @@ public class PlayerDetectorAdvanced extends BlockCustomDrop {
     @Override
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TilePlayerDetectorAdvanced) {
-            ItemStack stackInSlot = ((TilePlayerDetectorAdvanced) tile).getStackInSlot(0);
+        if (tile instanceof TilePlayerDetectorAdvanced detector) {
+            ItemStack stackInSlot = detector.getStackInSlot(0);
             if (stackInSlot != null) {
                 return stackInSlot;
             }

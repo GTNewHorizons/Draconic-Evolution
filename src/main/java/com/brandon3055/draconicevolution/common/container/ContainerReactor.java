@@ -20,10 +20,10 @@ import com.brandon3055.draconicevolution.common.utills.OreDictionaryHelper;
  */
 public class ContainerReactor extends ContainerDataSync {
 
-    private static final int MaximumFuelStorage = 10368;
-    private static final int NuggetFuelAmount = 16;
-    private static final int IngotFuelAmount = NuggetFuelAmount * 9;
-    private static final int BlockFuelAmount = IngotFuelAmount * 9;
+    private static final int maximumFuelStorage = 10368;
+    private static final int nuggetFuelAmount = 16;
+    private static final int ingotFuelAmount = nuggetFuelAmount * 9;
+    private static final int blockFuelAmount = ingotFuelAmount * 9;
     private final TileReactorCore core;
     private final EntityPlayer player;
     private final GenericInventory ioSlots = new GenericInventory() {
@@ -45,11 +45,11 @@ public class ContainerReactor extends ContainerDataSync {
             if (slot == 0) {
                 Set<String> oreNames = OreDictionaryHelper.getOreNames(stack);
                 if (oreNames.contains("blockDraconiumAwakened")) {
-                    core.reactorFuel += stack.stackSize * BlockFuelAmount;
+                    core.reactorFuel += stack.stackSize * blockFuelAmount;
                 } else if (oreNames.contains("ingotDraconiumAwakened")) {
-                    core.reactorFuel += stack.stackSize * IngotFuelAmount;
+                    core.reactorFuel += stack.stackSize * ingotFuelAmount;
                 } else if (oreNames.contains("nuggetDraconiumAwakened")) {
-                    core.reactorFuel += stack.stackSize * NuggetFuelAmount;
+                    core.reactorFuel += stack.stackSize * nuggetFuelAmount;
                 }
             } else {
                 items[slot] = stack;
@@ -180,34 +180,34 @@ public class ContainerReactor extends ContainerDataSync {
     @Override
     public ItemStack slotClick(int slot, int button, int mode, EntityPlayer player) {
         if (slot == 37 && player.inventory.getItemStack() == null) {
-            if (core.reactorFuel / IngotFuelAmount >= 64) {
-                int stackSize = core.reactorFuel / BlockFuelAmount;
+            if (core.reactorFuel / ingotFuelAmount >= 64) {
+                int stackSize = core.reactorFuel / blockFuelAmount;
                 stackSize = Math.min(64, stackSize);
                 ioSlots.setInventorySlotContents(1, new ItemStack(ModBlocks.draconicBlock, stackSize));
-                core.reactorFuel -= stackSize * BlockFuelAmount;
-            } else if (core.reactorFuel >= IngotFuelAmount) {
-                int stackSize = core.reactorFuel / IngotFuelAmount;
+                core.reactorFuel -= stackSize * blockFuelAmount;
+            } else if (core.reactorFuel >= ingotFuelAmount) {
+                int stackSize = core.reactorFuel / ingotFuelAmount;
                 stackSize = Math.min(64, stackSize);
                 ioSlots.setInventorySlotContents(1, new ItemStack(ModItems.draconicIngot, stackSize));
-                core.reactorFuel -= stackSize * IngotFuelAmount;
-            } else if (core.reactorFuel >= NuggetFuelAmount) {
-                int stackSize = core.reactorFuel / NuggetFuelAmount;
+                core.reactorFuel -= stackSize * ingotFuelAmount;
+            } else if (core.reactorFuel >= nuggetFuelAmount) {
+                int stackSize = core.reactorFuel / nuggetFuelAmount;
                 ioSlots.setInventorySlotContents(1, new ItemStack(ModItems.nugget, stackSize, 1));
-                core.reactorFuel -= stackSize * NuggetFuelAmount;
-            } else if (core.convertedFuel / IngotFuelAmount >= 64) {
-                int stackSize = core.convertedFuel / BlockFuelAmount;
+                core.reactorFuel -= stackSize * nuggetFuelAmount;
+            } else if (core.convertedFuel / ingotFuelAmount >= 64) {
+                int stackSize = core.convertedFuel / blockFuelAmount;
                 stackSize = Math.min(64, stackSize);
                 ioSlots.setInventorySlotContents(1, new ItemStack(ModItems.chaosFragment, stackSize, 2));
-                core.convertedFuel -= stackSize * BlockFuelAmount;
-            } else if (core.convertedFuel >= IngotFuelAmount) {
-                int stackSize = core.convertedFuel / IngotFuelAmount;
+                core.convertedFuel -= stackSize * blockFuelAmount;
+            } else if (core.convertedFuel >= ingotFuelAmount) {
+                int stackSize = core.convertedFuel / ingotFuelAmount;
                 stackSize = Math.min(64, stackSize);
                 ioSlots.setInventorySlotContents(1, new ItemStack(ModItems.chaosFragment, stackSize, 1));
-                core.convertedFuel -= stackSize * IngotFuelAmount;
-            } else if (core.convertedFuel >= NuggetFuelAmount) {
-                int stackSize = core.convertedFuel / NuggetFuelAmount;
+                core.convertedFuel -= stackSize * ingotFuelAmount;
+            } else if (core.convertedFuel >= nuggetFuelAmount) {
+                int stackSize = core.convertedFuel / nuggetFuelAmount;
                 ioSlots.setInventorySlotContents(1, new ItemStack(ModItems.chaosFragment, stackSize, 0));
-                core.convertedFuel -= stackSize * NuggetFuelAmount;
+                core.convertedFuel -= stackSize * nuggetFuelAmount;
             }
         }
         return super.slotClick(slot, button, mode, player);
@@ -235,11 +235,11 @@ public class ContainerReactor extends ContainerDataSync {
             }
             Set<String> oreNames = OreDictionaryHelper.getOreNames(stack);
             if (oreNames.contains("nuggetDraconiumAwakened")) {
-                stackSizeLimit = (MaximumFuelStorage - (core.reactorFuel + core.convertedFuel)) / NuggetFuelAmount;
+                stackSizeLimit = (maximumFuelStorage - (core.reactorFuel + core.convertedFuel)) / nuggetFuelAmount;
             } else if (oreNames.contains("ingotDraconiumAwakened")) {
-                stackSizeLimit = (MaximumFuelStorage - (core.reactorFuel + core.convertedFuel)) / IngotFuelAmount;
+                stackSizeLimit = (maximumFuelStorage - (core.reactorFuel + core.convertedFuel)) / ingotFuelAmount;
             } else if (oreNames.contains("blockDraconiumAwakened")) {
-                stackSizeLimit = (MaximumFuelStorage - (core.reactorFuel + core.convertedFuel)) / BlockFuelAmount;
+                stackSizeLimit = (maximumFuelStorage - (core.reactorFuel + core.convertedFuel)) / blockFuelAmount;
             } else {
                 return false;
             }

@@ -17,7 +17,7 @@ import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.Til
  */
 public class RenderTileEnergyPylon extends TileEntitySpecialRenderer {
 
-    private static final ResourceLocation model_texture = new ResourceLocation(
+    private static final ResourceLocation modelTexture = new ResourceLocation(
             References.MODID.toLowerCase(),
             "textures/models/pylon_sphere_texture.png");
     private final IModelCustom model;
@@ -30,10 +30,9 @@ public class RenderTileEnergyPylon extends TileEntitySpecialRenderer {
     @Override
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float timeSinceLastTick) {
 
-        if (!(tile instanceof TileEnergyPylon)) {
+        if (!(tile instanceof TileEnergyPylon pylon)) {
             return;
         }
-        TileEnergyPylon pylon = (TileEnergyPylon) tile;
         if (!pylon.active) {
             return;
         }
@@ -52,7 +51,7 @@ public class RenderTileEnergyPylon extends TileEntitySpecialRenderer {
 
         GL11.glAlphaFunc(GL11.GL_GREATER, 0.0F);
 
-        bindTexture(model_texture);
+        bindTexture(modelTexture);
         GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, 10497.0F);
         GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, 10497.0F);
         GL11.glDisable(GL11.GL_LIGHTING);

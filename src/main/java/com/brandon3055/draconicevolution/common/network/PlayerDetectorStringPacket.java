@@ -1,7 +1,5 @@
 package com.brandon3055.draconicevolution.common.network;
 
-import net.minecraft.inventory.Container;
-
 import com.brandon3055.draconicevolution.common.container.ContainerPlayerDetector;
 import com.brandon3055.draconicevolution.common.tileentities.TilePlayerDetectorAdvanced;
 
@@ -39,15 +37,16 @@ public class PlayerDetectorStringPacket implements IMessage {
 
         @Override
         public IMessage onMessage(PlayerDetectorStringPacket message, MessageContext ctx) {
-            Container container = ctx.getServerHandler().playerEntity.openContainer;
-            if (container instanceof ContainerPlayerDetector) {
-                TilePlayerDetectorAdvanced detector = ((ContainerPlayerDetector) container).getDetector();
-                if (detector != null) {
-                    detector.names[message.index] = message.name;
-                    ctx.getServerHandler().playerEntity.worldObj
-                            .markBlockForUpdate(detector.xCoord, detector.yCoord, detector.zCoord);
-                }
+            if (!(ctx.getServerHandler().playerEntity.openContainer instanceof ContainerPlayerDetector container)) {
+                return null;
             }
+            TilePlayerDetectorAdvanced detector = container.getDetector();
+            if (detector == null) {
+                return null;
+            }
+            detector.names[message.index] = message.name;
+            ctx.getServerHandler().playerEntity.worldObj
+                    .markBlockForUpdate(detector.xCoord, detector.yCoord, detector.zCoord);
             return null;
         }
     }

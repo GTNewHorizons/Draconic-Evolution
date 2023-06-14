@@ -126,11 +126,10 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock, IT
         int metadata = world.getBlockMetadata(x, y, z);
         if (metadata == 0 || metadata == 1) {
             TileEntity tile = world.getTileEntity(x, y, z);
-            if (!(tile instanceof TileInvisibleMultiblock)) {
+            if (!(tile instanceof TileInvisibleMultiblock multiblock)) {
                 LogHelper.error("Missing Tile Entity (TileInvisibleMultiblock)");
                 return false;
             }
-            TileInvisibleMultiblock multiblock = (TileInvisibleMultiblock) tile;
             TileEnergyStorageCore core = multiblock.getMaster();
             if (core == null) {
                 onNeighborBlockChange(world, x, y, z, this);
@@ -165,12 +164,11 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock, IT
         int metadata = world.getBlockMetadata(x, y, z);
         if (metadata == 0 || metadata == 1) {
             TileEntity tile = world.getTileEntity(x, y, z);
-            if (!(tile instanceof TileInvisibleMultiblock)) {
+            if (!(tile instanceof TileInvisibleMultiblock multiblock)) {
                 LogHelper.error("Missing Tile Entity (TileInvisibleMultiblock)");
                 revertStructure(world, x, y, z);
                 return;
             }
-            TileInvisibleMultiblock multiblock = (TileInvisibleMultiblock) tile;
             TileEnergyStorageCore core = multiblock.getMaster();
             if (core == null) {
                 LogHelper.error("Master = null reverting!");
@@ -192,8 +190,7 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock, IT
     @Override
     public void breakBlock(World world, int x, int y, int z, Block blockBroken, int metadata) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TileInvisibleMultiblock) {
-            TileInvisibleMultiblock multiblock = (TileInvisibleMultiblock) tile;
+        if (tile instanceof TileInvisibleMultiblock multiblock) {
             TileEnergyStorageCore core = multiblock.getMaster();
             if (core != null && core.isOnline()) {
                 world.setBlockMetadataWithNotify(x, y, z, 0, 2);
@@ -208,8 +205,7 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock, IT
         int metadata = world.getBlockMetadata(x, y, z);
         if (metadata == 0 || metadata == 1) {
             TileEntity tile = world.getTileEntity(x, y, z);
-            if (tile instanceof TileInvisibleMultiblock) {
-                TileInvisibleMultiblock multiblock = (TileInvisibleMultiblock) tile;
+            if (tile instanceof TileInvisibleMultiblock multiblock) {
                 TileEnergyStorageCore core = multiblock.getMaster();
                 if (core != null) {
                     return AxisAlignedBB.getBoundingBox(
@@ -260,11 +256,10 @@ public class InvisibleMultiblock extends BlockDE implements IHudDisplayBlock, IT
         int metadata = world.getBlockMetadata(x, y, z);
         if (metadata == 0 || metadata == 1) {
             TileEntity tile = world.getTileEntity(x, y, z);
-            if (!(tile instanceof TileInvisibleMultiblock)) {
+            if (!(tile instanceof TileInvisibleMultiblock multiblock)) {
                 LogHelper.error("Missing Tile Entity (TileInvisibleMultiblock getDisplayData)");
                 return Collections.emptyList();
             }
-            TileInvisibleMultiblock multiblock = (TileInvisibleMultiblock) tile;
             TileEnergyStorageCore core = multiblock.getMaster();
             if (core != null) {
                 return core.getDisplayInformation(true);

@@ -527,6 +527,44 @@ gui.de.genRate.name=Generation Rate
 gui.de.fieldInputRate.name=Field Input Rate
 gui.de.fuelConversion.name=Fuel Conversion Rate
 
+gui.de.particleGenerator.random.name=Random:
+gui.de.particleGenerator.red.name=Red:
+gui.de.particleGenerator.green.name=Green:
+gui.de.particleGenerator.blue.name=Blue:
+gui.de.particleGenerator.motionX.name=Motion X:
+gui.de.particleGenerator.motionY.name=Motion Y:
+gui.de.particleGenerator.motionZ.name=Motion Z:
+gui.de.particleGenerator.scale.name=Scale:
+gui.de.particleGenerator.life.name=Life (T):
+gui.de.particleGenerator.spawnX.name=Spawn X:
+gui.de.particleGenerator.spawnY.name=Spawn Y:
+gui.de.particleGenerator.spawnZ.name=Spawn Z:
+gui.de.particleGenerator.delay.name=Delay:
+gui.de.particleGenerator.fade.name=Fade:
+gui.de.particleGenerator.gravity.name=Gravity:
+gui.de.particleGenerator.pitch.name=Pitch:
+gui.de.particleGenerator.yaw.name=Yaw:
+gui.de.particleGenerator.rotation.name=Rotation:
+gui.de.particleGenerator.length.name=Length:
+
+gui.de.particleGenerator.info.name=i
+gui.de.particleGenerator.back.name=Back
+gui.de.particleGenerator.blockCollision.name=Block Collision: %s
+gui.de.particleGenerator.particleSelected.name=Particle Selected: %d
+gui.de.particleGenerator.enabled.name=Enabled: %s
+gui.de.particleGenerator.renderCore.name=Render Core: %s
+gui.de.particleGenerator.saveSettings.name=Take note of values
+
+gui.de.particleGenerator.info.1=  The Particle Generator is a decorative device that allows you to create your own custom particle effects.\n  It is fairly easy you use this device you simply adjust the fields (variables) in the interface to change how the generated particles look and behave.\n  This block is a work in progress and new features and particles are likely to be added in future versions.\n  The following is a list of all of the fields in the interface and what they do.
+gui.de.particleGenerator.info.2=  The first thing to note is that most fields have a random modifier which will add a random number between 0 and whatever max (or min) value you give it to the field.\n  - The first 3 fields (Red, Green & Blue) control the colour of the particle. Most people should be familiar with this colour system if not google RGB colours. Note: the max value for each colour can not go higher then 255 so the colour field limits the random modifier e.g. if the colour field is set to 255 and the random modifier is set to 20 the result will always be 255.
+gui.de.particleGenerator.info.3=  - The next 3 fields (Motion X, Y & Z) control the direction and speed of the particle.\n  - The "Life" field sets how long (in ticks) before the particle despawns.\n  - The "Scale" field sets the size of the particle.\n  - The next 3 fields (Spawn X, Y & Z) Sets the spawn location of the particle (relative to the location of the particle generator).
+gui.de.particleGenerator.info.4=  - The "Delay" field sets the delay (in ticks) between each particle spawn e.g. 1=20/s, 20=1/s, 100=1/5s.\n  - The "Fade" field sets how long (in ticks) it takes the particle to fade out of existance. Note: This adds to the life of the particle.\n  - The "Gravity" field sets how the particle is affected by gravity.\n  - "Block Collision" Toggles weather or not the particle will collide with blocks.\n  - "Particle Selected" switches between the different particles available.
+gui.de.particleGenerator.info.5.title=Redstone Control\n\n
+gui.de.particleGenerator.info.5=  By default a redstone signal is required for the generator to run.\n  However if you shift right click the generator with an empty hand it will switch to inverted mode.\n  The redstone mode is indicated by the 8 cubes at the corners of the block.
+gui.de.particleGenerator.info.6.title=Computer Control\n\n
+gui.de.particleGenerator.info.6=  The Generator can be controlled via a computer.\n  It exposes a relatively straight forward API:\n\n  setGeneratorProperty(property, value)\n  getGeneratorState()\n  resetGeneratorState()
+gui.de.particleGenerator.info.7=  Generator state is obtained as a whole from getGeneratorState, whereas properties are modified one at a time using setGeneratorProperty. Property names are strings and mostly correspond to button labels in the GUI.
+
 gui.de.insert.txt=Insert
 gui.de.extract.txt=Extract
 gui.de.fuel.txt=Fuel

@@ -20,12 +20,14 @@ public class RenderTileReactorStabilizer extends TileEntitySpecialRenderer {
     public static ModelReactorStabilizerCore modelStabilizerCore = new ModelReactorStabilizerCore();
 
     @Override
-    public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTick) {
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTick) {
+        if (!(tile instanceof TileReactorStabilizer stabilizer)) {
+            return;
+        }
         GL11.glPushMatrix();
         GL11.glTranslated(x + 0.5, y + 0.5, z + 0.5);
 
-        renderCore((TileReactorStabilizer) tileEntity, partialTick);
-        // renderEffects((TileReactorStabilizer) tileEntity, partialTick);
+        renderCore(stabilizer, partialTick);
 
         GL11.glPopMatrix();
     }

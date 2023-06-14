@@ -135,10 +135,9 @@ public class PortalHelper {
         public boolean scanPortal(World world, int x, int y, int z, boolean setPortalBlocks,
                 boolean checkPortalBlocks) {
             TileEntity tile = world.getTileEntity(x, y, z);
-            if (!(tile instanceof TileDislocatorReceptacle)) {
+            if (!(tile instanceof TileDislocatorReceptacle receptacle)) {
                 return false;
             }
-            TileDislocatorReceptacle receptacle = (TileDislocatorReceptacle) tile;
             if (setPortalBlocks) {
                 receptacle.updating = true;
             }
@@ -157,8 +156,7 @@ public class PortalHelper {
                     } else if (setPortalBlocks) {
                         world.setBlock(targetX, targetY, targetZ, ModBlocks.portal);
                         tile = world.getTileEntity(targetX, targetY, targetZ);
-                        if (tile instanceof TilePortalBlock) {
-                            TilePortalBlock portal = (TilePortalBlock) tile;
+                        if (tile instanceof TilePortalBlock portal) {
                             portal.masterX = x;
                             portal.masterY = y;
                             portal.masterZ = z;

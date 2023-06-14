@@ -72,11 +72,10 @@ public class EnergyStorageCore extends BlockDE implements IHudDisplayBlock, ITil
             float subY, float subZ) {
         if (!world.isRemote) {
             TileEntity tile = world.getTileEntity(x, y, z);
-            if (!(tile instanceof TileEnergyStorageCore)) {
+            if (!(tile instanceof TileEnergyStorageCore core)) {
                 LogHelper.error("Missing Tile Entity (EnergyStorageCore)");
                 return false;
             }
-            TileEnergyStorageCore core = (TileEnergyStorageCore) tile;
             List<String> information = core.getDisplayInformation(false);
             for (String message : information) {
                 player.addChatComponentMessage(new ChatComponentText(message));
@@ -90,19 +89,17 @@ public class EnergyStorageCore extends BlockDE implements IHudDisplayBlock, ITil
     public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
         ForgeDirection direction = ForgeDirection.getOrientation(side);
         TileEntity tile = world.getTileEntity(x - direction.offsetX, y - direction.offsetY, z - direction.offsetZ);
-        if (!(tile instanceof TileEnergyStorageCore)) {
+        if (!(tile instanceof TileEnergyStorageCore core)) {
             LogHelper.error("Missing Tile Entity (EnergyStorageCore)(shouldSideBeRendered)");
             return true;
         }
-        TileEnergyStorageCore core = (TileEnergyStorageCore) tile;
         return !core.isOnline() && super.shouldSideBeRendered(world, x, y, z, side);
     }
 
     @Override
     public void onNeighborBlockChange(World world, int x, int y, int z, Block neighbor) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TileEnergyStorageCore) {
-            TileEnergyStorageCore core = (TileEnergyStorageCore) tile;
+        if (tile instanceof TileEnergyStorageCore core) {
             if (core.isOnline() && core.getTier() == 0) {
                 core.validateStructure(false);
             }
@@ -112,8 +109,7 @@ public class EnergyStorageCore extends BlockDE implements IHudDisplayBlock, ITil
     @Override
     public void breakBlock(World world, int x, int y, int z, Block blockBroken, int metadata) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TileEnergyStorageCore) {
-            TileEnergyStorageCore core = (TileEnergyStorageCore) tile;
+        if (tile instanceof TileEnergyStorageCore core) {
             if (core.isOnline() && core.getTier() == 0) {
                 core.deactivateStabilizers();
             }
@@ -124,8 +120,7 @@ public class EnergyStorageCore extends BlockDE implements IHudDisplayBlock, ITil
     @Override
     public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TileEnergyStorageCore) {
-            TileEnergyStorageCore core = (TileEnergyStorageCore) tile;
+        if (tile instanceof TileEnergyStorageCore core) {
             if (core.isOnline()) {
                 return AxisAlignedBB.getBoundingBox(
                         core.xCoord + 0.5,
@@ -142,10 +137,10 @@ public class EnergyStorageCore extends BlockDE implements IHudDisplayBlock, ITil
     @Override
     public List<String> getDisplayData(World world, int x, int y, int z) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (!(tile instanceof TileEnergyStorageCore)) {
+        if (!(tile instanceof TileEnergyStorageCore core)) {
             LogHelper.error("Missing Tile Entity (EnergyStorageCore getDisplayData)");
             return Collections.emptyList();
         }
-        return ((TileEnergyStorageCore) tile).getDisplayInformation(true);
+        return core.getDisplayInformation(true);
     }
 }

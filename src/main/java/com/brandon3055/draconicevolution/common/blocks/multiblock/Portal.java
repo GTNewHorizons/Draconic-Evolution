@@ -120,7 +120,7 @@ public class Portal extends BlockDE implements ITileEntityProvider {
 
     private TileDislocatorReceptacle getMaster(World world, int x, int y, int z) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        return tile instanceof TilePortalBlock ? ((TilePortalBlock) tile).getMaster() : null;
+        return tile instanceof TilePortalBlock portal ? portal.getMaster() : null;
     }
 
     @Override

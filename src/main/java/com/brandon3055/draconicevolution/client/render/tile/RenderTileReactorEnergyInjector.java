@@ -18,11 +18,14 @@ public class RenderTileReactorEnergyInjector extends TileEntitySpecialRenderer {
     public static ModelReactorEnergyInjector modelReactorEnergyInjector = new ModelReactorEnergyInjector();
 
     @Override
-    public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTick) {
+    public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTick) {
+        if (!(tile instanceof TileReactorEnergyInjector injector)) {
+            return;
+        }
         GL11.glPushMatrix();
         GL11.glTranslated(x + 0.5, y + 0.5, z + 0.5);
 
-        renderCore((TileReactorEnergyInjector) tileEntity);
+        renderCore(injector);
 
         GL11.glPopMatrix();
     }

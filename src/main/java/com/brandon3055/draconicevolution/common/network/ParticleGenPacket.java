@@ -57,130 +57,49 @@ public class ParticleGenPacket implements IMessage {
         public IMessage onMessage(ParticleGenPacket message, MessageContext ctx) {
             TileEntity tile = ctx.getServerHandler().playerEntity.worldObj
                     .getTileEntity(message.tileX, message.tileY, message.tileZ);
-            if (!(tile instanceof TileParticleGenerator)) {
+            if (!(tile instanceof TileParticleGenerator particleGenerator)) {
                 return null;
             }
-            TileParticleGenerator particleGenerator = (TileParticleGenerator) tile;
             switch (message.id) {
-                case 0:
-                    particleGenerator.red = message.value;
-                    break;
-                case 1:
-                    particleGenerator.green = message.value;
-                    break;
-                case 2:
-                    particleGenerator.blue = message.value;
-                    break;
-                case 3:
-                    particleGenerator.motionX = (float) message.value / 1000F;
-                    break;
-                case 4:
-                    particleGenerator.motionY = (float) message.value / 1000F;
-                    break;
-                case 5:
-                    particleGenerator.motionZ = (float) message.value / 1000F;
-                    break;
-                case 6:
-                    particleGenerator.scale = (float) message.value / 100F;
-                    break;
-                case 7:
-                    particleGenerator.life = message.value;
-                    break;
-                case 10:
-                    particleGenerator.randomRed = message.value;
-                    break;
-                case 11:
-                    particleGenerator.randomGreen = message.value;
-                    break;
-                case 12:
-                    particleGenerator.randomBlue = message.value;
-                    break;
-                case 13:
-                    particleGenerator.randomMotionX = (float) message.value / 1000F;
-                    break;
-                case 14:
-                    particleGenerator.randomMotionY = (float) message.value / 1000F;
-                    break;
-                case 15:
-                    particleGenerator.randomMotionZ = (float) message.value / 1000F;
-                    break;
-                case 16:
-                    particleGenerator.randomScale = (float) message.value / 100F;
-                    break;
-                case 17:
-                    particleGenerator.randomLife = message.value;
-                    break;
-                case 20:
-                    particleGenerator.spawnX = (float) message.value / 10F;
-                    break;
-                case 21:
-                    particleGenerator.spawnY = (float) message.value / 10F;
-                    break;
-                case 22:
-                    particleGenerator.spawnZ = (float) message.value / 10F;
-                    break;
-                case 23:
-                    particleGenerator.spawnRate = message.value;
-                    break;
-                case 24:
-                    particleGenerator.fade = message.value;
-                    break;
-                case 25:
-                    particleGenerator.gravity = (float) message.value / 1000F;
-                case 30:
-                    particleGenerator.randomSpawnX = (float) message.value / 10F;
-                    break;
-                case 31:
-                    particleGenerator.randomSpawnY = (float) message.value / 10F;
-                    break;
-                case 32:
-                    particleGenerator.randomSpawnZ = (float) message.value / 10F;
-                    break;
-                case 40:
-                    particleGenerator.beamRed = message.value;
-                    break;
-                case 41:
-                    particleGenerator.beamGreen = message.value;
-                    break;
-                case 42:
-                    particleGenerator.beamBlue = message.value;
-                    break;
-                case 43:
-                    particleGenerator.beamPitch = (float) message.value / 10F;
-                    break;
-                case 44:
-                    particleGenerator.beamYaw = (float) message.value / 10F;
-                    break;
-                case 45:
-                    particleGenerator.beamRotation = (float) message.value / 100F;
-                    break;
-                case 46:
-                    particleGenerator.beamScale = (float) message.value / 100F;
-                    break;
-                case 47:
-                    particleGenerator.beamLength = (float) message.value / 100F;
-                    break;
-                case 100:
-                case 101:
-                case 102:
-                case 103:
-                    particleGenerator.page = message.value;
-                    break;
-                case 110:
-                    particleGenerator.canParticleCollide = message.value == 1;
-                    break;
-                case 111:
-                    particleGenerator.selectedParticle = message.value;
-                    break;
-                case 112:
-                    particleGenerator.isParticlesEnabled = message.value == 1;
-                    break;
-                case 120:
-                    particleGenerator.isBeamEnabled = message.value == 1;
-                    break;
-                case 121:
-                    particleGenerator.shouldRenderCore = message.value == 1;
-                    break;
+                case 0 -> particleGenerator.red = message.value;
+                case 1 -> particleGenerator.green = message.value;
+                case 2 -> particleGenerator.blue = message.value;
+                case 3 -> particleGenerator.motionX = (float) message.value / 1000F;
+                case 4 -> particleGenerator.motionY = (float) message.value / 1000F;
+                case 5 -> particleGenerator.motionZ = (float) message.value / 1000F;
+                case 6 -> particleGenerator.scale = (float) message.value / 100F;
+                case 7 -> particleGenerator.life = message.value;
+                case 10 -> particleGenerator.randomRed = message.value;
+                case 11 -> particleGenerator.randomGreen = message.value;
+                case 12 -> particleGenerator.randomBlue = message.value;
+                case 13 -> particleGenerator.randomMotionX = (float) message.value / 1000F;
+                case 14 -> particleGenerator.randomMotionY = (float) message.value / 1000F;
+                case 15 -> particleGenerator.randomMotionZ = (float) message.value / 1000F;
+                case 16 -> particleGenerator.randomScale = (float) message.value / 100F;
+                case 17 -> particleGenerator.randomLife = message.value;
+                case 20 -> particleGenerator.spawnX = (float) message.value / 10F;
+                case 21 -> particleGenerator.spawnY = (float) message.value / 10F;
+                case 22 -> particleGenerator.spawnZ = (float) message.value / 10F;
+                case 23 -> particleGenerator.spawnRate = message.value;
+                case 24 -> particleGenerator.fade = message.value;
+                case 25 -> particleGenerator.gravity = (float) message.value / 1000F;
+                case 30 -> particleGenerator.randomSpawnX = (float) message.value / 10F;
+                case 31 -> particleGenerator.randomSpawnY = (float) message.value / 10F;
+                case 32 -> particleGenerator.randomSpawnZ = (float) message.value / 10F;
+                case 40 -> particleGenerator.beamRed = message.value;
+                case 41 -> particleGenerator.beamGreen = message.value;
+                case 42 -> particleGenerator.beamBlue = message.value;
+                case 43 -> particleGenerator.beamPitch = (float) message.value / 10F;
+                case 44 -> particleGenerator.beamYaw = (float) message.value / 10F;
+                case 45 -> particleGenerator.beamRotation = (float) message.value / 100F;
+                case 46 -> particleGenerator.beamScale = (float) message.value / 100F;
+                case 47 -> particleGenerator.beamLength = (float) message.value / 100F;
+                case 100, 101, 102, 103 -> particleGenerator.page = message.value;
+                case 110 -> particleGenerator.canParticleCollide = message.value == 1;
+                case 111 -> particleGenerator.selectedParticle = message.value;
+                case 112 -> particleGenerator.isParticlesEnabled = message.value == 1;
+                case 120 -> particleGenerator.isBeamEnabled = message.value == 1;
+                case 121 -> particleGenerator.shouldRenderCore = message.value == 1;
             }
 
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
@@ -203,8 +122,7 @@ public class ParticleGenPacket implements IMessage {
             ItemStack stack = new ItemStack(Items.paper);
             stack.setTagCompound(new NBTTagCompound());
             TileEntity tile = player.worldObj.getTileEntity(message.tileX, message.tileY, message.tileZ);
-            if (tile instanceof TileParticleGenerator) {
-                TileParticleGenerator particleGenerator = (TileParticleGenerator) tile;
+            if (tile instanceof TileParticleGenerator particleGenerator) {
                 particleGenerator.getBlockNBT(stack.getTagCompound());
                 stack.setStackDisplayName("Saved Particle Gen Settings");
                 player.worldObj.spawnEntityInWorld(

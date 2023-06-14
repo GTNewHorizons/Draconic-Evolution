@@ -78,7 +78,7 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
     @Override
     public TileReactorCore getMaster() {
         TileEntity tile = masterLocation.getTileEntity(worldObj);
-        return tile instanceof TileReactorCore ? (TileReactorCore) tile : null;
+        return tile instanceof TileReactorCore core ? core : null;
     }
 
     @Override

@@ -24,14 +24,14 @@ public interface IReactorPart {
         CONVERTED_FUEL,
         CONVERTED_FUEL_INVERTED;
 
-        private static final ComparatorMode[] Values = values();
+        private static final ComparatorMode[] values = values();
 
         public static ComparatorMode getMode(int ordinal) {
-            return ordinal >= 0 && ordinal < Values.length ? Values[ordinal] : TEMPERATURE;
+            return ordinal >= 0 && ordinal < values.length ? values[ordinal] : TEMPERATURE;
         }
 
         public ComparatorMode next() {
-            return Values[(ordinal() + 1) % Values.length];
+            return values[(ordinal() + 1) % values.length];
         }
 
         public String toLocalizedString() {
@@ -41,8 +41,7 @@ public interface IReactorPart {
 
     static int getComparatorOutput(IBlockAccess world, int x, int y, int z) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof IReactorPart) {
-            IReactorPart part = (IReactorPart) tile;
+        if (tile instanceof IReactorPart part) {
             TileReactorCore core = part.getMaster();
             if (core != null) {
                 return core.getComparatorOutput(part.getComparatorMode());

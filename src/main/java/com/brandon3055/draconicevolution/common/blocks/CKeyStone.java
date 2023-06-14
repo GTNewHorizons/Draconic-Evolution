@@ -69,8 +69,8 @@ public class CKeyStone extends BlockDE implements ITileEntityProvider {
             return Blocks.furnace.getIcon(side, 0);
         }
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TileCKeyStone) {
-            return ((TileCKeyStone) tile).isActivated ? blockIconActive : blockIcon;
+        if (tile instanceof TileCKeyStone keyStone) {
+            return keyStone.isActivated ? blockIconActive : blockIcon;
         }
         return blockIcon;
     }
@@ -79,7 +79,7 @@ public class CKeyStone extends BlockDE implements ITileEntityProvider {
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float subX,
             float subY, float subZ) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        return tile instanceof TileCKeyStone && ((TileCKeyStone) tile).onActivated(player.getHeldItem(), player);
+        return tile instanceof TileCKeyStone keyStone && keyStone.onActivated(player.getHeldItem(), player);
     }
 
     @Override
@@ -95,14 +95,13 @@ public class CKeyStone extends BlockDE implements ITileEntityProvider {
     @Override
     public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int meta) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        return tile instanceof TileCKeyStone && ((TileCKeyStone) tile).isActivated ? 15 : 0;
+        return tile instanceof TileCKeyStone keyStone && keyStone.isActivated ? 15 : 0;
     }
 
     @Override
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TileCKeyStone) {
-            TileCKeyStone keyStone = (TileCKeyStone) tile;
+        if (tile instanceof TileCKeyStone keyStone) {
             ItemStack key = new ItemStack(ModItems.key);
             ItemNBTHelper.setInteger(key, "KeyCode", keyStone.getKeyCode());
             ItemNBTHelper.setInteger(key, "X", x);

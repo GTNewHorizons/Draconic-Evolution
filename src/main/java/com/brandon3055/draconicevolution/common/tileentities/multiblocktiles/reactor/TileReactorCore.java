@@ -1,6 +1,10 @@
 package com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -47,10 +51,10 @@ public class TileReactorCore extends TileObjectSync {
         STOPPING,
         INVALID;
 
-        private static final ReactorState[] Values = values();
+        private static final ReactorState[] values = values();
 
         public static ReactorState getState(int ordinal) {
-            return ordinal >= 0 && ordinal < Values.length ? Values[ordinal] : INVALID;
+            return ordinal >= 0 && ordinal < values.length ? values[ordinal] : INVALID;
         }
 
         public String toLocalizedString(boolean canStart) {
@@ -101,16 +105,9 @@ public class TileReactorCore extends TileObjectSync {
         }
 
         switch (reactorState) {
-            case OFFLINE:
-                offlineTick();
-                break;
-            case STARTING:
-                startingTick();
-                break;
-            case ONLINE:
-            case STOPPING:
-                runTick();
-                break;
+            case OFFLINE -> offlineTick();
+            case STARTING -> startingTick();
+            case ONLINE, STOPPING -> runTick();
         }
 
         detectAndSendChanges();
@@ -150,12 +147,8 @@ public class TileReactorCore extends TileObjectSync {
             int totalFuel = reactorFuel + convertedFuel;
             maxFieldCharge = totalFuel * 96.45061728395062 * 100;
             maxEnergySaturation = (int) (totalFuel * 96.45061728395062 * 1000);
-            if (energySaturation > maxEnergySaturation) {
-                energySaturation = maxEnergySaturation;
-            }
-            if (fieldCharge > maxFieldCharge) {
-                fieldCharge = maxFieldCharge;
-            }
+            energySaturation = Math.min(energySaturation, maxEnergySaturation);
+            fieldCharge = Math.min(fieldCharge, maxFieldCharge);
             startupInitialized = true;
         }
     }
@@ -267,9 +260,9 @@ public class TileReactorCore extends TileObjectSync {
                 int targetY = yCoord + direction.offsetY * distance;
                 int targetZ = zCoord + direction.offsetZ * distance;
                 TileEntity tile = worldObj.getTileEntity(targetX, targetY, targetZ);
-                if (tile instanceof IReactorPart && isFacingToCore(targetX, targetY, targetZ, (IReactorPart) tile)) {
+                if (tile instanceof IReactorPart part && isFacingToCore(targetX, targetY, targetZ, part)) {
                     if (shouldSetUp) {
-                        ((IReactorPart) tile).setUp(new TileLocation(xCoord, yCoord, zCoord));
+                        part.setUp(new TileLocation(xCoord, yCoord, zCoord));
                     }
                     if (tile instanceof TileReactorStabilizer) {
                         stabilizerLocations.add(new TileLocation(targetX, targetY, targetZ));
@@ -291,8 +284,7 @@ public class TileReactorCore extends TileObjectSync {
             TileLocation location = iterator.next();
             if (location.getDistanceSquared(xCoord, yCoord, zCoord) > coreRadiusSquared) {
                 TileEntity tile = location.getTileEntity(worldObj);
-                if (tile instanceof TileReactorStabilizer) {
-                    TileReactorStabilizer stabilizer = (TileReactorStabilizer) tile;
+                if (tile instanceof TileReactorStabilizer stabilizer) {
                     if (stabilizer.masterLocation.isThisLocation(xCoord, yCoord, zCoord)) {
                         stabilizersCount++;
                         continue;
@@ -332,8 +324,7 @@ public class TileReactorCore extends TileObjectSync {
                         xCoord + direction.offsetX * distance,
                         yCoord + direction.offsetY * distance,
                         zCoord + direction.offsetZ * distance);
-                if (tile instanceof IReactorPart) {
-                    IReactorPart part = (IReactorPart) tile;
+                if (tile instanceof IReactorPart part) {
                     if (part.getMasterLocation().isThisLocation(xCoord, yCoord, zCoord)) {
                         part.shutDown();
                     }
@@ -362,7 +353,7 @@ public class TileReactorCore extends TileObjectSync {
             if (fieldCharge < maxFieldCharge / 2) {
                 energyInjected = Math.min(energyToInject, (int) (maxFieldCharge / 2) - (int) fieldCharge + 1);
                 fieldCharge += energyInjected;
-                if (fieldCharge > (maxFieldCharge / 2)) {
+                if (fieldCharge > maxFieldCharge / 2) {
                     fieldCharge = maxFieldCharge / 2;
                 }
             } else if (energySaturation < maxEnergySaturation / 2) {
@@ -378,9 +369,7 @@ public class TileReactorCore extends TileObjectSync {
         } else if (reactorState == ReactorState.ONLINE || reactorState == ReactorState.STOPPING) {
             energyInjected = energyToInject;
             fieldCharge += energyInjected * (1D - fieldCharge / maxFieldCharge);
-            if (fieldCharge > maxFieldCharge) {
-                fieldCharge = maxFieldCharge;
-            }
+            fieldCharge = Math.min(fieldCharge, maxFieldCharge);
         }
         return energyInjected;
     }
@@ -495,28 +484,22 @@ public class TileReactorCore extends TileObjectSync {
     }
 
     public int getComparatorOutput(ComparatorMode comparatorMode) {
-        switch (comparatorMode) {
-            case TEMPERATURE:
-                return toRedstoneStrength(reactionTemperature, maxReactTemperature, comparatorMode);
-            case TEMPERATURE_INVERTED:
-                return 15 - toRedstoneStrength(reactionTemperature, maxReactTemperature, comparatorMode);
-            case FIELD_CHARGE:
-                return toRedstoneStrength(fieldCharge, maxFieldCharge, comparatorMode);
-            case FIELD_CHARGE_INVERTED:
-                return 15 - toRedstoneStrength(fieldCharge, maxFieldCharge, comparatorMode);
-            case ENERGY_SATURATION:
-                return toRedstoneStrength(energySaturation, maxEnergySaturation, comparatorMode);
-            case ENERGY_SATURATION_INVERTED:
-                return 15 - toRedstoneStrength(energySaturation, maxEnergySaturation, comparatorMode);
-            case CONVERTED_FUEL:
-                return toRedstoneStrength(convertedFuel + conversionUnit, reactorFuel - conversionUnit, comparatorMode);
-            case CONVERTED_FUEL_INVERTED:
-                return 15 - toRedstoneStrength(
-                        convertedFuel + conversionUnit,
-                        reactorFuel - conversionUnit,
-                        comparatorMode);
-        }
-        return 0;
+        return switch (comparatorMode) {
+            case TEMPERATURE -> toRedstoneStrength(reactionTemperature, maxReactTemperature, comparatorMode);
+            case TEMPERATURE_INVERTED -> 15
+                    - toRedstoneStrength(reactionTemperature, maxReactTemperature, comparatorMode);
+            case FIELD_CHARGE -> toRedstoneStrength(fieldCharge, maxFieldCharge, comparatorMode);
+            case FIELD_CHARGE_INVERTED -> 15 - toRedstoneStrength(fieldCharge, maxFieldCharge, comparatorMode);
+            case ENERGY_SATURATION -> toRedstoneStrength(energySaturation, maxEnergySaturation, comparatorMode);
+            case ENERGY_SATURATION_INVERTED -> 15
+                    - toRedstoneStrength(energySaturation, maxEnergySaturation, comparatorMode);
+            case CONVERTED_FUEL -> toRedstoneStrength(
+                    convertedFuel + conversionUnit,
+                    reactorFuel - conversionUnit,
+                    comparatorMode);
+            case CONVERTED_FUEL_INVERTED -> 15
+                    - toRedstoneStrength(convertedFuel + conversionUnit, reactorFuel - conversionUnit, comparatorMode);
+        };
     }
 
     private int toRedstoneStrength(double value, double maxValue, ComparatorMode comparatorMode) {
@@ -526,19 +509,15 @@ public class TileReactorCore extends TileObjectSync {
         double proportion = value / maxValue;
         int redstoneStrength = (int) (proportion * 15D);
         switch (comparatorMode) {
-            case FIELD_CHARGE:
-            case FIELD_CHARGE_INVERTED: {
+            case FIELD_CHARGE, FIELD_CHARGE_INVERTED -> {
                 if (proportion < 0.1) {
                     redstoneStrength = 0;
                 }
-                break;
             }
-            case CONVERTED_FUEL:
-            case CONVERTED_FUEL_INVERTED: {
+            case CONVERTED_FUEL, CONVERTED_FUEL_INVERTED -> {
                 if (proportion > 0.9) {
                     redstoneStrength = 15;
                 }
-                break;
             }
         }
         return redstoneStrength;
@@ -548,42 +527,19 @@ public class TileReactorCore extends TileObjectSync {
     @SideOnly(Side.CLIENT)
     public void receiveObjectFromServer(int index, Object object) {
         switch (index) {
-            case 0:
-                isStructureValid = (boolean) object;
-                break;
-            case 2:
-                startupInitialized = (boolean) object;
-                break;
-            case 3:
-                reactorState = ReactorState.getState((int) object);
-                break;
-            case 4:
-                reactorFuel = (int) object;
-                break;
-            case 5:
-                convertedFuel = (int) object;
-                break;
-            case 6:
-                energySaturation = (int) object;
-                break;
-            case 7:
-                maxEnergySaturation = (int) object;
-                break;
-            case 8:
-                reactionTemperature = (double) object;
-                break;
-            case 9:
-                maxReactTemperature = (double) object;
-                break;
-            case 10:
-                fieldCharge = (double) object;
-                break;
-            case 11:
-                maxFieldCharge = (double) object;
-                break;
-            case 100:
-                FMLClientHandler.instance().getClient().effectRenderer.addEffect(
-                        new Particles.ReactorExplosionParticle(worldObj, xCoord, yCoord, zCoord, (int) object));
+            case 0 -> isStructureValid = (boolean) object;
+            case 2 -> startupInitialized = (boolean) object;
+            case 3 -> reactorState = ReactorState.getState((int) object);
+            case 4 -> reactorFuel = (int) object;
+            case 5 -> convertedFuel = (int) object;
+            case 6 -> energySaturation = (int) object;
+            case 7 -> maxEnergySaturation = (int) object;
+            case 8 -> reactionTemperature = (double) object;
+            case 9 -> maxReactTemperature = (double) object;
+            case 10 -> fieldCharge = (double) object;
+            case 11 -> maxFieldCharge = (double) object;
+            case 100 -> FMLClientHandler.instance().getClient().effectRenderer
+                    .addEffect(new Particles.ReactorExplosionParticle(worldObj, xCoord, yCoord, zCoord, (int) object));
         }
         super.receiveObjectFromServer(index, object);
     }

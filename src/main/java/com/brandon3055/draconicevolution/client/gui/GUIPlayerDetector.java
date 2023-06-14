@@ -25,7 +25,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GUIPlayerDetector extends GuiContainer {
 
-    private static final ResourceLocation Texture = new ResourceLocation(
+    private static final ResourceLocation texture = new ResourceLocation(
             References.MODID.toLowerCase(),
             "textures/gui/PlayerDetector.png");
 
@@ -55,7 +55,7 @@ public class GUIPlayerDetector extends GuiContainer {
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int x, int y) {
         GL11.glColor4f(1, 1, 1, 1);
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(Texture);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
         if (isInEditMode) {
             drawTexturedModalRect(guiLeft + 3, guiTop + ySize / 2, 3, 3, xSize - 6, (ySize / 2) - 3);
@@ -83,6 +83,7 @@ public class GUIPlayerDetector extends GuiContainer {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void initGui() {
         super.initGui();
         buttonList.clear();
@@ -109,36 +110,36 @@ public class GUIPlayerDetector extends GuiContainer {
     @Override
     protected void actionPerformed(GuiButton button) {
         switch (button.id) {
-            case 0: // Range +
+            case 0 -> { // Range +
                 range = Math.min(range + 1, TilePlayerDetectorAdvanced.MAXIMUM_RANGE);
                 DraconicEvolution.network.sendToServer(new PlayerDetectorButtonPacket((byte) 0, (byte) range));
-                break;
-            case 1: // Range -
+            }
+            case 1 -> { // Range -
                 range = Math.max(range - 1, TilePlayerDetectorAdvanced.MINIMUM_RANGE);
                 DraconicEvolution.network.sendToServer(new PlayerDetectorButtonPacket((byte) 0, (byte) range));
-                break;
-            case 3: // Edit Whitelist/Blacklist
+            }
+            case 3 -> { // Edit Whitelist/Blacklist
                 isInitScheduled = true;
                 isInEditMode = true;
                 container.setShouldShowInventory(false);
-                break;
-            case 4: // Toggle Whitelist/Blacklist mode
+            }
+            case 4 -> { // Toggle Whitelist/Blacklist mode
                 isInitScheduled = true;
                 isInWhitelistMode = !isInWhitelistMode;
                 byte whitelistMode = (byte) (isInWhitelistMode ? 1 : 0);
                 DraconicEvolution.network.sendToServer(new PlayerDetectorButtonPacket((byte) 1, whitelistMode));
-                break;
-            case 5: // Back
+            }
+            case 5 -> { // Back
                 isInitScheduled = true;
                 isInEditMode = false;
                 container.setShouldShowInventory(true);
-                break;
-            case 6: // Invert Output
+            }
+            case 6 -> { // Invert Output
                 isInitScheduled = true;
                 isOutputInverted = !isOutputInverted;
                 byte outputMode = (byte) (isOutputInverted ? 1 : 0);
                 DraconicEvolution.network.sendToServer(new PlayerDetectorButtonPacket((byte) 2, outputMode));
-                break;
+            }
         }
     }
 

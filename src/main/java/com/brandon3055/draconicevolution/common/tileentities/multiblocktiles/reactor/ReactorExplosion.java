@@ -1,7 +1,5 @@
 package com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor;
 
-import java.util.Random;
-
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
@@ -14,20 +12,19 @@ import com.brandon3055.brandonscore.common.utills.Utills;
  */
 public class ReactorExplosion implements IProcess {
 
-    public static DamageSource fusionExplosion = new DamageSource("damage.de.fusionExplode").setExplosion()
+    public static final DamageSource FUSION_EXPLOSION = new DamageSource("damage.de.fusionExplode").setExplosion()
             .setDamageBypassesArmor().setDamageIsAbsolute().setDamageAllowedInCreativeMode();
 
-    private World worldObj;
-    private int xCoord;
-    private int yCoord;
-    private int zCoord;
-    private float power;
-    private Random random = new Random();
-
+    private final World world;
+    private final int xCoord;
+    private final int yCoord;
+    private final int zCoord;
+    private final float power;
+    private boolean isDead;
     private double expansion = 0;
 
     public ReactorExplosion(World world, int x, int y, int z, float power) {
-        this.worldObj = world;
+        this.world = world;
         this.xCoord = x;
         this.yCoord = y;
         this.zCoord = z;
@@ -38,17 +35,14 @@ public class ReactorExplosion implements IProcess {
     @Override
     public void updateProcess() {
 
-        int OD = (int) expansion;
-        int ID = OD - 1;
         int size = (int) expansion;
-
         for (int x = xCoord - size; x < xCoord + size; x++) {
             for (int z = zCoord - size; z < zCoord + size; z++) {
-                double dist = Utills.getDistanceAtoB(x, z, xCoord, zCoord);
-                if (dist < OD && dist >= ID) {
+                double distance = Utills.getDistanceAtoB(x, z, xCoord, zCoord);
+                if (distance < expansion && distance >= size - 1) {
                     float tracePower = power - (float) (expansion / 10D);
-                    tracePower *= 1F + ((random.nextFloat() - 0.5F) * 0.2);
-                    ProcessHandler.addProcess(new ReactorExplosionTrace(worldObj, x, yCoord, z, tracePower, random));
+                    tracePower *= 1F + (world.rand.nextFloat() - 0.5F) * 0.2;
+                    ProcessHandler.addProcess(new ReactorExplosionTrace(world, x, yCoord, z, tracePower));
                 }
             }
         }
@@ -56,8 +50,6 @@ public class ReactorExplosion implements IProcess {
         isDead = expansion >= power * 10;
         expansion += 1;
     }
-
-    private boolean isDead = false;
 
     @Override
     public boolean isDead() {

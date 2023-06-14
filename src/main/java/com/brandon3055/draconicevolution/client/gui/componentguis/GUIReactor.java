@@ -11,7 +11,11 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.brandonscore.client.gui.guicomponents.*;
+import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentButton;
+import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentCollection;
+import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentTextureButton;
+import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentTexturedRect;
+import com.brandon3055.brandonscore.client.gui.guicomponents.GUIBase;
 import com.brandon3055.brandonscore.client.utills.GuiHelper;
 import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
@@ -166,6 +170,7 @@ public class GUIReactor extends GUIBase {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
         List<String> text = new ArrayList<>();
@@ -266,19 +271,10 @@ public class GUIReactor extends GUIBase {
     private void drawStatus() {
         String status = StatCollector.translateToLocal("gui.de.status.txt") + ": ";
         switch (core.reactorState) {
-            case OFFLINE:
-                status += EnumChatFormatting.DARK_GRAY;
-                break;
-            case STARTING:
-            case STOPPING:
-                status += EnumChatFormatting.RED;
-                break;
-            case ONLINE:
-                status += EnumChatFormatting.DARK_GREEN;
-                break;
-            case INVALID:
-                status += EnumChatFormatting.DARK_RED;
-                break;
+            case OFFLINE -> status += EnumChatFormatting.DARK_GRAY;
+            case STARTING, STOPPING -> status += EnumChatFormatting.RED;
+            case ONLINE -> status += EnumChatFormatting.DARK_GREEN;
+            case INVALID -> status += EnumChatFormatting.DARK_RED;
         }
         status += core.reactorState.toLocalizedString(core.canStart());
         fontRendererObj.drawString(status, xSize - 5 - fontRendererObj.getStringWidth(status), 125, 0);

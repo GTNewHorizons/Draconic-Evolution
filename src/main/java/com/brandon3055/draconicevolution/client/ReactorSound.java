@@ -12,52 +12,44 @@ import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.rea
  */
 public class ReactorSound extends PositionedSound implements ITickableSound {
 
-    private static ResourceLocation sound = new ResourceLocation(References.RESOURCESPREFIX + "coreSound");
-    public boolean donePlaying = false;
-    private TileReactorCore tile;
+    private static final ResourceLocation sound = new ResourceLocation(References.RESOURCESPREFIX + "coreSound");
+    public boolean isDonePlaying = false;
+    private final TileReactorCore core;
 
-    public ReactorSound(TileReactorCore tile) {
+    public ReactorSound(TileReactorCore core) {
         super(sound);
-        this.tile = tile;
-        this.xPosF = (float) tile.xCoord + 0.5F;
-        this.yPosF = (float) tile.yCoord + 0.5F;
-        this.zPosF = (float) tile.zCoord + 0.5F;
+        this.core = core;
+        this.xPosF = (float) core.xCoord + 0.5F;
+        this.yPosF = (float) core.yCoord + 0.5F;
+        this.zPosF = (float) core.zCoord + 0.5F;
         this.repeat = true;
         this.volume = 1.5F;
     }
 
     @Override
     public boolean isDonePlaying() {
-        return donePlaying;
+        return isDonePlaying;
     }
 
     @Override
     public void update() {
-
-        volume = (tile.renderSpeed - 0.5F) * 2F;
-        if (tile.reactionTemperature > 8000) {
-            volume += (float) ((tile.reactionTemperature - 8000D) / 1000D);
+        volume = (core.renderSpeed - 0.5F) * 2F;
+        if (core.reactionTemperature > 8000) {
+            volume += (float) ((core.reactionTemperature - 8000D) / 1000D);
         }
-        if (tile.reactionTemperature > 2000 && tile.maxFieldCharge > 0
-                && tile.fieldCharge < (tile.maxFieldCharge * 0.2D)) {
-            volume += 2D - ((tile.fieldCharge / tile.maxFieldCharge) * 10D);
+        if (core.reactionTemperature > 2000 && core.maxFieldCharge > 0
+                && core.fieldCharge < (core.maxFieldCharge * 0.2D)) {
+            volume += 2D - ((core.fieldCharge / core.maxFieldCharge) * 10D);
         }
-        if (tile.reactionTemperature > 2000 && tile.reactorFuel + tile.convertedFuel > 0
-                && tile.reactorFuel < (double) (tile.reactorFuel + tile.convertedFuel) * 0.2D) {
-            volume += 2D - ((tile.reactorFuel / (tile.reactorFuel + tile.convertedFuel)) * 10D);
+        if (core.reactionTemperature > 2000 && core.reactorFuel + core.convertedFuel > 0
+                && core.reactorFuel < (double) (core.reactorFuel + core.convertedFuel) * 0.2D) {
+            volume += 2D - ((float) core.reactorFuel / (core.reactorFuel + core.convertedFuel)) * 10D;
         }
 
         field_147663_c = 0.5F + volume / 2F;
 
-        if (tile.isInvalid() || !tile.getWorldObj().getChunkFromBlockCoords(tile.xCoord, tile.zCoord).isChunkLoaded) { // ||
-                                                                                                                       // player
-                                                                                                                       // ==
-                                                                                                                       // null
-                                                                                                                       // ||
-                                                                                                                       // tile.getDistanceFrom(player.posX,
-                                                                                                                       // player.posY,
-            // player.posZ) > 512){
-            donePlaying = true;
+        if (core.isInvalid() || !core.getWorldObj().getChunkFromBlockCoords(core.xCoord, core.zCoord).isChunkLoaded) {
+            isDonePlaying = true;
             repeat = false;
         }
     }

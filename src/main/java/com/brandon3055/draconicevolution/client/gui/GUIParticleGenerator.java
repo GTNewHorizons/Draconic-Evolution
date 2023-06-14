@@ -10,7 +10,9 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -48,7 +50,7 @@ public class GUIParticleGenerator extends GuiScreen {
 
         public IntegerProperty(int page, String label, int value, int minimumValue, int maximumValue) {
             this.page = page;
-            this.label = label;
+            this.label = StatCollector.translateToLocal("gui.de.particleGenerator." + label);
             this.value = value;
             this.minimumValue = minimumValue;
             this.maximumValue = maximumValue;
@@ -101,7 +103,7 @@ public class GUIParticleGenerator extends GuiScreen {
 
         public FloatProperty(int page, String label, float value, float minimumValue, float maximumValue, float scale) {
             this.page = page;
-            this.label = label;
+            this.label = StatCollector.translateToLocal("gui.de.particleGenerator." + label);
             this.value = value;
             this.minimumValue = minimumValue;
             this.maximumValue = maximumValue;
@@ -181,33 +183,22 @@ public class GUIParticleGenerator extends GuiScreen {
         updateScreen();
     }
 
-    private static final String[] InfoText = {
-            "The Particle Generator is a decorative device that allows you to create your own custom particle effects.                                                                 "
-                    + "It is fairly easy you use this device you simply adjust the fields (variables) in the interface to change how the generated particles look and behave.                                                                                            "
-                    + "This block is a work in progress and new features and particles are likely to be added in future versions.                                                         "
-                    + "The following is a list of all of the fields in the interface and what they do.",
-            "The first thing to note is that most fields have a random modifier which will add a random number between 0 and whatever max (or min) value you give it to the field.                                                                                      "
-                    + "-The first 3 fields (Red, Green & Blue) control the colour of the particle. Most people should be familiar with this colour system if not google RGB colours. Note: the max value for each colour can not go higher then 255 so the colour field limits the random modifier e.g. if the colour field is set to 255 and the random modifier is set to 20 the result will always be 255",
-            "-The next 3 fields (Motion X, Y & Z) control the direction and speed of the particle                                                                                            "
-                    + "-The \"Life\" field sets how long (in ticks) before the particle despawns.                                                       "
-                    + "-The \"Size\" field sets the size of the particle.                                                                                           "
-                    + "-The next 3 fields (Spawn X, Y & Z) Sets the spawn location of the particle (relative to the location of the particle generator)",
-            "-The \"Delay\" field sets the delay (in ticks) between each particle spawn e.g. 1=20/s, 20=1/s, 100=1/5s                                                                    "
-                    + "-The \"Fade\" field sets how long (in ticks) it takes the particle to fade out of existance. Note: This adds to the life of the particle                                                                                  "
-                    + "-The \"Gravity\" field sets how the particle is affected by gravity.                                                              "
-                    + "-\"Block Collision\" Toggles weather or not the particle will collide with blocks                                                     "
-                    + "-\"Particle Selected\" Switches between the different particles available.",
-            EnumChatFormatting.DARK_RED + "              Redstone Control"
+    private static final String[] infoText = {
+            StringEscapeUtils.unescapeJava(StatCollector.translateToLocal("gui.de.particleGenerator.info.1")),
+            StringEscapeUtils.unescapeJava(StatCollector.translateToLocal("gui.de.particleGenerator.info.2")),
+            StringEscapeUtils.unescapeJava(StatCollector.translateToLocal("gui.de.particleGenerator.info.3")),
+            StringEscapeUtils.unescapeJava(StatCollector.translateToLocal("gui.de.particleGenerator.info.4")),
+            EnumChatFormatting.DARK_RED
+                    + StringEscapeUtils
+                            .unescapeJava(StatCollector.translateToLocal("gui.de.particleGenerator.info.5.title"))
                     + EnumChatFormatting.BLACK
-                    + "\nBy default a redstone signal is required for the generator to run."
-                    + "\n\nHowever if you shift right click the generator with an empty hand it will switch to inverted mode."
-                    + "\nThe redstone mode is indicated by the 8 cubes at the corners of the block.",
-            EnumChatFormatting.DARK_RED + "              Computer Control"
+                    + StringEscapeUtils.unescapeJava(StatCollector.translateToLocal("gui.de.particleGenerator.info.5")),
+            EnumChatFormatting.DARK_RED
+                    + StringEscapeUtils
+                            .unescapeJava(StatCollector.translateToLocal("gui.de.particleGenerator.info.6.title"))
                     + EnumChatFormatting.BLACK
-                    + "\nThe Generator can be controlled via a computer"
-                    + "\nIt exposes a relatively straight forward API:"
-                    + "\n\n  setGeneratorProperty(property, value)\n  getGeneratorState()\n  resetGeneratorState()"
-                    + "\n\nGenerator state is obtained as a whole from getGeneratorState, whereas properties are modified one at a time using setGeneratorProperty. Property names are strings and mostly correspond to button labels in the GUI." };
+                    + StringEscapeUtils.unescapeJava(StatCollector.translateToLocal("gui.de.particleGenerator.info.6")),
+            StringEscapeUtils.escapeJava(StatCollector.translateToLocal("gui.de.particleGenerator.info.7")) };
 
     @Override
     public void drawScreen(int x, int y, float partialTicks) {
@@ -250,7 +241,7 @@ public class GUIParticleGenerator extends GuiScreen {
         }
         if (page == 10) {
             fontRendererObj.drawStringWithShadow("Information", posX + 75, posY + 5, 0x00FFFF);
-            fontRendererObj.drawSplitString(InfoText[infoPage], posX + 5, posY + 20, 200, 0x000000);
+            fontRendererObj.drawSplitString(infoText[infoPage], posX + 5, posY + 20, 200, 0x000000);
             fontRendererObj.drawSplitString("Page: " + (infoPage + 1), posX + 88, posY + 180, 200, 0xFF0000);
         }
 
@@ -270,12 +261,26 @@ public class GUIParticleGenerator extends GuiScreen {
         buttonList.clear();
 
         // Navigation
-        buttonList.add(previousPage = new GuiButton(100, posX - 47, posY + 177, 47, 20, "<==="));
-        buttonList.add(nextPage = new GuiButton(101, posX + 213, posY + 177, 47, 20, "===>"));
-        buttonList.add(showInfo = new GuiButton(102, posX - 21, posY + 3, 20, 20, "i"));
-        buttonList.add(hideInfo = new GuiButton(103, posX - 31, posY + 23, 30, 20, "Back"));
-        buttonList.add(previousInfoPage = new GuiButton(104, posX + 4, posY + 174, 80, 20, "Previous page"));
-        buttonList.add(nextInfoPage = new GuiButton(105, posX + 128, posY + 174, 80, 20, "Next page"));
+        buttonList.add(previousPage = new GuiButton(100, posX - 20, posY + 177, 20, 20, "<"));
+        buttonList.add(nextPage = new GuiButton(101, posX + 213, posY + 177, 20, 20, ">"));
+        buttonList.add(
+                showInfo = new GuiButton(
+                        102,
+                        posX - 21,
+                        posY + 3,
+                        20,
+                        20,
+                        StatCollector.translateToLocal("gui.de.particleGenerator.info.name")));
+        buttonList.add(
+                hideInfo = new GuiButton(
+                        103,
+                        posX - 31,
+                        posY + 23,
+                        30,
+                        20,
+                        StatCollector.translateToLocal("gui.de.particleGenerator.back.name")));
+        buttonList.add(previousInfoPage = new GuiButton(104, posX + 4, posY + 174, 30, 20, "<-"));
+        buttonList.add(nextInfoPage = new GuiButton(105, posX + 178, posY + 174, 30, 20, "->"));
 
         // First page
         for (int column = 0; column < 2; column++) {
@@ -298,11 +303,30 @@ public class GUIParticleGenerator extends GuiScreen {
             property.createButtons(buttonList, posX + 116, posY + 19 + row * 22, propertyId);
         }
         buttonList.add(
-                collisionToggle = new GuiButton(110, posX + 105, posY + 19 + 3 * 22, 102, 20, "Block Collision: "));
+                collisionToggle = new GuiButton(
+                        110,
+                        posX + 105,
+                        posY + 19 + 3 * 22,
+                        102,
+                        20,
+                        StatCollector.translateToLocal("gui.de.particleGenerator.blockCollision.name")));
         buttonList.add(
-                particleSelector = new GuiButton(111, posX + 105, posY + 19 + 4 * 22, 102, 20, "Particle Selected: "));
+                particleSelector = new GuiButton(
+                        111,
+                        posX + 105,
+                        posY + 19 + 4 * 22,
+                        102,
+                        20,
+                        StatCollector.translateToLocal("gui.de.particleGenerator.particleSelected.name")));
 
-        buttonList.add(particleToggle = new GuiButton(112, posX + 105, posY + 19 + 5 * 22, 102, 20, "Enabled: "));
+        buttonList.add(
+                particleToggle = new GuiButton(
+                        112,
+                        posX + 105,
+                        posY + 19 + 5 * 22,
+                        102,
+                        20,
+                        StatCollector.translateToLocal("gui.de.particleGenerator.enabled.name")));
 
         // Third page
         for (int row = 0; row < 8; row++) {
@@ -310,10 +334,30 @@ public class GUIParticleGenerator extends GuiScreen {
             IProperty property = properties.get(propertyId);
             property.createButtons(buttonList, posX + 5, posY + 19 + row * 22, propertyId);
         }
-        buttonList.add(beamToggle = new GuiButton(120, posX + 105, posY + 19, 102, 20, "Enabled: "));
-        buttonList.add(coreRenderToggle = new GuiButton(121, posX + 105, posY + 41, 102, 20, "Render Core: "));
         buttonList.add(
-                settingsSaver = new GuiButton(127, posX + 105, posY + 19 + 7 * 22, 102, 20, "Take note of values"));
+                beamToggle = new GuiButton(
+                        120,
+                        posX + 105,
+                        posY + 19,
+                        102,
+                        20,
+                        StatCollector.translateToLocal("gui.de.particleGenerator.enabled.name")));
+        buttonList.add(
+                coreRenderToggle = new GuiButton(
+                        121,
+                        posX + 105,
+                        posY + 41,
+                        102,
+                        20,
+                        StatCollector.translateToLocal("gui.de.particleGenerator.renderCore.name")));
+        buttonList.add(
+                settingsSaver = new GuiButton(
+                        127,
+                        posX + 105,
+                        posY + 19 + 7 * 22,
+                        102,
+                        20,
+                        StatCollector.translateToLocal("gui.de.particleGenerator.saveSettings.name")));
 
         updateButtons();
     }
@@ -328,50 +372,46 @@ public class GUIParticleGenerator extends GuiScreen {
         }
         short packetData = 0;
         switch (button.id) {
-            case 100:
+            case 100 -> {
                 page = Math.max(page - 1, 1);
                 packetData = (short) page;
-                break;
-            case 101:
+            }
+            case 101 -> {
                 page = Math.min(page + 1, 3);
                 packetData = (short) page;
-                break;
-            case 102:
+            }
+            case 102 -> {
                 page = 10;
                 packetData = (short) page;
-                break;
-            case 103:
+            }
+            case 103 -> {
                 page = 1;
                 packetData = (short) page;
-                break;
-            case 104:
-                infoPage = Math.max(infoPage - 1, 0);
-                break;
-            case 105:
-                infoPage = Math.min(infoPage + 1, InfoText.length - 1);
-                break;
-            case 110:
+            }
+            case 104 -> infoPage = Math.max(infoPage - 1, 0);
+            case 105 -> infoPage = Math.min(infoPage + 1, infoText.length - 1);
+            case 110 -> {
                 canParticleCollide = !canParticleCollide;
                 packetData = (short) (canParticleCollide ? 1 : 0);
-                break;
-            case 111:
+            }
+            case 111 -> {
                 selectedParticle = selectedParticle < TileParticleGenerator.MAXIMUM_PARTICLE_INDEX
                         ? selectedParticle + 1
                         : 1;
                 packetData = (short) selectedParticle;
-                break;
-            case 112:
+            }
+            case 112 -> {
                 isParticlesEnabled = !isParticlesEnabled;
                 packetData = (short) (isParticlesEnabled ? 1 : 0);
-                break;
-            case 120:
+            }
+            case 120 -> {
                 isBeamEnabled = !isBeamEnabled;
                 packetData = (short) (isBeamEnabled ? 1 : 0);
-                break;
-            case 121:
+            }
+            case 121 -> {
                 shouldRenderCore = !shouldRenderCore;
                 packetData = (short) (shouldRenderCore ? 1 : 0);
-                break;
+            }
         }
         updateButtons();
         DraconicEvolution.network.sendToServer(
@@ -418,48 +458,48 @@ public class GUIParticleGenerator extends GuiScreen {
     }
 
     private void syncWithServer() {
-        properties.put(0, new IntegerProperty(1, "Red:", particleGenerator.red, 0, 255));
-        properties.put(1, new IntegerProperty(1, "Green:", particleGenerator.green, 0, 255));
-        properties.put(2, new IntegerProperty(1, "Blue:", particleGenerator.blue, 0, 255));
-        properties.put(3, new FloatProperty(1, "Motion X:", particleGenerator.motionX, -5F, 5F, 1000F));
-        properties.put(4, new FloatProperty(1, "Motion Y:", particleGenerator.motionY, -5F, 5F, 1000F));
-        properties.put(5, new FloatProperty(1, "Motion Z:", particleGenerator.motionZ, -5F, 5F, 1000F));
-        properties.put(6, new FloatProperty(1, "Scale:", particleGenerator.scale, 0.01F, 50F, 100F));
-        properties.put(7, new IntegerProperty(1, "Life (T):", particleGenerator.life, 0, 1000));
+        properties.put(0, new IntegerProperty(1, "red.name", particleGenerator.red, 0, 255));
+        properties.put(1, new IntegerProperty(1, "green.name", particleGenerator.green, 0, 255));
+        properties.put(2, new IntegerProperty(1, "blue.name", particleGenerator.blue, 0, 255));
+        properties.put(3, new FloatProperty(1, "motionX.name", particleGenerator.motionX, -5F, 5F, 1000F));
+        properties.put(4, new FloatProperty(1, "motionY.name", particleGenerator.motionY, -5F, 5F, 1000F));
+        properties.put(5, new FloatProperty(1, "motionZ.name", particleGenerator.motionZ, -5F, 5F, 1000F));
+        properties.put(6, new FloatProperty(1, "scale.name", particleGenerator.scale, 0.01F, 50F, 100F));
+        properties.put(7, new IntegerProperty(1, "life.name", particleGenerator.life, 0, 1000));
 
-        properties.put(10, new IntegerProperty(1, "Random:", particleGenerator.randomRed, 0, 255));
-        properties.put(11, new IntegerProperty(1, "Random:", particleGenerator.randomGreen, 0, 255));
-        properties.put(12, new IntegerProperty(1, "Random:", particleGenerator.randomBlue, 0, 255));
-        properties.put(13, new FloatProperty(1, "Random:", particleGenerator.randomMotionX, -5F, 5F, 1000F));
-        properties.put(14, new FloatProperty(1, "Random:", particleGenerator.randomMotionY, -5F, 5F, 1000F));
-        properties.put(15, new FloatProperty(1, "Random:", particleGenerator.randomMotionZ, -5F, 5F, 1000F));
-        properties.put(16, new FloatProperty(1, "Random:", particleGenerator.randomScale, 0F, 50F, 100F));
-        properties.put(17, new IntegerProperty(1, "Random:", particleGenerator.randomLife, 0, 1000));
+        properties.put(10, new IntegerProperty(1, "random.name", particleGenerator.randomRed, 0, 255));
+        properties.put(11, new IntegerProperty(1, "random.name", particleGenerator.randomGreen, 0, 255));
+        properties.put(12, new IntegerProperty(1, "random.name", particleGenerator.randomBlue, 0, 255));
+        properties.put(13, new FloatProperty(1, "random.name", particleGenerator.randomMotionX, -5F, 5F, 1000F));
+        properties.put(14, new FloatProperty(1, "random.name", particleGenerator.randomMotionY, -5F, 5F, 1000F));
+        properties.put(15, new FloatProperty(1, "random.name", particleGenerator.randomMotionZ, -5F, 5F, 1000F));
+        properties.put(16, new FloatProperty(1, "random.name", particleGenerator.randomScale, 0F, 50F, 100F));
+        properties.put(17, new IntegerProperty(1, "random.name", particleGenerator.randomLife, 0, 1000));
 
-        properties.put(20, new FloatProperty(2, "Spawn X:", particleGenerator.spawnX, -50F, 50F, 10F));
-        properties.put(21, new FloatProperty(2, "Spawn Y:", particleGenerator.spawnY, -50F, 50F, 10F));
-        properties.put(22, new FloatProperty(2, "Spawn Z:", particleGenerator.spawnZ, -50F, 50F, 10F));
-        properties.put(23, new IntegerProperty(2, "Delay:", particleGenerator.spawnRate, 1, 200));
-        properties.put(24, new IntegerProperty(2, "Fade:", particleGenerator.fade, 0, 100));
-        properties.put(25, new FloatProperty(2, "Gravity:", particleGenerator.gravity, -5F, 5F, 1000F));
+        properties.put(20, new FloatProperty(2, "spawnX.name", particleGenerator.spawnX, -50F, 50F, 10F));
+        properties.put(21, new FloatProperty(2, "spawnY.name", particleGenerator.spawnY, -50F, 50F, 10F));
+        properties.put(22, new FloatProperty(2, "spawnZ.name", particleGenerator.spawnZ, -50F, 50F, 10F));
+        properties.put(23, new IntegerProperty(2, "delay.name", particleGenerator.spawnRate, 1, 200));
+        properties.put(24, new IntegerProperty(2, "fade.name", particleGenerator.fade, 0, 100));
+        properties.put(25, new FloatProperty(2, "gravity.name", particleGenerator.gravity, -5F, 5F, 1000F));
 
-        properties.put(30, new FloatProperty(2, "Random:", particleGenerator.randomSpawnX, -50F, 50F, 10F));
-        properties.put(31, new FloatProperty(2, "Random:", particleGenerator.randomSpawnY, -50F, 50F, 10F));
-        properties.put(32, new FloatProperty(2, "Random:", particleGenerator.randomSpawnZ, -50F, 50F, 10F));
+        properties.put(30, new FloatProperty(2, "random.name", particleGenerator.randomSpawnX, -50F, 50F, 10F));
+        properties.put(31, new FloatProperty(2, "random.name", particleGenerator.randomSpawnY, -50F, 50F, 10F));
+        properties.put(32, new FloatProperty(2, "random.name", particleGenerator.randomSpawnZ, -50F, 50F, 10F));
 
         page = particleGenerator.page;
         canParticleCollide = particleGenerator.canParticleCollide;
         selectedParticle = particleGenerator.selectedParticle;
         isParticlesEnabled = particleGenerator.isParticlesEnabled;
 
-        properties.put(40, new IntegerProperty(3, "Red:", particleGenerator.beamRed, 0, 255));
-        properties.put(41, new IntegerProperty(3, "Green:", particleGenerator.beamGreen, 0, 255));
-        properties.put(42, new IntegerProperty(3, "Blue:", particleGenerator.beamBlue, 0, 255));
-        properties.put(43, new FloatProperty(3, "Pitch:", particleGenerator.beamPitch, -180F, 180F, 10F));
-        properties.put(44, new FloatProperty(3, "Yaw:", particleGenerator.beamYaw, -180F, 180F, 10F));
-        properties.put(45, new FloatProperty(3, "Rotation:", particleGenerator.beamRotation, -1F, 1F, 100F));
-        properties.put(46, new FloatProperty(3, "Scale:", particleGenerator.beamScale, 0F, 5F, 100F));
-        properties.put(47, new FloatProperty(3, "Length:", particleGenerator.beamLength, 0F, 320F, 100F));
+        properties.put(40, new IntegerProperty(3, "red.name", particleGenerator.beamRed, 0, 255));
+        properties.put(41, new IntegerProperty(3, "green.name", particleGenerator.beamGreen, 0, 255));
+        properties.put(42, new IntegerProperty(3, "blue.name", particleGenerator.beamBlue, 0, 255));
+        properties.put(43, new FloatProperty(3, "pitch.name", particleGenerator.beamPitch, -180F, 180F, 10F));
+        properties.put(44, new FloatProperty(3, "yaw.name", particleGenerator.beamYaw, -180F, 180F, 10F));
+        properties.put(45, new FloatProperty(3, "rotation.name", particleGenerator.beamRotation, -1F, 1F, 100F));
+        properties.put(46, new FloatProperty(3, "scale.name", particleGenerator.beamScale, 0F, 5F, 100F));
+        properties.put(47, new FloatProperty(3, "length.name", particleGenerator.beamLength, 0F, 320F, 100F));
 
         shouldRenderCore = particleGenerator.shouldRenderCore;
         isBeamEnabled = particleGenerator.isBeamEnabled;
@@ -476,23 +516,33 @@ public class GUIParticleGenerator extends GuiScreen {
             showInfo.visible = false;
             hideInfo.visible = true;
             previousInfoPage.visible = infoPage > 0;
-            nextInfoPage.visible = infoPage < InfoText.length - 1;
+            nextInfoPage.visible = infoPage < infoText.length - 1;
         } else {
             showInfo.visible = true;
             hideInfo.visible = false;
             previousInfoPage.visible = false;
             nextInfoPage.visible = false;
         }
+        final String onLabel = StatCollector.translateToLocal("gui.de.on.txt");
+        final String offLabel = StatCollector.translateToLocal("gui.de.off.txt");
         collisionToggle.visible = page == 2;
-        collisionToggle.displayString = "Block Collision: " + (canParticleCollide ? "on" : "off");
+        collisionToggle.displayString = StatCollector.translateToLocalFormatted(
+                "gui.de.particleGenerator.blockCollision.name",
+                canParticleCollide ? onLabel : offLabel);
         particleSelector.visible = page == 2;
-        particleSelector.displayString = "Particle Selected: " + selectedParticle;
+        particleSelector.displayString = StatCollector
+                .translateToLocalFormatted("gui.de.particleGenerator.particleSelected.name", selectedParticle);
         particleToggle.visible = page == 2;
-        particleToggle.displayString = "Enabled: " + (isParticlesEnabled ? "on" : "off");
+        particleToggle.displayString = StatCollector.translateToLocalFormatted(
+                "gui.de.particleGenerator.enabled.name",
+                isParticlesEnabled ? onLabel : offLabel);
         beamToggle.visible = page == 3;
-        beamToggle.displayString = "Enabled: " + (isBeamEnabled ? "on" : "off");
+        beamToggle.displayString = StatCollector
+                .translateToLocalFormatted("gui.de.particleGenerator.enabled.name", isBeamEnabled ? onLabel : offLabel);
         coreRenderToggle.visible = page == 3;
-        coreRenderToggle.displayString = "Render Core: " + (shouldRenderCore ? "on" : "off");
+        coreRenderToggle.displayString = StatCollector.translateToLocalFormatted(
+                "gui.de.particleGenerator.renderCore.name",
+                shouldRenderCore ? onLabel : offLabel);
         settingsSaver.visible = page == 3;
     }
 }

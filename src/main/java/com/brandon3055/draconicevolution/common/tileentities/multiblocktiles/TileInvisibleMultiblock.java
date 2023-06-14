@@ -24,12 +24,12 @@ public class TileInvisibleMultiblock extends TileEntity {
 
     public boolean isMasterOnline() {
         TileEntity tile = master.getTileEntity(worldObj);
-        return tile instanceof TileEnergyStorageCore && ((TileEnergyStorageCore) tile).isOnline();
+        return tile instanceof TileEnergyStorageCore core && core.isOnline();
     }
 
     public TileEnergyStorageCore getMaster() {
         TileEntity tile = master.getTileEntity(worldObj);
-        return tile instanceof TileEnergyStorageCore ? (TileEnergyStorageCore) tile : null;
+        return tile instanceof TileEnergyStorageCore core ? core : null;
     }
 
     @Override

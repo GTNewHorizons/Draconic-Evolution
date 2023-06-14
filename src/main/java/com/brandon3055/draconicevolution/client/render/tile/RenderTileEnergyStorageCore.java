@@ -35,10 +35,9 @@ public class RenderTileEnergyStorageCore extends TileEntitySpecialRenderer {
 
     @Override
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float timeSinceLastTick) {
-        if (!(tile instanceof TileEnergyStorageCore)) {
+        if (!(tile instanceof TileEnergyStorageCore core)) {
             return;
         }
-        TileEnergyStorageCore core = (TileEnergyStorageCore) tile;
         if (!core.isOnline()) {
             return;
         }
@@ -46,27 +45,13 @@ public class RenderTileEnergyStorageCore extends TileEntitySpecialRenderer {
         float rotation = core.modelRotation + (timeSinceLastTick / 2F);
 
         switch (core.getTier()) {
-            case 0:
-                scale = 0.7F;
-                break;
-            case 1:
-                scale = 1.2F;
-                break;
-            case 2:
-                scale = 1.7F;
-                break;
-            case 3:
-                scale = 2.5F;
-                break;
-            case 4:
-                scale = 3.5F;
-                break;
-            case 5:
-                scale = 4.5F;
-                break;
-            case 6:
-                scale = 5.5F;
-                break;
+            case 0 -> scale = 0.7F;
+            case 1 -> scale = 1.2F;
+            case 2 -> scale = 1.7F;
+            case 3 -> scale = 2.5F;
+            case 4 -> scale = 3.5F;
+            case 5 -> scale = 4.5F;
+            case 6 -> scale = 5.5F;
         }
 
         GL11.glPushMatrix();

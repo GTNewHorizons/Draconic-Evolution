@@ -54,7 +54,7 @@ public class ChaosImplosionTrace implements IProcess {
             List<Entity> entities = worldObj.getEntitiesWithinAABB(
                     Entity.class,
                     AxisAlignedBB.getBoundingBox(xCoord, y, zCoord, xCoord + 1, y + 1, zCoord + 1));
-            for (Entity entity : entities) entity.attackEntityFrom(ReactorExplosion.fusionExplosion, power * 100);
+            for (Entity entity : entities) entity.attackEntityFrom(ReactorExplosion.FUSION_EXPLOSION, power * 100);
 
             // energy -= block instanceof BlockLiquid ? 10 : block.getExplosionResistance(null);
             if (energy >= 0) worldObj.setBlockToAir(xCoord, y, zCoord);

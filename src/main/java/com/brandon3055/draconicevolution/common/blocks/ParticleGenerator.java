@@ -54,11 +54,10 @@ public class ParticleGenerator extends BlockDE implements ITileEntityProvider {
         }
         if (player.getHeldItem() != null && player.getHeldItem().getItem() == Items.paper) {
             TileEntity tile = world.getTileEntity(x, y, z);
-            if (tile instanceof TileParticleGenerator) {
-                TileParticleGenerator generator = (TileParticleGenerator) tile;
+            if (tile instanceof TileParticleGenerator particleGenerator) {
                 ItemStack stack = player.getHeldItem();
                 if (stack.hasTagCompound() && stack.getTagCompound().hasKey("particles_enabled")) {
-                    generator.setBlockNBT(stack.getTagCompound());
+                    particleGenerator.setBlockNBT(stack.getTagCompound());
                     return true;
                 }
             }
@@ -69,8 +68,8 @@ public class ParticleGenerator extends BlockDE implements ITileEntityProvider {
                 return true;
             }
             TileEntity tile = world.getTileEntity(x, y, z);
-            if (tile instanceof TileParticleGenerator) {
-                ((TileParticleGenerator) tile).toggleInverted();
+            if (tile instanceof TileParticleGenerator particleGenerator) {
+                particleGenerator.toggleInverted();
             }
         } else {
             FMLNetworkHandler.openGui(player, DraconicEvolution.instance, GuiHandler.GUIID_PARTICLEGEN, world, x, y, z);
@@ -87,8 +86,8 @@ public class ParticleGenerator extends BlockDE implements ITileEntityProvider {
     @Override
     public void onNeighborBlockChange(final World world, final int x, final int y, final int z, final Block block) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TileParticleGenerator) {
-            ((TileParticleGenerator) tile).hasRedstoneSignal = world.isBlockIndirectlyGettingPowered(x, y, z);
+        if (tile instanceof TileParticleGenerator particleGenerator) {
+            particleGenerator.hasRedstoneSignal = world.isBlockIndirectlyGettingPowered(x, y, z);
             world.markBlockForUpdate(x, y, z);
         }
     }
@@ -183,8 +182,7 @@ public class ParticleGenerator extends BlockDE implements ITileEntityProvider {
 
     private boolean tryActivateEnergyStorageCore(World world, int coreX, int coreY, int coreZ, EntityPlayer player) {
         TileEntity tile = world.getTileEntity(coreX, coreY, coreZ);
-        if (tile instanceof TileEnergyStorageCore) {
-            TileEnergyStorageCore core = (TileEnergyStorageCore) tile;
+        if (tile instanceof TileEnergyStorageCore core) {
             if (core.tryActivate(player.capabilities.isCreativeMode)) {
                 return true;
             }
@@ -199,11 +197,10 @@ public class ParticleGenerator extends BlockDE implements ITileEntityProvider {
     public void breakBlock(World world, int x, int y, int z, Block blockBroken, int metadata) {
         if (metadata == 1) {
             TileEntity tile = world.getTileEntity(x, y, z);
-            if (tile instanceof TileParticleGenerator) {
-                TileParticleGenerator generator = (TileParticleGenerator) tile;
-                if (generator.getMaster() != null) {
+            if (tile instanceof TileParticleGenerator particleGenerator) {
+                if (particleGenerator.getMaster() != null) {
                     world.setBlockMetadataWithNotify(x, y, z, 0, 2);
-                    generator.getMaster().validateStructure(true);
+                    particleGenerator.getMaster().validateStructure(true);
                 }
             }
         }

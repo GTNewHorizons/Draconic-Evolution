@@ -55,7 +55,7 @@ public class TilePortalBlock extends TileEntity {
             double targetZ = zCoord;
 
             switch (blockMetadata) {
-                case 1:
+                case 1 -> {
                     sourceX += offset1;
                     sourceY += offset2;
                     targetX += offset1 + smallOffset1;
@@ -66,8 +66,8 @@ public class TilePortalBlock extends TileEntity {
                         sourceZ += 1;
                         targetZ += 0.25;
                     }
-                    break;
-                case 2:
+                }
+                case 2 -> {
                     sourceY += offset1;
                     sourceZ += offset2;
                     targetY += offset1 + smallOffset1;
@@ -78,8 +78,8 @@ public class TilePortalBlock extends TileEntity {
                         sourceX += 1;
                         targetX += 0.25;
                     }
-                    break;
-                case 3:
+                }
+                case 3 -> {
                     sourceX += offset1;
                     sourceZ += offset2;
                     targetX += offset1 + smallOffset1;
@@ -90,7 +90,7 @@ public class TilePortalBlock extends TileEntity {
                         sourceY += 1;
                         targetY += 0.25;
                     }
-                    break;
+                }
             }
             DraconicEvolution.proxy.spawnParticle(
                     new Particles.PortalParticle(worldObj, sourceX, sourceY, sourceZ, targetX, targetY, targetZ),
@@ -100,7 +100,7 @@ public class TilePortalBlock extends TileEntity {
 
     public TileDislocatorReceptacle getMaster() {
         TileEntity tile = worldObj.getTileEntity(masterX, masterY, masterZ);
-        return tile instanceof TileDislocatorReceptacle ? (TileDislocatorReceptacle) tile : null;
+        return tile instanceof TileDislocatorReceptacle receptacle ? receptacle : null;
     }
 
     public boolean isPortalStillValid() {

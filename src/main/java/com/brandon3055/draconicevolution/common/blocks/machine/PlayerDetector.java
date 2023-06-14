@@ -60,7 +60,7 @@ public class PlayerDetector extends BlockDE implements ITileEntityProvider {
         }
         IIcon side_icon;
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TilePlayerDetector && ((TilePlayerDetector) tile).shouldOutput()) {
+        if (tile instanceof TilePlayerDetector detector && detector.shouldOutput()) {
             side_icon = side_active;
         } else {
             side_icon = side_inactive;
@@ -118,15 +118,14 @@ public class PlayerDetector extends BlockDE implements ITileEntityProvider {
     @Override
     public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int side) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        return tile instanceof TilePlayerDetector && ((TilePlayerDetector) tile).shouldOutput() ? 15 : 0;
+        return tile instanceof TilePlayerDetector detector && detector.shouldOutput() ? 15 : 0;
     }
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float subX,
             float subY, float subZ) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TilePlayerDetector) {
-            TilePlayerDetector detector = (TilePlayerDetector) tile;
+        if (tile instanceof TilePlayerDetector detector) {
             int range = detector.getRange();
 
             if (player.isSneaking()) {

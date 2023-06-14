@@ -12,7 +12,7 @@ public class TilePlayerDetector extends TileEntity {
 
     public static final int MAXIMUM_RANGE = 10;
     public static final int MINIMUM_RANGE = 1;
-    private static final int ScanRate = 5;
+    private static final int scanRate = 5;
 
     private int tick = 0;
     private boolean shouldOutput = false;
@@ -24,7 +24,7 @@ public class TilePlayerDetector extends TileEntity {
             return;
         }
 
-        if (tick >= ScanRate) {
+        if (tick >= scanRate) {
             tick = 0;
             EntityPlayer player = worldObj.getClosestPlayer(xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D, range + 0.5D);
             if (player != null) {

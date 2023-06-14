@@ -63,8 +63,8 @@ public class ReactorCore extends BlockDE implements ITileEntityProvider {
     @Override
     public void onBlockAdded(World world, int x, int y, int z) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TileReactorCore) {
-            ((TileReactorCore) tile).onPlaced();
+        if (tile instanceof TileReactorCore core) {
+            core.onPlaced();
         }
     }
 
@@ -76,8 +76,8 @@ public class ReactorCore extends BlockDE implements ITileEntityProvider {
     @Override
     public void breakBlock(World world, int x, int y, int z, Block blockBroken, int metadata) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TileReactorCore) {
-            ((TileReactorCore) tile).onBroken();
+        if (tile instanceof TileReactorCore core) {
+            core.onBroken();
         }
         super.breakBlock(world, x, y, z, blockBroken, metadata);
     }

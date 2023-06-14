@@ -22,7 +22,7 @@ public class TilePlayerDetectorAdvanced extends TileEntity implements IInventory
 
     public static final int MAXIMUM_RANGE = 20;
     public static final int MINIMUM_RANGE = 1;
-    private static final int ScanRate = 5;
+    private static final int scanRate = 5;
 
     public String[] names = new String[42];
     public boolean isInWhiteListMode = false;
@@ -48,7 +48,7 @@ public class TilePlayerDetectorAdvanced extends TileEntity implements IInventory
             return;
         }
 
-        if (tick >= ScanRate) {
+        if (tick >= scanRate) {
             tick = 0;
             if (shouldEmit()) {
                 if (!shouldOutput) setShouldOutput(true);

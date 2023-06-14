@@ -74,10 +74,9 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
             for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
                 TileEntity tile = worldObj
                         .getTileEntity(xCoord + side.offsetX, yCoord + side.offsetY, zCoord + side.offsetZ);
-                if (tile instanceof IEnergyReceiver) {
+                if (tile instanceof IEnergyReceiver receiver) {
                     int energyToReceive = extractEnergy(side, Integer.MAX_VALUE, true);
-                    int energyReceived = ((IEnergyReceiver) tile)
-                            .receiveEnergy(side.getOpposite(), energyToReceive, false);
+                    int energyReceived = receiver.receiveEnergy(side.getOpposite(), energyToReceive, false);
                     extractEnergy(side, energyReceived, false);
                 }
             }
@@ -100,8 +99,8 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
         TileLocation location = coreLocations.get(selectedCore);
         if (location != null) {
             TileEntity tile = location.getTileEntity(worldObj);
-            if (tile instanceof TileEnergyStorageCore) {
-                return (TileEnergyStorageCore) tile;
+            if (tile instanceof TileEnergyStorageCore core) {
+                return core;
             }
         }
         return null;
@@ -148,26 +147,13 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
         int z = core.zCoord;
         int cYCoord = worldObj.getBlockMetadata(xCoord, yCoord, zCoord) == 1 ? yCoord + 1 : yCoord - 1;
 
-        float disMod;
-        switch (core.getTier()) {
-            case 0:
-                disMod = 0.5F;
-                break;
-            case 1:
-            case 2:
-                disMod = 1F;
-                break;
-            case 3:
-            case 4:
-                disMod = 2F;
-                break;
-            case 5:
-                disMod = 3F;
-                break;
-            default:
-                disMod = 4F;
-                break;
-        }
+        float disMod = switch (core.getTier()) {
+            case 0 -> 0.5F;
+            case 1, 2 -> 1F;
+            case 3, 4 -> 2F;
+            case 5 -> 3F;
+            default -> 4F;
+        };
 
         if (particleRate > 20) particleRate = 20;
         double sourceX = x + 0.5 - disMod + (rand.nextFloat() * (disMod * 2));
@@ -326,15 +312,9 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
     @Override
     public void receiveObjectFromServer(int index, Object object) {
         switch (index) {
-            case 0:
-                active = (Boolean) object;
-                break;
-            case 1:
-                isReceivingEnergy = (Boolean) object;
-                break;
-            case 2:
-                particleRate = (Byte) object;
-                break;
+            case 0 -> active = (Boolean) object;
+            case 1 -> isReceivingEnergy = (Boolean) object;
+            case 2 -> particleRate = (Byte) object;
         }
     }
 

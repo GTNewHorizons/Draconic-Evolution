@@ -8,9 +8,28 @@ import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.gui.componentguis.GUIManual;
 import com.brandon3055.draconicevolution.client.gui.componentguis.GUIReactor;
 import com.brandon3055.draconicevolution.client.gui.componentguis.GUIToolConfig;
-import com.brandon3055.draconicevolution.common.container.*;
+import com.brandon3055.draconicevolution.common.container.ContainerAdvTool;
+import com.brandon3055.draconicevolution.common.container.ContainerDissEnchanter;
+import com.brandon3055.draconicevolution.common.container.ContainerDraconiumChest;
+import com.brandon3055.draconicevolution.common.container.ContainerEnergyInfuser;
+import com.brandon3055.draconicevolution.common.container.ContainerGenerator;
+import com.brandon3055.draconicevolution.common.container.ContainerGrinder;
+import com.brandon3055.draconicevolution.common.container.ContainerPlayerDetector;
+import com.brandon3055.draconicevolution.common.container.ContainerReactor;
+import com.brandon3055.draconicevolution.common.container.ContainerSunDial;
+import com.brandon3055.draconicevolution.common.container.ContainerUpgradeModifier;
+import com.brandon3055.draconicevolution.common.container.ContainerWeatherController;
 import com.brandon3055.draconicevolution.common.inventory.InventoryTool;
-import com.brandon3055.draconicevolution.common.tileentities.*;
+import com.brandon3055.draconicevolution.common.tileentities.TileDissEnchanter;
+import com.brandon3055.draconicevolution.common.tileentities.TileDraconiumChest;
+import com.brandon3055.draconicevolution.common.tileentities.TileEnergyInfuser;
+import com.brandon3055.draconicevolution.common.tileentities.TileGenerator;
+import com.brandon3055.draconicevolution.common.tileentities.TileGrinder;
+import com.brandon3055.draconicevolution.common.tileentities.TileParticleGenerator;
+import com.brandon3055.draconicevolution.common.tileentities.TilePlayerDetectorAdvanced;
+import com.brandon3055.draconicevolution.common.tileentities.TileSunDial;
+import com.brandon3055.draconicevolution.common.tileentities.TileUpgradeModifier;
+import com.brandon3055.draconicevolution.common.tileentities.TileWeatherController;
 import com.brandon3055.draconicevolution.common.tileentities.gates.TileGate;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
 
@@ -41,163 +60,145 @@ public class GuiHandler implements IGuiHandler {
     }
 
     @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-        switch (ID) {
-            case GUIID_WEATHER_CONTROLLER:
-                TileEntity weatherController = world.getTileEntity(x, y, z);
-                if (weatherController instanceof TileWeatherController) {
-                    return new ContainerWeatherController(player.inventory, (TileWeatherController) weatherController);
+    public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        switch (id) {
+            case GUIID_WEATHER_CONTROLLER -> {
+                if (tile instanceof TileWeatherController weatherController) {
+                    return new ContainerWeatherController(player.inventory, weatherController);
                 }
-                break;
-            case GUIID_SUN_DIAL:
-                TileEntity sunDial = world.getTileEntity(x, y, z);
-                if (sunDial instanceof TileSunDial) {
-                    return new ContainerSunDial(player.inventory, (TileSunDial) sunDial);
+            }
+            case GUIID_SUN_DIAL -> {
+                if (tile instanceof TileSunDial sunDial) {
+                    return new ContainerSunDial(player.inventory, sunDial);
                 }
-                break;
-            case GUIID_GRINDER:
-                TileEntity grinder = world.getTileEntity(x, y, z);
-                if (grinder instanceof TileGrinder) {
-                    return new ContainerGrinder(player.inventory, (TileGrinder) grinder);
+            }
+            case GUIID_GRINDER -> {
+                if (tile instanceof TileGrinder grinder) {
+                    return new ContainerGrinder(player.inventory, grinder);
                 }
-                break;
-            case GUIID_PLAYERDETECTOR:
-                TileEntity detector = world.getTileEntity(x, y, z);
-                if (detector instanceof TilePlayerDetectorAdvanced) {
-                    return new ContainerPlayerDetector(player.inventory, (TilePlayerDetectorAdvanced) detector);
+            }
+            case GUIID_PLAYERDETECTOR -> {
+                if (tile instanceof TilePlayerDetectorAdvanced detector) {
+                    return new ContainerPlayerDetector(player.inventory, detector);
                 }
-                break;
-            case GUIID_ENERGY_INFUSER:
-                TileEntity infuser = world.getTileEntity(x, y, z);
-                if (infuser instanceof TileEnergyInfuser) {
-                    return new ContainerEnergyInfuser(player.inventory, (TileEnergyInfuser) infuser);
+            }
+            case GUIID_ENERGY_INFUSER -> {
+                if (tile instanceof TileEnergyInfuser infuser) {
+                    return new ContainerEnergyInfuser(player.inventory, infuser);
                 }
-                break;
-            case GUIID_GENERATOR:
-                TileEntity generator = world.getTileEntity(x, y, z);
-                if (generator instanceof TileGenerator) {
-                    return new ContainerGenerator(player.inventory, (TileGenerator) generator);
+            }
+            case GUIID_GENERATOR -> {
+                if (tile instanceof TileGenerator generator) {
+                    return new ContainerGenerator(player.inventory, generator);
                 }
-                break;
-            case GUIID_DISSENCHANTER:
-                TileEntity dissenchanter = world.getTileEntity(x, y, z);
-                if (dissenchanter instanceof TileDissEnchanter) {
-                    return new ContainerDissEnchanter(player.inventory, (TileDissEnchanter) dissenchanter);
+            }
+            case GUIID_DISSENCHANTER -> {
+                if (tile instanceof TileDissEnchanter dissenchanter) {
+                    return new ContainerDissEnchanter(player.inventory, dissenchanter);
                 }
-                break;
-            case GUIID_DRACONIC_CHEST:
-                TileEntity containerChest = world.getTileEntity(x, y, z);
-                if (containerChest instanceof TileDraconiumChest) {
-                    return new ContainerDraconiumChest(player.inventory, (TileDraconiumChest) containerChest);
+            }
+            case GUIID_DRACONIC_CHEST -> {
+                if (tile instanceof TileDraconiumChest draconiumChest) {
+                    return new ContainerDraconiumChest(player.inventory, draconiumChest);
                 }
-                break;
-            case GUIID_REACTOR:
-                TileEntity reactor = world.getTileEntity(x, y, z);
-                if (reactor instanceof TileReactorCore) {
-                    return new ContainerReactor(player, (TileReactorCore) reactor);
+            }
+            case GUIID_REACTOR -> {
+                if (tile instanceof TileReactorCore reactorCore) {
+                    return new ContainerReactor(player, reactorCore);
                 }
-                break;
-            case GUIID_TOOL_CONFIG:
+            }
+            case GUIID_TOOL_CONFIG -> {
                 return new ContainerAdvTool(player.inventory, new InventoryTool(player, null));
-            case GUIID_UPGRADE_MODIFIER:
-                TileEntity containerTemp = world.getTileEntity(x, y, z);
-                if (containerTemp instanceof TileUpgradeModifier) {
-                    return new ContainerUpgradeModifier(player.inventory, (TileUpgradeModifier) containerTemp);
+            }
+            case GUIID_UPGRADE_MODIFIER -> {
+                if (tile instanceof TileUpgradeModifier upgradeModifier) {
+                    return new ContainerUpgradeModifier(player.inventory, upgradeModifier);
                 }
-                break;
+            }
         }
 
         return null;
     }
 
     @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-        switch (ID) {
-            case GUIID_WEATHER_CONTROLLER:
-                TileEntity weatherController = world.getTileEntity(x, y, z);
-                if (weatherController instanceof TileWeatherController) {
-                    return new GUIWeatherController(player.inventory, (TileWeatherController) weatherController);
+    public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        switch (id) {
+            case GUIID_WEATHER_CONTROLLER -> {
+                if (tile instanceof TileWeatherController weatherController) {
+                    return new GUIWeatherController(player.inventory, weatherController);
                 }
-                break;
-            case GUIID_SUN_DIAL:
-                TileEntity sunDial = world.getTileEntity(x, y, z);
-                if (sunDial instanceof TileSunDial) {
-                    return new GUISunDial(player.inventory, (TileSunDial) sunDial);
+            }
+            case GUIID_SUN_DIAL -> {
+                if (tile instanceof TileSunDial sunDial) {
+                    return new GUISunDial(player.inventory, sunDial);
                 }
-                break;
-            case GUIID_TELEPORTER:
+            }
+            case GUIID_TELEPORTER -> {
                 return new GUITeleporter(player);
-            case GUIID_GRINDER:
-                TileEntity grinder = world.getTileEntity(x, y, z);
-                if (grinder instanceof TileGrinder) {
-                    return new GUIGrinder(player.inventory, (TileGrinder) grinder);
+            }
+            case GUIID_GRINDER -> {
+                if (tile instanceof TileGrinder grinder) {
+                    return new GUIGrinder(player.inventory, grinder);
                 }
-                break;
-            case GUIID_PARTICLEGEN:
-                TileEntity particleGenerator = world.getTileEntity(x, y, z);
-                if (particleGenerator instanceof TileParticleGenerator) {
-                    return new GUIParticleGenerator((TileParticleGenerator) particleGenerator);
+            }
+            case GUIID_PARTICLEGEN -> {
+                if (tile instanceof TileParticleGenerator particleGenerator) {
+                    return new GUIParticleGenerator(particleGenerator);
                 }
-                break;
-            case GUIID_PLAYERDETECTOR:
-                TileEntity detector = world.getTileEntity(x, y, z);
-                if (detector instanceof TilePlayerDetectorAdvanced) {
-                    return new GUIPlayerDetector(player.inventory, (TilePlayerDetectorAdvanced) detector);
+            }
+            case GUIID_PLAYERDETECTOR -> {
+                if (tile instanceof TilePlayerDetectorAdvanced detector) {
+                    return new GUIPlayerDetector(player.inventory, detector);
                 }
-                break;
-            case GUIID_ENERGY_INFUSER:
-                TileEntity infuser = world.getTileEntity(x, y, z);
-                if (infuser instanceof TileEnergyInfuser) {
-                    return new GUIEnergyInfuser(player.inventory, (TileEnergyInfuser) infuser);
+            }
+            case GUIID_ENERGY_INFUSER -> {
+                if (tile instanceof TileEnergyInfuser infuser) {
+                    return new GUIEnergyInfuser(player.inventory, infuser);
                 }
-                break;
-            case GUIID_GENERATOR:
-                TileEntity generator = world.getTileEntity(x, y, z);
-                if (generator instanceof TileGenerator) {
-                    return new GUIGenerator(player.inventory, (TileGenerator) generator);
+            }
+            case GUIID_GENERATOR -> {
+                if (tile instanceof TileGenerator generator) {
+                    return new GUIGenerator(player.inventory, generator);
                 }
-                break;
-            case GUIID_MANUAL:
+            }
+            case GUIID_MANUAL -> {
                 return new GUIManual();
-            case GUIID_DISSENCHANTER:
-                TileEntity dissenchanter = world.getTileEntity(x, y, z);
-                if (dissenchanter instanceof TileDissEnchanter) {
-                    return new GUIDissEnchanter(player.inventory, (TileDissEnchanter) dissenchanter);
+            }
+            case GUIID_DISSENCHANTER -> {
+                if (tile instanceof TileDissEnchanter dissenchanter) {
+                    return new GUIDissEnchanter(player.inventory, dissenchanter);
                 }
-                break;
-            case GUIID_DRACONIC_CHEST:
-                TileEntity containerChest = world.getTileEntity(x, y, z);
-                if (containerChest instanceof TileDraconiumChest) {
-                    return new GUIDraconiumChest(player.inventory, (TileDraconiumChest) containerChest);
+            }
+            case GUIID_DRACONIC_CHEST -> {
+                if (tile instanceof TileDraconiumChest draconiumChest) {
+                    return new GUIDraconiumChest(player.inventory, draconiumChest);
                 }
-                break;
-            case GUIID_REACTOR:
-                TileEntity reactor = world.getTileEntity(x, y, z);
-                if (reactor instanceof TileReactorCore) {
-                    return new GUIReactor(
-                            (TileReactorCore) reactor,
-                            new ContainerReactor(player, (TileReactorCore) reactor));
+            }
+            case GUIID_REACTOR -> {
+                if (tile instanceof TileReactorCore reactorCore) {
+                    return new GUIReactor(reactorCore, new ContainerReactor(player, reactorCore));
                 }
-                break;
-            case GUIID_TOOL_CONFIG:
+            }
+            case GUIID_TOOL_CONFIG -> {
                 return new GUIToolConfig(
                         player,
                         new ContainerAdvTool(player.inventory, new InventoryTool(player, null)));
-            case GUIID_FLOW_GATE:
-                TileEntity gate = world.getTileEntity(x, y, z);
-                if (gate instanceof TileGate) {
-                    return new GUIFlowGate((TileGate) world.getTileEntity(x, y, z));
+            }
+            case GUIID_FLOW_GATE -> {
+                if (tile instanceof TileGate gate) {
+                    return new GUIFlowGate(gate);
                 }
-                break;
-            case GUIID_UPGRADE_MODIFIER:
-                TileEntity containerTemp = world.getTileEntity(x, y, z);
-                if (containerTemp instanceof TileUpgradeModifier) {
+            }
+            case GUIID_UPGRADE_MODIFIER -> {
+                if (tile instanceof TileUpgradeModifier upgradeModifier) {
                     return new GUIUpgradeModifier(
                             player.inventory,
-                            (TileUpgradeModifier) containerTemp,
-                            new ContainerUpgradeModifier(player.inventory, (TileUpgradeModifier) containerTemp));
+                            upgradeModifier,
+                            new ContainerUpgradeModifier(player.inventory, upgradeModifier));
                 }
-                break;
+            }
         }
 
         return null;

@@ -54,27 +54,14 @@ public class ReactorEnergyInjector extends BlockDE implements ITileEntityProvide
 
     private void initializeBoundingBox(IBlockAccess world, int x, int y, int z) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TileReactorEnergyInjector) {
-            TileReactorEnergyInjector injector = (TileReactorEnergyInjector) tile;
+        if (tile instanceof TileReactorEnergyInjector injector) {
             switch (injector.facing) {
-                case DOWN:
-                    this.setBlockBounds(0F, 0.875F, 0F, 1F, 1F, 1F);
-                    break;
-                case UP:
-                    this.setBlockBounds(0F, 0F, 0F, 1F, 0.125F, 1F);
-                    break;
-                case NORTH:
-                    this.setBlockBounds(0F, 0F, 0.875F, 1F, 1F, 1F);
-                    break;
-                case SOUTH:
-                    this.setBlockBounds(0F, 0F, 0F, 1F, 1F, 0.125F);
-                    break;
-                case WEST:
-                    this.setBlockBounds(0.875F, 0F, 0F, 1F, 1F, 1F);
-                    break;
-                case EAST:
-                    this.setBlockBounds(0F, 0F, 0F, 0.125F, 1F, 1F);
-                    break;
+                case DOWN -> this.setBlockBounds(0F, 0.875F, 0F, 1F, 1F, 1F);
+                case UP -> this.setBlockBounds(0F, 0F, 0F, 1F, 0.125F, 1F);
+                case NORTH -> this.setBlockBounds(0F, 0F, 0.875F, 1F, 1F, 1F);
+                case SOUTH -> this.setBlockBounds(0F, 0F, 0F, 1F, 1F, 0.125F);
+                case WEST -> this.setBlockBounds(0.875F, 0F, 0F, 1F, 1F, 1F);
+                case EAST -> this.setBlockBounds(0F, 0F, 0F, 0.125F, 1F, 1F);
             }
         }
     }
@@ -98,8 +85,7 @@ public class ReactorEnergyInjector extends BlockDE implements ITileEntityProvide
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack stack) {
         ForgeDirection facing = ForgeDirection.getOrientation(Utills.determineOrientation(x, y, z, entity));
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TileReactorEnergyInjector) {
-            TileReactorEnergyInjector injector = (TileReactorEnergyInjector) tile;
+        if (tile instanceof TileReactorEnergyInjector injector) {
             injector.facing = entity.isSneaking() ? facing.getOpposite() : facing;
             injector.onPlaced();
         }
@@ -109,8 +95,7 @@ public class ReactorEnergyInjector extends BlockDE implements ITileEntityProvide
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float subX,
             float subY, float subZ) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof IReactorPart && player.isSneaking()) {
-            IReactorPart part = (IReactorPart) tile;
+        if (tile instanceof IReactorPart part && player.isSneaking()) {
             part.changeComparatorMode();
             if (!world.isRemote) {
                 player.addChatComponentMessage(new ChatComponentText(part.getComparatorMode().toLocalizedString()));
