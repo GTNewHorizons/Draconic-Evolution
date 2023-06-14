@@ -547,6 +547,11 @@ gui.de.particleGenerator.yaw.name=Yaw:
 gui.de.particleGenerator.rotation.name=Rotation:
 gui.de.particleGenerator.length.name=Length:
 
+gui.de.particleGenerator.main.title=Particle Generator
+gui.de.particleGenerator.beam.title=Beam Generator
+gui.de.particleGenerator.info.title=Information
+
+gui.de.particleGenerator.hold.name=Hold:
 gui.de.particleGenerator.info.name=i
 gui.de.particleGenerator.back.name=Back
 gui.de.particleGenerator.blockCollision.name=Block Collision: %s

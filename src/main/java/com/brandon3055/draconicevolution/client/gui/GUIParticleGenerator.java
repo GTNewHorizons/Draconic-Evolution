@@ -209,7 +209,11 @@ public class GUIParticleGenerator extends GuiScreen {
         drawTexturedModalRect(posX, posY, 0, 0, xSize, ySize);
 
         if (page == 1) {
-            fontRendererObj.drawStringWithShadow("Particle Generator", posX + 60, posY + 5, 0x00FFFF);
+            fontRendererObj.drawStringWithShadow(
+                    StatCollector.translateToLocal("gui.de.particleGenerator.main.title"),
+                    posX + 60,
+                    posY + 5,
+                    0x00FFFF);
             for (int column = 0; column < 2; column++) {
                 for (int row = 0; row < 8; row++) {
                     IProperty property = properties.get(row + column * 10);
@@ -221,7 +225,11 @@ public class GUIParticleGenerator extends GuiScreen {
             }
         }
         if (page == 2) {
-            fontRendererObj.drawStringWithShadow("Particle Generator", posX + 60, posY + 5, 0x00FFFF);
+            fontRendererObj.drawStringWithShadow(
+                    StatCollector.translateToLocal("gui.de.particleGenerator.main.title"),
+                    posX + 60,
+                    posY + 5,
+                    0x00FFFF);
             for (int row = 0; row < 6; row++) {
                 IProperty property = properties.get(row + 20);
                 property.drawLabel(fontRendererObj, posX + 30, posY + 20 + row * 22);
@@ -233,22 +241,34 @@ public class GUIParticleGenerator extends GuiScreen {
             }
         }
         if (page == 3) {
-            fontRendererObj.drawStringWithShadow("Beam Generator", posX + 65, posY + 5, 0x00FFFF);
+            fontRendererObj.drawStringWithShadow(
+                    StatCollector.translateToLocal("gui.de.particleGenerator.beam.title"),
+                    posX + 65,
+                    posY + 5,
+                    0x00FFFF);
             for (int row = 0; row < 8; row++) {
                 IProperty property = properties.get(row + 40);
                 property.drawLabel(fontRendererObj, posX + 30, posY + 20 + row * 22);
             }
         }
         if (page == 10) {
-            fontRendererObj.drawStringWithShadow("Information", posX + 75, posY + 5, 0x00FFFF);
+            fontRendererObj.drawStringWithShadow(
+                    StatCollector.translateToLocal("gui.de.particleGenerator.info.title"),
+                    posX + 75,
+                    posY + 5,
+                    0x00FFFF);
             fontRendererObj.drawSplitString(infoText[infoPage], posX + 5, posY + 20, 200, 0x000000);
             fontRendererObj.drawSplitString("Page: " + (infoPage + 1), posX + 88, posY + 180, 200, 0xFF0000);
         }
 
-        fontRendererObj.drawStringWithShadow("Hold:", posX + 215, posY + 11, 0xFFFFFF);
-        fontRendererObj.drawStringWithShadow("Shift +- 10", posX + 215, posY + 21, 0xFFFFFF);
-        fontRendererObj.drawStringWithShadow("Ctrl +- 50", posX + 215, posY + 31, 0xFFFFFF);
-        fontRendererObj.drawStringWithShadow("Shift+Ctrl +- 100", posX + 215, posY + 41, 0xFFFFFF);
+        fontRendererObj.drawStringWithShadow(
+                StatCollector.translateToLocal("gui.de.particleGenerator.hold.name"),
+                posX + 215,
+                posY + 11,
+                0xFFFFFF);
+        fontRendererObj.drawStringWithShadow("Shift: +-10", posX + 215, posY + 21, 0xFFFFFF);
+        fontRendererObj.drawStringWithShadow("Ctrl: +-50", posX + 215, posY + 31, 0xFFFFFF);
+        fontRendererObj.drawStringWithShadow("Shift+Ctrl: +-100", posX + 215, posY + 41, 0xFFFFFF);
 
         super.drawScreen(x, y, partialTicks);
     }
