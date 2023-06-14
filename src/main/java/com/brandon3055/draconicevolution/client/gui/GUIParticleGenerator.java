@@ -258,7 +258,12 @@ public class GUIParticleGenerator extends GuiScreen {
                     posY + 5,
                     0x00FFFF);
             fontRendererObj.drawSplitString(infoText[infoPage], posX + 5, posY + 20, 200, 0x000000);
-            fontRendererObj.drawSplitString("Page: " + (infoPage + 1), posX + 88, posY + 180, 200, 0xFF0000);
+            fontRendererObj.drawSplitString(
+                    StatCollector.translateToLocalFormatted("gui.de.particleGenerator.page.name", infoPage + 1),
+                    posX + 88,
+                    posY + 180,
+                    200,
+                    0xFF0000);
         }
 
         fontRendererObj.drawStringWithShadow(
