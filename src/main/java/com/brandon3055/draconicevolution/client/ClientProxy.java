@@ -41,7 +41,6 @@ import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.Til
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorEnergyInjector;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorStabilizer;
-import com.brandon3055.draconicevolution.common.utills.UpdateChecker;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -117,7 +116,6 @@ public class ClientProxy extends CommonProxy {
         super.init(event);
         FMLCommonHandler.instance().bus().register(new KeyInputHandler());
         FMLCommonHandler.instance().bus().register(new ClientEventHandler());
-        if (ConfigHandler.enableVersionChecker) FMLCommonHandler.instance().bus().register(new UpdateChecker());
         MinecraftForge.EVENT_BUS.register(new HudHandler());
         MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
         KeyBindings.init();

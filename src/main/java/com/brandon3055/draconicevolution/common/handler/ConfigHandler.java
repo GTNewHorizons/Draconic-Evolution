@@ -30,7 +30,6 @@ public class ConfigHandler {
     public static boolean disableOreSpawnEnd;
     public static boolean disableOreSpawnOverworld;
     public static boolean disableOreSpawnNether;
-    public static boolean enableVersionChecker;
     public static boolean dragonBreaksBlocks;
     public static boolean sumonRitualAccelerated;
     public static int[] dragonEggSpawnLocation;
@@ -177,11 +176,6 @@ public class ConfigHandler {
                     "Disable Ore Spawn (Overworld)",
                     false,
                     "Set to true to prevent draconium ore from spawning in the overworld").getBoolean(false);
-            enableVersionChecker = config.get(
-                    Configuration.CATEGORY_GENERAL,
-                    "Enable version checker",
-                    true,
-                    "Set to false to disable the version checker").getBoolean(true);
             dragonBreaksBlocks = config.get(
                     Configuration.CATEGORY_GENERAL,
                     "Can dragon break blocks",

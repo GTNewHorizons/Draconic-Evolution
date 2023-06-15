@@ -46,11 +46,6 @@ public class Wrench extends ItemDE implements IHudDisplayItem {
 
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-
-        // if (world.isRemote)FMLCommonHandler.instance().bus().register(new UpdateChecker());
-        // player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[Draconic Evolution]" +
-        // EnumChatFormatting.RESET + " New version available:"));
-
         if (player.isSneaking()) cycleMode(stack, world, player);
         else if (ItemNBTHelper.getCompound(stack).hasKey("LinkData")
                 && ItemNBTHelper.getCompound(stack).getCompoundTag("LinkData").getBoolean("Bound"))
