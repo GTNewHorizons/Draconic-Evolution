@@ -37,21 +37,14 @@ public class RenderTileReactorEnergyInjector extends TileEntitySpecialRenderer {
         int angle = 90;
         ForgeDirection axis = injector.facing;
         switch (injector.facing) {
-            case UP:
+            case UP -> {
                 angle = 180;
-                // it's intended to fall through
-            case SOUTH:
                 axis = ForgeDirection.WEST;
-                break;
-            case NORTH:
-                axis = ForgeDirection.EAST;
-                break;
-            case WEST:
-                axis = ForgeDirection.NORTH;
-                break;
-            case EAST:
-                axis = ForgeDirection.SOUTH;
-                break;
+            }
+            case SOUTH -> axis = ForgeDirection.WEST;
+            case NORTH -> axis = ForgeDirection.EAST;
+            case WEST -> axis = ForgeDirection.NORTH;
+            case EAST -> axis = ForgeDirection.SOUTH;
         }
         if (injector.facing != ForgeDirection.DOWN) {
             GL11.glRotated(angle, axis.offsetX, axis.offsetY, axis.offsetZ);

@@ -41,21 +41,14 @@ public class RenderTileReactorStabilizer extends TileEntitySpecialRenderer {
         int angle = 90;
         ForgeDirection axis = stabilizer.facing;
         switch (stabilizer.facing) {
-            case DOWN:
-                axis = ForgeDirection.WEST;
-                break;
-            case SOUTH:
+            case DOWN -> axis = ForgeDirection.WEST;
+            case SOUTH -> {
                 angle = 180;
-                // it's intended to fall through
-            case UP:
                 axis = ForgeDirection.EAST;
-                break;
-            case WEST:
-                axis = ForgeDirection.UP;
-                break;
-            case EAST:
-                axis = ForgeDirection.DOWN;
-                break;
+            }
+            case UP -> axis = ForgeDirection.EAST;
+            case WEST -> axis = ForgeDirection.UP;
+            case EAST -> axis = ForgeDirection.DOWN;
         }
         if (stabilizer.facing != ForgeDirection.NORTH) {
             GL11.glRotated(angle, axis.offsetX, axis.offsetY, axis.offsetZ);
