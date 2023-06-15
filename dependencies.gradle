@@ -1,7 +1,8 @@
 // Add your dependencies here
 
 dependencies {
-    compile("curse.maven:brandons-core-231382:2297163")
+    api("com.github.GTNewHorizons:BrandonsCore:1.0.0.13-GTNH:dev")
+    api("curse.maven:cofh-lib-220333:2388748")
 
     compileOnly("com.github.GTNewHorizons:ForestryMC:4.6.7:api") {
         transitive = false
@@ -23,9 +24,6 @@ dependencies {
         transitive = false
     }
     compileOnly("curse.maven:computercraft-67504:2269339") {
-        transitive = false
-    }
-    compileOnly("curse.maven:cofh-lib-220333:2388748") {
         transitive = false
     }
 }
