@@ -546,15 +546,10 @@ repositories {
         }
         maven {
             name = "ic2"
-            url = "https://maven.ic2.player.to/"
-            metadataSources {
-                mavenPom()
-                artifact()
+            url = getURL("https://maven.ic2.player.to/", "https://maven2.ic2.player.to/")
+            content {
+                includeGroup "net.industrial-craft"
             }
-        }
-        maven {
-            name = "ic2-mirror"
-            url = "https://maven2.ic2.player.to/"
             metadataSources {
                 mavenPom()
                 artifact()
