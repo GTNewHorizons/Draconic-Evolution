@@ -65,7 +65,7 @@ public class TileEnergyPylon extends TileObjectSync implements IEnergyHandler, I
         if (tick % 20 == 0) {
             int comparatorOut = (int) (getEnergyStored() / getMaxEnergyStored() * 15D);
             if (comparatorOut != lastCheckCompOverride) {
-                worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, blockType);
+                worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, getBlockType());
                 lastCheckCompOverride = comparatorOut;
             }
         }

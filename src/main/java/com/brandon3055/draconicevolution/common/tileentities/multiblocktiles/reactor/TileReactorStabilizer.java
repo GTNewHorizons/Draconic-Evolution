@@ -64,7 +64,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
             int comparatorOutput = core.getComparatorOutput(comparatorMode);
             if (comparatorOutput != comparatorOutputCache) {
                 comparatorOutputCache = comparatorOutput;
-                worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, blockType);
+                worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, getBlockType());
             }
         }
     }

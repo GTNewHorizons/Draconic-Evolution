@@ -46,7 +46,7 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
             int comparatorOutput = core.getComparatorOutput(comparatorMode);
             if (comparatorOutput != comparatorOutputCache) {
                 comparatorOutputCache = comparatorOutput;
-                worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, blockType);
+                worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, getBlockType());
             }
         }
     }

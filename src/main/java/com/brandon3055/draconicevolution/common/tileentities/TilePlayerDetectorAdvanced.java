@@ -96,13 +96,13 @@ public class TilePlayerDetectorAdvanced extends TileEntity implements IInventory
 
     private void updateBlocks() {
         worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, blockType);
+        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, getBlockType());
         for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
             worldObj.notifyBlocksOfNeighborChange(
                     xCoord + direction.offsetX,
                     yCoord + direction.offsetY,
                     zCoord + direction.offsetZ,
-                    blockType,
+                    getBlockType(),
                     direction.getOpposite().ordinal());
         }
     }

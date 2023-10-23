@@ -181,6 +181,6 @@ public class TileCKeyStone extends TileEntity {
 
     public void updateBlocks() {
         worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, blockType);
+        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, getBlockType());
     }
 }

@@ -60,7 +60,7 @@ public class TileDislocatorReceptacle extends TileEntity implements IInventory {
         }
         if (structure == null) {
             isActive = false;
-            worldObj.notifyBlockChange(xCoord, yCoord, zCoord, blockType);
+            worldObj.notifyBlockChange(xCoord, yCoord, zCoord, getBlockType());
             worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
             return;
         }
@@ -80,7 +80,7 @@ public class TileDislocatorReceptacle extends TileEntity implements IInventory {
             }
         }
         if (isActive != isActiveBeforeUpdate) {
-            worldObj.notifyBlockChange(xCoord, yCoord, zCoord, blockType);
+            worldObj.notifyBlockChange(xCoord, yCoord, zCoord, getBlockType());
             worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
         }
     }
