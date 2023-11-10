@@ -15,11 +15,10 @@ import com.brandon3055.draconicevolution.common.utills.LogHelper;
 
 public class RenderMobSoul implements IItemRenderer {
 
-    private Minecraft mc;
-    private Entity randomEntity = null;
-    private String[] randomEntitys = new String[] { "Pig", "Sheep", "Enderman", "Zombie", "Creeper", "Cow", "Chicken",
-            "Ozelot", "Witch", "Wolf", "MushroomCow", "Squid", "EntityHorse", "Spider", "Skeleton", "Blaze", "Bat",
-            "Villager", "Silverfish" };
+    private final Minecraft mc;
+    private final String[] randomEntities = new String[] { "Pig", "Sheep", "Enderman", "Zombie", "Creeper", "Cow",
+            "Chicken", "Ozelot", "Witch", "Wolf", "MushroomCow", "Squid", "EntityHorse", "Spider", "Skeleton", "Blaze",
+            "Bat", "Villager", "Silverfish" };
 
     public RenderMobSoul() {
         this.mc = Minecraft.getMinecraft();
@@ -40,8 +39,8 @@ public class RenderMobSoul implements IItemRenderer {
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         Entity mob = EntityList.createEntityByName(ItemNBTHelper.getString(item, "Name", "Pig"), mc.theWorld);
-        randomEntity = EntityList
-                .createEntityByName(randomEntitys[(int) ((Minecraft.getSystemTime() / 1000) % 18)], mc.theWorld);
+        Entity randomEntity = EntityList
+                .createEntityByName(randomEntities[(int) ((Minecraft.getSystemTime() / 1000) % 18)], mc.theWorld);
         if (ItemNBTHelper.getString(item, "Name", "Pig").equals("Any")) mob = randomEntity;
         if (mob instanceof EntitySkeleton)
             ((EntitySkeleton) mob).setSkeletonType(ItemNBTHelper.getInteger(item, "SkeletonType", 0));
