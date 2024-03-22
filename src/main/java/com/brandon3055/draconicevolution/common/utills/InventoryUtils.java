@@ -15,10 +15,10 @@ public final class InventoryUtils {
 
     public static Optional<ItemStack> getItemInPlayerInventory(EntityPlayer player, Class<? extends Item> item) {
 
-        Optional<ItemStack> blaublesSlots = Arrays.stream(PlayerHandler.getPlayerBaubles(player).stackList)
+        Optional<ItemStack> baublesSlots = Arrays.stream(PlayerHandler.getPlayerBaubles(player).stackList)
                 .filter(itemStack -> itemStack != null && item.isInstance(itemStack.getItem())).findAny();
-        if (blaublesSlots.isPresent()) {
-            return blaublesSlots;
+        if (baublesSlots.isPresent()) {
+            return baublesSlots;
         }
 
         return Arrays.stream(player.inventory.mainInventory)
