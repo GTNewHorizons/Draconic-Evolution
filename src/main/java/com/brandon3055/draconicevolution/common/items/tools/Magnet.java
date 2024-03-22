@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,13 +26,15 @@ import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.items.ItemDE;
 import com.brandon3055.draconicevolution.common.lib.References;
 
+import baubles.api.BaubleType;
+import baubles.api.IBauble;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Created by brandon3055 on 9/3/2016.
  */
-public class Magnet extends ItemDE {
+public class Magnet extends ItemDE implements IBauble {
 
     private IIcon draconium;
     private IIcon awakened;
@@ -186,5 +189,36 @@ public class Magnet extends ItemDE {
                         + InfoHelper.ITC()
                         + " "
                         + StatCollector.translateToLocal("info.de.blockRange.txt"));
+    }
+
+    @Override
+    public BaubleType getBaubleType(ItemStack itemstack) {
+        return BaubleType.UNIVERSAL;
+    }
+
+    @Override
+    public void onWornTick(ItemStack itemstack, EntityLivingBase player) {
+        World world = player.worldObj;
+        onUpdate(itemstack, world, player, 0, false);
+    }
+
+    @Override
+    public void onEquipped(ItemStack itemstack, EntityLivingBase player) {
+
+    }
+
+    @Override
+    public void onUnequipped(ItemStack itemstack, EntityLivingBase player) {
+
+    }
+
+    @Override
+    public boolean canEquip(ItemStack itemstack, EntityLivingBase player) {
+        return true;
+    }
+
+    @Override
+    public boolean canUnequip(ItemStack itemstack, EntityLivingBase player) {
+        return true;
     }
 }

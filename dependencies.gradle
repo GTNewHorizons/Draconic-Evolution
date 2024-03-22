@@ -19,6 +19,9 @@ dependencies {
     compileOnly("com.github.GTNewHorizons:inventory-tweaks:1.6.2:dev") {
         transitive = false
     }
+    compile('com.github.GTNewHorizons:Baubles:1.0.4:dev') {
+        transitive = false
+    }
 
     compileOnly("thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev") {
         transitive = false

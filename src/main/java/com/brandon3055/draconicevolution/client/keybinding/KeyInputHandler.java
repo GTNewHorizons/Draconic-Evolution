@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.client.keybinding;
 
+import java.util.Optional;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -12,12 +14,14 @@ import org.lwjgl.input.Mouse;
 import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.ModItems;
+import com.brandon3055.draconicevolution.common.items.tools.Magnet;
 import com.brandon3055.draconicevolution.common.items.tools.baseclasses.ToolHandler;
 import com.brandon3055.draconicevolution.common.network.ButtonPacket;
 import com.brandon3055.draconicevolution.common.network.MagnetTogglePacket;
 import com.brandon3055.draconicevolution.common.network.PlacedItemPacket;
 import com.brandon3055.draconicevolution.common.network.TeleporterPacket;
 import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
+import com.brandon3055.draconicevolution.common.utills.InventoryUtils;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
@@ -65,7 +69,9 @@ public class KeyInputHandler {
                 }
             } else if (KeyBindings.toggleMagnet.isPressed()) {
                 EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-                if (player.inventory.hasItem(ModItems.magnet)) {
+                Optional<ItemStack> magnetOptional = InventoryUtils.getItemInPlayerInventory(player, Magnet.class);
+
+                if (magnetOptional.isPresent()) {
                     DraconicEvolution.network.sendToServer(new MagnetTogglePacket());
                 }
             }
