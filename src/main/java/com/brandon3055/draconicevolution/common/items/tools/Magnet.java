@@ -28,12 +28,15 @@ import com.brandon3055.draconicevolution.common.lib.References;
 
 import baubles.api.BaubleType;
 import baubles.api.IBauble;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Created by brandon3055 on 9/3/2016.
  */
+
+@Optional.Interface(iface = "baubles.api.IBauble", modid = "Baubles")
 public class Magnet extends ItemDE implements IBauble {
 
     private IIcon draconium;
@@ -192,32 +195,38 @@ public class Magnet extends ItemDE implements IBauble {
     }
 
     @Override
+    @Optional.Method(modid = "Baubles")
     public BaubleType getBaubleType(ItemStack itemstack) {
         return BaubleType.UNIVERSAL;
     }
 
     @Override
+    @Optional.Method(modid = "Baubles")
     public void onWornTick(ItemStack itemstack, EntityLivingBase player) {
         World world = player.worldObj;
         onUpdate(itemstack, world, player, 0, false);
     }
 
     @Override
+    @Optional.Method(modid = "Baubles")
     public void onEquipped(ItemStack itemstack, EntityLivingBase player) {
 
     }
 
     @Override
+    @Optional.Method(modid = "Baubles")
     public void onUnequipped(ItemStack itemstack, EntityLivingBase player) {
 
     }
 
     @Override
+    @Optional.Method(modid = "Baubles")
     public boolean canEquip(ItemStack itemstack, EntityLivingBase player) {
         return true;
     }
 
     @Override
+    @Optional.Method(modid = "Baubles")
     public boolean canUnequip(ItemStack itemstack, EntityLivingBase player) {
         return true;
     }

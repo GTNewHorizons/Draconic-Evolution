@@ -34,7 +34,7 @@ public final class MagnetTogglePacket implements IMessage {
         public IMessage onMessage(MagnetTogglePacket message, MessageContext ctx) {
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
 
-            Optional<ItemStack> magnetOptional = InventoryUtils.getItemInPlayerInventory(player, Magnet.class);
+            Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
             magnetOptional.ifPresent(itemStack -> {
                 Magnet.toggle(itemStack);
                 DraconicEvolution.network.sendTo(new MagnetToggleAckPacket(Magnet.isEnabled(itemStack)), player);

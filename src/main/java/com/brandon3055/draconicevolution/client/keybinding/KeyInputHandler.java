@@ -69,7 +69,7 @@ public class KeyInputHandler {
                 }
             } else if (KeyBindings.toggleMagnet.isPressed()) {
                 EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-                Optional<ItemStack> magnetOptional = InventoryUtils.getItemInPlayerInventory(player, Magnet.class);
+                Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
 
                 if (magnetOptional.isPresent()) {
                     DraconicEvolution.network.sendToServer(new MagnetTogglePacket());

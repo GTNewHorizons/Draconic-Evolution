@@ -19,7 +19,7 @@ dependencies {
     compileOnly("com.github.GTNewHorizons:inventory-tweaks:1.6.2:dev") {
         transitive = false
     }
-    compile('com.github.GTNewHorizons:Baubles:1.0.4:dev') {
+    compileOnly('com.github.GTNewHorizons:Baubles:1.0.4:dev') {
         transitive = false
     }
 
