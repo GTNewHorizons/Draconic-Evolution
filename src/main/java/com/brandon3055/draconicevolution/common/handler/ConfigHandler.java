@@ -34,6 +34,7 @@ public class ConfigHandler {
     public static boolean sumonRitualAccelerated;
     public static int[] dragonEggSpawnLocation;
     public static int[] oreGenDimentionBlacklist;
+    public static int[] oreGenDimensionWhitelist;
     public static int[] hudSettings;
     private static String[] disabledBlocksItems;
     public static List<String> disabledNamesList = new ArrayList<String>();
@@ -193,6 +194,12 @@ public class ConfigHandler {
                     "Ore gen dimension blacklist",
                     new int[0],
                     "Add the id's of dimensions you do not want draconium ore to spawn in").getIntList();
+            oreGenDimensionWhitelist = config.get(
+                    Configuration.CATEGORY_GENERAL,
+                    "Ore gen dimension blacklist",
+                    new int[0],
+                    "Add the id's of dimensions you do want draconium ore to spawn in (if empty, uses only the blacklist)")
+                    .getIntList();
             disabledBlocksItems = config.getStringList(
                     "Disabled Blocks & Items",
                     Configuration.CATEGORY_GENERAL,

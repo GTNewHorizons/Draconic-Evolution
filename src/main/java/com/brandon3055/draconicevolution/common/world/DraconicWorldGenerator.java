@@ -33,8 +33,22 @@ public class DraconicWorldGenerator implements IWorldGenerator {
                 generateNether(random, chunkX * 16, chunkZ * 16, world);
                 break;
             default:
-                for (Integer i : ConfigHandler.oreGenDimentionBlacklist) {
-                    if (i == world.provider.dimensionId) return;
+                if (ConfigHandler.oreGenDimensionWhitelist.length > 0) {
+                    boolean isWhitelisted = false;
+                    for (Integer dim : ConfigHandler.oreGenDimensionWhitelist) {
+                        if (dim == world.provider.dimensionId) {
+                            isWhitelisted = true;
+                            break;
+                        }
+                    }
+                    if (!isWhitelisted) {
+                        return;
+                    }
+                }
+                for (Integer dim : ConfigHandler.oreGenDimentionBlacklist) {
+                    if (dim == world.provider.dimensionId) {
+                        return;
+                    }
                 }
                 addOreSpawn(ModBlocks.draconiumOre, world, random, chunkX * 16, chunkZ * 16, 3, 4, 2, 2, 8);
                 break;
