@@ -196,7 +196,7 @@ public class ConfigHandler {
                     "Add the id's of dimensions you do not want draconium ore to spawn in").getIntList();
             oreGenDimensionWhitelist = config.get(
                     Configuration.CATEGORY_GENERAL,
-                    "Ore gen dimension blacklist",
+                    "Ore gen dimension whitelist",
                     new int[0],
                     "Add the id's of dimensions you do want draconium ore to spawn in (if empty, uses only the blacklist)")
                     .getIntList();
