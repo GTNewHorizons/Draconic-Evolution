@@ -46,9 +46,9 @@ public final class MagnetToggleAckPacket implements IMessage {
             Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
 
             if (magnetOptional.isPresent()) {
-                ItemStack itemStack = magnetOptional.get().copy();
+                ItemStack itemStack = magnetOptional.get();
                 Magnet.setStatus(itemStack, message.status);
-                ClientEventHandler.statusDisplayManager.startDrawing(itemStack);
+                ClientEventHandler.statusDisplayManager.startDrawing(itemStack.copy());
             }
 
             return null;
