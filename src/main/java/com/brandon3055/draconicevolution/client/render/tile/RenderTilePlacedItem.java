@@ -72,12 +72,11 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
             GL11.glTranslatef(0.0F, -0.18F, 0.0F);
         }
 
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT);
         RenderItem.renderInFrame = true;
         RenderManager.instance.renderEntityWithPosYaw(itemEntity, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
         RenderItem.renderInFrame = false;
-        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glPopAttrib();
     }
 
     private void metaAdjustItemTool(int meta) {
