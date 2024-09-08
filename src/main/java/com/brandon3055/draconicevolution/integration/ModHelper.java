@@ -6,6 +6,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
 import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler.ArmorSummery;
+import com.brandon3055.draconicevolution.common.utills.LogHelper;
 
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -15,30 +16,37 @@ import cpw.mods.fml.common.registry.GameRegistry;
  */
 public class ModHelper {
 
-    private static boolean isTConInstalled;
-    private static boolean isAvaritiaInstalled;
+    private static final boolean isTConInstalled;
+    private static final boolean isAvaritiaInstalled;
     // private static boolean isRotaryCraftInstalled;
-    private static boolean isGregTechInstalled;
+    private static final boolean isGregTechInstalled;
+    private static final boolean isBartworkdsInstalled;
 
     private static Item cleaver;
     private static Item avaritiaSword;
     // private static Item bedrockSword;
 
-    private static Class bwores;
-    private static Class GTores;
+    private static Class<?> bwores;
+    private static Class<?> GTores;
 
     static {
         isTConInstalled = Loader.isModLoaded("TConstruct");
         isAvaritiaInstalled = Loader.isModLoaded("Avaritia");
         // isRotaryCraftInstalled = Loader.isModLoaded("RotaryCraft");
         isGregTechInstalled = Loader.isModLoaded("gregtech");
-
+        isBartworkdsInstalled = Loader.isModLoaded("bartworks");
+        final String GT_ORE_CLASS = "gregtech.common.blocks.TileEntityOres";
+        final String BW_ORE_CLASS = "bartworks.system.material.BWMetaGeneratedOres";
         if (isGregTechInstalled) try {
-            GTores = Class.forName("gregtech.common.blocks.GT_TileEntity_Ores");
-        } catch (ClassNotFoundException e) {}
-        if (Loader.isModLoaded("bartworks")) try {
-            bwores = Class.forName("com.github.bartimaeusnek.bartworks.system.material.BW_MetaGeneratedOreTE");
-        } catch (ClassNotFoundException e) {}
+            GTores = Class.forName(GT_ORE_CLASS);
+        } catch (ClassNotFoundException e) {
+            LogHelper.error("Couldn't reflect class " + GT_ORE_CLASS);
+        }
+        if (isBartworkdsInstalled) try {
+            bwores = Class.forName(BW_ORE_CLASS);
+        } catch (ClassNotFoundException e) {
+            LogHelper.error("Couldn't reflect class " + BW_ORE_CLASS);
+        }
     }
 
     public static boolean isHoldingCleaver(EntityPlayer player) {
@@ -102,7 +110,6 @@ public class ModHelper {
     }
 
     public static boolean isGregTechTileEntityOre(TileEntity te) {
-        return isGregTechInstalled && GTores.isInstance(te)
-                || isGregTechInstalled && Loader.isModLoaded("bartworks") && bwores.isInstance(te);
+        return isGregTechInstalled && GTores.isInstance(te) || isBartworkdsInstalled && bwores.isInstance(te);
     }
 }
