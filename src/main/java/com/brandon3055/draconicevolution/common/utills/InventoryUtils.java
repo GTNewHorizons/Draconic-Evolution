@@ -1,7 +1,5 @@
 package com.brandon3055.draconicevolution.common.utills;
 
-import static com.brandon3055.draconicevolution.common.lib.References.BAUBLES_MOD_IS_LOADED;
-
 import java.util.Optional;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -9,8 +7,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import baubles.common.lib.PlayerHandler;
+import cpw.mods.fml.common.Loader;
 
 public final class InventoryUtils {
+
+    private static final boolean BAUBLES_MOD_IS_LOADED = Loader.isModLoaded("Baubles");
 
     private InventoryUtils() {}
 

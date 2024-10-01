@@ -1,7 +1,5 @@
 package com.brandon3055.draconicevolution.common.lib;
 
-import cpw.mods.fml.common.Loader;
-
 public final class References {
 
     public static final String MODID = "DraconicEvolution";
@@ -12,7 +10,6 @@ public final class References {
     public static final String SERVERPROXYLOCATION = "com.brandon3055.draconicevolution.common.CommonProxy";
     public static final String GUIFACTORY = "com.brandon3055.draconicevolution.client.gui.DEGUIFactory";
     public static final String RESOURCESPREFIX = MODID.toLowerCase() + ":";
-    public static final boolean BAUBLES_MOD_IS_LOADED = Loader.isModLoaded("Baubles");
 
     // ======================Render IDs========================//
     public static int idTeleporterStand = -1;
