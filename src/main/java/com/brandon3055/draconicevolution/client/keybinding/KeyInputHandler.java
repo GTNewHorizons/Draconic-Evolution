@@ -77,16 +77,6 @@ public class KeyInputHandler {
             }
     }
 
-    private void handlePlaceItemKey() {
-        EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
-        WorldClient world = Minecraft.getMinecraft().theWorld;
-        MovingObjectPosition mop = ToolHandler.raytraceFromEntity(world, player, 4.5D);
-        if (mop != null) {
-            DraconicEvolution.network
-                    .sendToServer(new PlacedItemPacket((byte) mop.sideHit, mop.blockX, mop.blockY, mop.blockZ));
-        }
-    }
-
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onMouseInput(InputEvent.MouseInputEvent event) {
@@ -122,6 +112,16 @@ public class KeyInputHandler {
                 player.inventory.currentItem = previouseSlot(-1, player.inventory.currentItem);
                 DraconicEvolution.network.sendToServer(new TeleporterPacket(TeleporterPacket.SCROLL, 1, false));
             }
+        }
+    }
+
+    private void handlePlaceItemKey() {
+        EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+        WorldClient world = Minecraft.getMinecraft().theWorld;
+        MovingObjectPosition mop = ToolHandler.raytraceFromEntity(world, player, 4.5D);
+        if (mop != null) {
+            DraconicEvolution.network
+                    .sendToServer(new PlacedItemPacket((byte) mop.sideHit, mop.blockX, mop.blockY, mop.blockZ));
         }
     }
 
