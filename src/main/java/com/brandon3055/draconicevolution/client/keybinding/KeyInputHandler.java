@@ -49,11 +49,7 @@ public class KeyInputHandler {
         } else if (KeyBindings.toggleFlight.isPressed() && player != null) {
             handleToggleFlightKey(player);
         } else if (KeyBindings.toggleMagnet.isPressed()) {
-            Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
-
-            if (magnetOptional.isPresent()) {
-                DraconicEvolution.network.sendToServer(new MagnetTogglePacket());
-            }
+            handleToggleMagnetKey(player);
         }
     }
 
@@ -70,6 +66,8 @@ public class KeyInputHandler {
             handleToolProfileChangeKey(player);
         } else if (KeyBindings.toggleFlight.isPressed() && player != null) {
             handleToggleFlightKey(player);
+        } else if (KeyBindings.toggleMagnet.isPressed()) {
+            handleToggleMagnetKey(player);
         }
 
         if (player != null) {
@@ -130,6 +128,14 @@ public class KeyInputHandler {
                 }
             }
             player.sendPlayerAbilities();
+        }
+    }
+
+    private void handleToggleMagnetKey(EntityClientPlayerMP player) {
+        Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
+
+        if (magnetOptional.isPresent()) {
+            DraconicEvolution.network.sendToServer(new MagnetTogglePacket());
         }
     }
 
