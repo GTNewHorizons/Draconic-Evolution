@@ -39,7 +39,7 @@ public class KeyInputHandler {
         if (KeyBindings.placeItem.isPressed()) {
             handlePlaceItemKey();
         } else if (KeyBindings.toolConfig.isPressed()) {
-            DraconicEvolution.network.sendToServer(new ButtonPacket(ButtonPacket.ID_TOOLCONFIG, false));
+            handleToolConfigKey();
         } else if (KeyBindings.toolProfileChange.isPressed() && Minecraft.getMinecraft().thePlayer != null
                 && Minecraft.getMinecraft().thePlayer.getItemInUse() == null) {
                     DraconicEvolution.network
@@ -83,7 +83,7 @@ public class KeyInputHandler {
         if (KeyBindings.placeItem.isPressed()) {
             handlePlaceItemKey();
         } else if (KeyBindings.toolConfig.isPressed()) {
-            DraconicEvolution.network.sendToServer(new ButtonPacket(ButtonPacket.ID_TOOLCONFIG, false));
+            handleToolConfigKey();
         } else if (KeyBindings.toolProfileChange.isPressed() && Minecraft.getMinecraft().thePlayer != null) {
             DraconicEvolution.network.sendToServer(new ButtonPacket(ButtonPacket.ID_TOOL_PROFILE_CHANGE, false));
 
@@ -123,6 +123,10 @@ public class KeyInputHandler {
             DraconicEvolution.network
                     .sendToServer(new PlacedItemPacket((byte) mop.sideHit, mop.blockX, mop.blockY, mop.blockZ));
         }
+    }
+
+    private void handleToolConfigKey() {
+        DraconicEvolution.network.sendToServer(new ButtonPacket(ButtonPacket.ID_TOOLCONFIG, false));
     }
 
     private int previouseSlot(int i, int c) {
