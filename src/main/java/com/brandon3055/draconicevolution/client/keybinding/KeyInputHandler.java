@@ -47,18 +47,7 @@ public class KeyInputHandler {
         } else if (KeyBindings.toolProfileChange.isPressed() && player != null && player.getItemInUse() == null) {
             handleToolProfileChangeKey(player);
         } else if (KeyBindings.toggleFlight.isPressed() && player != null) {
-            if (player.capabilities.allowFlying) {
-                if (player.capabilities.isFlying) {
-                    player.capabilities.isFlying = false;
-                } else {
-                    player.capabilities.isFlying = true;
-                    if (player.onGround) {
-                        player.setPosition(player.posX, player.posY + 0.05D, player.posZ);
-                        player.motionY = 0;
-                    }
-                }
-                player.sendPlayerAbilities();
-            }
+            handleToggleFlightKey(player);
         } else if (KeyBindings.toggleMagnet.isPressed()) {
             Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
 
@@ -79,6 +68,8 @@ public class KeyInputHandler {
             handleToolConfigKey();
         } else if (KeyBindings.toolProfileChange.isPressed() && player != null) {
             handleToolProfileChangeKey(player);
+        } else if (KeyBindings.toggleFlight.isPressed() && player != null) {
+            handleToggleFlightKey(player);
         }
 
         if (player != null) {
@@ -124,6 +115,21 @@ public class KeyInputHandler {
             int preset = ItemNBTHelper.getInteger(stack, "ConfigProfile", 0);
             if (++preset >= 5) preset = 0;
             ItemNBTHelper.setInteger(stack, "ConfigProfile", preset);
+        }
+    }
+
+    private void handleToggleFlightKey(@Nonnull EntityClientPlayerMP player) {
+        if (player.capabilities.allowFlying) {
+            if (player.capabilities.isFlying) {
+                player.capabilities.isFlying = false;
+            } else {
+                player.capabilities.isFlying = true;
+                if (player.onGround) {
+                    player.setPosition(player.posX, player.posY + 0.05D, player.posZ);
+                    player.motionY = 0;
+                }
+            }
+            player.sendPlayerAbilities();
         }
     }
 
