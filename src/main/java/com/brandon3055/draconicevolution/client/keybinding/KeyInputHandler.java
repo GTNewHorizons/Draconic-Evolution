@@ -75,15 +75,15 @@ public class KeyInputHandler {
             if (change == 0 || !player.isSneaking()) return;
 
             if (change > 0) {
-                ItemStack item = player.inventory.getStackInSlot(previouseSlot(1, player.inventory.currentItem));
+                ItemStack item = player.inventory.getStackInSlot(previousSlot(1, player.inventory.currentItem));
                 if (item != null && Objects.equals(item.getItem(), ModItems.teleporterMKII)) {
-                    player.inventory.currentItem = previouseSlot(1, player.inventory.currentItem);
+                    player.inventory.currentItem = previousSlot(1, player.inventory.currentItem);
                     DraconicEvolution.network.sendToServer(new TeleporterPacket(TeleporterPacket.SCROLL, -1, false));
                 }
             } else {
-                ItemStack item = player.inventory.getStackInSlot(previouseSlot(-1, player.inventory.currentItem));
+                ItemStack item = player.inventory.getStackInSlot(previousSlot(-1, player.inventory.currentItem));
                 if (item != null && Objects.equals(item.getItem(), ModItems.teleporterMKII)) {
-                    player.inventory.currentItem = previouseSlot(-1, player.inventory.currentItem);
+                    player.inventory.currentItem = previousSlot(-1, player.inventory.currentItem);
                     DraconicEvolution.network.sendToServer(new TeleporterPacket(TeleporterPacket.SCROLL, 1, false));
                 }
             }
@@ -139,7 +139,7 @@ public class KeyInputHandler {
         }
     }
 
-    private int previouseSlot(int i, int c) {
+    private int previousSlot(int i, int c) {
         if (c > 0 && c < 8) return c + i;
         if (c == 0 && i < 0) return 8;
         if (c == 8 && i > 0) return 0;
