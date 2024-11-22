@@ -1,11 +1,13 @@
 package com.brandon3055.draconicevolution.client.keybinding;
 
+import java.util.Objects;
 import java.util.Optional;
+
+import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
 
@@ -36,81 +38,65 @@ public class KeyInputHandler {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
+        EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+
         if (KeyBindings.placeItem.isPressed()) {
             handlePlaceItemKey();
         } else if (KeyBindings.toolConfig.isPressed()) {
             handleToolConfigKey();
-        } else if (KeyBindings.toolProfileChange.isPressed() && Minecraft.getMinecraft().thePlayer != null
-                && Minecraft.getMinecraft().thePlayer.getItemInUse() == null) {
-                    DraconicEvolution.network
-                            .sendToServer(new ButtonPacket(ButtonPacket.ID_TOOL_PROFILE_CHANGE, false));
-
-                    ItemStack stack = Minecraft.getMinecraft().thePlayer.getHeldItem();
-                    if (stack != null && stack.getItem() instanceof IConfigurableItem
-                            && ((IConfigurableItem) stack.getItem()).hasProfiles()) {
-                        int preset = ItemNBTHelper.getInteger(stack, "ConfigProfile", 0);
-                        if (++preset >= 5) preset = 0;
-                        ItemNBTHelper.setInteger(stack, "ConfigProfile", preset);
+        } else if (KeyBindings.toolProfileChange.isPressed() && player != null && player.getItemInUse() == null) {
+            handleToolProfileChangeKey(player);
+        } else if (KeyBindings.toggleFlight.isPressed() && player != null) {
+            if (player.capabilities.allowFlying) {
+                if (player.capabilities.isFlying) {
+                    player.capabilities.isFlying = false;
+                } else {
+                    player.capabilities.isFlying = true;
+                    if (player.onGround) {
+                        player.setPosition(player.posX, player.posY + 0.05D, player.posZ);
+                        player.motionY = 0;
                     }
-                } else
-            if (KeyBindings.toggleFlight.isPressed()) {
-                EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-                if (player.capabilities.allowFlying) {
-                    if (player.capabilities.isFlying) {
-                        player.capabilities.isFlying = false;
-                    } else {
-                        player.capabilities.isFlying = true;
-                        if (player.onGround) {
-                            player.setPosition(player.posX, player.posY + 0.05D, player.posZ);
-                            player.motionY = 0;
-                        }
-                    }
-                    player.sendPlayerAbilities();
                 }
-            } else if (KeyBindings.toggleMagnet.isPressed()) {
-                EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-                Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
-
-                if (magnetOptional.isPresent()) {
-                    DraconicEvolution.network.sendToServer(new MagnetTogglePacket());
-                }
+                player.sendPlayerAbilities();
             }
+        } else if (KeyBindings.toggleMagnet.isPressed()) {
+            Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
+
+            if (magnetOptional.isPresent()) {
+                DraconicEvolution.network.sendToServer(new MagnetTogglePacket());
+            }
+        }
     }
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onMouseInput(InputEvent.MouseInputEvent event) {
+        EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+
         if (KeyBindings.placeItem.isPressed()) {
             handlePlaceItemKey();
         } else if (KeyBindings.toolConfig.isPressed()) {
             handleToolConfigKey();
-        } else if (KeyBindings.toolProfileChange.isPressed() && Minecraft.getMinecraft().thePlayer != null) {
-            DraconicEvolution.network.sendToServer(new ButtonPacket(ButtonPacket.ID_TOOL_PROFILE_CHANGE, false));
-
-            ItemStack stack = Minecraft.getMinecraft().thePlayer.getHeldItem();
-            if (stack != null && stack.getItem() instanceof IConfigurableItem
-                    && ((IConfigurableItem) stack.getItem()).hasProfiles()) {
-                int preset = ItemNBTHelper.getInteger(stack, "ConfigProfile", 0);
-                if (++preset >= 5) preset = 0;
-                ItemNBTHelper.setInteger(stack, "ConfigProfile", preset);
-            }
+        } else if (KeyBindings.toolProfileChange.isPressed() && player != null) {
+            handleToolProfileChangeKey(player);
         }
 
-        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-        int change = Mouse.getEventDWheel();
-        if (change == 0 || !player.isSneaking()) return;
+        if (player != null) {
+            int change = Mouse.getEventDWheel();
+            if (change == 0 || !player.isSneaking()) return;
 
-        if (change > 0) {
-            ItemStack item = player.inventory.getStackInSlot(previouseSlot(1, player.inventory.currentItem));
-            if (item != null && item.getItem().equals(ModItems.teleporterMKII)) {
-                player.inventory.currentItem = previouseSlot(1, player.inventory.currentItem);
-                DraconicEvolution.network.sendToServer(new TeleporterPacket(TeleporterPacket.SCROLL, -1, false));
-            }
-        } else {
-            ItemStack item = player.inventory.getStackInSlot(previouseSlot(-1, player.inventory.currentItem));
-            if (item != null && item.getItem().equals(ModItems.teleporterMKII)) {
-                player.inventory.currentItem = previouseSlot(-1, player.inventory.currentItem);
-                DraconicEvolution.network.sendToServer(new TeleporterPacket(TeleporterPacket.SCROLL, 1, false));
+            if (change > 0) {
+                ItemStack item = player.inventory.getStackInSlot(previouseSlot(1, player.inventory.currentItem));
+                if (item != null && Objects.equals(item.getItem(), ModItems.teleporterMKII)) {
+                    player.inventory.currentItem = previouseSlot(1, player.inventory.currentItem);
+                    DraconicEvolution.network.sendToServer(new TeleporterPacket(TeleporterPacket.SCROLL, -1, false));
+                }
+            } else {
+                ItemStack item = player.inventory.getStackInSlot(previouseSlot(-1, player.inventory.currentItem));
+                if (item != null && Objects.equals(item.getItem(), ModItems.teleporterMKII)) {
+                    player.inventory.currentItem = previouseSlot(-1, player.inventory.currentItem);
+                    DraconicEvolution.network.sendToServer(new TeleporterPacket(TeleporterPacket.SCROLL, 1, false));
+                }
             }
         }
     }
@@ -127,6 +113,18 @@ public class KeyInputHandler {
 
     private void handleToolConfigKey() {
         DraconicEvolution.network.sendToServer(new ButtonPacket(ButtonPacket.ID_TOOLCONFIG, false));
+    }
+
+    private void handleToolProfileChangeKey(@Nonnull EntityClientPlayerMP player) {
+        DraconicEvolution.network.sendToServer(new ButtonPacket(ButtonPacket.ID_TOOL_PROFILE_CHANGE, false));
+
+        ItemStack stack = player.getHeldItem();
+        if (stack != null && stack.getItem() instanceof IConfigurableItem
+                && ((IConfigurableItem) stack.getItem()).hasProfiles()) {
+            int preset = ItemNBTHelper.getInteger(stack, "ConfigProfile", 0);
+            if (++preset >= 5) preset = 0;
+            ItemNBTHelper.setInteger(stack, "ConfigProfile", preset);
+        }
     }
 
     private int previouseSlot(int i, int c) {
