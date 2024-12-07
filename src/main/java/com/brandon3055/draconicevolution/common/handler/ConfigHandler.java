@@ -73,6 +73,11 @@ public class ConfigHandler {
     public static boolean enableReactorBigBoom;
     public static double reactorOutputMultiplier;
     public static double reactorFuelUsageMultiplier;
+    public static int reactorFuelStorage;
+    public static int reactorFuelValue;
+    public static int reactorChaosValue;
+
+
 
     private static String[] defaultSpawnerList = new String[] { "ExampleMob1", "ExampleMob2",
             "ExampleMob3 (these examples can be deleted)" };
@@ -319,13 +324,6 @@ public class ConfigHandler {
                             true,
                             "Setting this to false will reduce the reactor explosion to little more then a tnt blast")
                     .getBoolean(true);
-            reactorFuelUsageMultiplier = config.get(
-                    "Draconic Reactor",
-                    "FuelUsageMultiplier",
-                    1,
-                    "Use this to adjust how quickly the reactor uses fuel",
-                    0,
-                    1000000).getDouble(1);
             reactorOutputMultiplier = config.get(
                     "Draconic Reactor",
                     "EnergyOutputMultiplier",
@@ -333,7 +331,34 @@ public class ConfigHandler {
                     "Use this to adjust the output of the reactor",
                     0,
                     1000000).getDouble(1);
-
+            reactorFuelUsageMultiplier = config.get(
+                    "Draconic Reactor",
+                    "FuelUsageMultiplier",
+                    1,
+                    "Use this to adjust how quickly the reactor uses fuel",
+                    0,
+                    1000000).getDouble(1);
+            reactorFuelStorage = config.get(
+                    "Draconic Reactor",
+                    "maxFuelStorage",
+                    10368,
+                    "Use this to adjust the maximum fuel storage of the reactor",
+                    0,
+                    10000000).getInt(10368);
+            reactorFuelValue = config.get(
+                    "Draconic Reactor",
+                    "awakenedDraconiumFuelValue",
+                    16,
+                    "Use this to adjust the fuel value of Awakened Draconium",
+                    0,
+                    1000000).getInt(16);
+            reactorChaosValue = config.get(
+                    "Draconic Reactor",
+                    "chaosShardOutputValue",
+                    16,
+                    "Use this to adjust how much Tiny Chaos Shards you get per fuel value",
+                    0,
+                    1000000).getInt(16);
             disabledNamesList.clear();
             for (String s : disabledBlocksItems) {
                 disabledNamesList.add(s);

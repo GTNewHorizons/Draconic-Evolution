@@ -2,6 +2,7 @@ package com.brandon3055.draconicevolution.common.container;
 
 import java.util.Set;
 
+import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -20,10 +21,14 @@ import com.brandon3055.draconicevolution.common.utills.OreDictionaryHelper;
  */
 public class ContainerReactor extends ContainerDataSync {
 
-    private static final int maximumFuelStorage = 10368;
-    private static final int nuggetFuelAmount = 16;
+    private static final int maximumFuelStorage = ConfigHandler.reactorFuelStorage;
+    private static final int nuggetFuelAmount = ConfigHandler.reactorFuelValue;
     private static final int ingotFuelAmount = nuggetFuelAmount * 9;
     private static final int blockFuelAmount = ingotFuelAmount * 9;
+    private static final int tinyChaosAmount = ConfigHandler.reactorChaosValue;
+    private static final int smallChaosAmount = tinyChaosAmount * 9;
+    private static final int largeChaosAmount = smallChaosAmount * 9;
+
     private final TileReactorCore core;
     private final EntityPlayer player;
     private final GenericInventory ioSlots = new GenericInventory() {
@@ -194,20 +199,20 @@ public class ContainerReactor extends ContainerDataSync {
                 int stackSize = core.reactorFuel / nuggetFuelAmount;
                 ioSlots.setInventorySlotContents(1, new ItemStack(ModItems.nugget, stackSize, 1));
                 core.reactorFuel -= stackSize * nuggetFuelAmount;
-            } else if (core.convertedFuel / ingotFuelAmount >= 64) {
-                int stackSize = core.convertedFuel / blockFuelAmount;
+            } else if (core.convertedFuel / smallChaosAmount >= 64) {
+                int stackSize = core.convertedFuel / largeChaosAmount;
                 stackSize = Math.min(64, stackSize);
                 ioSlots.setInventorySlotContents(1, new ItemStack(ModItems.chaosFragment, stackSize, 2));
-                core.convertedFuel -= stackSize * blockFuelAmount;
-            } else if (core.convertedFuel >= ingotFuelAmount) {
-                int stackSize = core.convertedFuel / ingotFuelAmount;
+                core.convertedFuel -= stackSize * largeChaosAmount;
+            } else if (core.convertedFuel >= smallChaosAmount) {
+                int stackSize = core.convertedFuel / smallChaosAmount;
                 stackSize = Math.min(64, stackSize);
                 ioSlots.setInventorySlotContents(1, new ItemStack(ModItems.chaosFragment, stackSize, 1));
-                core.convertedFuel -= stackSize * ingotFuelAmount;
-            } else if (core.convertedFuel >= nuggetFuelAmount) {
-                int stackSize = core.convertedFuel / nuggetFuelAmount;
+                core.convertedFuel -= stackSize * smallChaosAmount;
+            } else if (core.convertedFuel >= tinyChaosAmount) {
+                int stackSize = core.convertedFuel / tinyChaosAmount;
                 ioSlots.setInventorySlotContents(1, new ItemStack(ModItems.chaosFragment, stackSize, 0));
-                core.convertedFuel -= stackSize * nuggetFuelAmount;
+                core.convertedFuel -= stackSize * tinyChaosAmount;
             }
         }
         return super.slotClick(slot, button, mode, player);
