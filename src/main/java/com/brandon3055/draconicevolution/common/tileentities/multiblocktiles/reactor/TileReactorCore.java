@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor;
 
+import static com.brandon3055.draconicevolution.common.handler.ConfigHandler.reactorOutputMultiplier;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,8 +37,6 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import static com.brandon3055.draconicevolution.common.handler.ConfigHandler.reactorOutputMultiplier;
 
 /**
  * Created by Brandon on 16/6/2015.
@@ -88,7 +88,9 @@ public class TileReactorCore extends TileObjectSync {
     public int energySaturation = 0;
     public int maxEnergySaturation = 0;
 
-    public float fuelStorageRatio = (float) ConfigHandler.reactorFuelStorage /10368; // To keep the temperature increase unchanged from the default config if it's changed
+    public float fuelStorageRatio = (float) ConfigHandler.reactorFuelStorage / 10368; // To keep the temperature
+                                                                                      // increase unchanged from the
+                                                                                      // default config if it's changed
 
     @SideOnly(Side.CLIENT)
     private ReactorSound reactorSound;
@@ -149,8 +151,8 @@ public class TileReactorCore extends TileObjectSync {
     private void startingTick() {
         if (!startupInitialized) {
             int totalFuel = reactorFuel + convertedFuel;
-            maxFieldCharge = (totalFuel/fuelStorageRatio) * 96.45061728395062 * 100;
-            maxEnergySaturation = (int) ((totalFuel/fuelStorageRatio)* 96.45061728395062 * 1000);
+            maxFieldCharge = (totalFuel / fuelStorageRatio) * 96.45061728395062 * 100;
+            maxEnergySaturation = (int) ((totalFuel / fuelStorageRatio) * 96.45061728395062 * 1000);
             energySaturation = Math.min(energySaturation, maxEnergySaturation);
             fieldCharge = Math.min(fieldCharge, maxFieldCharge);
             startupInitialized = true;
@@ -365,7 +367,7 @@ public class TileReactorCore extends TileObjectSync {
                 energySaturation += energyInjected;
             } else if (reactionTemperature < 2000) {
                 energyInjected = energyToInject;
-                reactionTemperature += (double) energyInjected / (1000D + (reactorFuel/fuelStorageRatio)* 10);
+                reactionTemperature += (double) energyInjected / (1000D + (reactorFuel / fuelStorageRatio) * 10);
                 if (reactionTemperature > 2000) {
                     reactionTemperature = 2000;
                 }
@@ -405,7 +407,7 @@ public class TileReactorCore extends TileObjectSync {
     }
 
     public double getCoreRadius() {
-        double volume = (double) (reactorFuel + convertedFuel) / (1296D*fuelStorageRatio);
+        double volume = (double) (reactorFuel + convertedFuel) / (1296D * fuelStorageRatio);
         volume *= 1 + (reactionTemperature / maxReactTemperature) * 10D;
         return Math.cbrt(volume / (4D / 3D * Math.PI));
     }

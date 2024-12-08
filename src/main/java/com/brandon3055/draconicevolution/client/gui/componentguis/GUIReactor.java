@@ -3,7 +3,6 @@ package com.brandon3055.draconicevolution.client.gui.componentguis;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.EnumChatFormatting;
@@ -21,6 +20,7 @@ import com.brandon3055.brandonscore.client.utills.GuiHelper;
 import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 import com.brandon3055.draconicevolution.common.container.ContainerReactor;
+import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore.ReactorState;
 
@@ -206,9 +206,9 @@ public class GUIReactor extends GUIBase {
                                 100D) + "%");
             }
             text.add(core.convertedFuel + " / " + (core.convertedFuel + core.reactorFuel));
-            text.add("Full: " + (
-                    Utills.round(
-                            (float) (core.convertedFuel + core.reactorFuel)/ ConfigHandler.reactorFuelStorage*100,
+            text.add(
+                    "Full: " + (Utills.round(
+                            (float) (core.convertedFuel + core.reactorFuel) / ConfigHandler.reactorFuelStorage * 100,
                             1000)) + "%");
             drawHoveringText(text, mouseX, mouseY, fontRendererObj);
         }

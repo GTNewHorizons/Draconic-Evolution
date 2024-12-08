@@ -77,8 +77,6 @@ public class ConfigHandler {
     public static int reactorFuelValue;
     public static int reactorChaosValue;
 
-
-
     private static String[] defaultSpawnerList = new String[] { "ExampleMob1", "ExampleMob2",
             "ExampleMob3 (these examples can be deleted)" };
 
