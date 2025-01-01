@@ -1,5 +1,6 @@
 package com.brandon3055.draconicevolution.common.items.tools;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -11,6 +12,7 @@ import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
@@ -25,6 +27,8 @@ import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.items.ItemDE;
 import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
+import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
 
 import baubles.api.BaubleType;
 import baubles.api.IBauble;
@@ -37,7 +41,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  */
 
 @Optional.Interface(iface = "baubles.api.IBauble", modid = "Baubles")
-public class Magnet extends ItemDE implements IBauble {
+public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
 
     private IIcon draconium;
     private IIcon awakened;
@@ -85,9 +89,14 @@ public class Magnet extends ItemDE implements IBauble {
 
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean hotbar) {
-        if (!entity.isSneaking() && entity.ticksExisted % 5 == 0
-                && isEnabled(stack)
-                && entity instanceof EntityPlayer) {
+        if (entity.ticksExisted % 5 != 0 || !isEnabled(stack)) {
+            return;
+        }
+        if (IConfigurableItem.ProfileHelper.getBoolean(stack, References.MAGNET_SNEAK, true) && entity.isSneaking()) {
+            return;
+        }
+
+        if (entity instanceof EntityPlayer player) {
             int range = stack.getItemDamage() == 0 ? 8 : 32;
 
             List<EntityItem> items = world.getEntitiesWithinAABB(
@@ -145,7 +154,6 @@ public class Magnet extends ItemDE implements IBauble {
                                 entity.posX,
                                 entity.posY,
                                 entity.posZ).expand(4, 4, 4));
-                EntityPlayer player = (EntityPlayer) entity;
                 for (EntityXPOrb orb : xp) {
                     if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
                         if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, orb))) continue;
@@ -164,15 +172,24 @@ public class Magnet extends ItemDE implements IBauble {
     }
 
     public static boolean isEnabled(ItemStack itemStack) {
-        return ItemNBTHelper.getBoolean(itemStack, "MagnetEnabled", false);
+        // For backward compatibility
+        if (ItemNBTHelper.verifyExistance(itemStack, "MagnetEnabled")) {
+            final NBTTagCompound nbt = itemStack.getTagCompound();
+            final boolean enabled = nbt.getBoolean("MagnetEnabled");
+            IConfigurableItem.ProfileHelper.setBoolean(itemStack, References.ENABLED, enabled);
+            nbt.removeTag("MagnetEnabled");
+            return enabled;
+        }
+        return IConfigurableItem.ProfileHelper.getBoolean(itemStack, References.ENABLED, false);
     }
 
     public static void toggle(ItemStack itemStack) {
-        ItemNBTHelper.setBoolean(itemStack, "MagnetEnabled", !isEnabled(itemStack));
+        final boolean enabled = IConfigurableItem.ProfileHelper.getBoolean(itemStack, References.ENABLED, false);
+        IConfigurableItem.ProfileHelper.setBoolean(itemStack, References.ENABLED, !enabled);
     }
 
     public static void setStatus(ItemStack itemStack, boolean status) {
-        ItemNBTHelper.setBoolean(itemStack, "MagnetEnabled", status);
+        IConfigurableItem.ProfileHelper.setBoolean(itemStack, References.ENABLED, status);
     }
 
     @Override
@@ -229,5 +246,18 @@ public class Magnet extends ItemDE implements IBauble {
     @Optional.Method(modid = "Baubles")
     public boolean canUnequip(ItemStack itemstack, EntityLivingBase player) {
         return true;
+    }
+
+    @Override
+    public List<ItemConfigField> getFields(ItemStack stack, int slot) {
+        List<ItemConfigField> fields = new ArrayList<>();
+        fields.add(new ItemConfigField(References.BOOLEAN_ID, slot, References.ENABLED).readFromItem(stack, false));
+        fields.add(new ItemConfigField(References.BOOLEAN_ID, slot, References.MAGNET_SNEAK).readFromItem(stack, true));
+        return fields;
+    }
+
+    @Override
+    public boolean hasProfiles() {
+        return false;
     }
 }
