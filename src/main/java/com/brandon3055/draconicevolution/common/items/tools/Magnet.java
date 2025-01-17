@@ -29,6 +29,7 @@ import com.brandon3055.draconicevolution.common.items.ItemDE;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
 import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
+import com.brandon3055.draconicevolution.integration.ModHelper;
 
 import baubles.api.BaubleType;
 import baubles.api.IBauble;
@@ -112,7 +113,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
             boolean playSound = false;
 
             for (EntityItem item : items) {
-                if (item.getEntityItem() == null || item.delayBeforeCanPickup < 0) {
+                if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)) {
                     continue;
                 }
 
