@@ -112,7 +112,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
             boolean playSound = false;
 
             for (EntityItem item : items) {
-                if (item.getEntityItem() == null) {
+                if (item.getEntityItem() == null || item.delayBeforeCanPickup < 0) {
                     continue;
                 }
 
