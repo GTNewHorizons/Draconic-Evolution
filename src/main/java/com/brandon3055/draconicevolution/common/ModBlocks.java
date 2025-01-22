@@ -24,6 +24,7 @@ import com.brandon3055.draconicevolution.common.blocks.SafetyFlame;
 import com.brandon3055.draconicevolution.common.blocks.TeleporterStand;
 import com.brandon3055.draconicevolution.common.blocks.TestBlock;
 import com.brandon3055.draconicevolution.common.blocks.XRayBlock;
+import com.brandon3055.draconicevolution.common.blocks.machine.DislocatorInhibitor;
 import com.brandon3055.draconicevolution.common.blocks.machine.DissEnchanter;
 import com.brandon3055.draconicevolution.common.blocks.machine.EnergyCrystal;
 import com.brandon3055.draconicevolution.common.blocks.machine.EnergyInfuser;
@@ -90,6 +91,7 @@ public class ModBlocks {
     public static BlockDE reactorEnergyInjector;
     public static BlockDE chaosCrystal;
     public static BlockDE upgradeModifier;
+    public static BlockDE dislocatorInhibitor;
     public static Block safetyFlame;
     public static Block chaosShardAtmos = new ChaosShardAtmos()
             .setBlockName(References.RESOURCESPREFIX + "chaosShardAtmos")
@@ -133,6 +135,7 @@ public class ModBlocks {
         reactorEnergyInjector = new ReactorEnergyInjector();
         chaosCrystal = new ChaosCrystal();
         upgradeModifier = new UpgradeModifier();
+        dislocatorInhibitor = new DislocatorInhibitor();
 
         longRangeDislocator = new LongRangeDislocator();
 
