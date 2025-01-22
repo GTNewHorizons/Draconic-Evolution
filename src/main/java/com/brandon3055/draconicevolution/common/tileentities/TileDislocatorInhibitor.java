@@ -8,7 +8,6 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 public class TileDislocatorInhibitor extends TileEntity {
@@ -79,14 +78,11 @@ public class TileDislocatorInhibitor extends TileEntity {
     }
 
     public boolean isInRange(double x, double y, double z) {
-        AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(
-                this.xCoord + 0.5,
-                this.yCoord + 0.5,
-                this.zCoord + 0.5,
-                this.xCoord + 0.5,
-                this.yCoord + 0.5,
-                this.zCoord + 0.5).expand(range + 0.5, range + 0.5, range + 0.5);
-        return x >= aabb.minX && x <= aabb.maxX && y >= aabb.minY && y <= aabb.maxY && z >= aabb.minZ && z <= aabb.maxZ;
+        return x >= this.xCoord - range && x <= this.xCoord + range + 1
+                && y >= this.yCoord - range
+                && y <= this.yCoord + range + 1
+                && z >= this.zCoord - range
+                && z <= this.zCoord + range + 1;
     }
 
     @Override
