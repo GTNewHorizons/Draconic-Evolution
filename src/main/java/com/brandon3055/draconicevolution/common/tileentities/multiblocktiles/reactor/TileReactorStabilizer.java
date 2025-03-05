@@ -294,9 +294,12 @@ public class TileReactorStabilizer extends TileEntity
     @Override
     public void setInventorySlotContents(int i, ItemStack stack) {
         TileReactorCore core = getMaster();
-        core.items[0] = stack;
+        core.items[i] = stack;
         if (stack != null && stack.stackSize > getInventoryStackLimit()) {
             stack.stackSize = getInventoryStackLimit();
+        }
+        if (stack == null) {
+            core.setInventorySlotContents(i, null);
         }
     }
 

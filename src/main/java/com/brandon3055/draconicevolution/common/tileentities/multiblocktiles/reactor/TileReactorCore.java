@@ -724,9 +724,7 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
 
     @Override
     public ItemStack getStackInSlotOnClosing(int i) {
-        ItemStack item = getStackInSlot(i);
-        if (item != null) setInventorySlotContents(i, null);
-        return item;
+        return null;
     }
 
     @Override
