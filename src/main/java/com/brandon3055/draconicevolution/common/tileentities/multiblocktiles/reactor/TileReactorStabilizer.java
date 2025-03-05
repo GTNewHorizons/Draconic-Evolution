@@ -1,6 +1,8 @@
 package com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor;
 
-import com.brandon3055.draconicevolution.common.utills.OreDictionaryHelper;
+import java.util.Objects;
+import java.util.Set;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -16,24 +18,19 @@ import com.brandon3055.draconicevolution.client.render.particle.ParticleReactorB
 import com.brandon3055.draconicevolution.common.blocks.multiblock.IReactorPart;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper.TileLocation;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore.ReactorState;
+import com.brandon3055.draconicevolution.common.utills.OreDictionaryHelper;
 import com.brandon3055.draconicevolution.integration.computers.IDEPeripheral;
 
 import cofh.api.energy.IEnergyProvider;
 import cofh.api.energy.IEnergyReceiver;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.util.Objects;
-import java.util.Set;
 
 /**
  * Created by brandon3055 on 5/7/2015.
  */
-public class TileReactorStabilizer extends TileEntity implements IReactorPart, IEnergyProvider, IDEPeripheral, ISidedInventory {
-
-    public static final Logger LOGGER = LogManager.getLogger("ReactorStabilizer");
+public class TileReactorStabilizer extends TileEntity
+        implements IReactorPart, IEnergyProvider, IDEPeripheral, ISidedInventory {
 
     public float coreRotation = 0F;
     public float ringRotation = 0F;
@@ -254,7 +251,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
     }
 
     @Override
-    public boolean canExtractItem(int slot, ItemStack item , int p_102008_3_) {
+    public boolean canExtractItem(int slot, ItemStack item, int p_102008_3_) {
         return (slot == 1 && validOutputItems(item));
     }
 
@@ -274,7 +271,7 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
     public ItemStack decrStackSize(int i, int count) {
         TileReactorCore core = getMaster();
         ItemStack itemstack = core.getStackInSlot(i);
-        if (i == 1)  {
+        if (i == 1) {
             if (itemstack != null) {
                 if (itemstack.stackSize <= count) {
                     core.setInventorySlotContents(i, null);
@@ -341,10 +338,13 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
 
     public boolean validInputItems(ItemStack item) {
         Set<String> oreNames = OreDictionaryHelper.getOreNames(item);
-        return (oreNames.contains("nuggetDraconiumAwakened") || oreNames.contains("ingotDraconiumAwakened") || oreNames.contains("blockDraconiumAwakened"));
+        return (oreNames.contains("nuggetDraconiumAwakened") || oreNames.contains("ingotDraconiumAwakened")
+                || oreNames.contains("blockDraconiumAwakened"));
     }
 
     public boolean validOutputItems(ItemStack item) {
-        return (Objects.equals(item.getUnlocalizedName(), "item.draconicevolution:chaosFragment0")) || (Objects.equals(item.getUnlocalizedName(), "item.draconicevolution:chaosFragment1")) || (Objects.equals(item.getUnlocalizedName(), "item.draconicevolution:chaosFragment2"));
+        return (Objects.equals(item.getUnlocalizedName(), "item.draconicevolution:chaosFragment0"))
+                || (Objects.equals(item.getUnlocalizedName(), "item.draconicevolution:chaosFragment1"))
+                || (Objects.equals(item.getUnlocalizedName(), "item.draconicevolution:chaosFragment2"));
     }
 }

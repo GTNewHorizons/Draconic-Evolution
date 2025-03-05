@@ -1,6 +1,7 @@
 package com.brandon3055.draconicevolution.common.blocks.multiblock;
 
-import com.brandon3055.draconicevolution.common.blocks.BlockCustomDrop;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -12,14 +13,12 @@ import net.minecraft.world.World;
 
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.ModBlocks;
-import com.brandon3055.draconicevolution.common.blocks.BlockDE;
+import com.brandon3055.draconicevolution.common.blocks.BlockCustomDrop;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import java.util.List;
 
 /**
  * Created by Brandon on 16/6/2015.

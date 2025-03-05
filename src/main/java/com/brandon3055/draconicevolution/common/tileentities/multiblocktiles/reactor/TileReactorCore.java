@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.brandon3055.draconicevolution.common.ModItems;
-import com.brandon3055.draconicevolution.common.utills.OreDictionaryHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -36,12 +34,14 @@ import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.ReactorSound;
 import com.brandon3055.draconicevolution.client.gui.GuiHandler;
 import com.brandon3055.draconicevolution.client.render.particle.Particles;
+import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.IReactorPart;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.IReactorPart.ComparatorMode;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper.TileLocation;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.TileObjectSync;
+import com.brandon3055.draconicevolution.common.utills.OreDictionaryHelper;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -55,6 +55,7 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
 
     public static final int MAXIMUM_PART_DISTANCE = 10;
     ItemStack[] items = new ItemStack[2];
+
     public enum ReactorState {
 
         OFFLINE,
@@ -102,7 +103,7 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
                                                                                       // increase unchanged from the
                                                                                       // default config if it's changed
 
-    int maxStoredChaosShard = 5*9;
+    int maxStoredChaosShard = 5 * 9;
 
     @SideOnly(Side.CLIENT)
     private ReactorSound reactorSound;
@@ -778,29 +779,32 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
     }
 
     public void addFuelFromInventory() {
-        if (items[0] != null && this.reactorFuel < (maximumFuelStorage-nuggetFuelAmount)) {
+        if (items[0] != null && this.reactorFuel < (maximumFuelStorage - nuggetFuelAmount)) {
             int fuelAmountToConsume;
             Set<String> oreNames = OreDictionaryHelper.getOreNames(items[0]);
             if (oreNames.contains("blockDraconiumAwakened")) {
-                fuelAmountToConsume = Math.min((maximumFuelStorage - this.reactorFuel) / blockFuelAmount, items[0].stackSize);
+                fuelAmountToConsume = Math
+                        .min((maximumFuelStorage - this.reactorFuel) / blockFuelAmount, items[0].stackSize);
                 if (fuelAmountToConsume > 0) {
                     this.reactorFuel += fuelAmountToConsume * blockFuelAmount;
                     items[0].stackSize -= fuelAmountToConsume;
-                    if (items[0].stackSize == 0){
+                    if (items[0].stackSize == 0) {
                         items[0] = null;
                     }
                 }
             } else if (oreNames.contains("ingotDraconiumAwakened")) {
-                fuelAmountToConsume = Math.min((maximumFuelStorage - this.reactorFuel) / ingotFuelAmount, items[0].stackSize);
+                fuelAmountToConsume = Math
+                        .min((maximumFuelStorage - this.reactorFuel) / ingotFuelAmount, items[0].stackSize);
                 if (fuelAmountToConsume > 0) {
                     this.reactorFuel += fuelAmountToConsume * ingotFuelAmount;
                     items[0].stackSize -= fuelAmountToConsume;
-                    if (items[0].stackSize == 0){
+                    if (items[0].stackSize == 0) {
                         items[0] = null;
                     }
                 }
             } else if (oreNames.contains("nuggetDraconiumAwakened")) {
-                fuelAmountToConsume = Math.min((maximumFuelStorage - this.reactorFuel) / nuggetFuelAmount, items[0].stackSize);
+                fuelAmountToConsume = Math
+                        .min((maximumFuelStorage - this.reactorFuel) / nuggetFuelAmount, items[0].stackSize);
                 if (fuelAmountToConsume > 0) {
                     this.reactorFuel += fuelAmountToConsume * nuggetFuelAmount;
                     items[0].stackSize -= fuelAmountToConsume;
@@ -811,6 +815,7 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
             }
         }
     }
+
     public void addChaosShardToInventory() {
         if (convertedFuel > largeChaosAmount) {
             int addedChaosShardAmount;
@@ -819,7 +824,8 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
                 setInventorySlotContents(1, new ItemStack(ModItems.chaosFragment, addedChaosShardAmount, 2));
                 convertedFuel -= addedChaosShardAmount * largeChaosAmount;
             } else if (maxStoredChaosShard > items[1].stackSize) {
-                addedChaosShardAmount = Math.min(convertedFuel / largeChaosAmount, maxStoredChaosShard - items[1].stackSize);
+                addedChaosShardAmount = Math
+                        .min(convertedFuel / largeChaosAmount, maxStoredChaosShard - items[1].stackSize);
                 convertedFuel -= addedChaosShardAmount * largeChaosAmount;
                 items[1].stackSize += addedChaosShardAmount;
             }
