@@ -362,7 +362,7 @@ public class ConfigHandler {
             chaosStorageValue = config.get(
                     "Draconic Reactor",
                     "chaosStorageValue",
-                    16,
+                    45,
                     "Use this to adjust how much Large Chaos Shards the reactor stores",
                     0,
                     1000000).getInt(45);
