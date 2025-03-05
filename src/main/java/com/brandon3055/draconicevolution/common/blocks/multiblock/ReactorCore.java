@@ -1,8 +1,11 @@
 package com.brandon3055.draconicevolution.common.blocks.multiblock;
 
+import com.brandon3055.draconicevolution.common.blocks.BlockCustomDrop;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -16,15 +19,17 @@ import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.rea
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+import java.util.List;
+
 /**
  * Created by Brandon on 16/6/2015.
  */
-public class ReactorCore extends BlockDE implements ITileEntityProvider {
+public class ReactorCore extends BlockCustomDrop implements ITileEntityProvider {
 
     public ReactorCore() {
+        super(Material.iron);
         this.setCreativeTab(DraconicEvolution.tabBlocksItems);
         this.setBlockName("reactorCore");
-        this.setHardness(100F);
 
         ModBlocks.register(this);
     }
@@ -80,5 +85,20 @@ public class ReactorCore extends BlockDE implements ITileEntityProvider {
             core.onBroken();
         }
         super.breakBlock(world, x, y, z, blockBroken, metadata);
+    }
+
+    @Override
+    protected boolean dropInventory() {
+        return true;
+    }
+
+    @Override
+    protected boolean hasCustomDropps() {
+        return false;
+    }
+
+    @Override
+    protected void getCustomTileEntityDrops(TileEntity te, List<ItemStack> droppes) {
+
     }
 }
