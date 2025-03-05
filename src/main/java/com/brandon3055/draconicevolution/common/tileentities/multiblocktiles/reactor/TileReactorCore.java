@@ -103,7 +103,7 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
                                                                                       // increase unchanged from the
                                                                                       // default config if it's changed
 
-    int maxStoredChaosShard = 5 * 9;
+    int maxStoredChaosShard = ConfigHandler.chaosStorageValue;
 
     @SideOnly(Side.CLIENT)
     private ReactorSound reactorSound;
@@ -129,8 +129,10 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
             case ONLINE, STOPPING -> runTick();
         }
 
-        addFuelFromInventory();
-        addChaosShardToInventory();
+        if (ConfigHandler.enableAutomation) {
+            addFuelFromInventory();
+            addChaosShardToInventory();
+        }
         detectAndSendChanges();
     }
 

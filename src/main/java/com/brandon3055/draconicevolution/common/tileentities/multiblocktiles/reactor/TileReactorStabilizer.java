@@ -17,6 +17,7 @@ import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.render.particle.ParticleReactorBeam;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.IReactorPart;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper.TileLocation;
+import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore.ReactorState;
 import com.brandon3055.draconicevolution.common.utills.OreDictionaryHelper;
 import com.brandon3055.draconicevolution.integration.computers.IDEPeripheral;
@@ -247,7 +248,7 @@ public class TileReactorStabilizer extends TileEntity
 
     @Override
     public boolean canInsertItem(int slot, ItemStack p_102007_2_, int p_102007_3_) {
-        return true;
+        return ConfigHandler.enableAutomation;
     }
 
     @Override
@@ -269,21 +270,25 @@ public class TileReactorStabilizer extends TileEntity
 
     @Override
     public ItemStack decrStackSize(int i, int count) {
-        TileReactorCore core = getMaster();
-        ItemStack itemstack = core.getStackInSlot(i);
-        if (i == 1) {
-            if (itemstack != null) {
-                if (itemstack.stackSize <= count) {
-                    core.setInventorySlotContents(i, null);
-                } else {
-                    itemstack = itemstack.splitStack(count);
-                    if (itemstack.stackSize == 0) {
+        if (ConfigHandler.enableAutomation) {
+            TileReactorCore core = getMaster();
+            ItemStack itemstack = core.getStackInSlot(i);
+            if (i == 1) {
+                if (itemstack != null) {
+                    if (itemstack.stackSize <= count) {
                         core.setInventorySlotContents(i, null);
+                    } else {
+                        itemstack = itemstack.splitStack(count);
+                        if (itemstack.stackSize == 0) {
+                            core.setInventorySlotContents(i, null);
+                        }
                     }
                 }
             }
+            return itemstack;
+        } else {
+            return null;
         }
-        return itemstack;
     }
 
     @Override
@@ -293,13 +298,15 @@ public class TileReactorStabilizer extends TileEntity
 
     @Override
     public void setInventorySlotContents(int i, ItemStack stack) {
-        TileReactorCore core = getMaster();
-        core.items[i] = stack;
-        if (stack != null && stack.stackSize > getInventoryStackLimit()) {
-            stack.stackSize = getInventoryStackLimit();
-        }
-        if (stack == null) {
-            core.setInventorySlotContents(i, null);
+        if (ConfigHandler.enableAutomation) {
+            TileReactorCore core = getMaster();
+            core.items[i] = stack;
+            if (stack != null && stack.stackSize > getInventoryStackLimit()) {
+                stack.stackSize = getInventoryStackLimit();
+            }
+            if (stack == null) {
+                core.setInventorySlotContents(i, null);
+            }
         }
     }
 

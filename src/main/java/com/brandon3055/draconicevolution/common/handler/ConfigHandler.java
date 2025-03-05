@@ -76,6 +76,8 @@ public class ConfigHandler {
     public static int reactorFuelStorage;
     public static int reactorFuelValue;
     public static int reactorChaosValue;
+    public static int chaosStorageValue;
+    public static boolean enableAutomation;
 
     private static String[] defaultSpawnerList = new String[] { "ExampleMob1", "ExampleMob2",
             "ExampleMob3 (these examples can be deleted)" };
@@ -347,7 +349,7 @@ public class ConfigHandler {
                     "Draconic Reactor",
                     "awakenedDraconiumFuelValue",
                     16,
-                    "Use this to adjust the fuel value of Awakened Draconium",
+                    "Use this to adjust the fuel value of Awakened Draconium nugget",
                     0,
                     1000000).getInt(16);
             reactorChaosValue = config.get(
@@ -357,6 +359,18 @@ public class ConfigHandler {
                     "Use this to adjust how much Tiny Chaos Shards you get per fuel value",
                     0,
                     1000000).getInt(16);
+            chaosStorageValue = config.get(
+                    "Draconic Reactor",
+                    "chaosStorageValue",
+                    16,
+                    "Use this to adjust how much Large Chaos Shards the reactor stores",
+                    0,
+                    1000000).getInt(45);
+            enableAutomation = config.get(
+                    "Draconic Reactor",
+                    "enableAutomation",
+                    false,
+                    "Sets whether the Draconic Reactor is automatable or not").getBoolean(false);
             disabledNamesList.clear();
             for (String s : disabledBlocksItems) {
                 disabledNamesList.add(s);
