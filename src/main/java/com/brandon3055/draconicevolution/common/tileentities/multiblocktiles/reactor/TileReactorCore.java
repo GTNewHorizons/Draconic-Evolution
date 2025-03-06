@@ -699,17 +699,17 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
     }
 
     public ItemStack getStackInSlot(int i) {
-        if (convertedFuel>fullChaosAmount) {
-            return new ItemStack(ModItems.chaosShard, convertedFuel/fullChaosAmount);
+        if (convertedFuel > fullChaosAmount) {
+            return new ItemStack(ModItems.chaosShard, convertedFuel / fullChaosAmount);
         }
         return null;
     }
 
     @Override
     public ItemStack decrStackSize(int i, int count) {
-        if (convertedFuel>fullChaosAmount) {
-            int chaosShardCount = Math.min((convertedFuel/fullChaosAmount), count);
-            convertedFuel -= chaosShardCount*fullChaosAmount;
+        if (convertedFuel > fullChaosAmount) {
+            int chaosShardCount = Math.min((convertedFuel / fullChaosAmount), count);
+            convertedFuel -= chaosShardCount * fullChaosAmount;
             return new ItemStack(ModItems.chaosShard, chaosShardCount);
         }
         return null;
@@ -723,13 +723,12 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
     @Override
     public void setInventorySlotContents(int slot, ItemStack stack) {
         if (stack != null) {
-            int fuelValue = fuelValue(stack)*stack.stackSize;
+            int fuelValue = fuelValue(stack) * stack.stackSize;
             if (fuelValue > maximumFuelStorage - (reactorFuel + convertedFuel)) {
                 fuelValue -= maximumFuelStorage - (reactorFuel + convertedFuel);
-                reactorFuel = maximumFuelStorage-convertedFuel;
+                reactorFuel = maximumFuelStorage - convertedFuel;
                 excessFuel += fuelValue;
-            }
-            else {
+            } else {
                 reactorFuel += fuelValue;
             }
         }
@@ -779,16 +778,13 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
     public int fuelValue(ItemStack item) {
         Set<String> oreNames = OreDictionaryHelper.getOreNames(item);
 
-        if (oreNames.contains("blockDraconiumAwakened"))
-        {
+        if (oreNames.contains("blockDraconiumAwakened")) {
             return blockFuelAmount;
         }
-        if (oreNames.contains("ingotDraconiumAwakened"))
-        {
+        if (oreNames.contains("ingotDraconiumAwakened")) {
             return ingotFuelAmount;
         }
-        if (oreNames.contains("nuggetDraconiumAwakened"))
-        {
+        if (oreNames.contains("nuggetDraconiumAwakened")) {
             return nuggetFuelAmount;
         }
         return 0;

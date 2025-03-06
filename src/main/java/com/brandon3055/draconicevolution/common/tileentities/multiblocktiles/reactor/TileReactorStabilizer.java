@@ -1,5 +1,8 @@
 package com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor;
 
+import static com.brandon3055.draconicevolution.common.container.ContainerReactor.fullChaosAmount;
+import static com.brandon3055.draconicevolution.common.container.ContainerReactor.maximumFuelStorage;
+
 import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,9 +28,6 @@ import cofh.api.energy.IEnergyProvider;
 import cofh.api.energy.IEnergyReceiver;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import static com.brandon3055.draconicevolution.common.container.ContainerReactor.fullChaosAmount;
-import static com.brandon3055.draconicevolution.common.container.ContainerReactor.maximumFuelStorage;
 
 /**
  * Created by brandon3055 on 5/7/2015.
@@ -257,8 +257,7 @@ public class TileReactorStabilizer extends TileEntity
     @Override
     public boolean canExtractItem(int slot, ItemStack item, int side) {
         TileReactorCore core = getMaster();
-
-        return (ConfigHandler.enableAutomation && core.convertedFuel>fullChaosAmount);
+        return (ConfigHandler.enableAutomation && core.convertedFuel > fullChaosAmount);
     }
 
     @Override
@@ -285,8 +284,8 @@ public class TileReactorStabilizer extends TileEntity
 
     @Override
     public void setInventorySlotContents(int i, ItemStack stack) {
-            TileReactorCore core = getMaster();
-            core.setInventorySlotContents(i, stack);
+        TileReactorCore core = getMaster();
+        core.setInventorySlotContents(i, stack);
     }
 
     @Override

@@ -30,7 +30,6 @@ public class ContainerReactor extends ContainerDataSync {
     public static final int largeChaosAmount = smallChaosAmount * 9;
     public static final int fullChaosAmount = largeChaosAmount * 9;
 
-
     private final TileReactorCore core;
     private final EntityPlayer player;
     private final GenericInventory ioSlots = new GenericInventory() {
