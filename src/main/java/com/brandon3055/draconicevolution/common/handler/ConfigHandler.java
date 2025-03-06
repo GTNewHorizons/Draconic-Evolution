@@ -76,7 +76,6 @@ public class ConfigHandler {
     public static int reactorFuelStorage;
     public static int reactorFuelValue;
     public static int reactorChaosValue;
-    public static int chaosStorageValue;
     public static boolean enableAutomation;
 
     private static String[] defaultSpawnerList = new String[] { "ExampleMob1", "ExampleMob2",
@@ -359,13 +358,6 @@ public class ConfigHandler {
                     "Use this to adjust how much Tiny Chaos Shards you get per fuel value",
                     0,
                     1000000).getInt(16);
-            chaosStorageValue = config.get(
-                    "Draconic Reactor",
-                    "chaosStorageValue",
-                    45,
-                    "Use this to adjust how much Large Chaos Shards the reactor stores",
-                    0,
-                    1000000).getInt(45);
             enableAutomation = config.get(
                     "Draconic Reactor",
                     "enableAutomation",
