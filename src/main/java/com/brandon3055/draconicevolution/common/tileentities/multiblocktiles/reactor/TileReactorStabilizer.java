@@ -1,6 +1,5 @@
 package com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor;
 
-import java.util.Objects;
 import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,6 +25,9 @@ import cofh.api.energy.IEnergyProvider;
 import cofh.api.energy.IEnergyReceiver;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+
+import static com.brandon3055.draconicevolution.common.container.ContainerReactor.fullChaosAmount;
+import static com.brandon3055.draconicevolution.common.container.ContainerReactor.maximumFuelStorage;
 
 /**
  * Created by brandon3055 on 5/7/2015.
@@ -247,19 +249,21 @@ public class TileReactorStabilizer extends TileEntity
     }
 
     @Override
-    public boolean canInsertItem(int slot, ItemStack p_102007_2_, int p_102007_3_) {
-        return ConfigHandler.enableAutomation;
+    public boolean canInsertItem(int slot, ItemStack item, int side) {
+        TileReactorCore core = getMaster();
+        return (ConfigHandler.enableAutomation && (core.reactorFuel + core.convertedFuel) < maximumFuelStorage);
     }
 
     @Override
-    public boolean canExtractItem(int slot, ItemStack item, int p_102008_3_) {
-        return (slot == 1 && validOutputItems(item) && ConfigHandler.enableAutomation);
+    public boolean canExtractItem(int slot, ItemStack item, int side) {
+        TileReactorCore core = getMaster();
+
+        return (ConfigHandler.enableAutomation && core.convertedFuel>fullChaosAmount);
     }
 
     @Override
     public int getSizeInventory() {
-        TileReactorCore core = getMaster();
-        return core == null ? 0 : core.getSizeInventory();
+        return 1;
     }
 
     @Override
@@ -318,18 +322,12 @@ public class TileReactorStabilizer extends TileEntity
 
     @Override
     public boolean isItemValidForSlot(int i, ItemStack stack) {
-        return (i == 0 && validInputItems(stack));
+        return validInputItems(stack);
     }
 
     public boolean validInputItems(ItemStack item) {
         Set<String> oreNames = OreDictionaryHelper.getOreNames(item);
         return (oreNames.contains("nuggetDraconiumAwakened") || oreNames.contains("ingotDraconiumAwakened")
                 || oreNames.contains("blockDraconiumAwakened"));
-    }
-
-    public boolean validOutputItems(ItemStack item) {
-        return (Objects.equals(item.getUnlocalizedName(), "item.draconicevolution:chaosFragment0"))
-                || (Objects.equals(item.getUnlocalizedName(), "item.draconicevolution:chaosFragment1"))
-                || (Objects.equals(item.getUnlocalizedName(), "item.draconicevolution:chaosFragment2"));
     }
 }

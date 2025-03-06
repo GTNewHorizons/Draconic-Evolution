@@ -1,8 +1,8 @@
 package com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor;
 
 import static com.brandon3055.draconicevolution.common.container.ContainerReactor.blockFuelAmount;
+import static com.brandon3055.draconicevolution.common.container.ContainerReactor.fullChaosAmount;
 import static com.brandon3055.draconicevolution.common.container.ContainerReactor.ingotFuelAmount;
-import static com.brandon3055.draconicevolution.common.container.ContainerReactor.largeChaosAmount;
 import static com.brandon3055.draconicevolution.common.container.ContainerReactor.maximumFuelStorage;
 import static com.brandon3055.draconicevolution.common.container.ContainerReactor.nuggetFuelAmount;
 import static com.brandon3055.draconicevolution.common.handler.ConfigHandler.reactorOutputMultiplier;
@@ -54,7 +54,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileReactorCore extends TileObjectSync implements IInventory {
 
     public static final int MAXIMUM_PART_DISTANCE = 10;
-    ItemStack[] items = new ItemStack[2];
 
     public enum ReactorState {
 
@@ -103,7 +102,7 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
                                                                                       // increase unchanged from the
                                                                                       // default config if it's changed
 
-    int maxStoredChaosShard = ConfigHandler.chaosStorageValue;
+    int excessFuel = 0;
 
     @SideOnly(Side.CLIENT)
     private ReactorSound reactorSound;
@@ -129,9 +128,10 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
             case ONLINE, STOPPING -> runTick();
         }
 
-        if (ConfigHandler.enableAutomation) {
-            addFuelFromInventory();
-            addChaosShardToInventory();
+        if (excessFuel > 0 || (reactorFuel + convertedFuel) < maximumFuelStorage) {
+            int useExcessFuel = Math.min(maximumFuelStorage - (reactorFuel + convertedFuel), excessFuel);
+            reactorFuel += useExcessFuel;
+            excessFuel -= useExcessFuel;
         }
         detectAndSendChanges();
     }
@@ -594,18 +594,6 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
     public void writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
 
-        NBTTagCompound[] tag = new NBTTagCompound[items.length];
-
-        for (int i = 0; i < items.length; i++) {
-            tag[i] = new NBTTagCompound();
-
-            if (items[i] != null) {
-                tag[i] = items[i].writeToNBT(tag[i]);
-            }
-
-            compound.setTag("Item" + i, tag[i]);
-        }
-
         NBTTagList stabilizerList = new NBTTagList();
         for (TileLocation offset : stabilizerLocations) {
             NBTTagCompound compound1 = new NBTTagCompound();
@@ -621,6 +609,7 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
         compound.setInteger("maxEnergySaturation", maxEnergySaturation);
         compound.setInteger("reactorFuel", reactorFuel);
         compound.setInteger("convertedFuel", convertedFuel);
+        compound.setInteger("excessFuel", excessFuel);
         compound.setDouble("reactionTemperature", reactionTemperature);
         compound.setDouble("maxReactTemperature", maxReactTemperature);
         compound.setDouble("fieldCharge", fieldCharge);
@@ -630,13 +619,6 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-
-        NBTTagCompound[] tag = new NBTTagCompound[items.length];
-
-        for (int i = 0; i < items.length; i++) {
-            tag[i] = compound.getCompoundTag("Item" + i);
-            items[i] = ItemStack.loadItemStackFromNBT(tag[i]);
-        }
 
         stabilizerLocations = new ArrayList<>();
         if (compound.hasKey("Stabilizers")) {
@@ -655,6 +637,7 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
         maxEnergySaturation = compound.getInteger("maxEnergySaturation");
         reactorFuel = compound.getInteger("reactorFuel");
         convertedFuel = compound.getInteger("convertedFuel");
+        excessFuel = compound.getInteger("excessFuel");
         reactionTemperature = compound.getDouble("reactionTemperature");
         maxReactTemperature = compound.getDouble("maxReactTemperature");
         fieldCharge = compound.getDouble("fieldCharge");
@@ -711,34 +694,25 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
 
     @Override
     public int getSizeInventory() {
-        return items.length;
+        return 1;
 
     }
 
     public ItemStack getStackInSlot(int i) {
-        return items[i];
+        if (convertedFuel>fullChaosAmount) {
+            return new ItemStack(ModItems.chaosShard, convertedFuel/fullChaosAmount);
+        }
+        return null;
     }
 
     @Override
     public ItemStack decrStackSize(int i, int count) {
-        if (ConfigHandler.enableAutomation) {
-            ItemStack itemstack = getStackInSlot(i);
-            if (i == 1) {
-                if (itemstack != null) {
-                    if (itemstack.stackSize <= count) {
-                        setInventorySlotContents(i, null);
-                    } else {
-                        itemstack = itemstack.splitStack(count);
-                        if (itemstack.stackSize == 0) {
-                            setInventorySlotContents(i, null);
-                        }
-                    }
-                }
-            }
-            return itemstack;
-        } else {
-            return null;
+        if (convertedFuel>fullChaosAmount) {
+            int chaosShardCount = Math.min((convertedFuel/fullChaosAmount), count);
+            convertedFuel -= chaosShardCount*fullChaosAmount;
+            return new ItemStack(ModItems.chaosShard, chaosShardCount);
         }
+        return null;
     }
 
     @Override
@@ -748,9 +722,16 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack stack) {
-        items[slot] = stack;
-        if (stack != null && stack.stackSize > getInventoryStackLimit()) {
-            stack.stackSize = getInventoryStackLimit();
+        if (stack != null) {
+            int fuelValue = fuelValue(stack)*stack.stackSize;
+            if (fuelValue > maximumFuelStorage - (reactorFuel + convertedFuel)) {
+                fuelValue -= maximumFuelStorage - (reactorFuel + convertedFuel);
+                reactorFuel = maximumFuelStorage-convertedFuel;
+                excessFuel += fuelValue;
+            }
+            else {
+                reactorFuel += fuelValue;
+            }
         }
     }
 
@@ -795,59 +776,6 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
         return false;
     }
 
-    public void addFuelFromInventory() {
-        if (items[0] != null && this.reactorFuel < (maximumFuelStorage - nuggetFuelAmount)) {
-            int fuelAmountToConsume;
-            Set<String> oreNames = OreDictionaryHelper.getOreNames(items[0]);
-            if (oreNames.contains("blockDraconiumAwakened")) {
-                fuelAmountToConsume = Math
-                        .min((maximumFuelStorage - this.reactorFuel) / blockFuelAmount, items[0].stackSize);
-                if (fuelAmountToConsume > 0) {
-                    this.reactorFuel += fuelAmountToConsume * blockFuelAmount;
-                    items[0].stackSize -= fuelAmountToConsume;
-                    if (items[0].stackSize == 0) {
-                        items[0] = null;
-                    }
-                }
-            } else if (oreNames.contains("ingotDraconiumAwakened")) {
-                fuelAmountToConsume = Math
-                        .min((maximumFuelStorage - this.reactorFuel) / ingotFuelAmount, items[0].stackSize);
-                if (fuelAmountToConsume > 0) {
-                    this.reactorFuel += fuelAmountToConsume * ingotFuelAmount;
-                    items[0].stackSize -= fuelAmountToConsume;
-                    if (items[0].stackSize == 0) {
-                        items[0] = null;
-                    }
-                }
-            } else if (oreNames.contains("nuggetDraconiumAwakened")) {
-                fuelAmountToConsume = Math
-                        .min((maximumFuelStorage - this.reactorFuel) / nuggetFuelAmount, items[0].stackSize);
-                if (fuelAmountToConsume > 0) {
-                    this.reactorFuel += fuelAmountToConsume * nuggetFuelAmount;
-                    items[0].stackSize -= fuelAmountToConsume;
-                    if (items[0].stackSize == 0) {
-                        items[0] = null;
-                    }
-                }
-            }
-        }
-    }
-
-    public void addChaosShardToInventory() {
-        if (convertedFuel > largeChaosAmount) {
-            int addedChaosShardAmount;
-            if (items[1] == null) {
-                addedChaosShardAmount = Math.min(convertedFuel / largeChaosAmount, maxStoredChaosShard);
-                setInventorySlotContents(1, new ItemStack(ModItems.chaosFragment, addedChaosShardAmount, 2));
-                convertedFuel -= addedChaosShardAmount * largeChaosAmount;
-            } else if (maxStoredChaosShard > items[1].stackSize) {
-                addedChaosShardAmount = Math
-                        .min(convertedFuel / largeChaosAmount, maxStoredChaosShard - items[1].stackSize);
-                convertedFuel -= addedChaosShardAmount * largeChaosAmount;
-                items[1].stackSize += addedChaosShardAmount;
-            }
-        }
-    }
     public int fuelValue(ItemStack item) {
         Set<String> oreNames = OreDictionaryHelper.getOreNames(item);
 
@@ -865,5 +793,4 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
         }
         return 0;
     }
-
 }
