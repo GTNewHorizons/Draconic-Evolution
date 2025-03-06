@@ -721,7 +721,24 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
 
     @Override
     public ItemStack decrStackSize(int i, int count) {
-        return null;
+        if (ConfigHandler.enableAutomation) {
+            ItemStack itemstack = getStackInSlot(i);
+            if (i == 1) {
+                if (itemstack != null) {
+                    if (itemstack.stackSize <= count) {
+                        setInventorySlotContents(i, null);
+                    } else {
+                        itemstack = itemstack.splitStack(count);
+                        if (itemstack.stackSize == 0) {
+                            setInventorySlotContents(i, null);
+                        }
+                    }
+                }
+            }
+            return itemstack;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -831,4 +848,22 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
             }
         }
     }
+    public int fuelValue(ItemStack item) {
+        Set<String> oreNames = OreDictionaryHelper.getOreNames(item);
+
+        if (oreNames.contains("blockDraconiumAwakened"))
+        {
+            return blockFuelAmount;
+        }
+        if (oreNames.contains("ingotDraconiumAwakened"))
+        {
+            return ingotFuelAmount;
+        }
+        if (oreNames.contains("nuggetDraconiumAwakened"))
+        {
+            return nuggetFuelAmount;
+        }
+        return 0;
+    }
+
 }

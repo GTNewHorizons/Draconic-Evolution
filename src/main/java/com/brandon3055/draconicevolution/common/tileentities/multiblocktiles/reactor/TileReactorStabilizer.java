@@ -253,7 +253,7 @@ public class TileReactorStabilizer extends TileEntity
 
     @Override
     public boolean canExtractItem(int slot, ItemStack item, int p_102008_3_) {
-        return (slot == 1 && validOutputItems(item));
+        return (slot == 1 && validOutputItems(item) && ConfigHandler.enableAutomation);
     }
 
     @Override
@@ -270,25 +270,8 @@ public class TileReactorStabilizer extends TileEntity
 
     @Override
     public ItemStack decrStackSize(int i, int count) {
-        if (ConfigHandler.enableAutomation) {
-            TileReactorCore core = getMaster();
-            ItemStack itemstack = core.getStackInSlot(i);
-            if (i == 1) {
-                if (itemstack != null) {
-                    if (itemstack.stackSize <= count) {
-                        core.setInventorySlotContents(i, null);
-                    } else {
-                        itemstack = itemstack.splitStack(count);
-                        if (itemstack.stackSize == 0) {
-                            core.setInventorySlotContents(i, null);
-                        }
-                    }
-                }
-            }
-            return itemstack;
-        } else {
-            return null;
-        }
+        TileReactorCore core = getMaster();
+        return core.decrStackSize(i, count);
     }
 
     @Override
@@ -298,10 +281,8 @@ public class TileReactorStabilizer extends TileEntity
 
     @Override
     public void setInventorySlotContents(int i, ItemStack stack) {
-        if (ConfigHandler.enableAutomation) {
             TileReactorCore core = getMaster();
             core.setInventorySlotContents(i, stack);
-        }
     }
 
     @Override
