@@ -609,6 +609,17 @@ public class CraftingHandler {
                     "ingotDraconium",
                     'C',
                     ModItems.draconicCore);
+            addOre(
+                    ModBlocks.dislocatorInhibitor,
+                    "IBI",
+                    "BDB",
+                    "IBI",
+                    'I',
+                    "ingotIron",
+                    'B',
+                    Blocks.iron_bars,
+                    'D',
+                    new ItemStack(ModItems.magnet, 1, 0));
 
             // machines adv
             ItemStack mobSoul = new ItemStack(ModItems.mobSoul);

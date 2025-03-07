@@ -1,5 +1,6 @@
 package com.brandon3055.draconicevolution.integration;
 
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -21,6 +22,7 @@ public class ModHelper {
     // private static boolean isRotaryCraftInstalled;
     private static final boolean isGregTechInstalled;
     private static final boolean isBartworkdsInstalled;
+    private static final boolean isAE2Installed;
 
     private static Item cleaver;
     private static Item avaritiaSword;
@@ -28,6 +30,7 @@ public class ModHelper {
 
     private static Class<?> bwores;
     private static Class<?> GTores;
+    private static Class<?> AE2FItem;
 
     static {
         isTConInstalled = Loader.isModLoaded("TConstruct");
@@ -35,8 +38,10 @@ public class ModHelper {
         // isRotaryCraftInstalled = Loader.isModLoaded("RotaryCraft");
         isGregTechInstalled = Loader.isModLoaded("gregtech");
         isBartworkdsInstalled = Loader.isModLoaded("bartworks");
+        isAE2Installed = Loader.isModLoaded("appliedenergistics2");
         final String GT_ORE_CLASS = "gregtech.common.blocks.TileEntityOres";
         final String BW_ORE_CLASS = "bartworks.system.material.BWMetaGeneratedOres";
+        final String AE2_FITEM_CLASS = "appeng.entity.EntityFloatingItem";
         if (isGregTechInstalled) try {
             GTores = Class.forName(GT_ORE_CLASS);
         } catch (ClassNotFoundException e) {
@@ -46,6 +51,11 @@ public class ModHelper {
             bwores = Class.forName(BW_ORE_CLASS);
         } catch (ClassNotFoundException e) {
             LogHelper.error("Couldn't reflect class " + BW_ORE_CLASS);
+        }
+        if (isAE2Installed) try {
+            AE2FItem = Class.forName(AE2_FITEM_CLASS);
+        } catch (ClassNotFoundException e) {
+            LogHelper.error("Couldn't reflect class " + AE2_FITEM_CLASS);
         }
     }
 
@@ -111,5 +121,9 @@ public class ModHelper {
 
     public static boolean isGregTechTileEntityOre(TileEntity te) {
         return isGregTechInstalled && GTores.isInstance(te) || isBartworkdsInstalled && bwores.isInstance(te);
+    }
+
+    public static boolean isAE2EntityFloatingItem(EntityItem item) {
+        return isAE2Installed && AE2FItem.isInstance(item);
     }
 }

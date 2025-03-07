@@ -56,6 +56,7 @@ import com.brandon3055.draconicevolution.common.tileentities.TileCKeyStone;
 import com.brandon3055.draconicevolution.common.tileentities.TileChaosShard;
 import com.brandon3055.draconicevolution.common.tileentities.TileContainerTemplate;
 import com.brandon3055.draconicevolution.common.tileentities.TileCustomSpawner;
+import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
 import com.brandon3055.draconicevolution.common.tileentities.TileDissEnchanter;
 import com.brandon3055.draconicevolution.common.tileentities.TileDraconiumChest;
 import com.brandon3055.draconicevolution.common.tileentities.TileEnergyInfuser;
@@ -262,6 +263,9 @@ public class CommonProxy {
         GameRegistry.registerTileEntity(TileChaosShard.class, References.RESOURCESPREFIX + "TileChaosShard");
         GameRegistry
                 .registerTileEntity(TileUpgradeModifier.class, References.RESOURCESPREFIX + "TileEnhancementModifier");
+        GameRegistry.registerTileEntity(
+                TileDislocatorInhibitor.class,
+                References.RESOURCESPREFIX + "TileDislocatorInhibitor");
         if (DraconicEvolution.debug) {
             GameRegistry.registerTileEntity(TileTestBlock.class, References.RESOURCESPREFIX + "TileTestBlock");
             GameRegistry.registerTileEntity(
