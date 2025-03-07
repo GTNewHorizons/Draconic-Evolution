@@ -5,6 +5,7 @@ import static com.brandon3055.draconicevolution.common.container.ContainerReacto
 import static com.brandon3055.draconicevolution.common.container.ContainerReactor.ingotFuelAmount;
 import static com.brandon3055.draconicevolution.common.container.ContainerReactor.maximumFuelStorage;
 import static com.brandon3055.draconicevolution.common.container.ContainerReactor.nuggetFuelAmount;
+import static com.brandon3055.draconicevolution.common.handler.ConfigHandler.linearReactorFuelUsage;
 import static com.brandon3055.draconicevolution.common.handler.ConfigHandler.reactorOutputMultiplier;
 
 import java.util.ArrayList;
@@ -238,7 +239,12 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
         fieldCharge -= fieldDrain;
 
         // Calculate Fuel Usage
-        fuelUseRate = tempDrainFactor * (1D - saturation) * (0.001 * ConfigHandler.reactorFuelUsageMultiplier);
+        if (linearReactorFuelUsage) {
+            fuelUseRate = tempDrainFactor * (1D - saturation) * (0.001 * ConfigHandler.reactorFuelUsageMultiplier);
+        }
+        else {
+            fuelUseRate = tempDrainFactor * (1D - Math.pow(Math.max(saturation - 0.1, 0.1), 0.4)) * (0.001 * ConfigHandler.reactorFuelUsageMultiplier);
+        }
         conversionUnit += fuelUseRate;
         if (conversionUnit >= 1 && reactorFuel > 0) {
             conversionUnit--;

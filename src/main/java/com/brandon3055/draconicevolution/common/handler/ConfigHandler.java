@@ -73,10 +73,12 @@ public class ConfigHandler {
     public static boolean enableReactorBigBoom;
     public static double reactorOutputMultiplier;
     public static double reactorFuelUsageMultiplier;
+    public static boolean linearReactorFuelUsage;
     public static int reactorFuelStorage;
     public static int reactorFuelValue;
     public static int reactorChaosValue;
     public static boolean enableAutomation;
+
 
     private static String[] defaultSpawnerList = new String[] { "ExampleMob1", "ExampleMob2",
             "ExampleMob3 (these examples can be deleted)" };
@@ -337,6 +339,11 @@ public class ConfigHandler {
                     "Use this to adjust how quickly the reactor uses fuel",
                     0,
                     1000000).getDouble(1);
+            linearReactorFuelUsage = config.get(
+                    "Draconic Reactor",
+                    "linearReactorFuelUsage",
+                    linearReactorFuelUsage,
+                    "Sets whether the Draconic Reactor should use linear (true) fuel usage formula or exponential (false)").getBoolean(true);
             reactorFuelStorage = config.get(
                     "Draconic Reactor",
                     "maxFuelStorage",
