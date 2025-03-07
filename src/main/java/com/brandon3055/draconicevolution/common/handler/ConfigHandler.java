@@ -343,7 +343,7 @@ public class ConfigHandler {
                     "Draconic Reactor",
                     "linearReactorFuelUsage",
                     linearReactorFuelUsage,
-                    "Sets whether the Draconic Reactor should use linear (true) fuel usage formula or exponential (false)").getBoolean(true);
+                    "Sets whether the reactor should use linear (true) fuel usage formula or exponential (false)").getBoolean(true);
             reactorFuelStorage = config.get(
                     "Draconic Reactor",
                     "maxFuelStorage",
@@ -355,21 +355,21 @@ public class ConfigHandler {
                     "Draconic Reactor",
                     "awakenedDraconiumFuelValue",
                     16,
-                    "Use this to adjust the fuel value of Awakened Draconium nugget",
+                    "Use this to adjust the fuel value of awakened draconium nugget",
                     0,
                     1000000).getInt(16);
             reactorChaosValue = config.get(
                     "Draconic Reactor",
                     "chaosShardOutputValue",
                     16,
-                    "Use this to adjust how much Tiny Chaos Shards you get per fuel value",
+                    "Use this to adjust how much tiny chaos shards you get per fuel value",
                     0,
                     1000000).getInt(16);
             enableAutomation = config.get(
                     "Draconic Reactor",
                     "enableAutomation",
                     false,
-                    "Sets whether the Draconic Reactor is automatable or not").getBoolean(false);
+                    "Sets whether the reactor is automatable or not").getBoolean(false);
             disabledNamesList.clear();
             for (String s : disabledBlocksItems) {
                 disabledNamesList.add(s);
