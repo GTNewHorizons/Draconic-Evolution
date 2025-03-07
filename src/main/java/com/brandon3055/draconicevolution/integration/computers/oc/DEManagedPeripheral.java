@@ -19,7 +19,7 @@ public class DEManagedPeripheral extends ManagedEnvironment implements ManagedPe
 
     public DEManagedPeripheral(IDEPeripheral peripheral) {
         this.peripheral = peripheral;
-        super.setNode( Network.newNode(this, Visibility.Network).withComponent(peripheral.getName()).create() );
+        super.setNode(Network.newNode(this, Visibility.Network).withComponent(peripheral.getName()).create());
     }
 
     @Override
