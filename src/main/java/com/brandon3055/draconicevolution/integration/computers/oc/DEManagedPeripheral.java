@@ -2,10 +2,12 @@ package com.brandon3055.draconicevolution.integration.computers.oc;
 
 import com.brandon3055.draconicevolution.integration.computers.IDEPeripheral;
 
+import li.cil.oc.api.Network;
 import li.cil.oc.api.driver.NamedBlock;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.ManagedPeripheral;
+import li.cil.oc.api.network.Visibility;
 import li.cil.oc.api.prefab.ManagedEnvironment;
 
 /**
@@ -17,6 +19,7 @@ public class DEManagedPeripheral extends ManagedEnvironment implements ManagedPe
 
     public DEManagedPeripheral(IDEPeripheral peripheral) {
         this.peripheral = peripheral;
+        super.setNode( Network.newNode(this, Visibility.Network).withComponent(peripheral.getName()).create() );
     }
 
     @Override
