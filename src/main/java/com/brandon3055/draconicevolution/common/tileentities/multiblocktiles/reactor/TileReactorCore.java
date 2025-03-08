@@ -241,9 +241,9 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
         // Calculate Fuel Usage
         if (linearReactorFuelUsage) {
             fuelUseRate = tempDrainFactor * (1D - saturation) * (0.001 * ConfigHandler.reactorFuelUsageMultiplier);
-        }
-        else {
-            fuelUseRate = tempDrainFactor * (1D - Math.pow(Math.max(saturation - 0.1, 0.1), 0.4)) * (0.001 * ConfigHandler.reactorFuelUsageMultiplier);
+        } else {
+            fuelUseRate = tempDrainFactor * (1D - Math.pow(Math.max(saturation - 0.1, 0.1), 0.4))
+                    * (0.001 * ConfigHandler.reactorFuelUsageMultiplier);
         }
         conversionUnit += fuelUseRate;
         if (conversionUnit >= 1 && reactorFuel > 0) {

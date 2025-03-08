@@ -79,7 +79,6 @@ public class ConfigHandler {
     public static int reactorChaosValue;
     public static boolean enableAutomation;
 
-
     private static String[] defaultSpawnerList = new String[] { "ExampleMob1", "ExampleMob2",
             "ExampleMob3 (these examples can be deleted)" };
 
@@ -343,7 +342,8 @@ public class ConfigHandler {
                     "Draconic Reactor",
                     "linearReactorFuelUsage",
                     linearReactorFuelUsage,
-                    "Sets whether the reactor should use linear (true) fuel usage formula or exponential (false)").getBoolean(true);
+                    "Sets whether the reactor should use linear (true) fuel usage formula or exponential (false)")
+                    .getBoolean(true);
             reactorFuelStorage = config.get(
                     "Draconic Reactor",
                     "maxFuelStorage",
