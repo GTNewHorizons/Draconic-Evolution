@@ -728,7 +728,7 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack stack) {
-        if (stack != null) {
+        if (fuelValue(stack) > 0) {
             int fuelValue = fuelValue(stack) * stack.stackSize;
             if (fuelValue > maximumFuelStorage - (reactorFuel + convertedFuel)) {
                 fuelValue -= maximumFuelStorage - (reactorFuel + convertedFuel);
@@ -737,6 +737,11 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
             } else {
                 reactorFuel += fuelValue;
             }
+        } else if (stack != null) {
+            convertedFuel = stack.stackSize * fullChaosAmount;
+        }
+        else {
+            convertedFuel -= (convertedFuel / fullChaosAmount) * fullChaosAmount;
         }
     }
 
