@@ -247,9 +247,9 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
         }
         conversionUnit += fuelUseRate;
         if (conversionUnit >= 1 && reactorFuel > 0) {
-            conversionUnit--;
-            reactorFuel--;
-            convertedFuel++;
+            reactorFuel -= (int) conversionUnit;
+            convertedFuel += (int) conversionUnit;
+            conversionUnit -= (int) conversionUnit;
         }
 
         if (fieldCharge <= 0 && !hasExploded) {
