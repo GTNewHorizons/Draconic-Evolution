@@ -739,8 +739,7 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
             }
         } else if (stack != null) {
             convertedFuel = stack.stackSize * fullChaosAmount;
-        }
-        else {
+        } else {
             convertedFuel -= (convertedFuel / fullChaosAmount) * fullChaosAmount;
         }
     }
