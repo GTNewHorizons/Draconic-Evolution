@@ -260,7 +260,7 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
 
     private void goBoom() {
         if (ConfigHandler.enableReactorBigBoom) {
-            float power = 2F + ((float) (convertedFuel + reactorFuel) / 10369F * 18F);
+            float power = 2F + ((float) (convertedFuel + reactorFuel) / (maximumFuelStorage + 1F) * 18F);
             ProcessHandler.addProcess(new ReactorExplosion(worldObj, xCoord, yCoord, zCoord, power));
             sendObjectToClient(
                     References.INT_ID,
