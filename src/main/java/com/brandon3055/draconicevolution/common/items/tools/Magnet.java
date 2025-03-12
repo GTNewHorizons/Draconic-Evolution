@@ -115,7 +115,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
 
             for (EntityItem item : items) {
                 if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
-                        || TileDislocatorInhibitor.isInInhibitorRange(world, item.posX, item.posY, item.posZ)) {
+                        || TileDislocatorInhibitor.isBlockedByInhibitor(world, item)) {
                     continue;
                 }
 

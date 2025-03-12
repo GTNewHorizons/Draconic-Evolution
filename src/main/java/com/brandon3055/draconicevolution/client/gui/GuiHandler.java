@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.client.gui;
 
+import com.brandon3055.draconicevolution.common.container.ContainerDislocatorInhibitor;
+import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -53,6 +55,7 @@ public class GuiHandler implements IGuiHandler {
     public static final int GUIID_FLOW_GATE = 13;
     public static final int GUIID_REACTOR = 14;
     public static final int GUIID_UPGRADE_MODIFIER = 15;
+    public static final int GUIID_DISLOCATOR_INHIBITOR = 16;
     public static final int GUIID_CONTAINER_TEMPLATE = 100;
 
     public GuiHandler() {
@@ -114,6 +117,11 @@ public class GuiHandler implements IGuiHandler {
             case GUIID_UPGRADE_MODIFIER -> {
                 if (tile instanceof TileUpgradeModifier upgradeModifier) {
                     return new ContainerUpgradeModifier(player.inventory, upgradeModifier);
+                }
+            }
+            case GUIID_DISLOCATOR_INHIBITOR -> {
+                if (tile instanceof TileDislocatorInhibitor inhibitor) {
+                    return new ContainerDislocatorInhibitor(player.inventory, inhibitor);
                 }
             }
         }
@@ -197,6 +205,11 @@ public class GuiHandler implements IGuiHandler {
                             player.inventory,
                             upgradeModifier,
                             new ContainerUpgradeModifier(player.inventory, upgradeModifier));
+                }
+            }
+            case GUIID_DISLOCATOR_INHIBITOR -> {
+                if (tile instanceof TileDislocatorInhibitor inhibitor) {
+                    return new GUIDislocatorInhibitor(player.inventory, inhibitor);
                 }
             }
         }

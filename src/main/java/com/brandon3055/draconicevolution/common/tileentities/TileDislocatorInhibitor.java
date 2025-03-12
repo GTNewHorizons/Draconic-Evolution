@@ -3,6 +3,14 @@ package com.brandon3055.draconicevolution.common.tileentities;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.brandon3055.draconicevolution.common.container.ContainerDislocatorInhibitor;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -10,22 +18,34 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-public class TileDislocatorInhibitor extends TileEntity {
+public class TileDislocatorInhibitor extends TileEntity implements IInventory {
 
     public static final int MAXIMUM_RANGE = 16;
     public static final int MINIMUM_RANGE = 1;
+    public static final int FILTER_SLOTS = 8;
     public static final HashMap<World, HashSet<TileDislocatorInhibitor>> inhibitors = new HashMap<>();
 
+    private boolean redstoneActive = false;
+    private ActivityControlType activityControlType = ActivityControlType.ALWAYS_ACTIVE;
     private boolean registered = false;
     private int range = 5;
 
-    public static boolean isInInhibitorRange(World world, double x, double y, double z) {
+    private boolean whitelist = false;
+    private final ItemStack[] filter = new ItemStack[FILTER_SLOTS];
+
+    public static boolean isBlockedByInhibitor(World world, EntityItem item) {
         HashSet<TileDislocatorInhibitor> list = inhibitors.get(world);
         if (list == null) {
             return false;
         }
         for (TileDislocatorInhibitor inhibitor : list) {
-            if (inhibitor.isInRange(x, y, z)) {
+            if (!inhibitor.shouldBeActive()) {
+                continue;
+            }
+            if (!inhibitor.isBlockingItem(item.getEntityItem())) {
+                continue;
+            }
+            if (inhibitor.isInRange(item.posX, item.posY, item.posZ)) {
                 return true;
             }
         }
@@ -65,15 +85,37 @@ public class TileDislocatorInhibitor extends TileEntity {
         this.range = value;
     }
 
-    public void increaseRange() {
-        if (range < MAXIMUM_RANGE) {
-            range++;
+    public boolean isBlockingItem(ItemStack item) {
+        boolean blocked = false;
+        for (ItemStack itemStack : filter) {
+            if (itemStack == null) {
+                continue;
+            }
+            if (itemStack.getItem() == item.getItem()) {
+                blocked = true;
+                break;
+            }
         }
+        if (whitelist) {
+            return blocked;
+        }
+        return !blocked;
     }
 
-    public void decreaseRange() {
-        if (range > MINIMUM_RANGE) {
-            range--;
+    public boolean shouldBeActive() {
+        switch (activityControlType) {
+            case NEVER_ACTIVE -> {
+                return false;
+            }
+            case WITH_REDSTONE -> {
+                return redstoneActive;
+            }
+            case WITHOUT_REDSTONE -> {
+                return !redstoneActive;
+            }
+            default -> {
+                return true;
+            }
         }
     }
 
@@ -83,6 +125,130 @@ public class TileDislocatorInhibitor extends TileEntity {
                 && y <= this.yCoord + range + 1
                 && z >= this.zCoord - range
                 && z <= this.zCoord + range + 1;
+    }
+
+    public void setActivityControl(int index) {
+        if (index < 0 || index >= ActivityControlType.values().length) {
+            return;
+        }
+        this.activityControlType = ActivityControlType.values()[index];
+    }
+
+    public ActivityControlType getActivityControlType() {
+        return activityControlType;
+    }
+
+    public boolean isRedstoneActive() {
+        return redstoneActive;
+    }
+
+    public void setRedstoneActive(boolean redstoneActive) {
+        this.redstoneActive = redstoneActive;
+    }
+
+    public void setFilterItem(int slot, ItemStack item) {
+        if (slot < 0 || slot >= FILTER_SLOTS) {
+            return;
+        }
+        filter[slot] = item.copy();
+    }
+
+    public void addItemFilter(ItemStack itemStack) {
+        if (itemStack == null) {
+            return;
+        }
+        for (int i = 0; i < FILTER_SLOTS; i++) {
+            if (filter[i] == null) {
+                filter[i] = itemStack.copy();
+                return;
+            }
+        }
+    }
+
+    public boolean isWhitelist() {
+        return whitelist;
+    }
+
+    public void setWhitelist(short value) {
+        this.whitelist = value == 1;
+    }
+
+    @Override
+    public String getInventoryName() {
+        return "Dislocator Inhibitor";
+    }
+
+    @Override
+    public int getSizeInventory() {
+        return FILTER_SLOTS;
+    }
+
+    @Override
+    public ItemStack getStackInSlot(int slotIn) {
+        if (slotIn < 0 || slotIn >= FILTER_SLOTS) {
+            return null;
+        }
+        return this.filter[slotIn];
+    }
+
+    @Override
+    public ItemStack decrStackSize(int index, int count) {
+        ItemStack item = this.filter[index];
+        this.filter[index] = null;
+        if (item == null) {
+            return null;
+        }
+        item.stackSize = 0;
+        return item;
+    }
+
+    @Override
+    public ItemStack getStackInSlotOnClosing(int index) {
+        return null;
+    }
+
+    @Override
+    public void setInventorySlotContents(int index, ItemStack stack) {
+        if (stack != null) {
+            this.filter[index] = stack.copy();
+            this.filter[index].stackSize = 0;
+        } else {
+            this.filter[index] = null;
+        }
+    }
+
+    @Override
+    public boolean isUseableByPlayer(EntityPlayer player) {
+        return true;
+    }
+
+    @Override
+    public void openInventory() {
+
+    }
+
+    @Override
+    public void closeInventory() {
+
+    }
+
+    @Override
+    public boolean isItemValidForSlot(int index, ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public boolean hasCustomInventoryName() {
+        return false;
+    }
+
+    @Override
+    public int getInventoryStackLimit() {
+        return 1;
+    }
+
+    public Container getGuiContainer(InventoryPlayer playerInventory) {
+        return new ContainerDislocatorInhibitor(playerInventory, this);
     }
 
     @Override
@@ -101,12 +267,58 @@ public class TileDislocatorInhibitor extends TileEntity {
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         compound.setInteger("Range", range);
+        compound.setBoolean("RedstoneAcitve", redstoneActive);
+        compound.setString("ActivityControl", activityControlType.name());
+        compound.setBoolean("Whitelist", whitelist);
+
+        int i = 0;
+        for (ItemStack item : filter) {
+            NBTTagCompound itemTag = new NBTTagCompound();
+            if (item != null) {
+                item.writeToNBT(itemTag);
+                compound.setTag("Item" + i, itemTag);
+            }
+            i++;
+        }
         super.writeToNBT(compound);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         range = compound.getInteger("Range");
+        redstoneActive = compound.getBoolean("RedstoneAcitve");
+        activityControlType = ActivityControlType.valueOf(compound.getString("ActivityControl"));
+        whitelist = compound.getBoolean("Whitelist");
+
+        for (int i = 0; i < FILTER_SLOTS; i++) {
+            NBTBase tag = compound.getTag("Item" + i);
+            if (tag instanceof NBTTagCompound) {
+                filter[i] = ItemStack.loadItemStackFromNBT((NBTTagCompound) tag);
+            } else {
+                filter[i] = null;
+            }
+        }
         super.readFromNBT(compound);
     }
+
+    public enum ActivityControlType {
+
+        ALWAYS_ACTIVE,
+        WITH_REDSTONE,
+        WITHOUT_REDSTONE,
+        NEVER_ACTIVE
+        ;
+
+        public ActivityControlType getNext() {
+            return switch (this) {
+                case ALWAYS_ACTIVE -> ActivityControlType.WITH_REDSTONE;
+                case WITH_REDSTONE -> ActivityControlType.WITHOUT_REDSTONE;
+                case WITHOUT_REDSTONE -> ActivityControlType.NEVER_ACTIVE;
+                default -> ActivityControlType.ALWAYS_ACTIVE;
+            };
+        }
+
+    }
+
+
 }

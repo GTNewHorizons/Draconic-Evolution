@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.common;
 
+import com.brandon3055.draconicevolution.common.network.DislocatorInhibitorButtonPacket;
+import com.brandon3055.draconicevolution.common.network.SlotFakeClickPacket;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -211,6 +213,10 @@ public class CommonProxy {
                 .registerMessage(MagnetTogglePacket.Handler.class, MagnetTogglePacket.class, 19, Side.SERVER);
         DraconicEvolution.network
                 .registerMessage(MagnetToggleAckPacket.Handler.class, MagnetToggleAckPacket.class, 20, Side.CLIENT);
+        DraconicEvolution.network
+                .registerMessage(DislocatorInhibitorButtonPacket.Handler.class, DislocatorInhibitorButtonPacket.class, 21, Side.SERVER);
+        DraconicEvolution.network
+                .registerMessage(SlotFakeClickPacket.Handler.class, SlotFakeClickPacket.class, 22, Side.SERVER);
     }
 
     public void registerTileEntities() {
