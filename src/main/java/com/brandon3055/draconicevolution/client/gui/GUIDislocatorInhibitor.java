@@ -1,12 +1,15 @@
 package com.brandon3055.draconicevolution.client.gui;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
@@ -20,11 +23,16 @@ import com.brandon3055.draconicevolution.common.network.DislocatorInhibitorButto
 import com.brandon3055.draconicevolution.common.network.SlotFakeClickPacket;
 import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
 
+import codechicken.nei.VisiblityData;
+import codechicken.nei.api.INEIGuiHandler;
+import codechicken.nei.api.TaggedInventoryArea;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GUIDislocatorInhibitor extends GuiContainer {
+@Optional.Interface(iface = "codechicken.nei.api.INEIGuiHandler", modid = "NotEnoughItems")
+public class GUIDislocatorInhibitor extends GuiContainer implements INEIGuiHandler {
 
     private static final ResourceLocation texture = new ResourceLocation(
             References.MODID.toLowerCase(),
@@ -107,7 +115,8 @@ public class GUIDislocatorInhibitor extends GuiContainer {
     @Override
     protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType) {
         if (slotIn instanceof SlotFakeItem sfi) {
-            DraconicEvolution.network.sendToServer(new SlotFakeClickPacket((byte) sfi.getSlotIndex()));
+            DraconicEvolution.network.sendToServer(
+                    new SlotFakeClickPacket((byte) sfi.getSlotIndex(), this.mc.thePlayer.inventory.getItemStack()));
         } else {
             super.handleMouseClick(slotIn, slotId, clickedButton, clickType);
         }
@@ -135,6 +144,43 @@ public class GUIDislocatorInhibitor extends GuiContainer {
                 DraconicEvolution.network.sendToServer(new DislocatorInhibitorButtonPacket((byte) 2, whitelistMode));
             }
         }
+    }
+
+    @Override
+    public VisiblityData modifyVisiblity(GuiContainer gui, VisiblityData currentVisibility) {
+        return currentVisibility;
+    }
+
+    @Override
+    public Iterable<Integer> getItemSpawnSlots(GuiContainer gui, ItemStack item) {
+        return null;
+    }
+
+    @Override
+    public List<TaggedInventoryArea> getInventoryAreas(GuiContainer gui) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean handleDragNDrop(GuiContainer gui, int mousex, int mousey, ItemStack draggedStack, int button) {
+        if (gui instanceof GUIDislocatorInhibitor) {
+            for (var slot : container.inventorySlots) {
+                if (slot instanceof SlotFakeItem sfi) {
+                    if (sfi.isOverSlot(mousex - this.guiLeft, mousey - this.guiTop)) {
+                        draggedStack.stackSize = 0;
+                        DraconicEvolution.network
+                                .sendToServer(new SlotFakeClickPacket((byte) sfi.getSlotIndex(), draggedStack));
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h) {
+        return false;
     }
 
     private void drawGuiText() {

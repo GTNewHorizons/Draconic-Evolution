@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import com.brandon3055.draconicevolution.common.container.ContainerDislocatorInhibitor;
 import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
 
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -13,21 +14,25 @@ import io.netty.buffer.ByteBuf;
 public class SlotFakeClickPacket implements IMessage {
 
     private short slotIndex = 0;
+    private ItemStack stack;
 
     public SlotFakeClickPacket() {}
 
-    public SlotFakeClickPacket(byte slotIndex) {
+    public SlotFakeClickPacket(byte slotIndex, ItemStack stack) {
         this.slotIndex = slotIndex;
+        this.stack = stack;
     }
 
     @Override
     public void toBytes(ByteBuf bytes) {
         bytes.writeByte(slotIndex);
+        ByteBufUtils.writeItemStack(bytes, stack);
     }
 
     @Override
     public void fromBytes(ByteBuf bytes) {
         slotIndex = bytes.readByte();
+        stack = ByteBufUtils.readItemStack(bytes);
     }
 
     public static class Handler implements IMessageHandler<SlotFakeClickPacket, IMessage> {
@@ -42,8 +47,7 @@ public class SlotFakeClickPacket implements IMessage {
             if (tile == null) {
                 return null;
             }
-            ItemStack currentItem = ctx.getServerHandler().playerEntity.inventory.getItemStack();
-            tile.setFilterItem(message.slotIndex, currentItem);
+            tile.setFilterItem(message.slotIndex, message.stack);
 
             ctx.getServerHandler().playerEntity.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
             return null;

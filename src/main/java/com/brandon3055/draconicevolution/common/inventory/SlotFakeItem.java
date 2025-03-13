@@ -17,8 +17,21 @@ public class SlotFakeItem extends Slot {
     }
 
     @Override
+    public boolean isItemValid(ItemStack stack) {
+        // this is here so NEI CheatItemHandler does not eat the handleDragNDrop event
+        return false;
+    }
+
+    @Override
     public int getSlotStackLimit() {
         return 1;
+    }
+
+    public boolean isOverSlot(int mouseX, int mouseY) {
+        if (xDisplayPosition < mouseX && mouseX <= xDisplayPosition + 18) {
+            return yDisplayPosition < mouseY && mouseY <= yDisplayPosition + 18;
+        }
+        return false;
     }
 
 }
