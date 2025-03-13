@@ -150,7 +150,7 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
         if (slot < 0 || slot >= FILTER_SLOTS) {
             return;
         }
-        filter[slot] = item.copy();
+        setInventorySlotContents(slot, item);
     }
 
     public void addItemFilter(ItemStack itemStack) {
@@ -159,7 +159,7 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
         }
         for (int i = 0; i < FILTER_SLOTS; i++) {
             if (filter[i] == null) {
-                filter[i] = itemStack.copy();
+                setInventorySlotContents(i, itemStack);
                 return;
             }
         }

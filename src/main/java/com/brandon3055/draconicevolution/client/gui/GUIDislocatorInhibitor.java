@@ -15,6 +15,9 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -48,15 +51,15 @@ public class GUIDislocatorInhibitor extends GuiContainer {
         buttonList.clear();
         buttonList.add(new GuiButtonAHeight(0, guiLeft + 7, guiTop + 11, 18, 18, "-"));
         buttonList.add(new GuiButtonAHeight(1, guiLeft + 97, guiTop + 11, 18, 18, "+"));
-        buttonList.add(new GuiButtonAHeight(2, guiLeft + 151, guiTop + 11, 18, 18, activityControlType.name().substring(0, 1)));
-        buttonList.add(new GuiButtonAHeight(3, guiLeft + 151, guiTop + 33, 18, 18, whitelist ? "W" : "B"));
+        buttonList.add(new GuiButtonAHeight(2, guiLeft + 151, guiTop + 11, 18, 18, ""));
+        buttonList.add(new GuiButtonAHeight(3, guiLeft + 151, guiTop + 33, 18, 18, ""));
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         drawGuiText();
-        // todo draw grey outs for fake item slots
-        // todo draw button icons
+        drawGreyOutSlots();
+        drawButtonIcons();
     }
 
     @Override
@@ -73,22 +76,22 @@ public class GUIDislocatorInhibitor extends GuiContainer {
         super.drawScreen(x, y, partialTicks);
         ArrayList<String> lines = new ArrayList<>();
         if ((x - guiLeft > 7 && x - guiLeft < 25) && (y - guiTop > 11 && y - guiTop < 29)) {
-            lines.add("Increase Range");
+            lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.range.increase.txt"));
         } else if ((x - guiLeft > 97 && x - guiLeft < 115) && (y - guiTop > 11 && y - guiTop < 29)) {
-            lines.add("Decrease Range");
+            lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.range.decrease.txt"));
         } else if ((x - guiLeft > 151 && x - guiLeft < 169) && (y - guiTop > 11 && y - guiTop < 29)) {
             switch (activityControlType) {
-                case ALWAYS_ACTIVE -> lines.add("Active regardles of redstone power");
-                case WITH_REDSTONE -> lines.add("Active with redstone power");
-                case WITHOUT_REDSTONE -> lines.add("Active without redstone power");
-                case NEVER_ACTIVE -> lines.add("Always inactive");
+                case ALWAYS_ACTIVE -> lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.always.txt"));
+                case WITH_REDSTONE -> lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.with.txt"));
+                case WITHOUT_REDSTONE -> lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.without.txt"));
+                case NEVER_ACTIVE -> lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.never.txt"));
             }
-            lines.add("Click to cycle through activity control");
+            lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.cycle.txt"));
         } else if ((x - guiLeft > 151 && x - guiLeft < 169) && (y - guiTop > 33 && y - guiTop < 51)) {
             if (whitelist) {
-                lines.add("Only items in filter will be blocked");
+                lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.whitelist.txt"));
             } else {
-                lines.add("Items in filter will NOT be blocked");
+                lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.blacklist.txt"));
             }
         }
         if (!lines.isEmpty()) {
@@ -104,8 +107,6 @@ public class GUIDislocatorInhibitor extends GuiContainer {
             super.handleMouseClick(slotIn, slotId, clickedButton, clickType);
         }
     }
-
-
 
     @Override
     protected void actionPerformed(GuiButton button) {
@@ -132,8 +133,36 @@ public class GUIDislocatorInhibitor extends GuiContainer {
     }
 
     private void drawGuiText() {
-        fontRendererObj.drawString("Range:", 40, 17, 0x000000, false);
+        fontRendererObj.drawString(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.range.txt"),
+                40, 17, 0x000000, false);
         fontRendererObj.drawString(String.valueOf(range), range < 10 ? 78 : 75, 17, 0x000000, false);
+    }
+
+    private void drawButtonIcons() {
+        GL11.glColor4f(1, 1, 1, 1);
+
+        Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
+
+        // activity control button
+        drawTexturedModalRect(151, 11, 0, 142 + (18 * activityControlType.ordinal()), 18, 18);
+
+        // whitelist button
+        drawTexturedModalRect(151, 33, 18, 142 + (whitelist ? 0 : 18), 18, 18);
+    }
+
+    private void drawGreyOutSlots() {
+
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5f);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
+        for (int i = 0; i < 8; i++) {
+            drawTexturedModalRect(7 + i * 18, 33, 36, 142, 18, 18);
+        }
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glEnable(GL11.GL_LIGHTING);
     }
 
     private void syncWithServer() {
