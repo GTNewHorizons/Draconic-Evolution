@@ -3,7 +3,6 @@ package com.brandon3055.draconicevolution.common.tileentities;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import com.brandon3055.draconicevolution.common.container.ContainerDislocatorInhibitor;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -17,6 +16,8 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
+import com.brandon3055.draconicevolution.common.container.ContainerDislocatorInhibitor;
 
 public class TileDislocatorInhibitor extends TileEntity implements IInventory {
 
@@ -306,8 +307,7 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
         ALWAYS_ACTIVE,
         WITH_REDSTONE,
         WITHOUT_REDSTONE,
-        NEVER_ACTIVE
-        ;
+        NEVER_ACTIVE;
 
         public ActivityControlType getNext() {
             return switch (this) {
@@ -319,6 +319,5 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
         }
 
     }
-
 
 }

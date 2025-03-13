@@ -1,12 +1,13 @@
 package com.brandon3055.draconicevolution.common.container;
 
-import com.brandon3055.draconicevolution.common.inventory.SlotFakeItem;
-import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
+import com.brandon3055.draconicevolution.common.inventory.SlotFakeItem;
+import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
 
 public class ContainerDislocatorInhibitor extends Container {
 
@@ -41,7 +42,6 @@ public class ContainerDislocatorInhibitor extends Container {
     public boolean canInteractWith(EntityPlayer player) {
         return inhibitor.isUseableByPlayer(player);
     }
-
 
     @Override
     public boolean canDragIntoSlot(Slot p_94531_1_) {

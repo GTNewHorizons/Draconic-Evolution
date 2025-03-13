@@ -1,14 +1,7 @@
 package com.brandon3055.draconicevolution.client.gui;
 
-import com.brandon3055.draconicevolution.DraconicEvolution;
-import com.brandon3055.draconicevolution.common.container.ContainerDislocatorInhibitor;
-import com.brandon3055.draconicevolution.common.inventory.SlotFakeItem;
-import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.network.DislocatorInhibitorButtonPacket;
-import com.brandon3055.draconicevolution.common.network.SlotFakeClickPacket;
-import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.ArrayList;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -16,11 +9,19 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.common.MinecraftForge;
+
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
+import com.brandon3055.draconicevolution.DraconicEvolution;
+import com.brandon3055.draconicevolution.common.container.ContainerDislocatorInhibitor;
+import com.brandon3055.draconicevolution.common.inventory.SlotFakeItem;
+import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.network.DislocatorInhibitorButtonPacket;
+import com.brandon3055.draconicevolution.common.network.SlotFakeClickPacket;
+import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GUIDislocatorInhibitor extends GuiContainer {
@@ -81,10 +82,14 @@ public class GUIDislocatorInhibitor extends GuiContainer {
             lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.range.decrease.txt"));
         } else if ((x - guiLeft > 151 && x - guiLeft < 169) && (y - guiTop > 11 && y - guiTop < 29)) {
             switch (activityControlType) {
-                case ALWAYS_ACTIVE -> lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.always.txt"));
-                case WITH_REDSTONE -> lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.with.txt"));
-                case WITHOUT_REDSTONE -> lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.without.txt"));
-                case NEVER_ACTIVE -> lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.never.txt"));
+                case ALWAYS_ACTIVE -> lines
+                        .add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.always.txt"));
+                case WITH_REDSTONE -> lines
+                        .add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.with.txt"));
+                case WITHOUT_REDSTONE -> lines
+                        .add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.without.txt"));
+                case NEVER_ACTIVE -> lines
+                        .add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.never.txt"));
             }
             lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.cycle.txt"));
         } else if ((x - guiLeft > 151 && x - guiLeft < 169) && (y - guiTop > 33 && y - guiTop < 51)) {
@@ -133,8 +138,12 @@ public class GUIDislocatorInhibitor extends GuiContainer {
     }
 
     private void drawGuiText() {
-        fontRendererObj.drawString(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.range.txt"),
-                40, 17, 0x000000, false);
+        fontRendererObj.drawString(
+                StatCollector.translateToLocal("gui.de.dislocatorInhibitor.range.txt"),
+                40,
+                17,
+                0x000000,
+                false);
         fontRendererObj.drawString(String.valueOf(range), range < 10 ? 78 : 75, 17, 0x000000, false);
     }
 

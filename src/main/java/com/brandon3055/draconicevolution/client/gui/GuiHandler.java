@@ -1,7 +1,5 @@
 package com.brandon3055.draconicevolution.client.gui;
 
-import com.brandon3055.draconicevolution.common.container.ContainerDislocatorInhibitor;
-import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -11,6 +9,7 @@ import com.brandon3055.draconicevolution.client.gui.componentguis.GUIManual;
 import com.brandon3055.draconicevolution.client.gui.componentguis.GUIReactor;
 import com.brandon3055.draconicevolution.client.gui.componentguis.GUIToolConfig;
 import com.brandon3055.draconicevolution.common.container.ContainerAdvTool;
+import com.brandon3055.draconicevolution.common.container.ContainerDislocatorInhibitor;
 import com.brandon3055.draconicevolution.common.container.ContainerDissEnchanter;
 import com.brandon3055.draconicevolution.common.container.ContainerDraconiumChest;
 import com.brandon3055.draconicevolution.common.container.ContainerEnergyInfuser;
@@ -22,6 +21,7 @@ import com.brandon3055.draconicevolution.common.container.ContainerSunDial;
 import com.brandon3055.draconicevolution.common.container.ContainerUpgradeModifier;
 import com.brandon3055.draconicevolution.common.container.ContainerWeatherController;
 import com.brandon3055.draconicevolution.common.inventory.InventoryTool;
+import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
 import com.brandon3055.draconicevolution.common.tileentities.TileDissEnchanter;
 import com.brandon3055.draconicevolution.common.tileentities.TileDraconiumChest;
 import com.brandon3055.draconicevolution.common.tileentities.TileEnergyInfuser;

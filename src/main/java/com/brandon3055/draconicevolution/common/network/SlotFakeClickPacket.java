@@ -1,12 +1,14 @@
 package com.brandon3055.draconicevolution.common.network;
 
+import net.minecraft.item.ItemStack;
+
 import com.brandon3055.draconicevolution.common.container.ContainerDislocatorInhibitor;
 import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
+
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.item.ItemStack;
 
 public class SlotFakeClickPacket implements IMessage {
 
@@ -32,7 +34,8 @@ public class SlotFakeClickPacket implements IMessage {
 
         @Override
         public IMessage onMessage(SlotFakeClickPacket message, MessageContext ctx) {
-            if (!(ctx.getServerHandler().playerEntity.openContainer instanceof ContainerDislocatorInhibitor container)) {
+            if (!(ctx
+                    .getServerHandler().playerEntity.openContainer instanceof ContainerDislocatorInhibitor container)) {
                 return null;
             }
             TileDislocatorInhibitor tile = container.getTileEntity();
