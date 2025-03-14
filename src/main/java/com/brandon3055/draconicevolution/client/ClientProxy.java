@@ -101,6 +101,8 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
+import static com.brandon3055.draconicevolution.integration.nei.IMCForNEI.IMCSender;
+
 public class ClientProxy extends CommonProxy {
 
     private static final boolean debug = DraconicEvolution.debug;
@@ -173,6 +175,7 @@ public class ClientProxy extends CommonProxy {
         registerRenderIDs();
         registerRendering();
         ResourceHandler.instance.tick(null);
+        IMCSender();
     }
 
     @Override

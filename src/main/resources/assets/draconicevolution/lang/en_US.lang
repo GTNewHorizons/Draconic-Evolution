@@ -309,6 +309,8 @@ info.infusedObsidian.txt=This block is wither resistant
 
 enchantment.draconicevolution.reaperEnchant=Reaper
 
+nei.recipe.reactor.category=Reactor
+
 //Achievements ----------------------------------------------------------------------------------------------------------------------------------------
 draconicevolution.achievementPage.name=Draconic Evolution
 
