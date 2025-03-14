@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.client;
 
+import static com.brandon3055.draconicevolution.integration.nei.IMCForNEI.IMCSender;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.particle.EntityFX;
@@ -100,8 +102,6 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-
-import static com.brandon3055.draconicevolution.integration.nei.IMCForNEI.IMCSender;
 
 public class ClientProxy extends CommonProxy {
 

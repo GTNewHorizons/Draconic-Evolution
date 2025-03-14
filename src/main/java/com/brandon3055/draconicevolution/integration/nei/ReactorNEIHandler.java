@@ -1,23 +1,23 @@
 package com.brandon3055.draconicevolution.integration.nei;
 
-import codechicken.nei.NEIServerUtils;
-import codechicken.nei.PositionedStack;
-import codechicken.nei.recipe.TemplateRecipeHandler;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.brandon3055.draconicevolution.common.ModBlocks;
-import com.brandon3055.draconicevolution.common.ModItems;
-import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-
 import net.minecraft.util.StatCollector;
+
 import org.lwjgl.opengl.GL11;
 
+import com.brandon3055.draconicevolution.common.ModBlocks;
+import com.brandon3055.draconicevolution.common.ModItems;
+import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
+
+import codechicken.nei.NEIServerUtils;
+import codechicken.nei.PositionedStack;
+import codechicken.nei.recipe.TemplateRecipeHandler;
 
 public class ReactorNEIHandler extends TemplateRecipeHandler {
 
@@ -87,7 +87,6 @@ public class ReactorNEIHandler extends TemplateRecipeHandler {
         transferRects.add(new RecipeTransferRect(new Rectangle(16, 18, 24, 28), "draconicevolution.reactor"));
     }
 
-
     private class CachedReactorRecipe extends CachedRecipe {
 
         private final List<PositionedStack> ingredients;
@@ -96,10 +95,8 @@ public class ReactorNEIHandler extends TemplateRecipeHandler {
         public CachedReactorRecipe() {
             this.result = new PositionedStack(new ItemStack(ModItems.chaosShard), 17, 47);
             this.ingredients = new ArrayList<>();
-            ItemStack[] inputList = {
-                    new ItemStack(ModBlocks.draconicBlock),
-                    new ItemStack(ModItems.draconicIngot),
-                    new ItemStack(ModItems.nugget, 1, 1)};
+            ItemStack[] inputList = { new ItemStack(ModBlocks.draconicBlock), new ItemStack(ModItems.draconicIngot),
+                    new ItemStack(ModItems.nugget, 1, 1) };
             this.ingredients.add(new PositionedStack(inputList, 17, 4));
         }
 

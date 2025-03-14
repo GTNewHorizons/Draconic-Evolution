@@ -1,15 +1,18 @@
 package com.brandon3055.draconicevolution.integration.nei;
-import net.minecraft.nbt.NBTTagCompound;
-
-import cpw.mods.fml.common.event.FMLInterModComms;
 
 import static com.brandon3055.draconicevolution.common.lib.References.MODID;
 import static com.brandon3055.draconicevolution.common.lib.References.MODNAME;
 
+import net.minecraft.nbt.NBTTagCompound;
+
+import cpw.mods.fml.common.event.FMLInterModComms;
 
 public class IMCForNEI {
+
     public static void IMCSender() {
-        sendHandler("com.brandon3055.draconicevolution.integration.nei.ReactorNEIHandler", "DraconicEvolution:reactorCore");
+        sendHandler(
+                "com.brandon3055.draconicevolution.integration.nei.ReactorNEIHandler",
+                "DraconicEvolution:reactorCore");
         sendCatalyst("draconicevolution.reactor", "DraconicEvolution:reactorCore");
     }
 
