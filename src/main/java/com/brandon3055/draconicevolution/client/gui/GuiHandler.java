@@ -9,6 +9,7 @@ import com.brandon3055.draconicevolution.client.gui.componentguis.GUIManual;
 import com.brandon3055.draconicevolution.client.gui.componentguis.GUIReactor;
 import com.brandon3055.draconicevolution.client.gui.componentguis.GUIToolConfig;
 import com.brandon3055.draconicevolution.common.container.ContainerAdvTool;
+import com.brandon3055.draconicevolution.common.container.ContainerDislocatorInhibitor;
 import com.brandon3055.draconicevolution.common.container.ContainerDissEnchanter;
 import com.brandon3055.draconicevolution.common.container.ContainerDraconiumChest;
 import com.brandon3055.draconicevolution.common.container.ContainerEnergyInfuser;
@@ -20,6 +21,7 @@ import com.brandon3055.draconicevolution.common.container.ContainerSunDial;
 import com.brandon3055.draconicevolution.common.container.ContainerUpgradeModifier;
 import com.brandon3055.draconicevolution.common.container.ContainerWeatherController;
 import com.brandon3055.draconicevolution.common.inventory.InventoryTool;
+import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
 import com.brandon3055.draconicevolution.common.tileentities.TileDissEnchanter;
 import com.brandon3055.draconicevolution.common.tileentities.TileDraconiumChest;
 import com.brandon3055.draconicevolution.common.tileentities.TileEnergyInfuser;
@@ -53,6 +55,7 @@ public class GuiHandler implements IGuiHandler {
     public static final int GUIID_FLOW_GATE = 13;
     public static final int GUIID_REACTOR = 14;
     public static final int GUIID_UPGRADE_MODIFIER = 15;
+    public static final int GUIID_DISLOCATOR_INHIBITOR = 16;
     public static final int GUIID_CONTAINER_TEMPLATE = 100;
 
     public GuiHandler() {
@@ -114,6 +117,11 @@ public class GuiHandler implements IGuiHandler {
             case GUIID_UPGRADE_MODIFIER -> {
                 if (tile instanceof TileUpgradeModifier upgradeModifier) {
                     return new ContainerUpgradeModifier(player.inventory, upgradeModifier);
+                }
+            }
+            case GUIID_DISLOCATOR_INHIBITOR -> {
+                if (tile instanceof TileDislocatorInhibitor inhibitor) {
+                    return new ContainerDislocatorInhibitor(player.inventory, inhibitor);
                 }
             }
         }
@@ -197,6 +205,11 @@ public class GuiHandler implements IGuiHandler {
                             player.inventory,
                             upgradeModifier,
                             new ContainerUpgradeModifier(player.inventory, upgradeModifier));
+                }
+            }
+            case GUIID_DISLOCATOR_INHIBITOR -> {
+                if (tile instanceof TileDislocatorInhibitor inhibitor) {
+                    return new GUIDislocatorInhibitor(player.inventory, inhibitor);
                 }
             }
         }
