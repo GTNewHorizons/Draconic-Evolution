@@ -1,6 +1,6 @@
 package com.brandon3055.draconicevolution.integration.nei;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
