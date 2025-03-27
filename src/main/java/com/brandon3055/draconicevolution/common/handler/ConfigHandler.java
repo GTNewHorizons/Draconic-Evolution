@@ -362,7 +362,7 @@ public class ConfigHandler {
                     "Draconic Reactor",
                     "chaosShardOutputValue",
                     16,
-                    "Use this to adjust how much tiny chaos shards you get per fuel value",
+                    "Use this to adjust how much fuel value one tiny chaos shard takes",
                     0,
                     1000000).getInt(16);
             enableAutomation = config.get(
