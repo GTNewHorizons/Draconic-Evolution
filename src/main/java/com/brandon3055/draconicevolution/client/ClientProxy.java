@@ -1,14 +1,5 @@
 package com.brandon3055.draconicevolution.client;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.ISound;
-import net.minecraft.client.particle.EntityFX;
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.MinecraftForge;
-
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
 import com.brandon3055.draconicevolution.client.handler.HudHandler;
@@ -19,7 +10,6 @@ import com.brandon3055.draconicevolution.client.keybinding.KeyInputHandler;
 import com.brandon3055.draconicevolution.client.render.IRenderTweak;
 import com.brandon3055.draconicevolution.client.render.block.RenderCrystal;
 import com.brandon3055.draconicevolution.client.render.block.RenderDraconiumChest;
-import com.brandon3055.draconicevolution.client.render.block.RenderEarthItem;
 import com.brandon3055.draconicevolution.client.render.block.RenderEnergyInfuser;
 import com.brandon3055.draconicevolution.client.render.block.RenderParticleGen;
 import com.brandon3055.draconicevolution.client.render.block.RenderPortal;
@@ -50,7 +40,6 @@ import com.brandon3055.draconicevolution.client.render.tile.RenderTileCrystal;
 import com.brandon3055.draconicevolution.client.render.tile.RenderTileCustomSpawner;
 import com.brandon3055.draconicevolution.client.render.tile.RenderTileDissEnchanter;
 import com.brandon3055.draconicevolution.client.render.tile.RenderTileDraconiumChest;
-import com.brandon3055.draconicevolution.client.render.tile.RenderTileEarth;
 import com.brandon3055.draconicevolution.client.render.tile.RenderTileEnergyInfiser;
 import com.brandon3055.draconicevolution.client.render.tile.RenderTileEnergyPylon;
 import com.brandon3055.draconicevolution.client.render.tile.RenderTileEnergyStorageCore;
@@ -86,13 +75,11 @@ import com.brandon3055.draconicevolution.common.tileentities.TileUpgradeModifier
 import com.brandon3055.draconicevolution.common.tileentities.energynet.TileEnergyRelay;
 import com.brandon3055.draconicevolution.common.tileentities.energynet.TileEnergyTransceiver;
 import com.brandon3055.draconicevolution.common.tileentities.energynet.TileWirelessEnergyTransceiver;
-import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileEarth;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileEnergyPylon;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileEnergyStorageCore;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorEnergyInjector;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorStabilizer;
-
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -100,6 +87,14 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.ISound;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.MinecraftForge;
 
 public class ClientProxy extends CommonProxy {
 
@@ -275,7 +270,6 @@ public class ClientProxy extends CommonProxy {
                 new RenderReactorEnergyInjector());
         MinecraftForgeClient
                 .registerItemRenderer(Item.getItemFromBlock(ModBlocks.reactorCore), new RenderReactorCore());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.earthBlock), new RenderEarthItem());
         MinecraftForgeClient
                 .registerItemRenderer(Item.getItemFromBlock(ModBlocks.chaosCrystal), new RenderChaosShard());
         MinecraftForgeClient
@@ -291,7 +285,6 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileCustomSpawner.class, new RenderTileCustomSpawner());
         // ClientRegistry.bindTileEntitySpecialRenderer(TileTestBlock.class, new RenderTileCrystal());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnergyStorageCore.class, new RenderTileEnergyStorageCore());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEarth.class, new RenderTileEarth());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnergyPylon.class, new RenderTileEnergyPylon());
         ClientRegistry.bindTileEntitySpecialRenderer(TilePlacedItem.class, new RenderTilePlacedItem());
         ClientRegistry.bindTileEntitySpecialRenderer(TileDissEnchanter.class, new RenderTileDissEnchanter());

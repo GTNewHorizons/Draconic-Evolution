@@ -1,12 +1,5 @@
 package com.brandon3055.draconicevolution.common;
 
-import net.minecraft.client.audio.ISound;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.oredict.OreDictionary;
-
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.creativetab.DETab;
 import com.brandon3055.draconicevolution.client.gui.GuiHandler;
@@ -78,7 +71,6 @@ import com.brandon3055.draconicevolution.common.tileentities.energynet.TileWirel
 import com.brandon3055.draconicevolution.common.tileentities.gates.TileFluidGate;
 import com.brandon3055.draconicevolution.common.tileentities.gates.TileFluxGate;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileDislocatorReceptacle;
-import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileEarth;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileEnderResurrection;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileEnergyPylon;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.TileEnergyStorageCore;
@@ -91,7 +83,6 @@ import com.brandon3055.draconicevolution.common.utills.DragonChunkLoader;
 import com.brandon3055.draconicevolution.common.utills.LogHelper;
 import com.brandon3055.draconicevolution.common.world.DraconicWorldGenerator;
 import com.brandon3055.draconicevolution.integration.computers.CCOCIntegration;
-
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -100,6 +91,12 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
+import net.minecraft.client.audio.ISound;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class CommonProxy {
 
@@ -230,7 +227,6 @@ public class CommonProxy {
         GameRegistry.registerTileEntity(TileGenerator.class, References.RESOURCESPREFIX + "TileGenerator");
         GameRegistry
                 .registerTileEntity(TileEnergyStorageCore.class, References.RESOURCESPREFIX + "TileEnergyStorageCore");
-        GameRegistry.registerTileEntity(TileEarth.class, References.RESOURCESPREFIX + "TileEarth");
         GameRegistry.registerTileEntity(
                 TileInvisibleMultiblock.class,
                 References.RESOURCESPREFIX + "TileInvisibleMultiblock");
