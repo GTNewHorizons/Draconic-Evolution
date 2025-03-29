@@ -5,8 +5,8 @@ dependencies {
     api("curse.maven:cofh-lib-220333:2388748")
 
     compileOnly("com.github.GTNewHorizons:ForestryMC:4.10.5:api") {transitive = false}
-    compileOnly("com.github.GTNewHorizons:OpenComputers:1.11.10-GTNH:api") {transitive = false}
-    compileOnly("com.github.GTNewHorizons:NotEnoughItems:2.7.30-GTNH:dev") {transitive = false}
+    compileOnly("com.github.GTNewHorizons:OpenComputers:1.11.12-GTNH:api") {transitive = false}
+    compileOnly("com.github.GTNewHorizons:NotEnoughItems:2.7.34-GTNH:dev") {transitive = false}
     compileOnly("com.github.GTNewHorizons:CodeChickenLib:1.3.0:dev") {transitive = false}
     compileOnly("com.github.GTNewHorizons:inventory-tweaks:1.7.1:dev") {transitive = false}
     compileOnly('com.github.GTNewHorizons:Baubles-Expanded:2.1.6-GTNH:dev') {transitive = false}
