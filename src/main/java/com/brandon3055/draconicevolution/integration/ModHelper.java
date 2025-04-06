@@ -11,6 +11,7 @@ import com.brandon3055.draconicevolution.common.utills.LogHelper;
 
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
+import gregtech.api.hazards.Hazard;
 
 /**
  * Created by brandon3055 on 29/9/2015.
@@ -125,5 +126,16 @@ public class ModHelper {
 
     public static boolean isAE2EntityFloatingItem(EntityItem item) {
         return isAE2Installed && AE2FItem.isInstance(item);
+    }
+
+    public static String getHazmatArmorConfigKey(Hazard hazard) {
+        return switch (hazard) {
+            case ELECTRICAL -> "HazmatElectrical";
+            case BIOLOGICAL -> "HazmatBiological";
+            case FROST -> "HazmatFrost";
+            case GAS -> "HazmatGas";
+            case HEAT -> "HazmatHeat";
+            case RADIOLOGICAL -> "HazmatRadiological";
+        };
     }
 }

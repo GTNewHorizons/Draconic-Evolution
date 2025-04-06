@@ -55,6 +55,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.IArmorApiarist;
 import forestry.api.core.IArmorNaturalist;
+import gregtech.api.hazards.Hazard;
+import gregtech.api.hazards.IHazardProtector;
 import thaumcraft.api.IGoggles;
 import thaumcraft.api.IVisDiscountGear;
 import thaumcraft.api.aspects.Aspect;
@@ -68,9 +70,10 @@ import thaumcraft.api.nodes.IRevealer;
                 @Interface(iface = "thaumcraft.api.IVisDiscountGear", modid = "Thaumcraft"),
                 @Interface(iface = "thaumcraft.api.nodes.IRevealer", modid = "Thaumcraft"),
                 @Interface(iface = "forestry.api.apiculture.IArmorApiarist", modid = "Forestry"),
-                @Interface(iface = "forestry.api.core.IArmorNaturalist", modid = "Forestry") })
+                @Interface(iface = "forestry.api.core.IArmorNaturalist", modid = "Forestry"),
+                @Interface(iface = "gregtech.api.hazards.IHazardProtector", modid = "gregtech") })
 public class DraconicArmor extends ItemArmor implements ISpecialArmor, IConfigurableItem, IInventoryTool, IGoggles,
-        IVisDiscountGear, IRevealer, IUpgradableItem, ICustomArmor, IArmorNaturalist, IArmorApiarist {
+        IVisDiscountGear, IRevealer, IUpgradableItem, ICustomArmor, IArmorNaturalist, IArmorApiarist, IHazardProtector {
 
     // TODO Wings
     @SideOnly(Side.CLIENT)
@@ -374,6 +377,13 @@ public class DraconicArmor extends ItemArmor implements ISpecialArmor, IConfigur
                 list.add(new ItemConfigField(References.BOOLEAN_ID, slot, "ApiaristArmor").readFromItem(stack, true));
             }
         }
+        if (Loader.isModLoaded("gregtech")) {
+            for (Hazard value : Hazard.values()) {
+                list.add(
+                        new ItemConfigField(References.BOOLEAN_ID, slot, ModHelper.getHazmatArmorConfigKey(value))
+                                .readFromItem(stack, true));
+            }
+        }
         return list;
     }
 
@@ -644,5 +654,11 @@ public class DraconicArmor extends ItemArmor implements ISpecialArmor, IConfigur
     @Method(modid = "Forestry")
     public boolean protectPlayer(EntityPlayer entityPlayer, ItemStack itemStack, String s, boolean b) {
         return protectEntity(entityPlayer, itemStack, s, b);
+    }
+
+    @Override
+    @Method(modid = "gregtech")
+    public boolean protectsAgainst(ItemStack itemStack, Hazard hazard) {
+        return IConfigurableItem.ProfileHelper.getBoolean(itemStack, ModHelper.getHazmatArmorConfigKey(hazard), true);
     }
 }
