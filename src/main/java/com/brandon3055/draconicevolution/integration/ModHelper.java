@@ -10,6 +10,7 @@ import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler.A
 import com.brandon3055.draconicevolution.common.utills.LogHelper;
 
 import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.hazards.Hazard;
 
@@ -128,6 +129,7 @@ public class ModHelper {
         return isAE2Installed && AE2FItem.isInstance(item);
     }
 
+    @Optional.Method(modid = "gregtech")
     public static String getHazmatArmorConfigKey(Hazard hazard) {
         return switch (hazard) {
             case ELECTRICAL -> "HazmatElectrical";
