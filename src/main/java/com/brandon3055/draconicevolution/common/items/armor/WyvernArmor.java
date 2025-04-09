@@ -40,12 +40,15 @@ import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
 import com.brandon3055.draconicevolution.common.utills.IInventoryTool;
 import com.brandon3055.draconicevolution.common.utills.IUpgradableItem;
 import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
+import com.brandon3055.draconicevolution.integration.ModHelper;
 
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import gregtech.api.hazards.Hazard;
+import gregtech.api.hazards.IHazardProtector;
 import thaumcraft.api.IVisDiscountGear;
 import thaumcraft.api.IWarpingGear;
 import thaumcraft.api.aspects.Aspect;
@@ -55,9 +58,10 @@ import thaumcraft.api.aspects.Aspect;
  */
 @Optional.InterfaceList(
         value = { @Optional.Interface(iface = "thaumcraft.api.IVisDiscountGear", modid = "Thaumcraft"),
-                @Optional.Interface(iface = "thaumcraft.api.IWarpingGear", modid = "Thaumcraft"), })
+                @Optional.Interface(iface = "thaumcraft.api.IWarpingGear", modid = "Thaumcraft"),
+                @Optional.Interface(iface = "gregtech.api.hazards.IHazardProtector", modid = "gregtech") })
 public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurableItem, IInventoryTool, IUpgradableItem,
-        ICustomArmor, IVisDiscountGear, IWarpingGear {
+        ICustomArmor, IVisDiscountGear, IWarpingGear, IHazardProtector {
 
     @SideOnly(Side.CLIENT)
     private IIcon helmIcon;
@@ -268,6 +272,13 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
                     new ItemConfigField(References.FLOAT_ID, slot, "ArmorJumpMult").setMinMaxAndIncromente(0f, 5f, 0.1f)
                             .readFromItem(stack, 0f).setModifier("PLUSPERCENT"));
             list.add(new ItemConfigField(References.BOOLEAN_ID, slot, "ArmorSprintOnly").readFromItem(stack, false));
+        }
+        if (Loader.isModLoaded("gregtech")) {
+            for (Hazard value : Hazard.values()) {
+                list.add(
+                        new ItemConfigField(References.BOOLEAN_ID, slot, ModHelper.getHazmatArmorConfigKey(value))
+                                .readFromItem(stack, true));
+            }
         }
         return list;
     }
@@ -499,5 +510,11 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
     @Optional.Method(modid = "Thaumcraft")
     public int getWarp(ItemStack itemStack, EntityPlayer entityPlayer) {
         return 5;
+    }
+
+    @Override
+    @Optional.Method(modid = "gregtech")
+    public boolean protectsAgainst(ItemStack itemStack, Hazard hazard) {
+        return IConfigurableItem.ProfileHelper.getBoolean(itemStack, ModHelper.getHazmatArmorConfigKey(hazard), true);
     }
 }
