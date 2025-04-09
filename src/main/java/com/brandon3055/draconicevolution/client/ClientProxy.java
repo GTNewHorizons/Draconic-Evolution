@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.client;
 
+import static com.brandon3055.draconicevolution.integration.nei.IMCForNEI.IMCSender;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.particle.EntityFX;
@@ -173,6 +175,7 @@ public class ClientProxy extends CommonProxy {
         registerRenderIDs();
         registerRendering();
         ResourceHandler.instance.tick(null);
+        IMCSender();
     }
 
     @Override
