@@ -50,7 +50,17 @@ public class DraconicWorldGenerator implements IWorldGenerator {
                         return;
                     }
                 }
-                addOreSpawn(ModBlocks.draconiumOre, world, random, chunkX * 16, chunkZ * 16, 3, 4, ConfigHandler.oreWeightDefault, 2, 8);
+                addOreSpawn(
+                        ModBlocks.draconiumOre,
+                        world,
+                        random,
+                        chunkX * 16,
+                        chunkZ * 16,
+                        3,
+                        4,
+                        ConfigHandler.oreWeightDefault,
+                        2,
+                        8);
                 break;
         }
     }
@@ -76,8 +86,17 @@ public class DraconicWorldGenerator implements IWorldGenerator {
     }
 
     public void generateNether(Random random, int chunkX, int chunkZ, World world) {
-        if (!ConfigHandler.disableOreSpawnNether)
-            addOreSpawn(ModBlocks.draconiumOre, world, random, chunkX, chunkZ, 3, 4, ConfigHandler.oreWeightNether, 1, 125);
+        if (!ConfigHandler.disableOreSpawnNether) addOreSpawn(
+                ModBlocks.draconiumOre,
+                world,
+                random,
+                chunkX,
+                chunkZ,
+                3,
+                4,
+                ConfigHandler.oreWeightNether,
+                1,
+                125);
     }
 
     /**
