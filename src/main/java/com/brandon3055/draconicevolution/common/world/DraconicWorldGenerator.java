@@ -50,7 +50,17 @@ public class DraconicWorldGenerator implements IWorldGenerator {
                         return;
                     }
                 }
-                addOreSpawn(ModBlocks.draconiumOre, world, random, chunkX * 16, chunkZ * 16, 3, 4, 2, 2, 8);
+                addOreSpawn(
+                        ModBlocks.draconiumOre,
+                        world,
+                        random,
+                        chunkX * 16,
+                        chunkZ * 16,
+                        3,
+                        4,
+                        ConfigHandler.oreWeightDefault,
+                        2,
+                        8);
                 break;
         }
     }
@@ -58,7 +68,7 @@ public class DraconicWorldGenerator implements IWorldGenerator {
     public void generateSurface(Random random, int x, int z, World world) { // minVainSise,
         // maxVainSize, spawnChance(Def2), minY, maxY
         if (!ConfigHandler.disableOreSpawnOverworld)
-            addOreSpawn(ModBlocks.draconiumOre, world, random, x, z, 3, 4, 2, 2, 8);
+            addOreSpawn(ModBlocks.draconiumOre, world, random, x, z, 3, 4, ConfigHandler.oreWeightOverworld, 2, 8);
     }
 
     public void generateEnd(Random random, int x, int z, World world) {
@@ -72,12 +82,21 @@ public class DraconicWorldGenerator implements IWorldGenerator {
         if (chaosIslandsEnabled && ConfigHandler.generateChaosIslands)
             ChaosWorldGenHandler.generateChunk(world, x / 16, z / 16, null, random);
         if (oreEnabledInEnd && !ConfigHandler.disableOreSpawnEnd)
-            addOreSpawn(ModBlocks.draconiumOre, world, random, x, z, 4, 5, 10, 1, 70);
+            addOreSpawn(ModBlocks.draconiumOre, world, random, x, z, 4, 5, ConfigHandler.oreWeightEnd, 1, 70);
     }
 
     public void generateNether(Random random, int chunkX, int chunkZ, World world) {
-        if (!ConfigHandler.disableOreSpawnNether)
-            addOreSpawn(ModBlocks.draconiumOre, world, random, chunkX, chunkZ, 3, 4, 5, 1, 125);
+        if (!ConfigHandler.disableOreSpawnNether) addOreSpawn(
+                ModBlocks.draconiumOre,
+                world,
+                random,
+                chunkX,
+                chunkZ,
+                3,
+                4,
+                ConfigHandler.oreWeightNether,
+                1,
+                125);
     }
 
     /**
