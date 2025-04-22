@@ -324,6 +324,13 @@ public class ConfigHandler {
                             true,
                             "Setting this to false will reduce the reactor explosion to little more then a tnt blast")
                     .getBoolean(true);
+            reactorFuelStorage = config.get(
+                    "Draconic Reactor",
+                    "maxFuelStorage",
+                    10368,
+                    "Use this to adjust the maximum fuel storage of the reactor",
+                    0,
+                    10000000).getInt(10368);
             reactorOutputMultiplier = config.get(
                     "Draconic Reactor",
                     "EnergyOutputMultiplier",
