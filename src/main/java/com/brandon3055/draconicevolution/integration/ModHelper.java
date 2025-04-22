@@ -38,7 +38,7 @@ public class ModHelper {
         isTConInstalled = Loader.isModLoaded("TConstruct");
         isAvaritiaInstalled = Loader.isModLoaded("Avaritia");
         // isRotaryCraftInstalled = Loader.isModLoaded("RotaryCraft");
-        isGregTechInstalled = Loader.isModLoaded("gregtech");
+        isGregTechInstalled = Loader.isModLoaded("gregtech") && !Loader.isModLoaded("gregapi");
         isBartworkdsInstalled = Loader.isModLoaded("bartworks");
         isAE2Installed = Loader.isModLoaded("appliedenergistics2");
         final String GT_ORE_CLASS = "gregtech.common.blocks.TileEntityOres";

@@ -377,7 +377,7 @@ public class DraconicArmor extends ItemArmor implements ISpecialArmor, IConfigur
                 list.add(new ItemConfigField(References.BOOLEAN_ID, slot, "ApiaristArmor").readFromItem(stack, true));
             }
         }
-        if (Loader.isModLoaded("gregtech")) {
+        if (Loader.isModLoaded("gregtech") && !Loader.isModLoaded("gregapi")) {
             for (Hazard value : Hazard.values()) {
                 list.add(
                         new ItemConfigField(References.BOOLEAN_ID, slot, ModHelper.getHazmatArmorConfigKey(value))

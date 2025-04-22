@@ -273,7 +273,7 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
                             .readFromItem(stack, 0f).setModifier("PLUSPERCENT"));
             list.add(new ItemConfigField(References.BOOLEAN_ID, slot, "ArmorSprintOnly").readFromItem(stack, false));
         }
-        if (Loader.isModLoaded("gregtech")) {
+        if (Loader.isModLoaded("gregtech") && !Loader.isModLoaded("gregapi")) {
             for (Hazard value : Hazard.values()) {
                 list.add(
                         new ItemConfigField(References.BOOLEAN_ID, slot, ModHelper.getHazmatArmorConfigKey(value))
