@@ -129,7 +129,7 @@ public class ModHelper {
         return isAE2Installed && AE2FItem.isInstance(item);
     }
 
-    @Optional.Method(modid = "dreamcraft")
+    @Optional.Method(modid = "gregtechNH")
     public static String getHazmatArmorConfigKey(Hazard hazard) {
         return switch (hazard) {
             case ELECTRICAL -> "HazmatElectrical";
