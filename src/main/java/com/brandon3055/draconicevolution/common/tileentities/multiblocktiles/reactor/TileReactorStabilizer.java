@@ -251,13 +251,24 @@ public class TileReactorStabilizer extends TileEntity
     @Override
     public boolean canInsertItem(int slot, ItemStack item, int side) {
         TileReactorCore core = getMaster();
-        return (ConfigHandler.enableAutomation && (core.reactorFuel + core.convertedFuel) < maximumFuelStorage);
+        if (core != null) {
+            return (ConfigHandler.enableAutomation && (core.reactorFuel + core.convertedFuel) < maximumFuelStorage);
+        }
+        else {
+            return false;
+        }
     }
 
     @Override
     public boolean canExtractItem(int slot, ItemStack item, int side) {
         TileReactorCore core = getMaster();
-        return (ConfigHandler.enableAutomation && core.convertedFuel > fullChaosAmount);
+        if (core != null) {
+            return (ConfigHandler.enableAutomation && core.convertedFuel > fullChaosAmount);
+
+        }
+        else {
+            return false;
+        }
     }
 
     @Override
@@ -268,7 +279,13 @@ public class TileReactorStabilizer extends TileEntity
     @Override
     public ItemStack getStackInSlot(int slotIn) {
         TileReactorCore core = getMaster();
-        return core.getStackInSlot(slotIn);
+        if (core != null)
+        {
+            return core.getStackInSlot(slotIn);
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
