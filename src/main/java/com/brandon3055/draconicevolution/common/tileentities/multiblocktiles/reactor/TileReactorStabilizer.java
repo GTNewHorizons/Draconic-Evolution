@@ -253,8 +253,7 @@ public class TileReactorStabilizer extends TileEntity
         TileReactorCore core = getMaster();
         if (core != null) {
             return (ConfigHandler.enableAutomation && (core.reactorFuel + core.convertedFuel) < maximumFuelStorage);
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -265,8 +264,7 @@ public class TileReactorStabilizer extends TileEntity
         if (core != null) {
             return (ConfigHandler.enableAutomation && core.convertedFuel > fullChaosAmount);
 
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -279,11 +277,9 @@ public class TileReactorStabilizer extends TileEntity
     @Override
     public ItemStack getStackInSlot(int slotIn) {
         TileReactorCore core = getMaster();
-        if (core != null)
-        {
+        if (core != null) {
             return core.getStackInSlot(slotIn);
-        }
-        else {
+        } else {
             return null;
         }
     }
