@@ -59,7 +59,7 @@ import thaumcraft.api.aspects.Aspect;
 @Optional.InterfaceList(
         value = { @Optional.Interface(iface = "thaumcraft.api.IVisDiscountGear", modid = "Thaumcraft"),
                 @Optional.Interface(iface = "thaumcraft.api.IWarpingGear", modid = "Thaumcraft"),
-                @Optional.Interface(iface = "gregtech.api.hazards.IHazardProtector", modid = "gregtech") })
+                @Optional.Interface(iface = "gregtech.api.hazards.IHazardProtector", modid = "gregtech_nh") })
 public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurableItem, IInventoryTool, IUpgradableItem,
         ICustomArmor, IVisDiscountGear, IWarpingGear, IHazardProtector {
 
@@ -513,7 +513,7 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
     }
 
     @Override
-    @Optional.Method(modid = "gregtech")
+    @Optional.Method(modid = "gregtech_nh")
     public boolean protectsAgainst(ItemStack itemStack, Hazard hazard) {
         return IConfigurableItem.ProfileHelper.getBoolean(itemStack, ModHelper.getHazmatArmorConfigKey(hazard), true);
     }
