@@ -1,12 +1,23 @@
 package com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor;
 
+import static com.brandon3055.draconicevolution.common.container.ContainerReactor.blockFuelAmount;
+import static com.brandon3055.draconicevolution.common.container.ContainerReactor.fullChaosAmount;
+import static com.brandon3055.draconicevolution.common.container.ContainerReactor.ingotFuelAmount;
+import static com.brandon3055.draconicevolution.common.container.ContainerReactor.maximumFuelStorage;
+import static com.brandon3055.draconicevolution.common.container.ContainerReactor.nuggetFuelAmount;
+import static com.brandon3055.draconicevolution.common.handler.ConfigHandler.linearReactorFuelUsage;
+import static com.brandon3055.draconicevolution.common.handler.ConfigHandler.reactorOutputMultiplier;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
@@ -24,12 +35,14 @@ import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.ReactorSound;
 import com.brandon3055.draconicevolution.client.gui.GuiHandler;
 import com.brandon3055.draconicevolution.client.render.particle.Particles;
+import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.IReactorPart;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.IReactorPart.ComparatorMode;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper.TileLocation;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.TileObjectSync;
+import com.brandon3055.draconicevolution.common.utills.OreDictionaryHelper;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -39,7 +52,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 /**
  * Created by Brandon on 16/6/2015.
  */
-public class TileReactorCore extends TileObjectSync {
+public class TileReactorCore extends TileObjectSync implements IInventory {
 
     public static final int MAXIMUM_PART_DISTANCE = 10;
 
@@ -86,6 +99,12 @@ public class TileReactorCore extends TileObjectSync {
     public int energySaturation = 0;
     public int maxEnergySaturation = 0;
 
+    public float fuelStorageRatio = (float) ConfigHandler.reactorFuelStorage / 10368; // To keep the temperature
+                                                                                      // increase unchanged from the
+                                                                                      // default config if it's changed
+
+    int excessFuel = 0;
+
     @SideOnly(Side.CLIENT)
     private ReactorSound reactorSound;
 
@@ -110,6 +129,11 @@ public class TileReactorCore extends TileObjectSync {
             case ONLINE, STOPPING -> runTick();
         }
 
+        if (excessFuel > 0 || (reactorFuel + convertedFuel) < maximumFuelStorage) {
+            int useExcessFuel = Math.min(maximumFuelStorage - (reactorFuel + convertedFuel), excessFuel);
+            reactorFuel += useExcessFuel;
+            excessFuel -= useExcessFuel;
+        }
         detectAndSendChanges();
     }
 
@@ -145,8 +169,8 @@ public class TileReactorCore extends TileObjectSync {
     private void startingTick() {
         if (!startupInitialized) {
             int totalFuel = reactorFuel + convertedFuel;
-            maxFieldCharge = totalFuel * 96.45061728395062 * 100;
-            maxEnergySaturation = (int) (totalFuel * 96.45061728395062 * 1000);
+            maxFieldCharge = (totalFuel / fuelStorageRatio) * 96.45061728395062 * 100;
+            maxEnergySaturation = (int) ((totalFuel / fuelStorageRatio) * 96.45061728395062 * 1000);
             energySaturation = Math.min(energySaturation, maxEnergySaturation);
             fieldCharge = Math.min(fieldCharge, maxFieldCharge);
             startupInitialized = true;
@@ -196,7 +220,7 @@ public class TileReactorCore extends TileObjectSync {
         }
 
         // Energy Calculation
-        int baseMaxRFt = (int) ((maxEnergySaturation / 1000D) * ConfigHandler.reactorOutputMultiplier * 1.5D);
+        int baseMaxRFt = (int) ((maxEnergySaturation / 1000D) * reactorOutputMultiplier * 1.5D);
         int maxRFt = (int) (baseMaxRFt * (1D + conversion * 2));
         generationRate = (1D - saturation) * maxRFt;
         energySaturation += generationRate;
@@ -215,12 +239,17 @@ public class TileReactorCore extends TileObjectSync {
         fieldCharge -= fieldDrain;
 
         // Calculate Fuel Usage
-        fuelUseRate = tempDrainFactor * (1D - saturation) * (0.001 * ConfigHandler.reactorFuelUsageMultiplier);
+        if (linearReactorFuelUsage) {
+            fuelUseRate = tempDrainFactor * (1D - saturation) * (0.001 * ConfigHandler.reactorFuelUsageMultiplier);
+        } else {
+            fuelUseRate = tempDrainFactor * (1D - Math.pow(Math.max(saturation - 0.1, 0), 0.3))
+                    * (0.001 * ConfigHandler.reactorFuelUsageMultiplier);
+        }
         conversionUnit += fuelUseRate;
         if (conversionUnit >= 1 && reactorFuel > 0) {
-            conversionUnit--;
-            reactorFuel--;
-            convertedFuel++;
+            reactorFuel -= (int) conversionUnit;
+            convertedFuel += (int) conversionUnit;
+            conversionUnit -= (int) conversionUnit;
         }
 
         if (fieldCharge <= 0 && !hasExploded) {
@@ -231,7 +260,7 @@ public class TileReactorCore extends TileObjectSync {
 
     private void goBoom() {
         if (ConfigHandler.enableReactorBigBoom) {
-            float power = 2F + ((float) (convertedFuel + reactorFuel) / 10369F * 18F);
+            float power = 2F + ((float) (convertedFuel + reactorFuel) / (maximumFuelStorage + 1F) * 18F);
             ProcessHandler.addProcess(new ReactorExplosion(worldObj, xCoord, yCoord, zCoord, power));
             sendObjectToClient(
                     References.INT_ID,
@@ -361,7 +390,7 @@ public class TileReactorCore extends TileObjectSync {
                 energySaturation += energyInjected;
             } else if (reactionTemperature < 2000) {
                 energyInjected = energyToInject;
-                reactionTemperature += (double) energyInjected / (1000D + reactorFuel * 10);
+                reactionTemperature += (double) energyInjected / (1000D + (reactorFuel / fuelStorageRatio) * 10);
                 if (reactionTemperature > 2000) {
                     reactionTemperature = 2000;
                 }
@@ -401,7 +430,7 @@ public class TileReactorCore extends TileObjectSync {
     }
 
     public double getCoreRadius() {
-        double volume = (double) (reactorFuel + convertedFuel) / 1296D;
+        double volume = (double) (reactorFuel + convertedFuel) / (1296D * fuelStorageRatio);
         volume *= 1 + (reactionTemperature / maxReactTemperature) * 10D;
         return Math.cbrt(volume / (4D / 3D * Math.PI));
     }
@@ -586,6 +615,7 @@ public class TileReactorCore extends TileObjectSync {
         compound.setInteger("maxEnergySaturation", maxEnergySaturation);
         compound.setInteger("reactorFuel", reactorFuel);
         compound.setInteger("convertedFuel", convertedFuel);
+        compound.setInteger("excessFuel", excessFuel);
         compound.setDouble("reactionTemperature", reactionTemperature);
         compound.setDouble("maxReactTemperature", maxReactTemperature);
         compound.setDouble("fieldCharge", fieldCharge);
@@ -613,6 +643,7 @@ public class TileReactorCore extends TileObjectSync {
         maxEnergySaturation = compound.getInteger("maxEnergySaturation");
         reactorFuel = compound.getInteger("reactorFuel");
         convertedFuel = compound.getInteger("convertedFuel");
+        excessFuel = compound.getInteger("excessFuel");
         reactionTemperature = compound.getDouble("reactionTemperature");
         maxReactTemperature = compound.getDouble("maxReactTemperature");
         fieldCharge = compound.getDouble("fieldCharge");
@@ -665,5 +696,107 @@ public class TileReactorCore extends TileObjectSync {
             return new Object[] { false };
         }
         return new Object[] {};
+    }
+
+    @Override
+    public int getSizeInventory() {
+        return 1;
+
+    }
+
+    public ItemStack getStackInSlot(int i) {
+        if (convertedFuel > fullChaosAmount) {
+            return new ItemStack(ModItems.chaosShard, convertedFuel / fullChaosAmount);
+        }
+        return null;
+    }
+
+    @Override
+    public ItemStack decrStackSize(int i, int count) {
+        if (convertedFuel > fullChaosAmount) {
+            int chaosShardCount = Math.min((convertedFuel / fullChaosAmount), count);
+            convertedFuel -= chaosShardCount * fullChaosAmount;
+            return new ItemStack(ModItems.chaosShard, chaosShardCount);
+        }
+        return null;
+    }
+
+    @Override
+    public ItemStack getStackInSlotOnClosing(int i) {
+        return null;
+    }
+
+    @Override
+    public void setInventorySlotContents(int slot, ItemStack stack) {
+        if (fuelValue(stack) > 0) {
+            int fuelValue = fuelValue(stack) * stack.stackSize;
+            if (fuelValue > maximumFuelStorage - (reactorFuel + convertedFuel)) {
+                fuelValue -= maximumFuelStorage - (reactorFuel + convertedFuel);
+                reactorFuel = maximumFuelStorage - convertedFuel;
+                excessFuel += fuelValue;
+            } else {
+                reactorFuel += fuelValue;
+            }
+        } else if (stack != null) {
+            convertedFuel = stack.stackSize * fullChaosAmount;
+        } else {
+            convertedFuel -= (convertedFuel / fullChaosAmount) * fullChaosAmount;
+        }
+    }
+
+    @Override
+    public String getInventoryName() {
+        return "";
+    }
+
+    @Override
+    public boolean hasCustomInventoryName() {
+        return false;
+    }
+
+    @Override
+    public int getInventoryStackLimit() {
+        return 64;
+    }
+
+    @Override
+    public boolean isUseableByPlayer(EntityPlayer player) {
+        if (worldObj == null) {
+            return true;
+        }
+        if (worldObj.getTileEntity(xCoord, yCoord, zCoord) != this) {
+            return false;
+        }
+        return player.getDistanceSq(xCoord + 0.5, yCoord + 0.5, zCoord + 0.4) < 64;
+    }
+
+    @Override
+    public void openInventory() {
+        System.out.println("open");
+    }
+
+    @Override
+    public void closeInventory() {
+        System.out.println("close");
+    }
+
+    @Override
+    public boolean isItemValidForSlot(int slot, ItemStack item) {
+        return false;
+    }
+
+    public int fuelValue(ItemStack item) {
+        Set<String> oreNames = OreDictionaryHelper.getOreNames(item);
+
+        if (oreNames.contains("blockDraconiumAwakened")) {
+            return blockFuelAmount;
+        }
+        if (oreNames.contains("ingotDraconiumAwakened")) {
+            return ingotFuelAmount;
+        }
+        if (oreNames.contains("nuggetDraconiumAwakened")) {
+            return nuggetFuelAmount;
+        }
+        return 0;
     }
 }

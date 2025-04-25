@@ -1,5 +1,13 @@
 package com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor;
 
+import static com.brandon3055.draconicevolution.common.container.ContainerReactor.fullChaosAmount;
+import static com.brandon3055.draconicevolution.common.container.ContainerReactor.maximumFuelStorage;
+
+import java.util.Set;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -11,7 +19,9 @@ import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.render.particle.ParticleReactorBeam;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.IReactorPart;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper.TileLocation;
+import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore.ReactorState;
+import com.brandon3055.draconicevolution.common.utills.OreDictionaryHelper;
 import com.brandon3055.draconicevolution.integration.computers.IDEPeripheral;
 
 import cofh.api.energy.IEnergyProvider;
@@ -22,7 +32,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 /**
  * Created by brandon3055 on 5/7/2015.
  */
-public class TileReactorStabilizer extends TileEntity implements IReactorPart, IEnergyProvider, IDEPeripheral {
+public class TileReactorStabilizer extends TileEntity
+        implements IReactorPart, IEnergyProvider, IDEPeripheral, ISidedInventory {
 
     public float coreRotation = 0F;
     public float ringRotation = 0F;
@@ -228,5 +239,107 @@ public class TileReactorStabilizer extends TileEntity implements IReactorPart, I
     public Object[] callMethod(String methodName, Object... args) {
         TileReactorCore core = getMaster();
         return core != null ? core.callMethod(methodName, args) : null;
+    }
+
+    @Override
+    public int[] getAccessibleSlotsFromSide(int p_94128_1_) {
+        int[] i = new int[getSizeInventory()];
+        for (int i1 = 0; i1 < i.length; i1++) i[i1] = i1;
+        return i;
+    }
+
+    @Override
+    public boolean canInsertItem(int slot, ItemStack item, int side) {
+        TileReactorCore core = getMaster();
+        if (core != null) {
+            return (ConfigHandler.enableAutomation && (core.reactorFuel + core.convertedFuel) < maximumFuelStorage);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean canExtractItem(int slot, ItemStack item, int side) {
+        TileReactorCore core = getMaster();
+        if (core != null) {
+            return (ConfigHandler.enableAutomation && core.convertedFuel > fullChaosAmount);
+
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int getSizeInventory() {
+        return 1;
+    }
+
+    @Override
+    public ItemStack getStackInSlot(int slotIn) {
+        TileReactorCore core = getMaster();
+        if (core != null) {
+            return core.getStackInSlot(slotIn);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public ItemStack decrStackSize(int i, int count) {
+        TileReactorCore core = getMaster();
+        return core.decrStackSize(i, count);
+    }
+
+    @Override
+    public ItemStack getStackInSlotOnClosing(int i) {
+        return null;
+    }
+
+    @Override
+    public void setInventorySlotContents(int i, ItemStack stack) {
+        TileReactorCore core = getMaster();
+        core.setInventorySlotContents(i, stack);
+    }
+
+    @Override
+    public String getInventoryName() {
+        return "";
+    }
+
+    @Override
+    public boolean hasCustomInventoryName() {
+        return false;
+    }
+
+    @Override
+    public int getInventoryStackLimit() {
+        TileReactorCore core = getMaster();
+        return core.getInventoryStackLimit();
+    }
+
+    @Override
+    public boolean isUseableByPlayer(EntityPlayer player) {
+        return false;
+    }
+
+    @Override
+    public void openInventory() {
+
+    }
+
+    @Override
+    public void closeInventory() {
+
+    }
+
+    @Override
+    public boolean isItemValidForSlot(int i, ItemStack stack) {
+        return validInputItems(stack);
+    }
+
+    public boolean validInputItems(ItemStack item) {
+        Set<String> oreNames = OreDictionaryHelper.getOreNames(item);
+        return (oreNames.contains("nuggetDraconiumAwakened") || oreNames.contains("ingotDraconiumAwakened")
+                || oreNames.contains("blockDraconiumAwakened"));
     }
 }

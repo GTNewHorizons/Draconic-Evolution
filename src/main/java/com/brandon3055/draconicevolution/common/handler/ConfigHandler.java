@@ -77,6 +77,11 @@ public class ConfigHandler {
     public static boolean enableReactorBigBoom;
     public static double reactorOutputMultiplier;
     public static double reactorFuelUsageMultiplier;
+    public static boolean linearReactorFuelUsage;
+    public static int reactorFuelStorage;
+    public static int reactorFuelValue;
+    public static int reactorChaosValue;
+    public static boolean enableAutomation;
 
     private static String[] defaultSpawnerList = new String[] { "ExampleMob1", "ExampleMob2",
             "ExampleMob3 (these examples can be deleted)" };
@@ -350,13 +355,13 @@ public class ConfigHandler {
                             true,
                             "Setting this to false will reduce the reactor explosion to little more then a tnt blast")
                     .getBoolean(true);
-            reactorFuelUsageMultiplier = config.get(
+            reactorFuelStorage = config.get(
                     "Draconic Reactor",
-                    "FuelUsageMultiplier",
-                    1,
-                    "Use this to adjust how quickly the reactor uses fuel",
+                    "maxFuelStorage",
+                    10368,
+                    "Use this to adjust the maximum fuel storage of the reactor",
                     0,
-                    1000000).getDouble(1);
+                    10000000).getInt(10368);
             reactorOutputMultiplier = config.get(
                     "Draconic Reactor",
                     "EnergyOutputMultiplier",
@@ -364,7 +369,45 @@ public class ConfigHandler {
                     "Use this to adjust the output of the reactor",
                     0,
                     1000000).getDouble(1);
-
+            reactorFuelUsageMultiplier = config.get(
+                    "Draconic Reactor",
+                    "FuelUsageMultiplier",
+                    1,
+                    "Use this to adjust how quickly the reactor uses fuel",
+                    0,
+                    1000000).getDouble(1);
+            linearReactorFuelUsage = config.get(
+                    "Draconic Reactor",
+                    "linearReactorFuelUsage",
+                    linearReactorFuelUsage,
+                    "Sets whether the reactor should use linear (true) fuel usage formula or exponential (false)")
+                    .getBoolean(true);
+            reactorFuelStorage = config.get(
+                    "Draconic Reactor",
+                    "maxFuelStorage",
+                    10368,
+                    "Use this to adjust the maximum fuel storage of the reactor",
+                    0,
+                    10000000).getInt(10368);
+            reactorFuelValue = config.get(
+                    "Draconic Reactor",
+                    "awakenedDraconiumFuelValue",
+                    16,
+                    "Use this to adjust the fuel value of awakened draconium nugget",
+                    0,
+                    1000000).getInt(16);
+            reactorChaosValue = config.get(
+                    "Draconic Reactor",
+                    "chaosShardOutputValue",
+                    16,
+                    "Use this to adjust how much fuel value one tiny chaos shard takes",
+                    0,
+                    1000000).getInt(16);
+            enableAutomation = config.get(
+                    "Draconic Reactor",
+                    "enableAutomation",
+                    false,
+                    "Sets whether the reactor is automatable or not").getBoolean(false);
             disabledNamesList.clear();
             for (String s : disabledBlocksItems) {
                 disabledNamesList.add(s);
