@@ -30,6 +30,10 @@ public class ConfigHandler {
     public static boolean disableOreSpawnEnd;
     public static boolean disableOreSpawnOverworld;
     public static boolean disableOreSpawnNether;
+    public static int oreWeightOverworld;
+    public static int oreWeightNether;
+    public static int oreWeightEnd;
+    public static int oreWeightDefault;
     public static boolean dragonBreaksBlocks;
     public static boolean sumonRitualAccelerated;
     public static int[] dragonEggSpawnLocation;
@@ -182,6 +186,33 @@ public class ConfigHandler {
                     "Disable Ore Spawn (Overworld)",
                     false,
                     "Set to true to prevent draconium ore from spawning in the overworld").getBoolean(false);
+            oreWeightOverworld = config
+                    .get(
+                            Configuration.CATEGORY_GENERAL,
+                            "Overworld Draconium Ore Weight",
+                            2,
+                            "Rarity of draconium ore in overworld (higher = more common), does not support fractions")
+                    .getInt(2);
+            oreWeightNether = config
+                    .get(
+                            Configuration.CATEGORY_GENERAL,
+                            "Nether Draconium Ore Weight",
+                            5,
+                            "Rarity of draconium ore in nether (higher = more common), does not support fractions")
+                    .getInt(5);
+            oreWeightEnd = config
+                    .get(
+                            Configuration.CATEGORY_GENERAL,
+                            "End Draconium Ore Weight",
+                            10,
+                            "Rarity of draconium ore in end (higher = more common), does not support fractions")
+                    .getInt(10);
+            oreWeightDefault = config.get(
+                    Configuration.CATEGORY_GENERAL,
+                    "Default Draconium Ore Weight",
+                    2,
+                    "Rarity of draconium ore in other dimensions in whitelist (higher = more common), does not support fractions")
+                    .getInt(2);
             dragonBreaksBlocks = config.get(
                     Configuration.CATEGORY_GENERAL,
                     "Can dragon break blocks",
