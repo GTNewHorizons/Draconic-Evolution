@@ -33,7 +33,7 @@ public class DislocatorInhibitor extends BlockDE implements ITileEntityProvider 
         this.setBlockName(Strings.dislocatorInhibitor);
         this.setCreativeTab(DraconicEvolution.tabBlocksItems);
         this.setStepSound(soundTypeStone);
-        ModBlocks.register(this, InfusedObsidianItemBlock.class);
+        ModBlocks.register(this, DislocatorInhibitorItemBlock.class);
     }
 
     @Override
@@ -112,17 +112,17 @@ public class DislocatorInhibitor extends BlockDE implements ITileEntityProvider 
         blockIcon = iconRegister.registerIcon(References.RESOURCESPREFIX + "inhibitor_block");
     }
 
-    public static class InfusedObsidianItemBlock extends ItemBlock {
+    public static class DislocatorInhibitorItemBlock extends ItemBlock {
 
-        public InfusedObsidianItemBlock(Block p_i45328_1_) {
-            super(p_i45328_1_);
+        public DislocatorInhibitorItemBlock(Block block) {
+            super(block);
         }
 
         @SideOnly(Side.CLIENT)
         @Override
-        public void addInformation(ItemStack p_77624_1_, EntityPlayer p_77624_2_, List list, boolean p_77624_4_) {
-            list.add(EnumChatFormatting.GRAY + StatCollector.translateToLocal("info.de.dislocatorInhibitor.txt"));
-            super.addInformation(p_77624_1_, p_77624_2_, list, p_77624_4_);
+        public void addInformation(ItemStack item, EntityPlayer player, List lines, boolean advanced) {
+            lines.add(EnumChatFormatting.GRAY + StatCollector.translateToLocal("info.de.dislocatorInhibitor.txt"));
+            super.addInformation(item, player, lines, advanced);
         }
     }
 }

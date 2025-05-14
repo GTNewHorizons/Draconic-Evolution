@@ -84,6 +84,7 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
             value = MAXIMUM_RANGE;
         }
         this.range = value;
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     public boolean isBlockingItem(ItemStack item) {
@@ -133,6 +134,7 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
             return;
         }
         this.activityControlType = ActivityControlType.values()[index];
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     public ActivityControlType getActivityControlType() {
@@ -152,6 +154,8 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
             return;
         }
         setInventorySlotContents(slot, item);
+
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     public void addItemFilter(ItemStack itemStack) {
@@ -170,8 +174,9 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
         return whitelist;
     }
 
-    public void setWhitelist(short value) {
-        this.whitelist = value == 1;
+    public void setWhitelist(boolean value) {
+        this.whitelist = value;
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     @Override
