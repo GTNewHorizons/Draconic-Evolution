@@ -3,6 +3,7 @@ package com.brandon3055.draconicevolution.common.tileentities;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.brandon3055.draconicevolution.common.ModBlocks;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -15,6 +16,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import com.brandon3055.draconicevolution.common.container.ContainerDislocatorInhibitor;
@@ -181,7 +183,8 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
 
     @Override
     public String getInventoryName() {
-        return "Dislocator Inhibitor";
+        return StatCollector.translateToLocal(ModBlocks.dislocatorInhibitor.getUnlocalizedName() + ".name");
+//        return "Dislocator Inhibitor";
     }
 
     @Override
