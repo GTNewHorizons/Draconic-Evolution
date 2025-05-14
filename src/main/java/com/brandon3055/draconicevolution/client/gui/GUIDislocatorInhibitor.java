@@ -48,7 +48,7 @@ public class GUIDislocatorInhibitor extends GuiContainer implements INEIGuiHandl
         this.container = (ContainerDislocatorInhibitor) inventorySlots;
 
         xSize = 176;
-        ySize = 142;
+        ySize = 150;
 
         syncWithServer();
     }
@@ -58,14 +58,15 @@ public class GUIDislocatorInhibitor extends GuiContainer implements INEIGuiHandl
     public void initGui() {
         super.initGui();
         buttonList.clear();
-        buttonList.add(new GuiButtonAHeight(0, guiLeft + 7, guiTop + 11, 18, 18, "-"));
-        buttonList.add(new GuiButtonAHeight(1, guiLeft + 97, guiTop + 11, 18, 18, "+"));
-        buttonList.add(new GuiButtonAHeight(2, guiLeft + 151, guiTop + 11, 18, 18, ""));
-        buttonList.add(new GuiButtonAHeight(3, guiLeft + 151, guiTop + 33, 18, 18, ""));
+        buttonList.add(new GuiButtonAHeight(0, guiLeft + 7, guiTop + 19, 18, 18, "-"));
+        buttonList.add(new GuiButtonAHeight(1, guiLeft + 97, guiTop + 19, 18, 18, "+"));
+        buttonList.add(new GuiButtonAHeight(2, guiLeft + 151, guiTop + 19, 18, 18, ""));
+        buttonList.add(new GuiButtonAHeight(3, guiLeft + 151, guiTop + 41, 18, 18, ""));
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
+        fontRendererObj.drawString(StatCollector.translateToLocal("tile.draconicevolution:dislocatorInhibitor.name"), 7, 5, 0x222222);
         drawGuiText();
         drawGreyOutSlots();
         drawButtonIcons();
@@ -113,19 +114,19 @@ public class GUIDislocatorInhibitor extends GuiContainer implements INEIGuiHandl
     }
 
     private boolean isOverIncreaseRangeButton(int x, int y) {
-        return (x - guiLeft > 7 && x - guiLeft < 25) && (y - guiTop > 11 && y - guiTop < 29);
+        return (x - guiLeft >= 7 && x - guiLeft < 25) && (y - guiTop >= 19 && y - guiTop < 37);
     }
 
     private boolean isOverDecreaseRangeButton(int x, int y) {
-        return (x - guiLeft > 97 && x - guiLeft < 115) && (y - guiTop > 11 && y - guiTop < 29);
+        return (x - guiLeft >= 97 && x - guiLeft < 115) && (y - guiTop >= 19 && y - guiTop < 37);
     }
 
     private boolean isOverActivityControlButton(int x, int y) {
-        return (x - guiLeft > 151 && x - guiLeft < 169) && (y - guiTop > 11 && y - guiTop < 29);
+        return (x - guiLeft >= 151 && x - guiLeft < 169) && (y - guiTop >= 19 && y - guiTop < 37);
     }
 
     private boolean isOverWhitelistButton(int x, int y) {
-        return (x - guiLeft > 151 && x - guiLeft < 169) && (y - guiTop > 33 && y - guiTop < 51);
+        return (x - guiLeft >= 151 && x - guiLeft < 169) && (y - guiTop >= 41 && y - guiTop < 59);
     }
 
 
@@ -204,10 +205,10 @@ public class GUIDislocatorInhibitor extends GuiContainer implements INEIGuiHandl
         fontRendererObj.drawString(
                 StatCollector.translateToLocal("gui.de.dislocatorInhibitor.range.txt"),
                 40,
-                17,
+                25,
                 0x000000,
                 false);
-        fontRendererObj.drawString(String.valueOf(range), range < 10 ? 78 : 75, 17, 0x000000, false);
+        fontRendererObj.drawString(String.valueOf(range), range < 10 ? 78 : 75, 25, 0x000000, false);
     }
 
     private void drawButtonIcons() {
@@ -216,10 +217,10 @@ public class GUIDislocatorInhibitor extends GuiContainer implements INEIGuiHandl
         Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 
         // activity control button
-        drawTexturedModalRect(151, 11, 0, 142 + (18 * activityControlType.ordinal()), 18, 18);
+        drawTexturedModalRect(151, 19, 0, 150 + (18 * activityControlType.ordinal()), 18, 18);
 
         // whitelist button
-        drawTexturedModalRect(151, 33, 18, 142 + (whitelist ? 0 : 18), 18, 18);
+        drawTexturedModalRect(151, 41, 18, 150 + (whitelist ? 0 : 18), 18, 18);
     }
 
     private void drawGreyOutSlots() {
@@ -230,7 +231,7 @@ public class GUIDislocatorInhibitor extends GuiContainer implements INEIGuiHandl
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5f);
         Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
         for (int i = 0; i < 8; i++) {
-            drawTexturedModalRect(7 + i * 18, 33, 36, 142, 18, 18);
+            drawTexturedModalRect(7 + i * 18, 41, 36, 150, 18, 18);
         }
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
