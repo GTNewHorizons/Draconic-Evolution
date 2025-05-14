@@ -66,7 +66,11 @@ public class GUIDislocatorInhibitor extends GuiContainer implements INEIGuiHandl
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
-        fontRendererObj.drawString(StatCollector.translateToLocal("tile.draconicevolution:dislocatorInhibitor.name"), 7, 5, 0x222222);
+        fontRendererObj.drawString(
+                StatCollector.translateToLocal("tile.draconicevolution:dislocatorInhibitor.name"),
+                7,
+                5,
+                0x222222);
         drawGuiText();
         drawGreyOutSlots();
         drawButtonIcons();
@@ -128,7 +132,6 @@ public class GUIDislocatorInhibitor extends GuiContainer implements INEIGuiHandl
     private boolean isOverWhitelistButton(int x, int y) {
         return (x - guiLeft >= 151 && x - guiLeft < 169) && (y - guiTop >= 41 && y - guiTop < 59);
     }
-
 
     @Override
     protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType) {
