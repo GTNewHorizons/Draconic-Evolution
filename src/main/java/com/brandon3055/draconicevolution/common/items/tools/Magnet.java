@@ -130,16 +130,15 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 }
 
                 EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
-
                 if (closestPlayer != null && closestPlayer != player) {
                     continue;
                 }
 
-                didPlayerDrop = item.func_145800_j() != null
-                        && item.func_145800_j().equals(player.getCommandSenderName());
                 item.writeEntityToNBT(itemNBT);
 
                 if (!world.isRemote) {
+                    didPlayerDrop = item.func_145800_j() != null
+                            && item.func_145800_j().equals(player.getCommandSenderName());
                     if (!didPlayerDrop) item.delayBeforeCanPickup = 0;
                     if (item.delayBeforeCanPickup <= 0) {
                         itemNBT.setBoolean("attractable", true);
