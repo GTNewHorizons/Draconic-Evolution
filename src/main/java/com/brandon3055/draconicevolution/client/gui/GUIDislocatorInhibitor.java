@@ -89,11 +89,11 @@ public class GUIDislocatorInhibitor extends GuiContainer implements INEIGuiHandl
     public void drawScreen(int x, int y, float partialTicks) {
         super.drawScreen(x, y, partialTicks);
         ArrayList<String> lines = new ArrayList<>();
-        if (isOverIncreaseRangeButton(x, y)) {
-            lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.range.increase.txt"));
-        } else if (isOverDecreaseRangeButton(x, y)) {
+        if (isButtonHovered(x, y, 7, 19, 18, 18)) {
             lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.range.decrease.txt"));
-        } else if (isOverActivityControlButton(x, y)) {
+        } else if (isButtonHovered(x, y, 97, 19, 18, 18)) {
+            lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.range.increase.txt"));
+        } else if (isButtonHovered(x, y, 151, 19, 18, 18)) {
             switch (activityControlType) {
                 case ALWAYS_ACTIVE -> lines
                         .add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.always.txt"));
@@ -105,7 +105,7 @@ public class GUIDislocatorInhibitor extends GuiContainer implements INEIGuiHandl
                         .add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.never.txt"));
             }
             lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.activity.cycle.txt"));
-        } else if (isOverWhitelistButton(x, y)) {
+        } else if (isButtonHovered(x, y, 151, 41, 18, 18)) {
             if (whitelist) {
                 lines.add(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.tooltip.whitelist.txt"));
             } else {
@@ -117,20 +117,9 @@ public class GUIDislocatorInhibitor extends GuiContainer implements INEIGuiHandl
         }
     }
 
-    private boolean isOverIncreaseRangeButton(int x, int y) {
-        return (x - guiLeft >= 7 && x - guiLeft < 25) && (y - guiTop >= 19 && y - guiTop < 37);
-    }
-
-    private boolean isOverDecreaseRangeButton(int x, int y) {
-        return (x - guiLeft >= 97 && x - guiLeft < 115) && (y - guiTop >= 19 && y - guiTop < 37);
-    }
-
-    private boolean isOverActivityControlButton(int x, int y) {
-        return (x - guiLeft >= 151 && x - guiLeft < 169) && (y - guiTop >= 19 && y - guiTop < 37);
-    }
-
-    private boolean isOverWhitelistButton(int x, int y) {
-        return (x - guiLeft >= 151 && x - guiLeft < 169) && (y - guiTop >= 41 && y - guiTop < 59);
+    private boolean isButtonHovered(int mouseX, int mouseY, int buttonX, int buttonY, int width, int height) {
+        return (mouseX >= buttonX + guiLeft && mouseX < buttonX + width + guiLeft)
+                && (mouseY >= buttonY + guiTop && mouseY < buttonY + height + guiTop);
     }
 
     @Override

@@ -184,7 +184,6 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
     @Override
     public String getInventoryName() {
         return StatCollector.translateToLocal(ModBlocks.dislocatorInhibitor.getUnlocalizedName() + ".name");
-        // return "Dislocator Inhibitor";
     }
 
     @Override
