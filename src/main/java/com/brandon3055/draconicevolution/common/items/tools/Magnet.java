@@ -112,6 +112,8 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                             entity.posZ).expand(range, range, range));
 
             boolean playSound = false;
+            boolean didPlayerDrop;
+            NBTTagCompound itemNBT = new NBTTagCompound();
 
             for (EntityItem item : items) {
                 if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
@@ -126,19 +128,37 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                                         == item.getEntityItem().getItemDamage())) {
                     continue;
                 }
-                playSound = true;
 
-                if (item.delayBeforeCanPickup > 0) {
-                    item.delayBeforeCanPickup = 0;
+                EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
+
+                if (closestPlayer != null && closestPlayer != player) {
+                    continue;
                 }
-                item.motionX = 0;
-                item.motionY = 0;
-                item.motionZ = 0;
-                item.setPosition(
-                        entity.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                        entity.posY - 0.6,
-                        entity.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+
+                didPlayerDrop = item.func_145800_j() != null
+                        && item.func_145800_j().equals(player.getCommandSenderName());
+                item.writeEntityToNBT(itemNBT);
+
+                if (!world.isRemote) {
+                    if (!didPlayerDrop) item.delayBeforeCanPickup = 0;
+                    if (item.delayBeforeCanPickup <= 0) {
+                        itemNBT.setBoolean("attractable", true);
+                        item.readEntityFromNBT(itemNBT);
+                    }
+                }
+
+                if (itemNBT.getBoolean("attractable")) {
+                    playSound = true;
+                    item.motionX = 0;
+                    item.motionY = 0;
+                    item.motionZ = 0;
+                    item.setPosition(
+                            entity.posX - 0.2 + (world.rand.nextDouble() * 0.4),
+                            entity.posY - 0.6,
+                            entity.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+                }
             }
+
             if (playSound && !ConfigHandler.itemDislocatorDisableSound) {
                 world.playSoundAtEntity(
                         entity,
