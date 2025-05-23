@@ -48,8 +48,6 @@ public class SlotFakeClickPacket implements IMessage {
                 return null;
             }
             tile.setFilterItem(message.slotIndex, message.stack);
-
-            ctx.getServerHandler().playerEntity.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
             return null;
         }
     }

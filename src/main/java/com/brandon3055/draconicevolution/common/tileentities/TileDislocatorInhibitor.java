@@ -15,8 +15,10 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
+import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.container.ContainerDislocatorInhibitor;
 
 public class TileDislocatorInhibitor extends TileEntity implements IInventory {
@@ -84,6 +86,7 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
             value = MAXIMUM_RANGE;
         }
         this.range = value;
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     public boolean isBlockingItem(ItemStack item) {
@@ -133,6 +136,7 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
             return;
         }
         this.activityControlType = ActivityControlType.values()[index];
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     public ActivityControlType getActivityControlType() {
@@ -152,6 +156,8 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
             return;
         }
         setInventorySlotContents(slot, item);
+
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     public void addItemFilter(ItemStack itemStack) {
@@ -170,13 +176,14 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
         return whitelist;
     }
 
-    public void setWhitelist(short value) {
-        this.whitelist = value == 1;
+    public void setWhitelist(boolean value) {
+        this.whitelist = value;
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     @Override
     public String getInventoryName() {
-        return "Dislocator Inhibitor";
+        return StatCollector.translateToLocal(ModBlocks.dislocatorInhibitor.getUnlocalizedName() + ".name");
     }
 
     @Override

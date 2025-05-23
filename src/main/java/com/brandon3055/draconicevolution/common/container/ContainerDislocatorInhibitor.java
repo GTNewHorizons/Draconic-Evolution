@@ -22,19 +22,19 @@ public class ContainerDislocatorInhibitor extends Container {
 
     private void bindPlayerInventory(InventoryPlayer invPlayer) {
         for (int x = 0; x < 9; x++) {
-            addSlotToContainer(new Slot(invPlayer, x, 8 + 18 * x, 118));
+            addSlotToContainer(new Slot(invPlayer, x, 8 + 18 * x, 126));
         }
 
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 9; x++) {
-                addSlotToContainer(new Slot(invPlayer, x + y * 9 + 9, 8 + 18 * x, 60 + y * 18));
+                addSlotToContainer(new Slot(invPlayer, x + y * 9 + 9, 8 + 18 * x, 68 + y * 18));
             }
         }
     }
 
     public void addContainerSlots(TileDislocatorInhibitor tileInhibitor) {
         for (int i = 0; i < 8; i++) {
-            addSlotToContainer(new SlotFakeItem(tileInhibitor, i, 8 + 18 * i, 34));
+            addSlotToContainer(new SlotFakeItem(tileInhibitor, i, 8 + 18 * i, 42));
         }
     }
 

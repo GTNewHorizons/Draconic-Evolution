@@ -48,9 +48,8 @@ public class DislocatorInhibitorButtonPacket implements IMessage {
             switch (message.index) {
                 case 0 -> tile.setRange(message.value);
                 case 1 -> tile.setActivityControl(message.value);
-                case 2 -> tile.setWhitelist(message.value);
+                case 2 -> tile.setWhitelist(message.value == 1);
             }
-            ctx.getServerHandler().playerEntity.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
             return null;
         }
     }
