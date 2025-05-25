@@ -30,6 +30,10 @@ public class ConfigHandler {
     public static boolean disableOreSpawnEnd;
     public static boolean disableOreSpawnOverworld;
     public static boolean disableOreSpawnNether;
+    public static int oreWeightOverworld;
+    public static int oreWeightNether;
+    public static int oreWeightEnd;
+    public static int oreWeightDefault;
     public static boolean dragonBreaksBlocks;
     public static boolean sumonRitualAccelerated;
     public static int[] dragonEggSpawnLocation;
@@ -73,6 +77,11 @@ public class ConfigHandler {
     public static boolean enableReactorBigBoom;
     public static double reactorOutputMultiplier;
     public static double reactorFuelUsageMultiplier;
+    public static boolean linearReactorFuelUsage;
+    public static int reactorFuelStorage;
+    public static int reactorFuelValue;
+    public static int reactorChaosValue;
+    public static boolean enableAutomation;
 
     private static String[] defaultSpawnerList = new String[] { "ExampleMob1", "ExampleMob2",
             "ExampleMob3 (these examples can be deleted)" };
@@ -177,6 +186,33 @@ public class ConfigHandler {
                     "Disable Ore Spawn (Overworld)",
                     false,
                     "Set to true to prevent draconium ore from spawning in the overworld").getBoolean(false);
+            oreWeightOverworld = config
+                    .get(
+                            Configuration.CATEGORY_GENERAL,
+                            "Overworld Draconium Ore Weight",
+                            2,
+                            "Rarity of draconium ore in overworld (higher = more common), does not support fractions")
+                    .getInt(2);
+            oreWeightNether = config
+                    .get(
+                            Configuration.CATEGORY_GENERAL,
+                            "Nether Draconium Ore Weight",
+                            5,
+                            "Rarity of draconium ore in nether (higher = more common), does not support fractions")
+                    .getInt(5);
+            oreWeightEnd = config
+                    .get(
+                            Configuration.CATEGORY_GENERAL,
+                            "End Draconium Ore Weight",
+                            10,
+                            "Rarity of draconium ore in end (higher = more common), does not support fractions")
+                    .getInt(10);
+            oreWeightDefault = config.get(
+                    Configuration.CATEGORY_GENERAL,
+                    "Default Draconium Ore Weight",
+                    2,
+                    "Rarity of draconium ore in other dimensions in whitelist (higher = more common), does not support fractions")
+                    .getInt(2);
             dragonBreaksBlocks = config.get(
                     Configuration.CATEGORY_GENERAL,
                     "Can dragon break blocks",
@@ -319,13 +355,13 @@ public class ConfigHandler {
                             true,
                             "Setting this to false will reduce the reactor explosion to little more then a tnt blast")
                     .getBoolean(true);
-            reactorFuelUsageMultiplier = config.get(
+            reactorFuelStorage = config.get(
                     "Draconic Reactor",
-                    "FuelUsageMultiplier",
-                    1,
-                    "Use this to adjust how quickly the reactor uses fuel",
+                    "maxFuelStorage",
+                    10368,
+                    "Use this to adjust the maximum fuel storage of the reactor",
                     0,
-                    1000000).getDouble(1);
+                    10000000).getInt(10368);
             reactorOutputMultiplier = config.get(
                     "Draconic Reactor",
                     "EnergyOutputMultiplier",
@@ -333,7 +369,45 @@ public class ConfigHandler {
                     "Use this to adjust the output of the reactor",
                     0,
                     1000000).getDouble(1);
-
+            reactorFuelUsageMultiplier = config.get(
+                    "Draconic Reactor",
+                    "FuelUsageMultiplier",
+                    1,
+                    "Use this to adjust how quickly the reactor uses fuel",
+                    0,
+                    1000000).getDouble(1);
+            linearReactorFuelUsage = config.get(
+                    "Draconic Reactor",
+                    "linearReactorFuelUsage",
+                    linearReactorFuelUsage,
+                    "Sets whether the reactor should use linear (true) fuel usage formula or exponential (false)")
+                    .getBoolean(true);
+            reactorFuelStorage = config.get(
+                    "Draconic Reactor",
+                    "maxFuelStorage",
+                    10368,
+                    "Use this to adjust the maximum fuel storage of the reactor",
+                    0,
+                    10000000).getInt(10368);
+            reactorFuelValue = config.get(
+                    "Draconic Reactor",
+                    "awakenedDraconiumFuelValue",
+                    16,
+                    "Use this to adjust the fuel value of awakened draconium nugget",
+                    0,
+                    1000000).getInt(16);
+            reactorChaosValue = config.get(
+                    "Draconic Reactor",
+                    "chaosShardOutputValue",
+                    16,
+                    "Use this to adjust how much fuel value one tiny chaos shard takes",
+                    0,
+                    1000000).getInt(16);
+            enableAutomation = config.get(
+                    "Draconic Reactor",
+                    "enableAutomation",
+                    false,
+                    "Sets whether the reactor is automatable or not").getBoolean(false);
             disabledNamesList.clear();
             for (String s : disabledBlocksItems) {
                 disabledNamesList.add(s);
