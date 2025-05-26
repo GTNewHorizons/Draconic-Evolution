@@ -71,7 +71,7 @@ import thaumcraft.api.nodes.IRevealer;
                 @Interface(iface = "thaumcraft.api.nodes.IRevealer", modid = "Thaumcraft"),
                 @Interface(iface = "forestry.api.apiculture.IArmorApiarist", modid = "Forestry"),
                 @Interface(iface = "forestry.api.core.IArmorNaturalist", modid = "Forestry"),
-                @Interface(iface = "gregtech.api.hazards.IHazardProtector", modid = "gregtech") })
+                @Interface(iface = "gregtech.api.hazards.IHazardProtector", modid = "gregtech_nh") })
 public class DraconicArmor extends ItemArmor implements ISpecialArmor, IConfigurableItem, IInventoryTool, IGoggles,
         IVisDiscountGear, IRevealer, IUpgradableItem, ICustomArmor, IArmorNaturalist, IArmorApiarist, IHazardProtector {
 
@@ -377,7 +377,7 @@ public class DraconicArmor extends ItemArmor implements ISpecialArmor, IConfigur
                 list.add(new ItemConfigField(References.BOOLEAN_ID, slot, "ApiaristArmor").readFromItem(stack, true));
             }
         }
-        if (Loader.isModLoaded("gregtech")) {
+        if (Loader.isModLoaded("gregtech") && !Loader.isModLoaded("gregapi")) {
             for (Hazard value : Hazard.values()) {
                 list.add(
                         new ItemConfigField(References.BOOLEAN_ID, slot, ModHelper.getHazmatArmorConfigKey(value))
@@ -657,7 +657,7 @@ public class DraconicArmor extends ItemArmor implements ISpecialArmor, IConfigur
     }
 
     @Override
-    @Method(modid = "gregtech")
+    @Method(modid = "gregtech_nh")
     public boolean protectsAgainst(ItemStack itemStack, Hazard hazard) {
         return IConfigurableItem.ProfileHelper.getBoolean(itemStack, ModHelper.getHazmatArmorConfigKey(hazard), true);
     }
