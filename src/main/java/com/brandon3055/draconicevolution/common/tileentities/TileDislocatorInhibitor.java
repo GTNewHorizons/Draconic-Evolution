@@ -95,7 +95,7 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
             if (itemStack == null) {
                 continue;
             }
-            if (itemStack.getItem() == item.getItem()) {
+            if (itemStack.isItemEqual(item)) {
                 blocked = true;
                 break;
             }
