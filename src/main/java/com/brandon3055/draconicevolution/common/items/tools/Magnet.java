@@ -157,18 +157,23 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                                 entity.posX,
                                 entity.posY,
                                 entity.posZ).expand(4, 4, 4));
+                boolean playSoundXp = false;
                 for (EntityXPOrb orb : xp) {
                     if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
                         if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, orb))) continue;
-                        world.playSoundAtEntity(
-                                player,
-                                "random.orb",
-                                0.1F,
-                                0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
+                        playSoundXp = true;
                         player.onItemPickup(orb, 1);
                         player.addExperience(orb.xpValue);
                         orb.setDead();
                     }
+                }
+                if (playSoundXp) {
+                    world.playSoundAtEntity(
+                            player,
+                            "random.orb",
+                            0.1F,
+                            0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
+
                 }
             }
         }
