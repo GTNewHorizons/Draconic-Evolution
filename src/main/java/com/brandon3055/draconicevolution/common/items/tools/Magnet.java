@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.DataWatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -37,6 +38,8 @@ import baubles.api.IBauble;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+
+import javax.xml.crypto.Data;
 
 /**
  * Created by brandon3055 on 9/3/2016.
@@ -98,6 +101,8 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
             return;
         }
 
+        final boolean skipPlayerCheck = world.playerEntities.size() < 2;
+
         if (entity instanceof EntityPlayer player) {
             int range = stack.getItemDamage() == 0 ? 8 : 32;
 
@@ -113,9 +118,12 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
 
             boolean playSound = false;
             boolean didPlayerDrop;
-            NBTTagCompound itemNBT = new NBTTagCompound();
+            double feetPos = world.isRemote ? entity.posY - (1.5 + player.getEyeHeight()) : entity.posY;
+            boolean doMove;
+            DataWatcher dw;
 
             for (EntityItem item : items) {
+
                 if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
                         || TileDislocatorInhibitor.isInInhibitorRange(world, item.posX, item.posY, item.posZ)) {
                     continue;
@@ -129,32 +137,48 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                     continue;
                 }
 
-                EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
-                if (closestPlayer != null && closestPlayer != player) {
-                    continue;
-                }
-
-                item.writeEntityToNBT(itemNBT);
-
-                if (!world.isRemote) {
-                    didPlayerDrop = item.func_145800_j() != null
-                            && item.func_145800_j().equals(player.getCommandSenderName());
-                    if (!didPlayerDrop) item.delayBeforeCanPickup = 0;
-                    if (item.delayBeforeCanPickup <= 0) {
-                        itemNBT.setBoolean("attractable", true);
-                        item.readEntityFromNBT(itemNBT);
+                doMove = false;
+                dw = item.getDataWatcher();
+                for (Object obj : dw.getAllWatched()) {
+                    DataWatcher.WatchableObject watchable = (DataWatcher.WatchableObject)obj;
+                    if (watchable.getDataValueId() == 11) {
+                        doMove = true;
+                        break;
                     }
                 }
 
-                if (itemNBT.getBoolean("attractable")) {
+                if (!doMove) {
+                    dw.addObjectByDataType(11, 0);
+                    if (!world.isRemote) {
+                        if (!skipPlayerCheck) {
+                            EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
+                            if (closestPlayer != null && closestPlayer != player) {
+                                continue;
+                            }
+                        }
+                        didPlayerDrop = item.func_145800_j() != null
+                                && item.func_145800_j().equals(player.getCommandSenderName());
+                        if (!didPlayerDrop) item.delayBeforeCanPickup = 0;
+                        if (item.delayBeforeCanPickup <= 0) {
+                            dw.updateObject(11, 1);
+                            doMove = true;
+                        }
+                    }
+                    dw.setObjectWatched(11);
+                }
+
+                if (doMove) {
                     playSound = true;
                     item.motionX = 0;
                     item.motionY = 0;
                     item.motionZ = 0;
-                    item.setPosition(
+                    item.setLocationAndAngles(
                             entity.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                            entity.posY - 0.6,
-                            entity.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+                            feetPos + item.height,
+                            entity.posZ - 0.2 + (world.rand.nextDouble() * 0.4),
+                            0.0f,
+                            0.0f
+                    );
                 }
             }
 
