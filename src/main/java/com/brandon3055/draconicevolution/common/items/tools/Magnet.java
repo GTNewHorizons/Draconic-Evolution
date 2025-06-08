@@ -123,6 +123,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
             double feetPos = world.isRemote ? entity.posY - (1.5 + player.getEyeHeight()) : entity.posY;
             boolean doMove;
             DataWatcher dw;
+            int selfPickupStatus = getSelfPickupStatus(stack);
 
             for (EntityItem item : items) {
 
@@ -144,8 +145,11 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 for (Object obj : dw.getAllWatched()) {
                     DataWatcher.WatchableObject watchable = (DataWatcher.WatchableObject)obj;
                     if (watchable.getDataValueId() == 11) {
-                        doMove = true;
-                        break;
+                        java.util.Optional<Object> watchableVal = java.util.Optional.ofNullable(watchable.getObject());
+                        if (watchableVal.isPresent() && (Byte)watchableVal.get() == 1) {
+                            doMove = true;
+                            break;
+                        }
                     }
                 }
 
@@ -158,12 +162,16 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                                 continue;
                             }
                         }
-                        didPlayerDrop = item.func_145800_j() != null
-                                && item.func_145800_j().equals(player.getCommandSenderName());
-                        if (!didPlayerDrop) item.delayBeforeCanPickup = 0;
-                        if (item.delayBeforeCanPickup <= 0) {
+                        if (selfPickupStatus != SELF_PICKUP_ALWAYS) {
+                            didPlayerDrop = item.func_145800_j() != null
+                                    && item.func_145800_j().equals(player.getCommandSenderName());
+                            if (!didPlayerDrop) doMove = true;
+                            else if (selfPickupStatus == SELF_PICKUP_DELAY && item.delayBeforeCanPickup <= 0) doMove = true;
+                        }
+                        else doMove = true;
+
+                        if (doMove) {
                             dw.updateObject(11, 1);
-                            doMove = true;
                         }
                     }
                     dw.setObjectWatched(11);
@@ -171,6 +179,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
 
                 if (doMove) {
                     playSound = true;
+                    item.delayBeforeCanPickup = 0;
                     item.motionX = 0;
                     item.motionY = 0;
                     item.motionZ = 0;
