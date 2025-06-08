@@ -39,8 +39,6 @@ import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-import javax.xml.crypto.Data;
-
 /**
  * Created by brandon3055 on 9/3/2016.
  */
@@ -50,6 +48,10 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
 
     private IIcon draconium;
     private IIcon awakened;
+
+    public static final int SELF_PICKUP_ALWAYS = 0;
+    public static final int SELF_PICKUP_DELAY = 1;
+    public static final int SELF_PICKUP_NEVER = 2;
 
     public Magnet() {
         this.setUnlocalizedName("magnet");
@@ -234,12 +236,25 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
     }
 
     public static void toggle(ItemStack itemStack) {
-        final boolean enabled = IConfigurableItem.ProfileHelper.getBoolean(itemStack, References.ENABLED, false);
+        final boolean enabled = isEnabled(itemStack);
         IConfigurableItem.ProfileHelper.setBoolean(itemStack, References.ENABLED, !enabled);
     }
 
     public static void setStatus(ItemStack itemStack, boolean status) {
         IConfigurableItem.ProfileHelper.setBoolean(itemStack, References.ENABLED, status);
+    }
+
+    public static int getSelfPickupStatus(ItemStack itemStack) {
+        return IConfigurableItem.ProfileHelper.getInteger(itemStack, References.ENABLED_SELF_PICKUP, 0);
+    }
+
+    public static void toggleSelfPickupStatus(ItemStack itemStack) {
+        final int enabledSelfPickup = getSelfPickupStatus(itemStack);
+        IConfigurableItem.ProfileHelper.setInteger(itemStack, References.ENABLED_SELF_PICKUP, enabledSelfPickup == SELF_PICKUP_NEVER ? 0 : enabledSelfPickup + 1);
+    }
+
+    public static void setSelfPickupStatus(ItemStack itemStack, int status) {
+        IConfigurableItem.ProfileHelper.setInteger(itemStack, References.ENABLED_SELF_PICKUP, status);
     }
 
     @Override
@@ -259,6 +274,14 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                         + InfoHelper.ITC()
                         + " "
                         + StatCollector.translateToLocal("info.de.blockRange.txt"));
+        list.add(
+                StatCollector.translateToLocal("info.de.selfPickup.txt")
+                + ": "
+                + switch(getSelfPickupStatus(stack)) {
+                    case SELF_PICKUP_DELAY -> StatCollector.translateToLocal("info.de.selfPickupDelay.txt");
+                    case SELF_PICKUP_NEVER -> StatCollector.translateToLocal("info.de.selfPickupNever.txt");
+                    default -> StatCollector.translateToLocal("info.de.selfPickupAlways.txt");
+                });
     }
 
     @Override

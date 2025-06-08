@@ -21,6 +21,7 @@ public final class KeyBindings {
     public static final KeyBinding toolProfileChange;
     public static final KeyBinding toggleFlight;
     public static final KeyBinding toggleMagnet;
+    public static final KeyBinding toggleMagnetSelfPickup;
 
     static {
         placeItem = new KeyBinding("key.placeItem", Keyboard.KEY_V, References.MODNAME);
@@ -28,6 +29,7 @@ public final class KeyBindings {
         toolProfileChange = new KeyBinding("key.toolProfileChange", Keyboard.KEY_NONE, References.MODNAME);
         toggleFlight = new KeyBinding("key.toggleFlight", Keyboard.KEY_NONE, References.MODNAME);
         toggleMagnet = new KeyBinding("key.toggleMagnet", Keyboard.KEY_NONE, References.MODNAME);
+        toggleMagnetSelfPickup = new KeyBinding("key.toggleMagnetSelfPickup", Keyboard.KEY_NONE, References.MODNAME);
     }
 
     private KeyBindings() {}
@@ -38,5 +40,6 @@ public final class KeyBindings {
         ClientRegistry.registerKeyBinding(toolProfileChange);
         ClientRegistry.registerKeyBinding(toggleFlight);
         ClientRegistry.registerKeyBinding(toggleMagnet);
+        ClientRegistry.registerKeyBinding(toggleMagnetSelfPickup);
     }
 }

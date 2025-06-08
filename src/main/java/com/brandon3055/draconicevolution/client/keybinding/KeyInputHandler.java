@@ -4,7 +4,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
+import javax.swing.text.html.Option;
 
+import com.brandon3055.draconicevolution.common.network.MagnetToggleSelfPickupPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -50,6 +52,8 @@ public class KeyInputHandler {
             handleToggleFlightKey(player);
         } else if (KeyBindings.toggleMagnet.isPressed()) {
             handleToggleMagnetKey(player);
+        } else if (KeyBindings.toggleMagnetSelfPickup.isPressed()) {
+            handleToggleMagnetSelfPickup(player);
         }
     }
 
@@ -68,6 +72,8 @@ public class KeyInputHandler {
             handleToggleFlightKey(player);
         } else if (KeyBindings.toggleMagnet.isPressed()) {
             handleToggleMagnetKey(player);
+        } else if (KeyBindings.toggleMagnetSelfPickup.isPressed()) {
+            handleToggleMagnetSelfPickup(player);
         }
 
         if (player != null) {
@@ -136,6 +142,14 @@ public class KeyInputHandler {
 
         if (magnetOptional.isPresent()) {
             DraconicEvolution.network.sendToServer(new MagnetTogglePacket());
+        }
+    }
+
+    private void handleToggleMagnetSelfPickup(EntityClientPlayerMP player) {
+        Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
+
+        if (magnetOptional.isPresent()) {
+            DraconicEvolution.network.sendToServer(new MagnetToggleSelfPickupPacket());
         }
     }
 

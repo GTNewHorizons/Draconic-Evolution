@@ -39,4 +39,5 @@ public final class References {
     public static final String BASE_SAFE_AOE = "BaseSafeAOE";
     public static final String ENABLED = "Enabled";
     public static final String MAGNET_SNEAK = "MagnetSneak";
+    public static final String ENABLED_SELF_PICKUP = "EnabledSelfPickup";
 }
