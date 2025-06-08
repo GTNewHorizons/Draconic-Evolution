@@ -38,6 +38,7 @@ import com.brandon3055.draconicevolution.common.magic.PotionHandler;
 import com.brandon3055.draconicevolution.common.network.BlockUpdatePacket;
 import com.brandon3055.draconicevolution.common.network.ButtonPacket;
 import com.brandon3055.draconicevolution.common.network.ContributorPacket;
+import com.brandon3055.draconicevolution.common.network.DislocatorInhibitorButtonPacket;
 import com.brandon3055.draconicevolution.common.network.GenericParticlePacket;
 import com.brandon3055.draconicevolution.common.network.ItemConfigPacket;
 import com.brandon3055.draconicevolution.common.network.MagnetToggleAckPacket;
@@ -50,6 +51,7 @@ import com.brandon3055.draconicevolution.common.network.PlacedItemPacket;
 import com.brandon3055.draconicevolution.common.network.PlayerDetectorButtonPacket;
 import com.brandon3055.draconicevolution.common.network.PlayerDetectorStringPacket;
 import com.brandon3055.draconicevolution.common.network.ShieldHitPacket;
+import com.brandon3055.draconicevolution.common.network.SlotFakeClickPacket;
 import com.brandon3055.draconicevolution.common.network.SpeedRequestPacket;
 import com.brandon3055.draconicevolution.common.network.TeleporterPacket;
 import com.brandon3055.draconicevolution.common.network.TileObjectPacket;
@@ -214,14 +216,21 @@ public class CommonProxy {
         DraconicEvolution.network
                 .registerMessage(MagnetToggleAckPacket.Handler.class, MagnetToggleAckPacket.class, 20, Side.CLIENT);
         DraconicEvolution.network.registerMessage(
+                DislocatorInhibitorButtonPacket.Handler.class,
+                DislocatorInhibitorButtonPacket.class,
+                21,
+                Side.SERVER);
+        DraconicEvolution.network
+                .registerMessage(SlotFakeClickPacket.Handler.class, SlotFakeClickPacket.class, 22, Side.SERVER);
+        DraconicEvolution.network.registerMessage(
                 MagnetToggleSelfPickupPacket.Handler.class,
                 MagnetToggleSelfPickupPacket.class,
-                21,
+                23,
                 Side.SERVER);
         DraconicEvolution.network.registerMessage(
                 MagnetToggleSelfPickupAckPacket.Handler.class,
                 MagnetToggleSelfPickupAckPacket.class,
-                22,
+                24,
                 Side.CLIENT);
     }
 
