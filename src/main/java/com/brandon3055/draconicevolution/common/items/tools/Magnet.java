@@ -111,6 +111,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                             player.posY,
                             player.posZ).expand(range, range, range));
 
+            final boolean skipPlayerCheck = world.playerEntities.size() < 2;
             boolean playSound = false;
 
             for (EntityItem item : items) {
@@ -126,6 +127,12 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                                         == item.getEntityItem().getItemDamage())) {
                     continue;
                 }
+
+                if (!skipPlayerCheck) {
+                    EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
+                    if (closestPlayer == null || closestPlayer != player) continue;
+                }
+
                 playSound = true;
 
                 if (item.delayBeforeCanPickup > 0) {
@@ -162,6 +169,10 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                                 player.posZ).expand(4, 4, 4));
                 for (EntityXPOrb orb : xp) {
                     if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
+                        if (!skipPlayerCheck) {
+                            EntityPlayer closestPlayer = world.getClosestPlayerToEntity(orb, range);
+                            if (closestPlayer == null || closestPlayer != player) continue;
+                        }
                         if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, orb))) continue;
                         world.playSoundAtEntity(
                                 player,
