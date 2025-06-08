@@ -199,8 +199,12 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                                 entity.posZ,
                                 entity.posX,
                                 entity.posY,
-                                entity.posZ).expand(4, 4, 4));
+                                entity.posZ).expand(range, range, range));
                 for (EntityXPOrb orb : xp) {
+                    if (!skipPlayerCheck) {
+                        EntityPlayer closestPlayer = world.getClosestPlayerToEntity(orb, range);
+                        if (closestPlayer == null || closestPlayer != player) continue;
+                    }
                     if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
                         if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, orb))) continue;
                         world.playSoundAtEntity(
