@@ -89,6 +89,8 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
         return isEnabled(stack);
     }
 
+    // This method uses the same algorithm as the magnet from AE2 Fluid Crafting
+    // if changes are ever made, they should be made on both
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean hotbar) {
         if (entity.ticksExisted % 5 != 0 || !isEnabled(stack)) {
@@ -143,7 +145,8 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 item.motionZ = 0;
                 // account for the server/client desync
                 double playerEyesPos = player.posY
-                        + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
+                        + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight()
+                                : player.getEyeHeight());
                 item.setPosition(
                         player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
                         playerEyesPos - 0.62,
