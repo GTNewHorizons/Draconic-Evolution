@@ -149,9 +149,13 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
 
                 doMove = false;
                 dw = item.getDataWatcher();
-                // DataWatcher enables Server-Client syncing
-                // Server will determine if item is valid to pull, and set the watchable to 1
-                // Then both client and server will teleport item, syncing server and  render
+                /*
+                 * DataWatcher enables Server-Client syncing
+                 * Server will determine if item is valid to pull, and set the watchable to 1
+                 * Then both client and server will teleport item, syncing server and render
+                 * The loop is needed because directly accessing a watchable object directly is private
+                 * and getWatchableObjectByte will throw NPE
+                 */
                 for (Object obj : dw.getAllWatched()) {
                     DataWatcher.WatchableObject watchable = (DataWatcher.WatchableObject)obj;
                     if (watchable.getDataValueId() == 11) {
