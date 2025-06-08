@@ -4,9 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.swing.text.html.Option;
 
-import com.brandon3055.draconicevolution.common.network.MagnetToggleSelfPickupPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -22,6 +20,7 @@ import com.brandon3055.draconicevolution.common.items.tools.Magnet;
 import com.brandon3055.draconicevolution.common.items.tools.baseclasses.ToolHandler;
 import com.brandon3055.draconicevolution.common.network.ButtonPacket;
 import com.brandon3055.draconicevolution.common.network.MagnetTogglePacket;
+import com.brandon3055.draconicevolution.common.network.MagnetToggleSelfPickupPacket;
 import com.brandon3055.draconicevolution.common.network.PlacedItemPacket;
 import com.brandon3055.draconicevolution.common.network.TeleporterPacket;
 import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;

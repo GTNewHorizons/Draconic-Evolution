@@ -1,7 +1,5 @@
 package com.brandon3055.draconicevolution.common;
 
-import com.brandon3055.draconicevolution.common.network.MagnetToggleSelfPickupAckPacket;
-import com.brandon3055.draconicevolution.common.network.MagnetToggleSelfPickupPacket;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -44,6 +42,8 @@ import com.brandon3055.draconicevolution.common.network.GenericParticlePacket;
 import com.brandon3055.draconicevolution.common.network.ItemConfigPacket;
 import com.brandon3055.draconicevolution.common.network.MagnetToggleAckPacket;
 import com.brandon3055.draconicevolution.common.network.MagnetTogglePacket;
+import com.brandon3055.draconicevolution.common.network.MagnetToggleSelfPickupAckPacket;
+import com.brandon3055.draconicevolution.common.network.MagnetToggleSelfPickupPacket;
 import com.brandon3055.draconicevolution.common.network.MountUpdatePacket;
 import com.brandon3055.draconicevolution.common.network.ParticleGenPacket;
 import com.brandon3055.draconicevolution.common.network.PlacedItemPacket;
@@ -213,10 +213,16 @@ public class CommonProxy {
                 .registerMessage(MagnetTogglePacket.Handler.class, MagnetTogglePacket.class, 19, Side.SERVER);
         DraconicEvolution.network
                 .registerMessage(MagnetToggleAckPacket.Handler.class, MagnetToggleAckPacket.class, 20, Side.CLIENT);
-        DraconicEvolution.network
-                .registerMessage(MagnetToggleSelfPickupPacket.Handler.class, MagnetToggleSelfPickupPacket.class, 21, Side.SERVER);
-        DraconicEvolution.network
-                .registerMessage(MagnetToggleSelfPickupAckPacket.Handler.class, MagnetToggleSelfPickupAckPacket.class, 22, Side.CLIENT);
+        DraconicEvolution.network.registerMessage(
+                MagnetToggleSelfPickupPacket.Handler.class,
+                MagnetToggleSelfPickupPacket.class,
+                21,
+                Side.SERVER);
+        DraconicEvolution.network.registerMessage(
+                MagnetToggleSelfPickupAckPacket.Handler.class,
+                MagnetToggleSelfPickupAckPacket.class,
+                22,
+                Side.CLIENT);
     }
 
     public void registerTileEntities() {

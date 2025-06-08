@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.common.network;
 
+import static com.brandon3055.draconicevolution.DraconicEvolution.isGTNHLibLoaded;
+
 import java.util.Optional;
 
 import net.minecraft.client.Minecraft;
@@ -16,8 +18,6 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
-
-import static com.brandon3055.draconicevolution.DraconicEvolution.isGTNHLibLoaded;
 
 public final class MagnetToggleAckPacket implements IMessage {
 

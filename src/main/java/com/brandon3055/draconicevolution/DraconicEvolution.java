@@ -1,6 +1,5 @@
 package com.brandon3055.draconicevolution;
 
-import cpw.mods.fml.common.Loader;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 
@@ -10,6 +9,7 @@ import com.brandon3055.draconicevolution.common.lib.OreDoublingRegistry;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.utills.LogHelper;
 
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
