@@ -3,6 +3,9 @@ package com.brandon3055.draconicevolution.common.items.tools;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.brandon3055.draconicevolution.common.utills.InventoryUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.DataWatcher;
@@ -15,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -35,6 +39,7 @@ import com.brandon3055.draconicevolution.integration.ModHelper;
 
 import baubles.api.BaubleType;
 import baubles.api.IBauble;
+import com.gtnewhorizon.gtnhlib.GTNHLib;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -120,6 +125,8 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
 
             boolean playSound = false;
             boolean didPlayerDrop;
+            // On server, entity.posY is feet position
+            // On client, it is eye position, and getEyeHeight needs further correction of 1.5 to get feet
             double feetPos = world.isRemote ? entity.posY - (1.5 + player.getEyeHeight()) : entity.posY;
             boolean doMove;
             DataWatcher dw;
@@ -142,6 +149,9 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
 
                 doMove = false;
                 dw = item.getDataWatcher();
+                // DataWatcher enables Server-Client syncing
+                // Server will determine if item is valid to pull, and set the watchable to 1
+                // Then both client and server will teleport item, syncing server and  render
                 for (Object obj : dw.getAllWatched()) {
                     DataWatcher.WatchableObject watchable = (DataWatcher.WatchableObject)obj;
                     if (watchable.getDataValueId() == 11) {
@@ -253,6 +263,17 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
         IConfigurableItem.ProfileHelper.setBoolean(itemStack, References.ENABLED, status);
     }
 
+    public static String getStatusString(ItemStack itemStack) {
+        String status;
+        if (isEnabled(itemStack)) {
+            status = EnumChatFormatting.DARK_GREEN + StatCollector.translateToLocal("info.de.statusActive.txt");
+        } else {
+            status = EnumChatFormatting.RED + StatCollector.translateToLocal("info.de.statusInactive.txt");
+        }
+        return StatCollector.translateToLocal("info.de.status.txt")
+                + ": " + status;
+    }
+
     public static int getSelfPickupStatus(ItemStack itemStack) {
         return IConfigurableItem.ProfileHelper.getInteger(itemStack, References.ENABLED_SELF_PICKUP, 0);
     }
@@ -264,6 +285,17 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
 
     public static void setSelfPickupStatus(ItemStack itemStack, int status) {
         IConfigurableItem.ProfileHelper.setInteger(itemStack, References.ENABLED_SELF_PICKUP, status);
+    }
+
+    public static String getSelfPickupStatusString(ItemStack itemStack) {
+        String status;
+        switch(getSelfPickupStatus(itemStack)) {
+            case SELF_PICKUP_DELAY -> status = EnumChatFormatting.YELLOW + StatCollector.translateToLocal("info.de.selfPickupDelay.txt");
+            case SELF_PICKUP_NEVER -> status = EnumChatFormatting.RED + StatCollector.translateToLocal("info.de.selfPickupNever.txt");
+            default -> status = EnumChatFormatting.DARK_GREEN + StatCollector.translateToLocal("info.de.selfPickupAlways.txt");
+        }
+        return StatCollector.translateToLocal("info.de.selfPickup.txt")
+            + ": " + status;
     }
 
     @Override
@@ -283,14 +315,28 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                         + InfoHelper.ITC()
                         + " "
                         + StatCollector.translateToLocal("info.de.blockRange.txt"));
-        list.add(
-                StatCollector.translateToLocal("info.de.selfPickup.txt")
-                + ": "
-                + switch(getSelfPickupStatus(stack)) {
-                    case SELF_PICKUP_DELAY -> StatCollector.translateToLocal("info.de.selfPickupDelay.txt");
-                    case SELF_PICKUP_NEVER -> StatCollector.translateToLocal("info.de.selfPickupNever.txt");
-                    default -> StatCollector.translateToLocal("info.de.selfPickupAlways.txt");
-                });
+        list.add(getStatusString(stack));
+        list.add(getSelfPickupStatusString(stack));
+    }
+
+    @Optional.Method(modid = "gtnhlib")
+    @SideOnly(Side.CLIENT)
+    public static void renderHUDStatusChange() {
+        EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+        java.util.Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
+        magnetOptional.ifPresent(itemStack -> GTNHLib.proxy.printMessageAboveHotbar(
+                EnumChatFormatting.GOLD + getStatusString(itemStack),
+                60, true, true));
+    }
+
+    @Optional.Method(modid = "gtnhlib")
+    @SideOnly(Side.CLIENT)
+    public static void renderHUDSelfPickupStatusChange() {
+        EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+        java.util.Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
+        magnetOptional.ifPresent(itemStack -> GTNHLib.proxy.printMessageAboveHotbar(
+                EnumChatFormatting.GOLD + getSelfPickupStatusString(itemStack),
+                60, true, true));
     }
 
     @Override

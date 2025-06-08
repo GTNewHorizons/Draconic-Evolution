@@ -17,6 +17,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 
+import static com.brandon3055.draconicevolution.DraconicEvolution.isGTNHLibLoaded;
+
 public final class MagnetToggleAckPacket implements IMessage {
 
     private boolean status;
@@ -49,6 +51,7 @@ public final class MagnetToggleAckPacket implements IMessage {
                 ItemStack itemStack = magnetOptional.get();
                 Magnet.setStatus(itemStack, message.status);
                 ClientEventHandler.statusDisplayManager.startDrawing(itemStack.copy());
+                if (isGTNHLibLoaded) Magnet.renderHUDStatusChange();
             }
 
             return null;

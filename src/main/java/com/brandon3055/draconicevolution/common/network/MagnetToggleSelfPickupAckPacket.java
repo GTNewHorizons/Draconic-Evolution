@@ -15,6 +15,8 @@ import net.minecraft.item.ItemStack;
 
 import java.util.Optional;
 
+import static com.brandon3055.draconicevolution.DraconicEvolution.isGTNHLibLoaded;
+
 public final class MagnetToggleSelfPickupAckPacket implements IMessage {
 
     private int status;
@@ -47,6 +49,7 @@ public final class MagnetToggleSelfPickupAckPacket implements IMessage {
                 ItemStack itemStack = magnetOptional.get();
                 Magnet.setSelfPickupStatus(itemStack, message.status);
                 ClientEventHandler.statusDisplayManager.startDrawing(itemStack.copy());
+                if (isGTNHLibLoaded) Magnet.renderHUDSelfPickupStatusChange();
             }
 
             return null;
