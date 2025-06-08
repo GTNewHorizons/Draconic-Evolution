@@ -104,12 +104,12 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
             List<EntityItem> items = world.getEntitiesWithinAABB(
                     EntityItem.class,
                     AxisAlignedBB.getBoundingBox(
-                            entity.posX,
-                            entity.posY,
-                            entity.posZ,
-                            entity.posX,
-                            entity.posY,
-                            entity.posZ).expand(range, range, range));
+                            player.posX,
+                            player.posY,
+                            player.posZ,
+                            player.posX,
+                            player.posY,
+                            player.posZ).expand(range, range, range));
 
             boolean playSound = false;
 
@@ -134,14 +134,17 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 item.motionX = 0;
                 item.motionY = 0;
                 item.motionZ = 0;
+                // account for the server/client desync
+                double playerEyesPos = player.posY
+                        + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
                 item.setPosition(
-                        entity.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                        entity.posY - 0.6,
-                        entity.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+                        player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
+                        playerEyesPos - 0.62,
+                        player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
             }
             if (playSound && !ConfigHandler.itemDislocatorDisableSound) {
                 world.playSoundAtEntity(
-                        entity,
+                        player,
                         "random.orb",
                         0.1F,
                         0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
@@ -151,12 +154,12 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 List<EntityXPOrb> xp = world.getEntitiesWithinAABB(
                         EntityXPOrb.class,
                         AxisAlignedBB.getBoundingBox(
-                                entity.posX,
-                                entity.posY,
-                                entity.posZ,
-                                entity.posX,
-                                entity.posY,
-                                entity.posZ).expand(4, 4, 4));
+                                player.posX,
+                                player.posY,
+                                player.posZ,
+                                player.posX,
+                                player.posY,
+                                player.posZ).expand(4, 4, 4));
                 for (EntityXPOrb orb : xp) {
                     if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
                         if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, orb))) continue;
