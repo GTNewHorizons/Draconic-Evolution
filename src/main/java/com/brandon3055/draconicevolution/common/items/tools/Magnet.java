@@ -166,7 +166,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                                 player.posZ,
                                 player.posX,
                                 player.posY,
-                                player.posZ).expand(4, 4, 4));
+                                player.posZ).expand(range, range, range));
                 for (EntityXPOrb orb : xp) {
                     if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
                         if (!skipPlayerCheck) {
