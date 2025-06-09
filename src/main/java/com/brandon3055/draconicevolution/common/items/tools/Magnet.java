@@ -54,7 +54,10 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
     private IIcon draconium;
     private IIcon awakened;
 
-    public static final int DATAWATCHER_MAGNET_INDEX = 9;
+    // Normally, DW index 1 is used for air ticks (breath), but this is irrelevant for items
+    // Avoids needing to mixin to EnitityItem#entityInit
+    public static final int DATAWATCHER_MAGNET_INDEX = 1;
+    public static final short DATAWATCHER_MAGNET_VALID = 299;
     public static final int SELF_PICKUP_ALWAYS = 0;
     public static final int SELF_PICKUP_DELAY = 1;
     public static final int SELF_PICKUP_NEVER = 2;
@@ -153,23 +156,13 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 doMove = false;
                 dw = item.getDataWatcher();
                 // DataWatcher enables Server-Client syncing
-                // Server will determine if item is valid to pull, and set the watchable to 1
+                // Server will determine if item is valid to pull, and set the watchable
                 // Then both client and server will teleport item, syncing server and render
-                // The loop is needed because accessing a watchable object directly is private
-                // and getWatchableObjectByte will throw NPE
-                for (Object obj : dw.getAllWatched()) {
-                    DataWatcher.WatchableObject watchable = (DataWatcher.WatchableObject) obj;
-                    if (watchable.getDataValueId() == DATAWATCHER_MAGNET_INDEX) {
-                        java.util.Optional<Object> watchableVal = java.util.Optional.ofNullable(watchable.getObject());
-                        if (watchableVal.isPresent() && (Byte) watchableVal.get() == (byte) 1) {
-                            doMove = true;
-                            break;
-                        }
-                    }
+                if (dw.getWatchableObjectShort(DATAWATCHER_MAGNET_INDEX) == DATAWATCHER_MAGNET_VALID) {
+                    doMove = true;
                 }
 
                 if (!doMove) {
-                    dw.addObjectByDataType(DATAWATCHER_MAGNET_INDEX, 0);
                     if (!world.isRemote) {
                         if (!skipPlayerCheck) {
                             EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
@@ -186,7 +179,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                         } else doMove = true;
 
                         if (doMove) {
-                            dw.updateObject(DATAWATCHER_MAGNET_INDEX, (byte) 1);
+                            dw.updateObject(DATAWATCHER_MAGNET_INDEX, DATAWATCHER_MAGNET_VALID);
                         }
                     }
                     dw.setObjectWatched(DATAWATCHER_MAGNET_INDEX);
