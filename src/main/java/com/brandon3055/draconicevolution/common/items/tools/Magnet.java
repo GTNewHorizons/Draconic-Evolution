@@ -136,7 +136,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
             boolean didPlayerDrop;
             // On server, entity.posY is feet position
             // On client, it is eye position, and getEyeHeight needs further correction of 1.5 to get feet
-            double feetPos = world.isRemote ? entity.posY - (1.5 + player.getEyeHeight()) : entity.posY;
+            final double feetPos = world.isRemote ? entity.posY - (1.5 + player.getEyeHeight()) : entity.posY;
             boolean doMove;
             DataWatcher dw;
             int selfPickupStatus = getSelfPickupStatus(stack);
