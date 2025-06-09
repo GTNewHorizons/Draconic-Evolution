@@ -454,6 +454,7 @@ key.toolConfig=Tool & Armor Config GUI
 key.toolProfileChange=Change Tool Config Profile
 key.toggleFlight=Toggle Creative Flight
 key.toggleMagnet=Toggle Magnet
+key.toggleMagnetSelfPickup=Toggle Magnet Self-Pickup
 
 //Damage ----------------------------------------------------------------------------------------------------------------------------------------
 death.attack.chaos=%1$s was torn apart by a Chaos Guardian
