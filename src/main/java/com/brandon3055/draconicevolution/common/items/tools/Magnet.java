@@ -117,8 +117,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
             boolean playSound = false;
             // account for the server/client desync
             double playerEyesPos = player.posY
-                    + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight()
-                    : player.getEyeHeight());
+                    + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
 
             for (EntityItem item : items) {
                 if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
