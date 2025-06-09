@@ -54,6 +54,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
     private IIcon draconium;
     private IIcon awakened;
 
+    public static final int DATAWATCHER_MAGNET_INDEX = 9;
     public static final int SELF_PICKUP_ALWAYS = 0;
     public static final int SELF_PICKUP_DELAY = 1;
     public static final int SELF_PICKUP_NEVER = 2;
@@ -154,11 +155,11 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 // DataWatcher enables Server-Client syncing
                 // Server will determine if item is valid to pull, and set the watchable to 1
                 // Then both client and server will teleport item, syncing server and render
-                // The loop is needed because directly accessing a watchable object directly is private
+                // The loop is needed because accessing a watchable object directly is private
                 // and getWatchableObjectByte will throw NPE
                 for (Object obj : dw.getAllWatched()) {
                     DataWatcher.WatchableObject watchable = (DataWatcher.WatchableObject) obj;
-                    if (watchable.getDataValueId() == 11) {
+                    if (watchable.getDataValueId() == DATAWATCHER_MAGNET_INDEX) {
                         java.util.Optional<Object> watchableVal = java.util.Optional.ofNullable(watchable.getObject());
                         if (watchableVal.isPresent() && (Byte) watchableVal.get() == (byte) 1) {
                             doMove = true;
@@ -168,7 +169,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 }
 
                 if (!doMove) {
-                    dw.addObjectByDataType(11, 0);
+                    dw.addObjectByDataType(DATAWATCHER_MAGNET_INDEX, 0);
                     if (!world.isRemote) {
                         if (!skipPlayerCheck) {
                             EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
@@ -185,10 +186,10 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                         } else doMove = true;
 
                         if (doMove) {
-                            dw.updateObject(11, (byte) 1);
+                            dw.updateObject(DATAWATCHER_MAGNET_INDEX, (byte) 1);
                         }
                     }
-                    dw.setObjectWatched(11);
+                    dw.setObjectWatched(DATAWATCHER_MAGNET_INDEX);
                 }
 
                 if (doMove) {
