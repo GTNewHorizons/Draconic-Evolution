@@ -160,7 +160,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                     DataWatcher.WatchableObject watchable = (DataWatcher.WatchableObject) obj;
                     if (watchable.getDataValueId() == 11) {
                         java.util.Optional<Object> watchableVal = java.util.Optional.ofNullable(watchable.getObject());
-                        if (watchableVal.isPresent() && (Byte) watchableVal.get() == 1) {
+                        if (watchableVal.isPresent() && (Byte) watchableVal.get() == (byte) 1) {
                             doMove = true;
                             break;
                         }
@@ -185,7 +185,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                         } else doMove = true;
 
                         if (doMove) {
-                            dw.updateObject(11, 1);
+                            dw.updateObject(11, (byte) 1);
                         }
                     }
                     dw.setObjectWatched(11);
