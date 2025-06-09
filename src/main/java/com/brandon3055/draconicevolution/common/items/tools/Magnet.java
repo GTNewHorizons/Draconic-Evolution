@@ -55,9 +55,12 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
     private IIcon awakened;
 
     // Normally, DW index 1 is used for air ticks (breath), but this is irrelevant for items
-    // Avoids needing to mixin to EnitityItem#entityInit
+    // Avoids needing to mixin to EnitityItem#entityInit. Starting value is 300
+    // Other indices in use (in vanilla) are 0 (catchall, stuff like on fire)
+    // and 10 (the ItemStack held by the EntityItem)
     public static final int DATAWATCHER_MAGNET_INDEX = 1;
     public static final short DATAWATCHER_MAGNET_VALID = 299;
+
     public static final int SELF_PICKUP_ALWAYS = 0;
     public static final int SELF_PICKUP_DELAY = 1;
     public static final int SELF_PICKUP_NEVER = 2;
