@@ -115,6 +115,10 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
 
             final boolean skipPlayerCheck = world.playerEntities.size() < 2;
             boolean playSound = false;
+            // account for the server/client desync
+            double playerEyesPos = player.posY
+                    + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight()
+                    : player.getEyeHeight());
 
             for (EntityItem item : items) {
                 if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
@@ -143,10 +147,6 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 item.motionX = 0;
                 item.motionY = 0;
                 item.motionZ = 0;
-                // account for the server/client desync
-                double playerEyesPos = player.posY
-                        + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight()
-                                : player.getEyeHeight());
                 item.setPosition(
                         player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
                         playerEyesPos - 0.62,
