@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.DataWatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -117,32 +116,29 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
             return;
         }
 
-        final boolean skipPlayerCheck = world.playerEntities.size() < 2;
-
         if (entity instanceof EntityPlayer player) {
             int range = stack.getItemDamage() == 0 ? 8 : 32;
 
             List<EntityItem> items = world.getEntitiesWithinAABB(
                     EntityItem.class,
                     AxisAlignedBB.getBoundingBox(
-                            entity.posX,
-                            entity.posY,
-                            entity.posZ,
-                            entity.posX,
-                            entity.posY,
-                            entity.posZ).expand(range, range, range));
+                            player.posX,
+                            player.posY,
+                            player.posZ,
+                            player.posX,
+                            player.posY,
+                            player.posZ).expand(range, range, range));
 
+            final boolean skipPlayerCheck = world.playerEntities.size() < 2;
             boolean playSound = false;
+            // account for the server/client desync
+            double playerEyesPos = player.posY
+                    + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
             boolean didPlayerDrop;
-            // On server, entity.posY is feet position
-            // On client, it is eye position, and getEyeHeight needs further correction of 1.5 to get feet
-            final double feetPos = world.isRemote ? entity.posY - (1.5 + player.getEyeHeight()) : entity.posY;
             boolean doMove;
-            DataWatcher dw;
             final short selfPickupStatus = getSelfPickupStatus(stack);
 
             for (EntityItem item : items) {
-
                 if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
                         || TileDislocatorInhibitor.isBlockedByInhibitor(world, item)) {
                     continue;
@@ -156,40 +152,20 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                     continue;
                 }
 
+                if (!skipPlayerCheck) {
+                    EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
+                    if (closestPlayer == null || closestPlayer != player) continue;
+                }
+
                 doMove = false;
-                dw = item.getDataWatcher();
-                // DataWatcher enables Server-Client syncing
-                // Server will determine if item is valid to pull, and set the watchable
-                // Then both client and server will teleport item, syncing server and render
-                if (dw.getWatchableObjectShort(DATAWATCHER_MAGNET_INDEX)
-                        == (short) (DATAWATCHER_MAGNET_VALID - selfPickupStatus)) {
-                    doMove = true;
-                }
+                if (selfPickupStatus != SELF_PICKUP_ALWAYS) {
+                    didPlayerDrop = item.func_145800_j() != null
+                            && item.func_145800_j().equals(player.getCommandSenderName());
+                    if (!didPlayerDrop) doMove = true;
+                    else if (selfPickupStatus == SELF_PICKUP_DELAY && item.delayBeforeCanPickup <= 0)
+                        doMove = true;
+                } else doMove = true;
 
-                if (!doMove) {
-                    if (!world.isRemote) {
-                        if (!skipPlayerCheck) {
-                            EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
-                            if (closestPlayer != null && closestPlayer != player) {
-                                continue;
-                            }
-                        }
-                        if (selfPickupStatus != SELF_PICKUP_ALWAYS) {
-                            didPlayerDrop = item.func_145800_j() != null
-                                    && item.func_145800_j().equals(player.getCommandSenderName());
-                            if (!didPlayerDrop) doMove = true;
-                            else if (selfPickupStatus == SELF_PICKUP_DELAY && item.delayBeforeCanPickup <= 0)
-                                doMove = true;
-                        } else doMove = true;
-
-                        if (doMove) {
-                            dw.updateObject(
-                                    DATAWATCHER_MAGNET_INDEX,
-                                    (short) (DATAWATCHER_MAGNET_VALID - selfPickupStatus));
-                        }
-                    }
-                    dw.setObjectWatched(DATAWATCHER_MAGNET_INDEX);
-                }
 
                 if (doMove) {
                     playSound = true;
@@ -198,15 +174,15 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                     item.motionY = 0;
                     item.motionZ = 0;
                     item.setPosition(
-                            entity.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                            feetPos + item.yOffset, // feet + 1/2 height since item posY is center
-                            entity.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+                            player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
+                            playerEyesPos - 0.62, // 1 block above feet / "belt height"
+                            player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
                 }
             }
 
             if (playSound && !ConfigHandler.itemDislocatorDisableSound) {
                 world.playSoundAtEntity(
-                        entity,
+                        player,
                         "random.orb",
                         0.1F,
                         0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
@@ -216,18 +192,18 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 List<EntityXPOrb> xp = world.getEntitiesWithinAABB(
                         EntityXPOrb.class,
                         AxisAlignedBB.getBoundingBox(
-                                entity.posX,
-                                entity.posY,
-                                entity.posZ,
-                                entity.posX,
-                                entity.posY,
-                                entity.posZ).expand(range, range, range));
+                                player.posX,
+                                player.posY,
+                                player.posZ,
+                                player.posX,
+                                player.posY,
+                                player.posZ).expand(range, range, range));
                 for (EntityXPOrb orb : xp) {
-                    if (!skipPlayerCheck) {
-                        EntityPlayer closestPlayer = world.getClosestPlayerToEntity(orb, range);
-                        if (closestPlayer == null || closestPlayer != player) continue;
-                    }
                     if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
+                        if (!skipPlayerCheck) {
+                            EntityPlayer closestPlayer = world.getClosestPlayerToEntity(orb, range);
+                            if (closestPlayer == null || closestPlayer != player) continue;
+                        }
                         if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, orb))) continue;
                         world.playSoundAtEntity(
                                 player,
