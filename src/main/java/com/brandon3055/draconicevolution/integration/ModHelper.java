@@ -92,8 +92,7 @@ public class ModHelper {
         if (isHoldingAvaritiaSword(attacker)) {
             event.entityLiving.hurtResistantTime = 0;
             return 300F;
-        }
-        else if (event.source.isUnblockable() || event.source.canHarmInCreative()) {
+        } else if (event.source.isUnblockable() || event.source.canHarmInCreative()) {
             summery.entropy += 3;
 
             if (summery.entropy > 100) {

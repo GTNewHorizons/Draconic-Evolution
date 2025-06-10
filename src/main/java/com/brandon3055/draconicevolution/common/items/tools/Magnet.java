@@ -140,8 +140,8 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 String name = Item.itemRegistry.getNameForObject(item.getEntityItem().getItem());
                 if (ConfigHandler.itemDislocatorBlacklistMap.containsKey(name)
                         && (ConfigHandler.itemDislocatorBlacklistMap.get(name) == -1
-                        || ConfigHandler.itemDislocatorBlacklistMap.get(name)
-                        == item.getEntityItem().getItemDamage())) {
+                                || ConfigHandler.itemDislocatorBlacklistMap.get(name)
+                                        == item.getEntityItem().getItemDamage())) {
                     continue;
                 }
 
