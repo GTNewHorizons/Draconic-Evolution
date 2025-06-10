@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
+import com.brandon3055.draconicevolution.integration.ModHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -51,7 +52,7 @@ public class KeyInputHandler {
             handleToggleFlightKey(player);
         } else if (KeyBindings.toggleMagnet.isPressed()) {
             handleToggleMagnetKey(player);
-        } else if (KeyBindings.toggleMagnetSelfPickup.isPressed()) {
+        } else if (ModHelper.isHodgepodgeLoaded && KeyBindings.toggleMagnetSelfPickup.isPressed()) {
             handleToggleMagnetSelfPickup(player);
         }
     }
@@ -71,7 +72,7 @@ public class KeyInputHandler {
             handleToggleFlightKey(player);
         } else if (KeyBindings.toggleMagnet.isPressed()) {
             handleToggleMagnetKey(player);
-        } else if (KeyBindings.toggleMagnetSelfPickup.isPressed()) {
+        } else if (ModHelper.isHodgepodgeLoaded && KeyBindings.toggleMagnetSelfPickup.isPressed()) {
             handleToggleMagnetSelfPickup(player);
         }
 

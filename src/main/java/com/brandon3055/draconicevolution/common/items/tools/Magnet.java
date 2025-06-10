@@ -53,13 +53,6 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
     private IIcon draconium;
     private IIcon awakened;
 
-    // Normally, DW index 1 is used for air ticks (breath), but this is irrelevant for items
-    // Avoids needing to mixin to EnitityItem#entityInit. Starting value is 300
-    // Other indices in use (in vanilla) are 0 (catchall, stuff like on fire)
-    // and 10 (the ItemStack held by the EntityItem)
-    public static final int DATAWATCHER_MAGNET_INDEX = 1;
-    public static final short DATAWATCHER_MAGNET_VALID = 299;
-
     public static final short SELF_PICKUP_ALWAYS = 0;
     public static final short SELF_PICKUP_DELAY = 1;
     public static final short SELF_PICKUP_NEVER = 2;
@@ -129,13 +122,13 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                             player.posY,
                             player.posZ).expand(range, range, range));
 
-            final boolean skipPlayerCheck = world.playerEntities.size() < 2;
-            boolean playSound = false;
             // account for the server/client desync
             double playerEyesPos = player.posY
                     + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
             boolean didPlayerDrop;
             boolean doMove;
+            boolean playSound = false;
+            final boolean skipPlayerCheck = world.playerEntities.size() < 2;
             final short selfPickupStatus = getSelfPickupStatus(stack);
 
             for (EntityItem item : items) {
@@ -147,8 +140,8 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 String name = Item.itemRegistry.getNameForObject(item.getEntityItem().getItem());
                 if (ConfigHandler.itemDislocatorBlacklistMap.containsKey(name)
                         && (ConfigHandler.itemDislocatorBlacklistMap.get(name) == -1
-                                || ConfigHandler.itemDislocatorBlacklistMap.get(name)
-                                        == item.getEntityItem().getItemDamage())) {
+                        || ConfigHandler.itemDislocatorBlacklistMap.get(name)
+                        == item.getEntityItem().getItemDamage())) {
                     continue;
                 }
 
@@ -157,15 +150,15 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                     if (closestPlayer == null || closestPlayer != player) continue;
                 }
 
-                doMove = false;
-                if (selfPickupStatus != SELF_PICKUP_ALWAYS) {
-                    didPlayerDrop = item.func_145800_j() != null
-                            && item.func_145800_j().equals(player.getCommandSenderName());
-                    if (!didPlayerDrop) doMove = true;
-                    else if (selfPickupStatus == SELF_PICKUP_DELAY && item.delayBeforeCanPickup <= 0)
-                        doMove = true;
+                if (ModHelper.isHodgepodgeLoaded) {
+                    doMove = false;
+                    if (selfPickupStatus != SELF_PICKUP_ALWAYS) {
+                        didPlayerDrop = item.func_145800_j() != null
+                                && item.func_145800_j().equals(player.getCommandSenderName());
+                        if (!didPlayerDrop) doMove = true;
+                        else if (selfPickupStatus == SELF_PICKUP_DELAY && item.delayBeforeCanPickup <= 0) doMove = true;
+                    } else doMove = true;
                 } else doMove = true;
-
 
                 if (doMove) {
                     playSound = true;
@@ -198,6 +191,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                                 player.posX,
                                 player.posY,
                                 player.posZ).expand(range, range, range));
+
                 for (EntityXPOrb orb : xp) {
                     if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
                         if (!skipPlayerCheck) {
@@ -297,7 +291,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                         + " "
                         + StatCollector.translateToLocal("info.de.blockRange.txt"));
         list.add(getStatusString(stack));
-        list.add(getSelfPickupStatusString(stack));
+        if (ModHelper.isHodgepodgeLoaded) list.add(getSelfPickupStatusString(stack));
     }
 
     @Optional.Method(modid = "gtnhlib")

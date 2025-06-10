@@ -1,7 +1,5 @@
 package com.brandon3055.draconicevolution.common.network;
 
-import static com.brandon3055.draconicevolution.DraconicEvolution.isGTNHLibLoaded;
-
 import java.util.Optional;
 
 import net.minecraft.client.Minecraft;
@@ -11,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
 import com.brandon3055.draconicevolution.common.items.tools.Magnet;
 import com.brandon3055.draconicevolution.common.utills.InventoryUtils;
+import com.brandon3055.draconicevolution.integration.ModHelper;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -51,7 +50,7 @@ public final class MagnetToggleAckPacket implements IMessage {
                 ItemStack itemStack = magnetOptional.get();
                 Magnet.setStatus(itemStack, message.status);
                 ClientEventHandler.statusDisplayManager.startDrawing(itemStack.copy());
-                if (isGTNHLibLoaded) Magnet.renderHUDStatusChange();
+                if (ModHelper.isGTNHLibLoaded) Magnet.renderHUDStatusChange();
             }
 
             return null;
