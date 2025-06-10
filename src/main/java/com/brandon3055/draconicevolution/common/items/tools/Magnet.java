@@ -61,9 +61,9 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
     public static final int DATAWATCHER_MAGNET_INDEX = 1;
     public static final short DATAWATCHER_MAGNET_VALID = 299;
 
-    public static final int SELF_PICKUP_ALWAYS = 0;
-    public static final int SELF_PICKUP_DELAY = 1;
-    public static final int SELF_PICKUP_NEVER = 2;
+    public static final short SELF_PICKUP_ALWAYS = 0;
+    public static final short SELF_PICKUP_DELAY = 1;
+    public static final short SELF_PICKUP_NEVER = 2;
 
     public Magnet() {
         this.setUnlocalizedName("magnet");
@@ -139,7 +139,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
             final double feetPos = world.isRemote ? entity.posY - (1.5 + player.getEyeHeight()) : entity.posY;
             boolean doMove;
             DataWatcher dw;
-            int selfPickupStatus = getSelfPickupStatus(stack);
+            final short selfPickupStatus = getSelfPickupStatus(stack);
 
             for (EntityItem item : items) {
 
@@ -161,7 +161,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 // DataWatcher enables Server-Client syncing
                 // Server will determine if item is valid to pull, and set the watchable
                 // Then both client and server will teleport item, syncing server and render
-                if (dw.getWatchableObjectShort(DATAWATCHER_MAGNET_INDEX) == DATAWATCHER_MAGNET_VALID) {
+                if (dw.getWatchableObjectShort(DATAWATCHER_MAGNET_INDEX) == (short) (DATAWATCHER_MAGNET_VALID - selfPickupStatus)) {
                     doMove = true;
                 }
 
@@ -182,7 +182,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                         } else doMove = true;
 
                         if (doMove) {
-                            dw.updateObject(DATAWATCHER_MAGNET_INDEX, DATAWATCHER_MAGNET_VALID);
+                            dw.updateObject(DATAWATCHER_MAGNET_INDEX, (short) (DATAWATCHER_MAGNET_VALID - selfPickupStatus));
                         }
                     }
                     dw.setObjectWatched(DATAWATCHER_MAGNET_INDEX);
@@ -196,7 +196,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                     item.motionZ = 0;
                     item.setLocationAndAngles(
                             entity.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                            feetPos + item.height,
+                            feetPos + item.height / 2,
                             entity.posZ - 0.2 + (world.rand.nextDouble() * 0.4),
                             0.0f,
                             0.0f);
@@ -273,20 +273,20 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
         return StatCollector.translateToLocal("info.de.status.txt") + ": " + status;
     }
 
-    public static int getSelfPickupStatus(ItemStack itemStack) {
-        return IConfigurableItem.ProfileHelper.getInteger(itemStack, References.ENABLED_SELF_PICKUP, 0);
+    public static short getSelfPickupStatus(ItemStack itemStack) {
+        return IConfigurableItem.ProfileHelper.getShort(itemStack, References.ENABLED_SELF_PICKUP, (short) 0);
     }
 
     public static void toggleSelfPickupStatus(ItemStack itemStack) {
-        final int enabledSelfPickup = getSelfPickupStatus(itemStack);
-        IConfigurableItem.ProfileHelper.setInteger(
+        final short enabledSelfPickup = getSelfPickupStatus(itemStack);
+        IConfigurableItem.ProfileHelper.setShort(
                 itemStack,
                 References.ENABLED_SELF_PICKUP,
-                enabledSelfPickup == SELF_PICKUP_NEVER ? 0 : enabledSelfPickup + 1);
+                enabledSelfPickup == SELF_PICKUP_NEVER ? (short) 0 : (short) (enabledSelfPickup + 1));
     }
 
-    public static void setSelfPickupStatus(ItemStack itemStack, int status) {
-        IConfigurableItem.ProfileHelper.setInteger(itemStack, References.ENABLED_SELF_PICKUP, status);
+    public static void setSelfPickupStatus(ItemStack itemStack, short status) {
+        IConfigurableItem.ProfileHelper.setShort(itemStack, References.ENABLED_SELF_PICKUP, status);
     }
 
     public static String getSelfPickupStatusString(ItemStack itemStack) {

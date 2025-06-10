@@ -36,6 +36,10 @@ public interface IConfigurableItem {
             getProfileCompound(stack).setBoolean(tag, b);
         }
 
+        public static void setShort(ItemStack stack, String tag, short s) {
+            getProfileCompound(stack).setShort(tag, s);
+        }
+
         public static void setInteger(ItemStack stack, String tag, int i) {
             getProfileCompound(stack).setInteger(tag, i);
         }
@@ -54,6 +58,10 @@ public interface IConfigurableItem {
 
         public static boolean getBoolean(ItemStack stack, String tag, boolean defaultExpected) {
             return getProfileCompound(stack).hasKey(tag) ? getProfileCompound(stack).getBoolean(tag) : defaultExpected;
+        }
+
+        public static short getShort(ItemStack stack, String tag, short defaultExpected) {
+            return getProfileCompound(stack).hasKey(tag) ? getProfileCompound(stack).getShort(tag) : defaultExpected;
         }
 
         public static int getInteger(ItemStack stack, String tag, int defaultExpected) {

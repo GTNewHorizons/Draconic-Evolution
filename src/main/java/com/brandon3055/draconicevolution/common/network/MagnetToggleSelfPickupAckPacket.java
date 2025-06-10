@@ -21,22 +21,22 @@ import io.netty.buffer.ByteBuf;
 
 public final class MagnetToggleSelfPickupAckPacket implements IMessage {
 
-    private int status;
+    private short status;
 
     public MagnetToggleSelfPickupAckPacket() {}
 
-    public MagnetToggleSelfPickupAckPacket(int status) {
+    public MagnetToggleSelfPickupAckPacket(short status) {
         this.status = status;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        this.status = buf.readInt();
+        this.status = buf.readShort();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(this.status);
+        buf.writeShort(this.status);
     }
 
     public static final class Handler implements IMessageHandler<MagnetToggleSelfPickupAckPacket, IMessage> {
