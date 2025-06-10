@@ -161,7 +161,8 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 // DataWatcher enables Server-Client syncing
                 // Server will determine if item is valid to pull, and set the watchable
                 // Then both client and server will teleport item, syncing server and render
-                if (dw.getWatchableObjectShort(DATAWATCHER_MAGNET_INDEX) == (short) (DATAWATCHER_MAGNET_VALID - selfPickupStatus)) {
+                if (dw.getWatchableObjectShort(DATAWATCHER_MAGNET_INDEX)
+                        == (short) (DATAWATCHER_MAGNET_VALID - selfPickupStatus)) {
                     doMove = true;
                 }
 
@@ -182,7 +183,9 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                         } else doMove = true;
 
                         if (doMove) {
-                            dw.updateObject(DATAWATCHER_MAGNET_INDEX, (short) (DATAWATCHER_MAGNET_VALID - selfPickupStatus));
+                            dw.updateObject(
+                                    DATAWATCHER_MAGNET_INDEX,
+                                    (short) (DATAWATCHER_MAGNET_VALID - selfPickupStatus));
                         }
                     }
                     dw.setObjectWatched(DATAWATCHER_MAGNET_INDEX);
@@ -194,12 +197,10 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                     item.motionX = 0;
                     item.motionY = 0;
                     item.motionZ = 0;
-                    item.setLocationAndAngles(
+                    item.setPosition(
                             entity.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                            feetPos + item.height / 2,
-                            entity.posZ - 0.2 + (world.rand.nextDouble() * 0.4),
-                            0.0f,
-                            0.0f);
+                            feetPos + item.yOffset, // feet + 1/2 height since item posY is center
+                            entity.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
                 }
             }
 
