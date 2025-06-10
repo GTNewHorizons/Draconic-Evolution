@@ -89,6 +89,8 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
         return isEnabled(stack);
     }
 
+    // This method uses the same algorithm as the magnet from AE2 Fluid Crafting
+    // if changes are ever made, they should be made on both
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean hotbar) {
         if (entity.ticksExisted % 5 != 0 || !isEnabled(stack)) {
@@ -104,14 +106,18 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
             List<EntityItem> items = world.getEntitiesWithinAABB(
                     EntityItem.class,
                     AxisAlignedBB.getBoundingBox(
-                            entity.posX,
-                            entity.posY,
-                            entity.posZ,
-                            entity.posX,
-                            entity.posY,
-                            entity.posZ).expand(range, range, range));
+                            player.posX,
+                            player.posY,
+                            player.posZ,
+                            player.posX,
+                            player.posY,
+                            player.posZ).expand(range, range, range));
 
+            final boolean skipPlayerCheck = world.playerEntities.size() < 2;
             boolean playSound = false;
+            // account for the server/client desync
+            double playerEyesPos = player.posY
+                    + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
 
             for (EntityItem item : items) {
                 if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
@@ -126,6 +132,12 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                                         == item.getEntityItem().getItemDamage())) {
                     continue;
                 }
+
+                if (!skipPlayerCheck) {
+                    EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
+                    if (closestPlayer == null || closestPlayer != player) continue;
+                }
+
                 playSound = true;
 
                 if (item.delayBeforeCanPickup > 0) {
@@ -135,13 +147,13 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 item.motionY = 0;
                 item.motionZ = 0;
                 item.setPosition(
-                        entity.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                        entity.posY - 0.6,
-                        entity.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+                        player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
+                        playerEyesPos - 0.62,
+                        player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
             }
             if (playSound && !ConfigHandler.itemDislocatorDisableSound) {
                 world.playSoundAtEntity(
-                        entity,
+                        player,
                         "random.orb",
                         0.1F,
                         0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
@@ -151,14 +163,18 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                 List<EntityXPOrb> xp = world.getEntitiesWithinAABB(
                         EntityXPOrb.class,
                         AxisAlignedBB.getBoundingBox(
-                                entity.posX,
-                                entity.posY,
-                                entity.posZ,
-                                entity.posX,
-                                entity.posY,
-                                entity.posZ).expand(4, 4, 4));
+                                player.posX,
+                                player.posY,
+                                player.posZ,
+                                player.posX,
+                                player.posY,
+                                player.posZ).expand(range, range, range));
                 for (EntityXPOrb orb : xp) {
                     if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
+                        if (!skipPlayerCheck) {
+                            EntityPlayer closestPlayer = world.getClosestPlayerToEntity(orb, range);
+                            if (closestPlayer == null || closestPlayer != player) continue;
+                        }
                         if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, orb))) continue;
                         world.playSoundAtEntity(
                                 player,
