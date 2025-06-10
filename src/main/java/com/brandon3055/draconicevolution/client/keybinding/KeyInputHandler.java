@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
-import com.brandon3055.draconicevolution.integration.ModHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -26,6 +25,7 @@ import com.brandon3055.draconicevolution.common.network.PlacedItemPacket;
 import com.brandon3055.draconicevolution.common.network.TeleporterPacket;
 import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
 import com.brandon3055.draconicevolution.common.utills.InventoryUtils;
+import com.brandon3055.draconicevolution.integration.ModHelper;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
