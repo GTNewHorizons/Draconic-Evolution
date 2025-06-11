@@ -112,18 +112,77 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
     // if changes are ever made, they should be made on both
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean hotbar) {
-        if (entity.ticksExisted % 5 != 0 || !isEnabled(stack)) {
+        if (entity.ticksExisted % 5 != 0 || !(entity instanceof EntityPlayer player) || !isEnabled(stack)) {
             return;
         }
         if (IConfigurableItem.ProfileHelper.getBoolean(stack, References.MAGNET_SNEAK, true) && entity.isSneaking()) {
             return;
         }
 
-        if (entity instanceof EntityPlayer player) {
-            int range = stack.getItemDamage() == 0 ? 8 : 32;
+        int range = stack.getItemDamage() == 0 ? 8 : 32;
+        List<EntityItem> items = world.getEntitiesWithinAABB(
+                EntityItem.class,
+                AxisAlignedBB
+                        .getBoundingBox(player.posX, player.posY, player.posZ, player.posX, player.posY, player.posZ)
+                        .expand(range, range, range));
 
-            List<EntityItem> items = world.getEntitiesWithinAABB(
-                    EntityItem.class,
+        // account for the server/client desync
+        final double playerEyesPos = player.posY
+                + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
+        final boolean skipPlayerCheck = world.playerEntities.size() < 2;
+        final SelfPickUpMode selfPickupStatus = getSelfPickupStatus(stack);
+        boolean playSound = false;
+
+        for (EntityItem item : items) {
+            if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
+                    || TileDislocatorInhibitor.isBlockedByInhibitor(world, item)) {
+                continue;
+            }
+
+            String name = Item.itemRegistry.getNameForObject(item.getEntityItem().getItem());
+            if (ConfigHandler.itemDislocatorBlacklistMap.containsKey(name)
+                    && (ConfigHandler.itemDislocatorBlacklistMap.get(name) == -1
+                            || ConfigHandler.itemDislocatorBlacklistMap.get(name)
+                                    == item.getEntityItem().getItemDamage())) {
+                continue;
+            }
+
+            if (!skipPlayerCheck) {
+                EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
+                if (closestPlayer == null || closestPlayer != player) continue;
+            }
+
+            boolean doMove = true;
+            if (ModHelper.isHodgepodgeLoaded && selfPickupStatus != SelfPickUpMode.ALWAYS) {
+                boolean isOwnDrop = item.func_145800_j() != null
+                        && item.func_145800_j().equals(player.getCommandSenderName());
+                doMove = !isOwnDrop || selfPickupStatus == SelfPickUpMode.DELAY && item.delayBeforeCanPickup <= 0;
+            }
+
+            if (doMove) {
+                playSound = true;
+                item.delayBeforeCanPickup = 0;
+                item.motionX = 0;
+                item.motionY = 0;
+                item.motionZ = 0;
+                item.setPosition(
+                        player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
+                        playerEyesPos - 0.62, // 1 block above feet / "belt height"
+                        player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+            }
+        }
+
+        if (playSound && !ConfigHandler.itemDislocatorDisableSound) {
+            world.playSoundAtEntity(
+                    player,
+                    "random.orb",
+                    0.1F,
+                    0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
+        }
+
+        if (!world.isRemote) {
+            List<EntityXPOrb> xp = world.getEntitiesWithinAABB(
+                    EntityXPOrb.class,
                     AxisAlignedBB.getBoundingBox(
                             player.posX,
                             player.posY,
@@ -131,87 +190,21 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                             player.posX,
                             player.posY,
                             player.posZ).expand(range, range, range));
-
-            // account for the server/client desync
-            final double playerEyesPos = player.posY
-                    + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
-            final boolean skipPlayerCheck = world.playerEntities.size() < 2;
-            final SelfPickUpMode selfPickupStatus = getSelfPickupStatus(stack);
-            boolean playSound = false;
-
-            for (EntityItem item : items) {
-                if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
-                        || TileDislocatorInhibitor.isBlockedByInhibitor(world, item)) {
-                    continue;
-                }
-
-                String name = Item.itemRegistry.getNameForObject(item.getEntityItem().getItem());
-                if (ConfigHandler.itemDislocatorBlacklistMap.containsKey(name)
-                        && (ConfigHandler.itemDislocatorBlacklistMap.get(name) == -1
-                                || ConfigHandler.itemDislocatorBlacklistMap.get(name)
-                                        == item.getEntityItem().getItemDamage())) {
-                    continue;
-                }
-
-                if (!skipPlayerCheck) {
-                    EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
-                    if (closestPlayer == null || closestPlayer != player) continue;
-                }
-
-                boolean doMove = true;
-                if (ModHelper.isHodgepodgeLoaded && selfPickupStatus != SelfPickUpMode.ALWAYS) {
-                    boolean isOwnDrop = item.func_145800_j() != null
-                            && item.func_145800_j().equals(player.getCommandSenderName());
-                    doMove = !isOwnDrop || selfPickupStatus == SelfPickUpMode.DELAY && item.delayBeforeCanPickup <= 0;
-                }
-
-                if (doMove) {
-                    playSound = true;
-                    item.delayBeforeCanPickup = 0;
-                    item.motionX = 0;
-                    item.motionY = 0;
-                    item.motionZ = 0;
-                    item.setPosition(
-                            player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                            playerEyesPos - 0.62, // 1 block above feet / "belt height"
-                            player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
-                }
-            }
-
-            if (playSound && !ConfigHandler.itemDislocatorDisableSound) {
-                world.playSoundAtEntity(
-                        player,
-                        "random.orb",
-                        0.1F,
-                        0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
-            }
-
-            if (!world.isRemote) {
-                List<EntityXPOrb> xp = world.getEntitiesWithinAABB(
-                        EntityXPOrb.class,
-                        AxisAlignedBB.getBoundingBox(
-                                player.posX,
-                                player.posY,
-                                player.posZ,
-                                player.posX,
-                                player.posY,
-                                player.posZ).expand(range, range, range));
-                for (EntityXPOrb orb : xp) {
-                    if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
-                        if (!skipPlayerCheck) {
-                            EntityPlayer closestPlayer = world.getClosestPlayerToEntity(orb, range);
-                            if (closestPlayer == null || closestPlayer != player) continue;
-                        }
-                        if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, orb))) continue;
-                        world.playSoundAtEntity(
-                                player,
-                                "random.orb",
-                                0.1F,
-                                0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
-                        player.onItemPickup(orb, 1);
-                        player.addExperience(orb.xpValue);
-                        orb.setDead();
+            for (EntityXPOrb orb : xp) {
+                if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
+                    if (!skipPlayerCheck) {
+                        EntityPlayer closestPlayer = world.getClosestPlayerToEntity(orb, range);
+                        if (closestPlayer == null || closestPlayer != player) continue;
                     }
+                    if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, orb))) continue;
+                    world.playSoundAtEntity(
+                            player,
+                            "random.orb",
+                            0.1F,
+                            0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
+                    player.onItemPickup(orb, 1);
+                    player.addExperience(orb.xpValue);
+                    orb.setDead();
                 }
             }
         }
