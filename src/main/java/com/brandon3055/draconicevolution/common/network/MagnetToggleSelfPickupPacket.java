@@ -37,8 +37,9 @@ public final class MagnetToggleSelfPickupPacket implements IMessage {
             Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
             magnetOptional.ifPresent(itemStack -> {
                 Magnet.toggleSelfPickupStatus(itemStack);
-                DraconicEvolution.network
-                        .sendTo(new MagnetToggleSelfPickupAckPacket(Magnet.getSelfPickupStatus(itemStack)), player);
+                DraconicEvolution.network.sendTo(
+                        new MagnetToggleSelfPickupAckPacket(Magnet.getSelfPickupStatusShort(itemStack)),
+                        player);
             });
 
             return null;

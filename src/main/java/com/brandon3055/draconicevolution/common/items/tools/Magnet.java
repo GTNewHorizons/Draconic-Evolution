@@ -53,9 +53,19 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
     private IIcon draconium;
     private IIcon awakened;
 
-    public static final short SELF_PICKUP_ALWAYS = 0;
-    public static final short SELF_PICKUP_DELAY = 1;
-    public static final short SELF_PICKUP_NEVER = 2;
+    private enum SelfPickUpMode {
+
+        // enum order matters,
+        // do not re-order
+        ALWAYS,
+        DELAY,
+        NEVER;
+
+        public SelfPickUpMode next() {
+            final SelfPickUpMode[] values = SelfPickUpMode.values();
+            return values[(this.ordinal() + 1) % values.length];
+        }
+    }
 
     public Magnet() {
         this.setUnlocalizedName("magnet");
@@ -129,7 +139,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
             boolean doMove;
             boolean playSound = false;
             final boolean skipPlayerCheck = world.playerEntities.size() < 2;
-            final short selfPickupStatus = getSelfPickupStatus(stack);
+            final SelfPickUpMode selfPickupStatus = getSelfPickupStatus(stack);
 
             for (EntityItem item : items) {
                 if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
@@ -152,11 +162,12 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
 
                 if (ModHelper.isHodgepodgeLoaded) {
                     doMove = false;
-                    if (selfPickupStatus != SELF_PICKUP_ALWAYS) {
+                    if (selfPickupStatus != SelfPickUpMode.ALWAYS) {
                         didPlayerDrop = item.func_145800_j() != null
                                 && item.func_145800_j().equals(player.getCommandSenderName());
                         if (!didPlayerDrop) doMove = true;
-                        else if (selfPickupStatus == SELF_PICKUP_DELAY && item.delayBeforeCanPickup <= 0) doMove = true;
+                        else if (selfPickupStatus == SelfPickUpMode.DELAY && item.delayBeforeCanPickup <= 0)
+                            doMove = true;
                     } else doMove = true;
                 } else doMove = true;
 
@@ -191,7 +202,6 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                                 player.posX,
                                 player.posY,
                                 player.posZ).expand(range, range, range));
-
                 for (EntityXPOrb orb : xp) {
                     if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
                         if (!skipPlayerCheck) {
@@ -244,16 +254,19 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
         return StatCollector.translateToLocal("info.de.status.txt") + ": " + status;
     }
 
-    public static short getSelfPickupStatus(ItemStack itemStack) {
-        return IConfigurableItem.ProfileHelper.getShort(itemStack, References.ENABLED_SELF_PICKUP, (short) 0);
+    public static short getSelfPickupStatusShort(ItemStack itemStack) {
+        return ProfileHelper.getShort(itemStack, References.ENABLED_SELF_PICKUP, (short) 0);
+    }
+
+    private static SelfPickUpMode getSelfPickupStatus(ItemStack itemStack) {
+        final short mode = getSelfPickupStatusShort(itemStack);
+        return SelfPickUpMode.values()[mode];
     }
 
     public static void toggleSelfPickupStatus(ItemStack itemStack) {
-        final short enabledSelfPickup = getSelfPickupStatus(itemStack);
-        IConfigurableItem.ProfileHelper.setShort(
-                itemStack,
-                References.ENABLED_SELF_PICKUP,
-                enabledSelfPickup == SELF_PICKUP_NEVER ? (short) 0 : (short) (enabledSelfPickup + 1));
+        final SelfPickUpMode mode = getSelfPickupStatus(itemStack);
+        IConfigurableItem.ProfileHelper
+                .setShort(itemStack, References.ENABLED_SELF_PICKUP, (short) mode.next().ordinal());
     }
 
     public static void setSelfPickupStatus(ItemStack itemStack, short status) {
@@ -263,9 +276,9 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
     public static String getSelfPickupStatusString(ItemStack itemStack) {
         String status;
         switch (getSelfPickupStatus(itemStack)) {
-            case SELF_PICKUP_DELAY -> status = EnumChatFormatting.YELLOW
+            case DELAY -> status = EnumChatFormatting.YELLOW
                     + StatCollector.translateToLocal("info.de.selfPickupDelay.txt");
-            case SELF_PICKUP_NEVER -> status = EnumChatFormatting.RED
+            case NEVER -> status = EnumChatFormatting.RED
                     + StatCollector.translateToLocal("info.de.selfPickupNever.txt");
             default -> status = EnumChatFormatting.DARK_GREEN
                     + StatCollector.translateToLocal("info.de.selfPickupAlways.txt");
