@@ -133,13 +133,11 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                             player.posZ).expand(range, range, range));
 
             // account for the server/client desync
-            double playerEyesPos = player.posY
+            final double playerEyesPos = player.posY
                     + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
-            boolean didPlayerDrop;
-            boolean doMove;
-            boolean playSound = false;
             final boolean skipPlayerCheck = world.playerEntities.size() < 2;
             final SelfPickUpMode selfPickupStatus = getSelfPickupStatus(stack);
+            boolean playSound = false;
 
             for (EntityItem item : items) {
                 if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
@@ -160,16 +158,12 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                     if (closestPlayer == null || closestPlayer != player) continue;
                 }
 
-                if (ModHelper.isHodgepodgeLoaded) {
-                    doMove = false;
-                    if (selfPickupStatus != SelfPickUpMode.ALWAYS) {
-                        didPlayerDrop = item.func_145800_j() != null
-                                && item.func_145800_j().equals(player.getCommandSenderName());
-                        if (!didPlayerDrop) doMove = true;
-                        else if (selfPickupStatus == SelfPickUpMode.DELAY && item.delayBeforeCanPickup <= 0)
-                            doMove = true;
-                    } else doMove = true;
-                } else doMove = true;
+                boolean doMove = true;
+                if (ModHelper.isHodgepodgeLoaded && selfPickupStatus != SelfPickUpMode.ALWAYS) {
+                    boolean isOwnDrop = item.func_145800_j() != null
+                            && item.func_145800_j().equals(player.getCommandSenderName());
+                    doMove = !isOwnDrop || selfPickupStatus == SelfPickUpMode.DELAY && item.delayBeforeCanPickup <= 0;
+                }
 
                 if (doMove) {
                     playSound = true;
