@@ -5,6 +5,7 @@ import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
 import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.integration.ModHelper;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -21,6 +22,7 @@ public final class KeyBindings {
     public static final KeyBinding toolProfileChange;
     public static final KeyBinding toggleFlight;
     public static final KeyBinding toggleMagnet;
+    public static KeyBinding toggleMagnetSelfPickup;
 
     static {
         placeItem = new KeyBinding("key.placeItem", Keyboard.KEY_V, References.MODNAME);
@@ -28,6 +30,10 @@ public final class KeyBindings {
         toolProfileChange = new KeyBinding("key.toolProfileChange", Keyboard.KEY_NONE, References.MODNAME);
         toggleFlight = new KeyBinding("key.toggleFlight", Keyboard.KEY_NONE, References.MODNAME);
         toggleMagnet = new KeyBinding("key.toggleMagnet", Keyboard.KEY_NONE, References.MODNAME);
+        if (ModHelper.isHodgepodgeLoaded) toggleMagnetSelfPickup = new KeyBinding(
+                "key.toggleMagnetSelfPickup",
+                Keyboard.KEY_NONE,
+                References.MODNAME);
     }
 
     private KeyBindings() {}
@@ -38,5 +44,6 @@ public final class KeyBindings {
         ClientRegistry.registerKeyBinding(toolProfileChange);
         ClientRegistry.registerKeyBinding(toggleFlight);
         ClientRegistry.registerKeyBinding(toggleMagnet);
+        if (ModHelper.isHodgepodgeLoaded) ClientRegistry.registerKeyBinding(toggleMagnetSelfPickup);
     }
 }

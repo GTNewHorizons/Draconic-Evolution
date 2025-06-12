@@ -18,39 +18,39 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 
-public final class MagnetToggleAckPacket implements IMessage {
+public final class MagnetToggleSelfPickupAckPacket implements IMessage {
 
-    private boolean status;
+    private short status;
 
-    public MagnetToggleAckPacket() {}
+    public MagnetToggleSelfPickupAckPacket() {}
 
-    public MagnetToggleAckPacket(boolean status) {
+    public MagnetToggleSelfPickupAckPacket(short status) {
         this.status = status;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        status = buf.readBoolean();
+        this.status = buf.readShort();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeBoolean(status);
+        buf.writeShort(this.status);
     }
 
-    public static final class Handler implements IMessageHandler<MagnetToggleAckPacket, IMessage> {
+    public static final class Handler implements IMessageHandler<MagnetToggleSelfPickupAckPacket, IMessage> {
 
         @SideOnly(Side.CLIENT)
         @Override
-        public IMessage onMessage(MagnetToggleAckPacket message, MessageContext ctx) {
+        public IMessage onMessage(MagnetToggleSelfPickupAckPacket message, MessageContext ctx) {
             EntityPlayer player = Minecraft.getMinecraft().thePlayer;
             Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
 
             if (magnetOptional.isPresent()) {
                 ItemStack itemStack = magnetOptional.get();
-                Magnet.setStatus(itemStack, message.status);
+                Magnet.setSelfPickupStatus(itemStack, message.status);
                 ClientEventHandler.statusDisplayManager.startDrawing(itemStack.copy());
-                if (ModHelper.isGTNHLibLoaded) Magnet.renderHUDStatusChange();
+                if (ModHelper.isGTNHLibLoaded) Magnet.renderHUDSelfPickupStatusChange();
             }
 
             return null;

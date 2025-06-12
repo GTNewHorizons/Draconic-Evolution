@@ -20,10 +20,12 @@ import com.brandon3055.draconicevolution.common.items.tools.Magnet;
 import com.brandon3055.draconicevolution.common.items.tools.baseclasses.ToolHandler;
 import com.brandon3055.draconicevolution.common.network.ButtonPacket;
 import com.brandon3055.draconicevolution.common.network.MagnetTogglePacket;
+import com.brandon3055.draconicevolution.common.network.MagnetToggleSelfPickupPacket;
 import com.brandon3055.draconicevolution.common.network.PlacedItemPacket;
 import com.brandon3055.draconicevolution.common.network.TeleporterPacket;
 import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
 import com.brandon3055.draconicevolution.common.utills.InventoryUtils;
+import com.brandon3055.draconicevolution.integration.ModHelper;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
@@ -50,6 +52,8 @@ public class KeyInputHandler {
             handleToggleFlightKey(player);
         } else if (KeyBindings.toggleMagnet.isPressed()) {
             handleToggleMagnetKey(player);
+        } else if (ModHelper.isHodgepodgeLoaded && KeyBindings.toggleMagnetSelfPickup.isPressed()) {
+            handleToggleMagnetSelfPickup(player);
         }
     }
 
@@ -68,6 +72,8 @@ public class KeyInputHandler {
             handleToggleFlightKey(player);
         } else if (KeyBindings.toggleMagnet.isPressed()) {
             handleToggleMagnetKey(player);
+        } else if (ModHelper.isHodgepodgeLoaded && KeyBindings.toggleMagnetSelfPickup.isPressed()) {
+            handleToggleMagnetSelfPickup(player);
         }
 
         if (player != null) {
@@ -136,6 +142,14 @@ public class KeyInputHandler {
 
         if (magnetOptional.isPresent()) {
             DraconicEvolution.network.sendToServer(new MagnetTogglePacket());
+        }
+    }
+
+    private void handleToggleMagnetSelfPickup(EntityClientPlayerMP player) {
+        Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
+
+        if (magnetOptional.isPresent()) {
+            DraconicEvolution.network.sendToServer(new MagnetToggleSelfPickupPacket());
         }
     }
 

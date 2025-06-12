@@ -21,14 +21,15 @@ public class ModHelper {
 
     private static final boolean isTConInstalled;
     private static final boolean isAvaritiaInstalled;
-    // private static boolean isRotaryCraftInstalled;
     private static final boolean isGregTechInstalled;
     private static final boolean isBartworkdsInstalled;
     private static final boolean isAE2Installed;
 
+    public static boolean isGTNHLibLoaded;
+    public static boolean isHodgepodgeLoaded;
+
     private static Item cleaver;
     private static Item avaritiaSword;
-    // private static Item bedrockSword;
 
     private static Class<?> bwores;
     private static Class<?> GTores;
@@ -37,10 +38,12 @@ public class ModHelper {
     static {
         isTConInstalled = Loader.isModLoaded("TConstruct");
         isAvaritiaInstalled = Loader.isModLoaded("Avaritia");
-        // isRotaryCraftInstalled = Loader.isModLoaded("RotaryCraft");
         isGregTechInstalled = Loader.isModLoaded("gregtech") && !Loader.isModLoaded("gregapi");
         isBartworkdsInstalled = Loader.isModLoaded("bartworks");
         isAE2Installed = Loader.isModLoaded("appliedenergistics2");
+        isGTNHLibLoaded = Loader.isModLoaded("gtnhlib");
+        isHodgepodgeLoaded = Loader.isModLoaded("hodgepodge");
+
         final String GT_ORE_CLASS = "gregtech.common.blocks.TileEntityOres";
         final String BW_ORE_CLASS = "bartworks.system.material.BWMetaGeneratedOres";
         final String AE2_FITEM_CLASS = "appeng.entity.EntityFloatingItem";
@@ -76,15 +79,6 @@ public class ModHelper {
                 && player.getHeldItem().getItem().equals(avaritiaSword);
     }
 
-    // public static boolean isHoldingBedrockSword(EntityPlayer player) {
-    // if (!isRotaryCraftInstalled) return false;
-    // else if (bedrockSword == null) bedrockSword = GameRegistry.findItem("RotaryCraft",
-    // "rotarycraft_item_bedsword");
-    //
-    // return bedrockSword != null && player.getHeldItem() != null &&
-    // player.getHeldItem().getItem().equals(bedrockSword);
-    // }
-
     public static float applyModDamageAdjustments(ArmorSummery summery, LivingAttackEvent event) {
         if (summery == null) return event.ammount;
         EntityPlayer attacker = event.source.getEntity() instanceof EntityPlayer
@@ -98,17 +92,7 @@ public class ModHelper {
         if (isHoldingAvaritiaSword(attacker)) {
             event.entityLiving.hurtResistantTime = 0;
             return 300F;
-        }
-        // else if (isHoldingBedrockSword(attacker)) {
-        // summery.entropy += 10;
-        //
-        // if (summery.entropy > 100) {
-        // summery.entropy = 100;
-        // }
-        //
-        // return Math.max(event.ammount, Math.min(50F, summery.protectionPoints));
-        // }
-        else if (event.source.isUnblockable() || event.source.canHarmInCreative()) {
+        } else if (event.source.isUnblockable() || event.source.canHarmInCreative()) {
             summery.entropy += 3;
 
             if (summery.entropy > 100) {

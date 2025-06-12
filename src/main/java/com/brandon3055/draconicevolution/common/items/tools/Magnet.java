@@ -3,6 +3,8 @@ package com.brandon3055.draconicevolution.common.items.tools;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -14,6 +16,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -29,8 +32,10 @@ import com.brandon3055.draconicevolution.common.items.ItemDE;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
 import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
+import com.brandon3055.draconicevolution.common.utills.InventoryUtils;
 import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
 import com.brandon3055.draconicevolution.integration.ModHelper;
+import com.gtnewhorizon.gtnhlib.GTNHLib;
 
 import baubles.api.BaubleType;
 import baubles.api.IBauble;
@@ -47,6 +52,20 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
 
     private IIcon draconium;
     private IIcon awakened;
+
+    private enum SelfPickUpMode {
+
+        // enum order matters,
+        // do not re-order
+        ALWAYS,
+        DELAY,
+        NEVER;
+
+        public SelfPickUpMode next() {
+            final SelfPickUpMode[] values = SelfPickUpMode.values();
+            return values[(this.ordinal() + 1) % values.length];
+        }
+    }
 
     public Magnet() {
         this.setUnlocalizedName("magnet");
@@ -93,18 +112,77 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
     // if changes are ever made, they should be made on both
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean hotbar) {
-        if (entity.ticksExisted % 5 != 0 || !isEnabled(stack)) {
+        if (entity.ticksExisted % 5 != 0 || !(entity instanceof EntityPlayer player) || !isEnabled(stack)) {
             return;
         }
         if (IConfigurableItem.ProfileHelper.getBoolean(stack, References.MAGNET_SNEAK, true) && entity.isSneaking()) {
             return;
         }
 
-        if (entity instanceof EntityPlayer player) {
-            int range = stack.getItemDamage() == 0 ? 8 : 32;
+        int range = stack.getItemDamage() == 0 ? 8 : 32;
+        List<EntityItem> items = world.getEntitiesWithinAABB(
+                EntityItem.class,
+                AxisAlignedBB
+                        .getBoundingBox(player.posX, player.posY, player.posZ, player.posX, player.posY, player.posZ)
+                        .expand(range, range, range));
 
-            List<EntityItem> items = world.getEntitiesWithinAABB(
-                    EntityItem.class,
+        // account for the server/client desync
+        final double playerEyesPos = player.posY
+                + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
+        final boolean skipPlayerCheck = world.playerEntities.size() < 2;
+        final SelfPickUpMode selfPickupStatus = getSelfPickupStatus(stack);
+        boolean playSound = false;
+
+        for (EntityItem item : items) {
+            if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
+                    || TileDislocatorInhibitor.isBlockedByInhibitor(world, item)) {
+                continue;
+            }
+
+            String name = Item.itemRegistry.getNameForObject(item.getEntityItem().getItem());
+            if (ConfigHandler.itemDislocatorBlacklistMap.containsKey(name)
+                    && (ConfigHandler.itemDislocatorBlacklistMap.get(name) == -1
+                            || ConfigHandler.itemDislocatorBlacklistMap.get(name)
+                                    == item.getEntityItem().getItemDamage())) {
+                continue;
+            }
+
+            if (!skipPlayerCheck) {
+                EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
+                if (closestPlayer == null || closestPlayer != player) continue;
+            }
+
+            boolean doMove = true;
+            if (ModHelper.isHodgepodgeLoaded && selfPickupStatus != SelfPickUpMode.ALWAYS) {
+                boolean isOwnDrop = item.func_145800_j() != null
+                        && item.func_145800_j().equals(player.getCommandSenderName());
+                doMove = !isOwnDrop || selfPickupStatus == SelfPickUpMode.DELAY && item.delayBeforeCanPickup <= 0;
+            }
+
+            if (doMove) {
+                playSound = true;
+                item.delayBeforeCanPickup = 0;
+                item.motionX = 0;
+                item.motionY = 0;
+                item.motionZ = 0;
+                item.setPosition(
+                        player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
+                        playerEyesPos - 0.62, // 1 block above feet / "belt height"
+                        player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+            }
+        }
+
+        if (playSound && !ConfigHandler.itemDislocatorDisableSound) {
+            world.playSoundAtEntity(
+                    player,
+                    "random.orb",
+                    0.1F,
+                    0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
+        }
+
+        if (!world.isRemote) {
+            List<EntityXPOrb> xp = world.getEntitiesWithinAABB(
+                    EntityXPOrb.class,
                     AxisAlignedBB.getBoundingBox(
                             player.posX,
                             player.posY,
@@ -112,79 +190,21 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                             player.posX,
                             player.posY,
                             player.posZ).expand(range, range, range));
-
-            final boolean skipPlayerCheck = world.playerEntities.size() < 2;
-            boolean playSound = false;
-            // account for the server/client desync
-            double playerEyesPos = player.posY
-                    + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
-
-            for (EntityItem item : items) {
-                if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
-                        || TileDislocatorInhibitor.isBlockedByInhibitor(world, item)) {
-                    continue;
-                }
-
-                String name = Item.itemRegistry.getNameForObject(item.getEntityItem().getItem());
-                if (ConfigHandler.itemDislocatorBlacklistMap.containsKey(name)
-                        && (ConfigHandler.itemDislocatorBlacklistMap.get(name) == -1
-                                || ConfigHandler.itemDislocatorBlacklistMap.get(name)
-                                        == item.getEntityItem().getItemDamage())) {
-                    continue;
-                }
-
-                if (!skipPlayerCheck) {
-                    EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
-                    if (closestPlayer == null || closestPlayer != player) continue;
-                }
-
-                playSound = true;
-
-                if (item.delayBeforeCanPickup > 0) {
-                    item.delayBeforeCanPickup = 0;
-                }
-                item.motionX = 0;
-                item.motionY = 0;
-                item.motionZ = 0;
-                item.setPosition(
-                        player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                        playerEyesPos - 0.62,
-                        player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
-            }
-            if (playSound && !ConfigHandler.itemDislocatorDisableSound) {
-                world.playSoundAtEntity(
-                        player,
-                        "random.orb",
-                        0.1F,
-                        0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
-            }
-
-            if (!world.isRemote) {
-                List<EntityXPOrb> xp = world.getEntitiesWithinAABB(
-                        EntityXPOrb.class,
-                        AxisAlignedBB.getBoundingBox(
-                                player.posX,
-                                player.posY,
-                                player.posZ,
-                                player.posX,
-                                player.posY,
-                                player.posZ).expand(range, range, range));
-                for (EntityXPOrb orb : xp) {
-                    if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
-                        if (!skipPlayerCheck) {
-                            EntityPlayer closestPlayer = world.getClosestPlayerToEntity(orb, range);
-                            if (closestPlayer == null || closestPlayer != player) continue;
-                        }
-                        if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, orb))) continue;
-                        world.playSoundAtEntity(
-                                player,
-                                "random.orb",
-                                0.1F,
-                                0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
-                        player.onItemPickup(orb, 1);
-                        player.addExperience(orb.xpValue);
-                        orb.setDead();
+            for (EntityXPOrb orb : xp) {
+                if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
+                    if (!skipPlayerCheck) {
+                        EntityPlayer closestPlayer = world.getClosestPlayerToEntity(orb, range);
+                        if (closestPlayer == null || closestPlayer != player) continue;
                     }
+                    if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, orb))) continue;
+                    world.playSoundAtEntity(
+                            player,
+                            "random.orb",
+                            0.1F,
+                            0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
+                    player.onItemPickup(orb, 1);
+                    player.addExperience(orb.xpValue);
+                    orb.setDead();
                 }
             }
         }
@@ -203,12 +223,54 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
     }
 
     public static void toggle(ItemStack itemStack) {
-        final boolean enabled = IConfigurableItem.ProfileHelper.getBoolean(itemStack, References.ENABLED, false);
+        final boolean enabled = isEnabled(itemStack);
         IConfigurableItem.ProfileHelper.setBoolean(itemStack, References.ENABLED, !enabled);
     }
 
     public static void setStatus(ItemStack itemStack, boolean status) {
         IConfigurableItem.ProfileHelper.setBoolean(itemStack, References.ENABLED, status);
+    }
+
+    public static String getStatusString(ItemStack itemStack) {
+        String status;
+        if (isEnabled(itemStack)) {
+            status = EnumChatFormatting.DARK_GREEN + StatCollector.translateToLocal("info.de.statusActive.txt");
+        } else {
+            status = EnumChatFormatting.RED + StatCollector.translateToLocal("info.de.statusInactive.txt");
+        }
+        return StatCollector.translateToLocal("info.de.status.txt") + ": " + status;
+    }
+
+    public static short getSelfPickupStatusShort(ItemStack itemStack) {
+        return ProfileHelper.getShort(itemStack, References.ENABLED_SELF_PICKUP, (short) 0);
+    }
+
+    private static SelfPickUpMode getSelfPickupStatus(ItemStack itemStack) {
+        final short mode = getSelfPickupStatusShort(itemStack);
+        return SelfPickUpMode.values()[mode];
+    }
+
+    public static void toggleSelfPickupStatus(ItemStack itemStack) {
+        final SelfPickUpMode mode = getSelfPickupStatus(itemStack);
+        IConfigurableItem.ProfileHelper
+                .setShort(itemStack, References.ENABLED_SELF_PICKUP, (short) mode.next().ordinal());
+    }
+
+    public static void setSelfPickupStatus(ItemStack itemStack, short status) {
+        IConfigurableItem.ProfileHelper.setShort(itemStack, References.ENABLED_SELF_PICKUP, status);
+    }
+
+    public static String getSelfPickupStatusString(ItemStack itemStack) {
+        String status;
+        switch (getSelfPickupStatus(itemStack)) {
+            case DELAY -> status = EnumChatFormatting.YELLOW
+                    + StatCollector.translateToLocal("info.de.selfPickupDelay.txt");
+            case NEVER -> status = EnumChatFormatting.RED
+                    + StatCollector.translateToLocal("info.de.selfPickupNever.txt");
+            default -> status = EnumChatFormatting.DARK_GREEN
+                    + StatCollector.translateToLocal("info.de.selfPickupAlways.txt");
+        }
+        return StatCollector.translateToLocal("info.de.selfPickup.txt") + ": " + status;
     }
 
     @Override
@@ -228,6 +290,31 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                         + InfoHelper.ITC()
                         + " "
                         + StatCollector.translateToLocal("info.de.blockRange.txt"));
+        list.add(getStatusString(stack));
+        if (ModHelper.isHodgepodgeLoaded) list.add(getSelfPickupStatusString(stack));
+    }
+
+    @Optional.Method(modid = "gtnhlib")
+    @SideOnly(Side.CLIENT)
+    public static void renderHUDStatusChange() {
+        EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+        java.util.Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
+        magnetOptional.ifPresent(
+                itemStack -> GTNHLib.proxy
+                        .printMessageAboveHotbar(EnumChatFormatting.GOLD + getStatusString(itemStack), 60, true, true));
+    }
+
+    @Optional.Method(modid = "gtnhlib")
+    @SideOnly(Side.CLIENT)
+    public static void renderHUDSelfPickupStatusChange() {
+        EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+        java.util.Optional<ItemStack> magnetOptional = InventoryUtils.getItemInAnyPlayerInventory(player, Magnet.class);
+        magnetOptional.ifPresent(
+                itemStack -> GTNHLib.proxy.printMessageAboveHotbar(
+                        EnumChatFormatting.GOLD + getSelfPickupStatusString(itemStack),
+                        60,
+                        true,
+                        true));
     }
 
     @Override
