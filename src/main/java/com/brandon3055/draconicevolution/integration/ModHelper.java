@@ -3,6 +3,8 @@ package com.brandon3055.draconicevolution.integration;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
@@ -12,7 +14,9 @@ import com.brandon3055.draconicevolution.common.utills.LogHelper;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.registry.GameRegistry;
+import gregtech.api.enums.Materials;
 import gregtech.api.hazards.Hazard;
+import gregtech.api.items.MetaGeneratedTool;
 
 /**
  * Created by brandon3055 on 29/9/2015.
@@ -107,6 +111,23 @@ public class ModHelper {
 
     public static boolean isGregTechTileEntityOre(TileEntity te) {
         return isGregTechInstalled && GTores.isInstance(te) || isBartworkdsInstalled && bwores.isInstance(te);
+    }
+
+    public static boolean isGregTechEnchantmentItem(ItemStack stack) {
+        if (!isGregTechInstalled) return false;
+
+        if (stack.getItem() instanceof MetaGeneratedTool) {
+            Materials material = null;
+            NBTTagCompound aNBT = stack.getTagCompound();
+            if (aNBT != null) {
+                aNBT = aNBT.getCompoundTag("GT.ToolStats");
+                if (aNBT != null) material = Materials.getRealMaterial(aNBT.getString("PrimaryMaterial"));
+            }
+            if (material == null) return false;
+            return material.mEnchantmentTools != null || material.mEnchantmentArmors != null;
+        }
+
+        return false;
     }
 
     public static boolean isAE2EntityFloatingItem(EntityItem item) {
