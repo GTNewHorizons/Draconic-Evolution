@@ -3,7 +3,6 @@ package com.brandon3055.draconicevolution.integration;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
 import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler.ArmorSummery;
@@ -21,8 +20,6 @@ public class ModHelper {
 
     private static final boolean isTConInstalled;
     private static final boolean isAvaritiaInstalled;
-    private static final boolean isGregTechInstalled;
-    private static final boolean isBartworkdsInstalled;
     private static final boolean isAE2Installed;
 
     public static boolean isGTNHLibLoaded;
@@ -31,32 +28,17 @@ public class ModHelper {
     private static Item cleaver;
     private static Item avaritiaSword;
 
-    private static Class<?> bwores;
-    private static Class<?> GTores;
     private static Class<?> AE2FItem;
 
     static {
         isTConInstalled = Loader.isModLoaded("TConstruct");
         isAvaritiaInstalled = Loader.isModLoaded("Avaritia");
-        isGregTechInstalled = Loader.isModLoaded("gregtech") && !Loader.isModLoaded("gregapi");
-        isBartworkdsInstalled = Loader.isModLoaded("bartworks");
         isAE2Installed = Loader.isModLoaded("appliedenergistics2");
         isGTNHLibLoaded = Loader.isModLoaded("gtnhlib");
         isHodgepodgeLoaded = Loader.isModLoaded("hodgepodge");
 
-        final String GT_ORE_CLASS = "gregtech.common.blocks.TileEntityOres";
-        final String BW_ORE_CLASS = "bartworks.system.material.BWMetaGeneratedOres";
         final String AE2_FITEM_CLASS = "appeng.entity.EntityFloatingItem";
-        if (isGregTechInstalled) try {
-            GTores = Class.forName(GT_ORE_CLASS);
-        } catch (ClassNotFoundException e) {
-            LogHelper.error("Couldn't reflect class " + GT_ORE_CLASS);
-        }
-        if (isBartworkdsInstalled) try {
-            bwores = Class.forName(BW_ORE_CLASS);
-        } catch (ClassNotFoundException e) {
-            LogHelper.error("Couldn't reflect class " + BW_ORE_CLASS);
-        }
+
         if (isAE2Installed) try {
             AE2FItem = Class.forName(AE2_FITEM_CLASS);
         } catch (ClassNotFoundException e) {
@@ -103,10 +85,6 @@ public class ModHelper {
         }
 
         return event.ammount;
-    }
-
-    public static boolean isGregTechTileEntityOre(TileEntity te) {
-        return isGregTechInstalled && GTores.isInstance(te) || isBartworkdsInstalled && bwores.isInstance(te);
     }
 
     public static boolean isAE2EntityFloatingItem(EntityItem item) {
