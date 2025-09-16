@@ -14,6 +14,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -293,8 +294,19 @@ public abstract class MiningTool extends ToolBase implements IUpgradableItem {
 
             block.onBlockHarvested(world, x, y, z, meta, player);
 
-            ArrayList<ItemStack> drops = block
-                    .getDrops(world, x, y, z, meta, EnchantmentHelper.getFortuneModifier(player));
+            ArrayList<ItemStack> drops = new ArrayList<>();
+
+            boolean silkTouchBreak = block.canSilkHarvest(world, player, x, y, z, meta)
+                    && EnchantmentHelper.getSilkTouchModifier(player);
+
+            if (silkTouchBreak) {
+                ItemStack silkTouchDrop = new ItemStack(Item.getItemFromBlock(block), 1, meta);
+                drops.add(silkTouchDrop);
+            } else {
+                int fortuneLevel = EnchantmentHelper.getFortuneModifier(player);
+                drops = block.getDrops(world, x, y, z, meta, fortuneLevel);
+            }
+
             for (ItemStack is : drops) {
                 if (!player.inventory.addItemStackToInventory(is)) {
                     if (world.getGameRules().getGameRuleBooleanValue("doTileDrops") && !world.restoringBlockSnapshots) {
@@ -316,8 +328,11 @@ public abstract class MiningTool extends ToolBase implements IUpgradableItem {
             block.onBlockDestroyedByPlayer(world, x, y, z, meta);
             world.setBlock(x, y, z, Blocks.air, 0, 2);
             player.addExhaustion(-0.025F);
-            if (block.getExpDrop(world, meta, EnchantmentHelper.getFortuneModifier(player)) > 0)
+
+            if (!silkTouchBreak && block.getExpDrop(world, meta, EnchantmentHelper.getFortuneModifier(player)) > 0) {
                 player.addExperience(block.getExpDrop(world, meta, EnchantmentHelper.getFortuneModifier(player)));
+            }
+
             EntityPlayerMP mpPlayer = (EntityPlayerMP) player;
             mpPlayer.playerNetServerHandler.sendPacket(new S23PacketBlockChange(x, y, z, world));
 
