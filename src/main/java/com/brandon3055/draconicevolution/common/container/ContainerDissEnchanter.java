@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
 import com.brandon3055.draconicevolution.common.inventory.SlotOutput;
 import com.brandon3055.draconicevolution.common.tileentities.TileDissEnchanter;
+import com.brandon3055.draconicevolution.integration.ModHelper;
 
 public class ContainerDissEnchanter extends Container {
 
@@ -110,8 +111,9 @@ public class ContainerDissEnchanter extends Container {
 
         @Override
         public boolean isItemValid(ItemStack stack) {
-            return EnchantmentHelper.getEnchantments(stack).size() > 0
-                    || ItemNBTHelper.getInteger(stack, "RepairCost", 0) > 0;
+            return (EnchantmentHelper.getEnchantments(stack).size() > 0
+                    || ItemNBTHelper.getInteger(stack, "RepairCost", 0) > 0)
+                    && (!ModHelper.isGregTechEnchantmentItem(stack));
         }
 
         @Override
