@@ -23,6 +23,7 @@ public class ModHelper {
 
     private static final boolean isTConInstalled;
     private static final boolean isAvaritiaInstalled;
+    private static final boolean isGregTechInstalled;
     private static final boolean isAE2Installed;
 
     public static boolean isGTNHLibLoaded;
@@ -36,6 +37,7 @@ public class ModHelper {
     static {
         isTConInstalled = Loader.isModLoaded("TConstruct");
         isAvaritiaInstalled = Loader.isModLoaded("Avaritia");
+        isGregTechInstalled = Loader.isModLoaded("gregtech_nh");
         isAE2Installed = Loader.isModLoaded("appliedenergistics2");
         isGTNHLibLoaded = Loader.isModLoaded("gtnhlib");
         isHodgepodgeLoaded = Loader.isModLoaded("hodgepodge");
@@ -88,10 +90,6 @@ public class ModHelper {
         }
 
         return event.ammount;
-    }
-
-    public static boolean isGregTechTileEntityOre(TileEntity te) {
-        return isGregTechInstalled && GTores.isInstance(te) || isBartworkdsInstalled && bwores.isInstance(te);
     }
 
     public static boolean isGregTechEnchantmentItem(ItemStack stack) {
