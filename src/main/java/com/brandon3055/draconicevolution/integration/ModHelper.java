@@ -4,7 +4,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
 import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler.ArmorSummery;
