@@ -38,7 +38,6 @@ import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
 import com.brandon3055.draconicevolution.common.utills.IUpgradableItem;
 import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
-import com.brandon3055.draconicevolution.integration.ModHelper;
 
 /**
  * Created by Brandon on 2/01/2015. Modified by bartimaeusnek on 23/05/2018
@@ -177,11 +176,13 @@ public abstract class MiningTool extends ToolBase implements IUpgradableItem {
                 for (int yPos = y + yOffset - yMin; yPos <= y + yOffset + yMax; yPos++) {
                     for (int zPos = z - zMin; zPos <= z + zMax; zPos++) {
                         TileEntity te = player.worldObj.getTileEntity(xPos, yPos, zPos);
-                        if (te != null && !ModHelper.isGregTechTileEntityOre(te)) {
+                        if (te != null) {
                             if (player.worldObj.isRemote) {
                                 player.addChatComponentMessage(new ChatComponentTranslation("msg.de.baseSafeAOW.txt"));
-                            } else((EntityPlayerMP) player).playerNetServerHandler
-                                    .sendPacket(new S23PacketBlockChange(x, y, z, ((EntityPlayerMP) player).worldObj));
+                            } else {
+                                ((EntityPlayerMP) player).playerNetServerHandler
+                                        .sendPacket(new S23PacketBlockChange(x, y, z, player.worldObj));
+                            }
                             return true;
                         }
                     }
