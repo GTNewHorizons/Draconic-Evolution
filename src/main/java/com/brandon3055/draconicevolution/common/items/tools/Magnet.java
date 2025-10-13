@@ -3,6 +3,7 @@ package com.brandon3055.draconicevolution.common.items.tools;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -144,6 +145,30 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                     && (ConfigHandler.itemDislocatorBlacklistMap.get(name) == -1
                             || ConfigHandler.itemDislocatorBlacklistMap.get(name)
                                     == item.getEntityItem().getItemDamage())) {
+                continue;
+            }
+
+            int x = (int) Math.floor(item.posX);
+            int y = (int) Math.floor(item.posY);
+            int z = (int) Math.floor(item.posZ);
+
+            Block block = world.getBlock(x, y, z);
+            String blockName = Item.itemRegistry.getNameForObject(Item.getItemFromBlock(block));
+            int meta = world.getBlockMetadata(x, y, z);
+            if (ConfigHandler.itemDislocatorBlockBlacklistMap.containsKey(blockName)
+                    && (ConfigHandler.itemDislocatorBlockBlacklistMap.get(blockName) == -1
+                            || ConfigHandler.itemDislocatorBlockBlacklistMap.get(blockName) == meta)) {
+                continue;
+            }
+
+            y--;
+
+            block = world.getBlock(x, y, z);
+            blockName = Item.itemRegistry.getNameForObject(Item.getItemFromBlock(block));
+            meta = world.getBlockMetadata(x, y, z);
+            if (ConfigHandler.itemDislocatorBlockBlacklistMap.containsKey(blockName)
+                    && (ConfigHandler.itemDislocatorBlockBlacklistMap.get(blockName) == -1
+                            || ConfigHandler.itemDislocatorBlockBlacklistMap.get(blockName) == meta)) {
                 continue;
             }
 

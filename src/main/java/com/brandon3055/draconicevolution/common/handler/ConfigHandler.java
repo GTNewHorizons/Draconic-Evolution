@@ -55,6 +55,8 @@ public class ConfigHandler {
     public static boolean enableFlight;
     private static String[] itemDislocatorBlacklist;
     public static Map<String, Integer> itemDislocatorBlacklistMap = new HashMap<String, Integer>();
+    private static String[] itemDislocatorBlockBlacklist;
+    public static Map<String, Integer> itemDislocatorBlockBlacklistMap = new HashMap<String, Integer>();
     public static boolean itemDislocatorDisableSound;
 
     // spawner
@@ -303,7 +305,12 @@ public class ConfigHandler {
                     "Item Dislocator Blacklist",
                     Configuration.CATEGORY_GENERAL,
                     new String[] { "appliedenergistics2:item.ItemCrystalSeed" },
-                    "A list of items of items that should be ignored by the item dislocator. Use the items registry name e.g. minecraft:apple you can also add a meta value like so minecraft:wool|4");
+                    "A list of items that should be ignored by the item dislocator. Use the items registry name e.g. minecraft:apple you can also add a meta value like so minecraft:wool|4");
+            itemDislocatorBlockBlacklist = config.getStringList(
+                    "Item Dislocator Block Blacklist",
+                    Configuration.CATEGORY_GENERAL,
+                    new String[] { "Thaumcraft:blockAlchemyFurnace|0", "Botania:pool" },
+                    "A list of blocks that will cause items above or inside of them to be ignored by the item dislocator. Use the items registry name e.g. minecraft:apple you can also add a meta value like so minecraft:wool|4");
             itemDislocatorDisableSound = config.get(
                     Configuration.CATEGORY_GENERAL,
                     "Item Dislocator Disable Sound",
@@ -425,6 +432,16 @@ public class ConfigHandler {
                             .put(s.substring(0, s.indexOf("|")), Integer.parseInt(s.substring(s.indexOf("|") + 1)));
                 } else {
                     itemDislocatorBlacklistMap.put(s, -1);
+                }
+            }
+
+            itemDislocatorBlockBlacklistMap.clear();
+            for (String s : itemDislocatorBlockBlacklist) {
+                if (s.contains("|")) {
+                    itemDislocatorBlockBlacklistMap
+                            .put(s.substring(0, s.indexOf("|")), Integer.parseInt(s.substring(s.indexOf("|") + 1)));
+                } else {
+                    itemDislocatorBlockBlacklistMap.put(s, -1);
                 }
             }
 
