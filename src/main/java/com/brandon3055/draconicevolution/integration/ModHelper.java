@@ -112,6 +112,7 @@ public class ModHelper {
             case GAS -> "HazmatGas";
             case HEAT -> "HazmatHeat";
             case RADIOLOGICAL -> "HazmatRadiological";
+            case SPACE -> "HazmatSpace";
         };
     }
 }
