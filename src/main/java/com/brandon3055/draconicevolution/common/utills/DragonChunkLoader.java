@@ -11,7 +11,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.LoadingCallback;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
-import net.minecraftforge.common.MinecraftForge;
 
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.entity.EntityChaosGuardian;
@@ -22,12 +21,11 @@ import com.brandon3055.draconicevolution.common.entity.EntityChaosGuardian;
 public class DragonChunkLoader implements LoadingCallback {
 
     public static DragonChunkLoader instance;
-    public static Map<EntityChaosGuardian, Ticket> ticketList = new HashMap<EntityChaosGuardian, Ticket>();
+    public static Map<EntityChaosGuardian, Ticket> ticketList = new HashMap<>();
     public static boolean hasReportedIssue = false;
 
     public static void init() {
         instance = new DragonChunkLoader();
-        MinecraftForge.EVENT_BUS.register(instance);
         ForgeChunkManager.setForcedChunkLoadingCallback(DraconicEvolution.instance, instance);
     }
 
@@ -64,7 +62,7 @@ public class DragonChunkLoader implements LoadingCallback {
 
         if (ticket == null || guardian.ticksExisted % 4 != 0) return;
 
-        Set<ChunkCoordIntPair> dragonChunks = new HashSet<ChunkCoordIntPair>();
+        Set<ChunkCoordIntPair> dragonChunks = new HashSet<>();
 
         for (int xx = guardian.chunkCoordX - 1; xx <= guardian.chunkCoordX + 1; xx++) {
             for (int zz = guardian.chunkCoordZ - 1; zz <= guardian.chunkCoordZ + 1; zz++) {
@@ -72,8 +70,8 @@ public class DragonChunkLoader implements LoadingCallback {
             }
         }
 
-        Set<ChunkCoordIntPair> toLoad = new HashSet<ChunkCoordIntPair>();
-        Set<ChunkCoordIntPair> toUnload = new HashSet<ChunkCoordIntPair>();
+        Set<ChunkCoordIntPair> toLoad = new HashSet<>();
+        Set<ChunkCoordIntPair> toUnload = new HashSet<>();
 
         for (ChunkCoordIntPair pair : ticket.getChunkList()) {
             if (!contains(dragonChunks, pair)) toUnload.add(pair);
