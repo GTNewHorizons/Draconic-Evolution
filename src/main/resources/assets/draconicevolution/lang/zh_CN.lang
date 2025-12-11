@@ -390,29 +390,30 @@ info.de.forUpgrades.txt=查看有关属性
 info.de.useUpgradeModifier.txt=用升级调整器加强那些属性！
 
 //Lore ----------------------------------------------------------------------------------------------------------------------------------------
-item.draconicevolution:wyvernPickaxe.lore=普通的镐子太菜了，使用龙力，你能增加开采面积和开采速度
-item.draconicevolution:wyvernShovel.lore=一次一个方块?不是龙力的风格!更快,面积更大,这只是一个开始!
-item.draconicevolution:wyvernSword.lore=龙力开始解开剑的潜力，剑的范围和攻击力提高了
-item.draconicevolution:wyvernBow.lore=向一个普通的弓里注入龙力，你会射的更快更强
+# 注意：所有Lore行都已添加行数前缀，符合NEI格式要求
+item.draconicevolution:wyvernPickaxe.lore=1普通的镐子太菜了，使用龙力，你能增加开采面积和开采速度
+item.draconicevolution:wyvernShovel.lore=1一次一个方块?不是龙力的风格!更快,面积更大,这只是一个开始!
+item.draconicevolution:wyvernSword.lore=1龙力开始解开剑的潜力，剑的范围和攻击力提高了
+item.draconicevolution:wyvernBow.lore=1向一个普通的弓里注入龙力，你会射的更快更强
 
-item.draconicevolution:wyvernHelm.lore=比钻石更强大，现在可以承受更大的打击
-item.draconicevolution:wyvernChest.lore=用龙力注入的钻石盔甲，大大增强了防御力
-item.draconicevolution:wyvernLeggs.lore=钻石护腿也注入了龙力，你现在感到更强更快
-item.draconicevolution:wyvernBoots.lore=你改善了靴子，它似乎让你更加敏捷
+item.draconicevolution:wyvernHelm.lore=1比钻石更强大，现在可以承受更大的打击
+item.draconicevolution:wyvernChest.lore=1用龙力注入的钻石盔甲，大大增强了防御力
+item.draconicevolution:wyvernLeggs.lore=1钻石护腿也注入了龙力，你现在感到更强更快
+item.draconicevolution:wyvernBoots.lore=1你改善了靴子，它似乎让你更加敏捷
 
-item.draconicevolution:draconicPickaxe.lore=细心的研究，让你可以挖更大的区域
-item.draconicevolution:draconicAxe.lore=在大量的试验和错误中，你现在可以一下子砍下一整棵树
-item.draconicevolution:draconicShovel.lore=更好的效率，你现在可以挖更大的区域
-item.draconicevolution:draconicHoe.lore=龙力甚至能改善农业，只需点一下整个农田就能耕好
-item.draconicevolution:draconicSword.lore=双足飞龙是不错,但龙力武器攻击力更加强大，能击杀更多的敌人
-item.draconicevolution:draconicBow.lore=完美的距离，更快的射击频率，爆炸性的箭头，堪比机枪，你还有什么想要的吗?
+item.draconicevolution:draconicPickaxe.lore=1细心的研究，让你可以挖更大的区域
+item.draconicevolution:draconicAxe.lore=2经过多次尝试与失败后\n你现在可以一下就砍倒一整棵树
+item.draconicevolution:draconicShovel.lore=1更好的效率，你现在可以挖更大的区域
+item.draconicevolution:draconicHoe.lore=1龙力甚至能改善农业，只需点一下整个农田就能耕好
+item.draconicevolution:draconicSword.lore=1双足飞龙是不错,但龙力武器攻击力更加强大，能击杀更多的敌人
+item.draconicevolution:draconicBow.lore=1完美的距离，更快的射击频率，爆炸性的箭头，堪比机枪，你还有什么想要的吗?
 
-item.draconicevolution:draconicHelm.lore=麻麻我再也不怕黑夜啦，你现在无论什么时候都看得见了
-item.draconicevolution:draconicChest.lore=龙心使得你更强大，拥有了飞行的能力
-item.draconicevolution:draconicLeggs.lore=更强的装备，龙力灵魂保护着你，使你跑得更快
-item.draconicevolution:draconicBoots.lore=更强，更快，更好，龙的心脏授予了你跳的更高的权力
+item.draconicevolution:draconicHelm.lore=1麻麻我再也不怕黑夜啦，你现在无论什么时候都看得见了
+item.draconicevolution:draconicChest.lore=1龙心使得你更强大，拥有了飞行的能力
+item.draconicevolution:draconicLeggs.lore=1更强的装备，龙力灵魂保护着你，使你跑得更快
+item.draconicevolution:draconicBoots.lore=1更强，更快，更好，龙的心脏授予了你跳的更高的权力
 
-item.draconicevolution:draconicDistructionStaff.lore=通过一条又长又艰苦的路后，你发现了真正的力量！一个工具就能做所有事：挖矿、战斗和死亡！
+item.draconicevolution:draconicDistructionStaff.lore=1通过一条又长又艰苦的路后，你发现了真正的力量！一个工具就能做所有事：挖矿、战斗和死亡！
 
 //Entity ----------------------------------------------------------------------------------------------------------------------------------------
 entity.DraconicEvolution.EnderDragon.name=上古末影龙
@@ -597,5 +598,3 @@ potion.de.highStep.txt=自动跳跃
 potion.de.swiftness.txt=速度
 potion.de.fireImmune.txt=抗火
 potion.de.jumpBoost.txt=跳跃提升
-
-item.draconicevolution:draconicAxe.lore=2经过多次尝试与失败后\n你现在可以一下就砍倒一整棵树
