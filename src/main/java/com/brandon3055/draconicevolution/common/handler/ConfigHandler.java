@@ -380,7 +380,7 @@ public class ConfigHandler {
                     "Draconic Reactor",
                     "linearReactorFuelUsage",
                     linearReactorFuelUsage,
-                    "Sets whether the reactor should use linear (true) fuel usage formula or exponential (false)")
+                    "Sets whether the reactor should use linear (true) fuel usage formula or ^0.3 (false)")
                     .getBoolean(true);
             reactorFuelStorage = config.get(
                     "Draconic Reactor",
