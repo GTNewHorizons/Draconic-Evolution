@@ -376,11 +376,12 @@ public class ConfigHandler {
                     "Use this to adjust how quickly the reactor uses fuel",
                     0,
                     1000000).getDouble(1);
-            linearReactorFuelUsage = config.get(
-                    "Draconic Reactor",
-                    "linearReactorFuelUsage",
-                    linearReactorFuelUsage,
-                    "Sets whether the reactor should use linear (true) fuel usage formula or ^0.3 (false)")
+            linearReactorFuelUsage = config
+                    .get(
+                            "Draconic Reactor",
+                            "linearReactorFuelUsage",
+                            linearReactorFuelUsage,
+                            "Sets whether the reactor should use linear (true) fuel usage formula or ^0.3 (false)")
                     .getBoolean(true);
             reactorFuelStorage = config.get(
                     "Draconic Reactor",
