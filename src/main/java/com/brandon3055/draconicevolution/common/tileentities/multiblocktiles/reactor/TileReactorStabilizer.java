@@ -314,7 +314,11 @@ public class TileReactorStabilizer extends TileEntity
     @Override
     public int getInventoryStackLimit() {
         TileReactorCore core = getMaster();
-        return core.getInventoryStackLimit();
+        if (core != null) {
+            return core.getInventoryStackLimit();
+        } else {
+            return 0;
+        }
     }
 
     @Override
