@@ -15,7 +15,7 @@ import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
 import com.brandon3055.draconicevolution.client.render.particle.ParticleEnergy;
 import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
 import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.utills.EnergyStorage;
+import com.brandon3055.draconicevolution.common.utils.EnergyStorage;
 
 import cofh.api.energy.IEnergyContainerItem;
 import cofh.api.energy.IEnergyReceiver;

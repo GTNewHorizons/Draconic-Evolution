@@ -15,15 +15,14 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-import com.brandon3055.brandonscore.BrandonsCore;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.brandonscore.common.utills.Teleporter.TeleportLocation;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.entity.EntityPersistentItem;
 import com.brandon3055.draconicevolution.common.items.ItemDE;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.lib.Strings;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
+import com.brandon3055.draconicevolution.common.utils.Teleporter;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -109,7 +108,7 @@ public class TeleporterMKI extends ItemDE {
                     ItemNBTHelper.setString(
                             stack,
                             "DimentionName",
-                            BrandonsCore.proxy.getMCServer().worldServerForDimension(player.dimension).provider
+                            DraconicEvolution.proxy.getMCServer().worldServerForDimension(player.dimension).provider
                                     .getDimensionName());
                 }
                 return stack;
@@ -176,10 +175,10 @@ public class TeleporterMKI extends ItemDE {
         return new EntityPersistentItem(world, location, itemstack);
     }
 
-    public TeleportLocation getLocation(ItemStack stack) {
+    public Teleporter.TeleportLocation getLocation(ItemStack stack) {
         if (!ItemNBTHelper.getBoolean(stack, "IsSet", false)) return null;
 
-        TeleportLocation location = new TeleportLocation();
+        Teleporter.TeleportLocation location = new Teleporter.TeleportLocation();
         location.readFromNBT(stack.getTagCompound());
 
         return location;

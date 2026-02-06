@@ -6,13 +6,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentBase;
-import com.brandon3055.brandonscore.client.utills.GuiHelper;
-import com.brandon3055.brandonscore.common.utills.DataUtills;
 import com.brandon3055.draconicevolution.client.gui.componentguis.GUIToolConfig;
+import com.brandon3055.draconicevolution.client.utils.GuiHelper;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentBase;
 import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
-import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.DataUtils;
+import com.brandon3055.draconicevolution.common.utils.IConfigurableItem;
+import com.brandon3055.draconicevolution.common.utils.ItemConfigField;
 
 /**
  * Created by Brandon on 1/01/2015.
@@ -212,7 +212,7 @@ public class ComponentFieldAdjuster extends ComponentBase {
                 .playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
         ItemStack stack = gui.player.inventory.getStackInSlot(field.slot);
         if (stack != null && stack.getItem() instanceof IConfigurableItem) {
-            DataUtills.writeObjectToCompound(
+            DataUtils.writeObjectToCompound(
                     IConfigurableItem.ProfileHelper.getProfileCompound(stack),
                     field.value,
                     field.datatype,

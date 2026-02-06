@@ -5,11 +5,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
-import com.brandon3055.brandonscore.BrandonsCore;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.brandonscore.common.utills.Teleporter.TeleportLocation;
+import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
+import com.brandon3055.draconicevolution.common.utils.Teleporter;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -34,7 +34,7 @@ public class TeleporterPacket implements IMessage {
     private int data = 0;
     private boolean dataB;
     private byte function = -1;
-    private TeleportLocation location;
+    private Teleporter.TeleportLocation location;
 
     public TeleporterPacket() {}
 
@@ -44,12 +44,12 @@ public class TeleporterPacket implements IMessage {
         this.dataB = b;
     }
 
-    public TeleporterPacket(TeleportLocation location, int function) {
+    public TeleporterPacket(Teleporter.TeleportLocation location, int function) {
         this.location = location;
         this.function = (byte) function;
     }
 
-    public TeleporterPacket(TeleportLocation location, int function, int data) {
+    public TeleporterPacket(Teleporter.TeleportLocation location, int function, int data) {
         this.data = data;
         this.location = location;
         this.function = (byte) function;
@@ -96,7 +96,7 @@ public class TeleporterPacket implements IMessage {
     public void fromBytes(ByteBuf bytes) {
         function = bytes.readByte();
         if (function == ADDDESTINATION || function == UPDATEDESTINATION) {
-            location = new TeleportLocation();
+            location = new Teleporter.TeleportLocation();
             location.setXCoord(bytes.readDouble());
             location.setYCoord(bytes.readDouble());
             location.setZCoord(bytes.readDouble());
@@ -121,7 +121,7 @@ public class TeleporterPacket implements IMessage {
         }
 
         if (function == UPDATENAME) {
-            location = new TeleportLocation();
+            location = new Teleporter.TeleportLocation();
             location.setName(ByteBufUtils.readUTF8String(bytes));
             data = bytes.readInt();
         }
@@ -146,7 +146,7 @@ public class TeleporterPacket implements IMessage {
             if (message.function == ADDDESTINATION) {
                 NBTTagCompound tag = new NBTTagCompound();
                 message.location.setDimentionName(
-                        BrandonsCore.proxy.getMCServer()
+                        DraconicEvolution.proxy.getMCServer()
                                 .worldServerForDimension(message.location.getDimension()).provider.getDimensionName());
                 message.location.writeToNBT(tag);
                 list.appendTag(tag);
@@ -181,7 +181,7 @@ public class TeleporterPacket implements IMessage {
             if (message.function == UPDATEDESTINATION) {
                 NBTTagCompound tag = list.getCompoundTagAt(message.data);
                 message.location.setDimentionName(
-                        BrandonsCore.proxy.getMCServer()
+                        DraconicEvolution.proxy.getMCServer()
                                 .worldServerForDimension(message.location.getDimension()).provider.getDimensionName());
                 message.location.writeToNBT(tag);
                 list.func_150304_a(message.data, tag);
@@ -211,7 +211,7 @@ public class TeleporterPacket implements IMessage {
                 int fuel = ItemNBTHelper.getInteger(teleporter, "Fuel", 0);
                 if (!ctx.getServerHandler().playerEntity.capabilities.isCreativeMode)
                     ItemNBTHelper.setInteger(teleporter, "Fuel", fuel - 1);
-                TeleportLocation destination = new TeleportLocation();
+                Teleporter.TeleportLocation destination = new Teleporter.TeleportLocation();
                 destination.readFromNBT(list.getCompoundTagAt(message.data));
                 destination.sendEntityToCoords(ctx.getServerHandler().playerEntity);
             }

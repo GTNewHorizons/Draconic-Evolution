@@ -6,11 +6,11 @@ import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentScrollingBase;
-import com.brandon3055.brandonscore.client.gui.guicomponents.GUIScrollingBase;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.client.gui.componentguis.ManualPage;
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentScrollingBase;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.GUIScrollingBase;
+import com.brandon3055.draconicevolution.common.utils.Utils;
 
 /**
  * Created by Brandon on 7/03/2015.
@@ -23,7 +23,7 @@ public class ComponentIndexButton extends ComponentScrollingBase {
     public ComponentIndexButton(int x, int y, GUIScrollingBase gui, ManualPage page) {
         super(x, y, gui);
         this.page = page;
-        stack = Utills.getStackFromName(page.name, page.meta);
+        stack = Utils.getStackFromName(page.name, page.meta);
     }
 
     @Override

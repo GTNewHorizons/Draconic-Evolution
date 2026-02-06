@@ -45,10 +45,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
-import com.brandon3055.brandonscore.common.handlers.ProcessHandler;
-import com.brandon3055.brandonscore.common.utills.DataUtills;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.ModItems;
@@ -60,7 +56,11 @@ import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler;
 import com.brandon3055.draconicevolution.common.network.MountUpdatePacket;
 import com.brandon3055.draconicevolution.common.network.SpeedRequestPacket;
 import com.brandon3055.draconicevolution.common.tileentities.TileGrinder;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.DataUtils;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.Utils;
+import com.brandon3055.draconicevolution.common.utils.handlers.ProcessHandler;
 import com.brandon3055.draconicevolution.common.world.ChaosWorldGenHandler;
 
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -454,10 +454,10 @@ public class MinecraftForgeEventHandler {
     @SubscribeEvent
     public void entityJoinWorld(EntityJoinWorldEvent event) {
         if (!event.world.isRemote && event.entity instanceof EntityEnderCrystal && event.entity.dimension == 1) {
-            DataUtills.XZPair<Integer, Integer> location = ChaosWorldGenHandler
+            DataUtils.XZPair<Integer, Integer> location = ChaosWorldGenHandler
                     .getClosestChaosSpawn((int) event.entity.posX / 16, (int) event.entity.posZ / 16);
             if ((location.x != 0 || location.z != 0)
-                    && Utills.getDistanceAtoB(event.entity.posX, event.entity.posZ, location.x, location.z) < 500) {
+                    && Utils.getDistanceAtoB(event.entity.posX, event.entity.posZ, location.x, location.z) < 500) {
                 ProcessHandler.addProcess(new ChaosWorldGenHandler.CrystalRemover(event.entity));
             }
         }

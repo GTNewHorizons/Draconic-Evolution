@@ -6,12 +6,12 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentButton;
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentCollection;
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentItemRenderer;
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentSlotBackground;
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentTexturedRect;
-import com.brandon3055.brandonscore.client.gui.guicomponents.GUIBase;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentButton;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentCollection;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentItemRenderer;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentSlotBackground;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentTexturedRect;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.GUIBase;
 import com.brandon3055.draconicevolution.common.container.ContainerAdvTool;
 import com.brandon3055.draconicevolution.common.lib.References;
 

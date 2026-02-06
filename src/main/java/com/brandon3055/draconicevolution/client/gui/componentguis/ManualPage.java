@@ -4,7 +4,7 @@ import net.minecraft.util.StatCollector;
 
 import org.apache.commons.io.FilenameUtils;
 
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
 /**
  * Created by Brandon on 7/03/2015.

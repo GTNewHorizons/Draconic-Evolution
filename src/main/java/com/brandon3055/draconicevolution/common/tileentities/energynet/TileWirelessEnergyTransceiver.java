@@ -10,13 +10,13 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.render.particle.ParticleEnergyField;
 import com.brandon3055.draconicevolution.client.render.particle.Particles;
 import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
 import com.brandon3055.draconicevolution.common.items.tools.Wrench;
 import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.utils.Utils;
 
 import cofh.api.energy.IEnergyReceiver;
 import cpw.mods.fml.relauncher.Side;
@@ -150,7 +150,7 @@ public class TileWirelessEnergyTransceiver extends TileRemoteEnergyBase {
             return;
         }
 
-        if (Utills.getDistanceAtoB(xCoord, yCoord, zCoord, x, y, z) > (powerTier == 0 ? 15 : 30)) {
+        if (Utils.getDistanceAtoB(xCoord, yCoord, zCoord, x, y, z) > (powerTier == 0 ? 15 : 30)) {
             player.addChatComponentMessage(new ChatComponentTranslation("msg.de.outOfRange.txt"));
             return;
         }

@@ -16,16 +16,16 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-import com.brandon3055.brandonscore.common.utills.InfoHelper;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.brandonscore.common.utills.Teleporter.TeleportLocation;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.gui.GuiHandler;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.entity.EntityPersistentItem;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.lib.Strings;
-import com.brandon3055.draconicevolution.common.utills.IHudDisplayItem;
+import com.brandon3055.draconicevolution.common.utils.IHudDisplayItem;
+import com.brandon3055.draconicevolution.common.utils.InfoHelper;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
+import com.brandon3055.draconicevolution.common.utils.Teleporter;
 
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -187,7 +187,7 @@ public class TeleporterMKII extends TeleporterMKI implements IHudDisplayItem {
     }
 
     @Override
-    public TeleportLocation getLocation(ItemStack stack) {
+    public Teleporter.TeleportLocation getLocation(ItemStack stack) {
         short selected = ItemNBTHelper.getShort(stack, "Selection", (short) 0);
         int selrctionOffset = ItemNBTHelper.getInteger(stack, "SelectionOffset", 0);
         NBTTagCompound compound = stack.getTagCompound();
@@ -195,7 +195,7 @@ public class TeleporterMKII extends TeleporterMKI implements IHudDisplayItem {
         NBTTagList list = (NBTTagList) compound.getTag("Locations");
         if (list == null) return null;
 
-        TeleportLocation destination = new TeleportLocation();
+        Teleporter.TeleportLocation destination = new Teleporter.TeleportLocation();
         destination.readFromNBT(list.getCompoundTagAt(selected + selrctionOffset));
         if (destination.getName().isEmpty()) return null;
 
@@ -205,7 +205,7 @@ public class TeleporterMKII extends TeleporterMKI implements IHudDisplayItem {
     @Override
     public List<String> getDisplayData(ItemStack stack) {
         List<String> list = new ArrayList<String>();
-        TeleportLocation location = getLocation(stack);
+        Teleporter.TeleportLocation location = getLocation(stack);
         if (location != null) {
             list.add(location.getName());
         }

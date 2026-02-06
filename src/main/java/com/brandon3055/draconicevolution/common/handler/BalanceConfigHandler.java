@@ -9,7 +9,7 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
 import com.brandon3055.draconicevolution.common.ModBlocks;
-import com.brandon3055.draconicevolution.common.utills.IUpgradableItem.EnumUpgrade;
+import com.brandon3055.draconicevolution.common.utils.IUpgradableItem.EnumUpgrade;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 

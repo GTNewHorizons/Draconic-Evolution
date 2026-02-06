@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import com.brandon3055.brandonscore.common.utills.InventoryUtils;
+import com.brandon3055.draconicevolution.common.utils.InventoryUtils;
 import com.google.common.collect.Lists;
 
 /**

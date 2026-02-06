@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 
-import com.brandon3055.brandonscore.common.utills.Utills;
+import com.brandon3055.draconicevolution.common.utils.Utils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -463,7 +463,7 @@ public class EntityEnderArrow extends EntityDraconicArrow {
                     int y = (int) Math.floor(posY);
                     int z = (int) Math.floor(posZ);
 
-                    double travelDist = Utills.getDistanceAtoB(startX, startY, startZ, x, y, z);
+                    double travelDist = Utils.getDistanceAtoB(startX, startY, startZ, x, y, z);
                     float travelDmg = (float) (travelDist / 5D);
                     EnderTeleportEvent event = new EnderTeleportEvent(
                             entityplayermp,

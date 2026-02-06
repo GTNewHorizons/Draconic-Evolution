@@ -12,12 +12,12 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.blocks.BlockDE;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorEnergyInjector;
+import com.brandon3055.draconicevolution.common.utils.Utils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -83,7 +83,7 @@ public class ReactorEnergyInjector extends BlockDE implements ITileEntityProvide
 
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack stack) {
-        ForgeDirection facing = ForgeDirection.getOrientation(Utills.determineOrientation(x, y, z, entity));
+        ForgeDirection facing = ForgeDirection.getOrientation(Utils.determineOrientation(x, y, z, entity));
         TileEntity tile = world.getTileEntity(x, y, z);
         if (tile instanceof TileReactorEnergyInjector injector) {
             injector.facing = entity.isSneaking() ? facing.getOpposite() : facing;

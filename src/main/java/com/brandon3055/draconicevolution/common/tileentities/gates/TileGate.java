@@ -6,9 +6,9 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.TileObjectSync;
+import com.brandon3055.draconicevolution.common.utils.Utils;
 import com.brandon3055.draconicevolution.integration.computers.IDEPeripheral;
 
 /**
@@ -109,19 +109,19 @@ public abstract class TileGate extends TileObjectSync implements IDEPeripheral {
         } else if (method.equals("setFlowOverride")) {
             if (args.length == 0 || !(args[0] instanceof Number)) throw new IllegalArgumentException(
                     "Expected Number got " + (args.length == 0 ? "nil" : args[0].getClass().getSimpleName()));
-            flowOverride = Utills.toInt((Double) args[0]);
+            flowOverride = Utils.toInt((Double) args[0]);
             if (!worldObj.isRemote) sendObjectToClient(References.INT_ID, 3, flowOverride);
         } else if (method.equals("setSignalHighFlow")) {
             if (args.length == 0 || !(args[0] instanceof Number)) throw new IllegalArgumentException(
                     "Expected Number got " + (args.length == 0 ? "nil" : args[0].getClass().getSimpleName()));
-            flowRSHigh = Utills.toInt((Double) args[0]);
+            flowRSHigh = Utils.toInt((Double) args[0]);
             if (!worldObj.isRemote) sendObjectToClient(References.INT_ID, 4, flowRSHigh);
         } else if (method.equals("getSignalHighFlow")) {
             return new Object[] { flowRSHigh };
         } else if (method.equals("setSignalLowFlow")) {
             if (args.length == 0 || !(args[0] instanceof Number)) throw new IllegalArgumentException(
                     "Expected Number got " + (args.length == 0 ? "nil" : args[0].getClass().getSimpleName()));
-            flowRSLow = Utills.toInt((Double) args[0]);
+            flowRSLow = Utils.toInt((Double) args[0]);
             if (!worldObj.isRemote) sendObjectToClient(References.INT_ID, 5, flowRSLow);
         } else if (method.equals("getSignalLowFlow")) {
             return new Object[] { flowRSLow };

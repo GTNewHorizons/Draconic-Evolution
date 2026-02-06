@@ -11,10 +11,10 @@ import net.minecraftforge.client.model.IModelCustom;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 import com.brandon3055.draconicevolution.common.entity.EntityDragonProjectile;
 import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.utils.Utils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -710,8 +710,8 @@ public class Particles {
             // super.onUpdate();
             if (particleAge >= particleMaxAge || this.getDistanceSq(targetX, targetY, targetZ) < 0.05) setDead();
 
-            double d1 = Utills.getDistanceAtoB(startX, startY, startZ, targetX, targetY, targetZ);
-            double d2 = Utills.getDistanceAtoB(posX, posY, posZ, targetX, targetY, targetZ);
+            double d1 = Utils.getDistanceAtoB(startX, startY, startZ, targetX, targetY, targetZ);
+            double d2 = Utils.getDistanceAtoB(posX, posY, posZ, targetX, targetY, targetZ);
             particleScale = ((float) (d2 / d1)) * baseScale;
 
             particleAge++;
@@ -1198,16 +1198,16 @@ public class Particles {
             prevPosZ = posZ;
 
             if (mode == 0) {
-                if (Utills.getDistanceAtoB(posX, posY, posZ, focalX, focalY, focalZ) < 0.2 && particleAge > 5) mode = 1;
-                double d = Utills.getDistanceAtoB(focalX, focalY, focalZ, shardX, shardY, shardZ);
+                if (Utils.getDistanceAtoB(posX, posY, posZ, focalX, focalY, focalZ) < 0.2 && particleAge > 5) mode = 1;
+                double d = Utils.getDistanceAtoB(focalX, focalY, focalZ, shardX, shardY, shardZ);
                 float motionMod = 0.1F;
                 motionX += (focalX - posX) / d * motionMod;
                 motionY += (focalY - posY) / d * motionMod;
                 motionZ += (focalZ - posZ) / d * motionMod;
             }
             if (mode == 1) {
-                if (Utills.getDistanceAtoB(posX, posY, posZ, shardX, shardY, shardZ) < 1) setDead();
-                double d = Utills.getDistanceAtoB(focalX, focalY, focalZ, shardX, shardY, shardZ);
+                if (Utils.getDistanceAtoB(posX, posY, posZ, shardX, shardY, shardZ) < 1) setDead();
+                double d = Utils.getDistanceAtoB(focalX, focalY, focalZ, shardX, shardY, shardZ);
                 particleScale = 1F - (float) d * 0.01F;
                 float motionMod = 1F;
                 motionX = (shardX - focalX) / d * motionMod;
@@ -1216,8 +1216,8 @@ public class Particles {
             }
 
             if (mode == 10) {
-                if (Utills.getDistanceAtoB(posX, posY, posZ, shardX, shardY, shardZ) < 0.3) setDead();
-                double d = Utills.getDistanceAtoB(focalX, focalY, focalZ, shardX, shardY, shardZ);
+                if (Utils.getDistanceAtoB(posX, posY, posZ, shardX, shardY, shardZ) < 0.3) setDead();
+                double d = Utils.getDistanceAtoB(focalX, focalY, focalZ, shardX, shardY, shardZ);
                 float motionMod = 0.4F;
                 motionX = (shardX - focalX) / d * motionMod;
                 motionY = (shardY - focalY) / d * motionMod;

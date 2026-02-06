@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.common.items.tools;
 
+import static com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil.formatNumber;
+
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -15,7 +17,6 @@ import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.brandonscore.common.utills.InfoHelper;
 import com.brandon3055.draconicevolution.client.render.IRenderTweak;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
@@ -24,10 +25,11 @@ import com.brandon3055.draconicevolution.common.items.tools.baseclasses.ToolHand
 import com.brandon3055.draconicevolution.common.items.weapons.IEnergyContainerWeaponItem;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.lib.Strings;
-import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
-import com.brandon3055.draconicevolution.common.utills.IInventoryTool;
-import com.brandon3055.draconicevolution.common.utills.IUpgradableItem;
-import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.IConfigurableItem;
+import com.brandon3055.draconicevolution.common.utils.IInventoryTool;
+import com.brandon3055.draconicevolution.common.utils.IUpgradableItem;
+import com.brandon3055.draconicevolution.common.utils.InfoHelper;
+import com.brandon3055.draconicevolution.common.utils.ItemConfigField;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -215,7 +217,7 @@ public class DraconicDistructionStaff extends MiningTool
                 InfoHelper.ITC() + StatCollector.translateToLocal("info.de.attackDamage.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + ToolHandler.getBaseAttackDamage(stack));
+                        + formatNumber(ToolHandler.getBaseAttackDamage(stack)));
         return list;
     }
 

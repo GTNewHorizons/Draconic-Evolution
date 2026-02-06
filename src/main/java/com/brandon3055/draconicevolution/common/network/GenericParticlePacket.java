@@ -1,6 +1,6 @@
 package com.brandon3055.draconicevolution.common.network;
 
-import com.brandon3055.brandonscore.BrandonsCore;
+import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
 import com.brandon3055.draconicevolution.client.render.particle.Particles;
 
@@ -75,7 +75,7 @@ public class GenericParticlePacket implements IMessage {
                     Particles.DragonProjectileParticle particle;
                     for (int i = 0; i < 100; i++) {
                         particle = new Particles.DragonProjectileParticle(
-                                BrandonsCore.proxy.getClientWorld(),
+                                DraconicEvolution.proxy.getClientWorld(),
                                 message.posX,
                                 message.posY,
                                 message.posZ,
@@ -92,7 +92,7 @@ public class GenericParticlePacket implements IMessage {
                     Particles.DragonProjectileParticle particle;
                     for (int i = 0; i < 100; i++) {
                         particle = new Particles.DragonProjectileParticle(
-                                BrandonsCore.proxy.getClientWorld(),
+                                DraconicEvolution.proxy.getClientWorld(),
                                 message.posX,
                                 message.posY,
                                 message.posZ,
@@ -108,7 +108,7 @@ public class GenericParticlePacket implements IMessage {
                 case CHAOS_IMPLOSION: {
                     ParticleHandler.spawnCustomParticle(
                             new Particles.ChaosImplosionParticle(
-                                    BrandonsCore.proxy.getClientWorld(),
+                                    DraconicEvolution.proxy.getClientWorld(),
                                     message.posX,
                                     message.posY,
                                     message.posZ,
@@ -119,7 +119,7 @@ public class GenericParticlePacket implements IMessage {
                 case ARROW_SHOCK_WAVE: {
                     ParticleHandler.spawnCustomParticle(
                             new Particles.ArrowShockParticle(
-                                    BrandonsCore.proxy.getClientWorld(),
+                                    DraconicEvolution.proxy.getClientWorld(),
                                     message.posX,
                                     message.posY,
                                     message.posZ,
@@ -127,17 +127,17 @@ public class GenericParticlePacket implements IMessage {
                             256);
                     for (int i = 0; i < 100; i++) {
                         Particles.ArrowParticle particle = new Particles.ArrowParticle(
-                                BrandonsCore.proxy.getClientWorld(),
-                                message.posX - 0.25 + BrandonsCore.proxy.getClientWorld().rand.nextDouble() * 0.5,
-                                message.posY + BrandonsCore.proxy.getClientWorld().rand.nextDouble() * 0.5,
-                                message.posZ - 0.25 + BrandonsCore.proxy.getClientWorld().rand.nextDouble() * 0.5,
+                                DraconicEvolution.proxy.getClientWorld(),
+                                message.posX - 0.25 + DraconicEvolution.proxy.getClientWorld().rand.nextDouble() * 0.5,
+                                message.posY + DraconicEvolution.proxy.getClientWorld().rand.nextDouble() * 0.5,
+                                message.posZ - 0.25 + DraconicEvolution.proxy.getClientWorld().rand.nextDouble() * 0.5,
                                 0xff6000,
-                                0.2F + BrandonsCore.proxy.getClientWorld().rand.nextFloat() * 10f);
+                                0.2F + DraconicEvolution.proxy.getClientWorld().rand.nextFloat() * 10f);
 
                         double mm = 2;
-                        particle.motionX = (BrandonsCore.proxy.getClientWorld().rand.nextDouble() - 0.5) * mm;
-                        particle.motionY = (BrandonsCore.proxy.getClientWorld().rand.nextDouble() - 0.5) * mm;
-                        particle.motionZ = (BrandonsCore.proxy.getClientWorld().rand.nextDouble() - 0.5) * mm;
+                        particle.motionX = (DraconicEvolution.proxy.getClientWorld().rand.nextDouble() - 0.5) * mm;
+                        particle.motionY = (DraconicEvolution.proxy.getClientWorld().rand.nextDouble() - 0.5) * mm;
+                        particle.motionZ = (DraconicEvolution.proxy.getClientWorld().rand.nextDouble() - 0.5) * mm;
                         ParticleHandler.spawnCustomParticle(particle, 64);
                     }
                     break;

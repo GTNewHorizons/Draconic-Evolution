@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.client.handler;
 
+import static com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil.formatNumber;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,13 +16,12 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.brandonscore.client.utills.GuiHelper;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.client.gui.GuiHudConfig;
+import com.brandon3055.draconicevolution.client.utils.GuiHelper;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler;
-import com.brandon3055.draconicevolution.common.utills.IHudDisplayBlock;
-import com.brandon3055.draconicevolution.common.utills.IHudDisplayItem;
+import com.brandon3055.draconicevolution.common.utils.IHudDisplayBlock;
+import com.brandon3055.draconicevolution.common.utils.IHudDisplayItem;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -213,7 +214,7 @@ public class HudHandler {
             GL11.glTranslated(-x, -y, 0);
             String shield = Math.round(shieldPoints) + "/" + (int) maxShieldPoints;
             String entropy = "EN: " + (int) shieldEntropy + "%";
-            String energy = "RF: " + Utills.formatNumber(rfTotal);
+            String energy = "RF: " + formatNumber(rfTotal);
             float fade = Math.min(armorStatsFadeOut, 1F);
             if (!rotated) {
                 fontRenderer

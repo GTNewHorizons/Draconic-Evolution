@@ -1,7 +1,9 @@
 package com.brandon3055.draconicevolution.common;
 
 import net.minecraft.client.audio.ISound;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -58,7 +60,6 @@ import com.brandon3055.draconicevolution.common.network.TileObjectPacket;
 import com.brandon3055.draconicevolution.common.network.ToolModePacket;
 import com.brandon3055.draconicevolution.common.tileentities.TileCKeyStone;
 import com.brandon3055.draconicevolution.common.tileentities.TileChaosShard;
-import com.brandon3055.draconicevolution.common.tileentities.TileContainerTemplate;
 import com.brandon3055.draconicevolution.common.tileentities.TileCustomSpawner;
 import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
 import com.brandon3055.draconicevolution.common.tileentities.TileDissEnchanter;
@@ -73,7 +74,6 @@ import com.brandon3055.draconicevolution.common.tileentities.TilePlayerDetectorA
 import com.brandon3055.draconicevolution.common.tileentities.TilePotentiometer;
 import com.brandon3055.draconicevolution.common.tileentities.TileSunDial;
 import com.brandon3055.draconicevolution.common.tileentities.TileTeleporterStand;
-import com.brandon3055.draconicevolution.common.tileentities.TileTestBlock;
 import com.brandon3055.draconicevolution.common.tileentities.TileUpgradeModifier;
 import com.brandon3055.draconicevolution.common.tileentities.TileWeatherController;
 import com.brandon3055.draconicevolution.common.tileentities.energynet.TileEnergyRelay;
@@ -91,8 +91,10 @@ import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.Til
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorEnergyInjector;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorStabilizer;
-import com.brandon3055.draconicevolution.common.utills.DragonChunkLoader;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.DragonChunkLoader;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.handlers.FileHandler;
+import com.brandon3055.draconicevolution.common.utils.handlers.ProcessHandler;
 import com.brandon3055.draconicevolution.common.world.DraconicWorldGenerator;
 import com.brandon3055.draconicevolution.integration.computers.CCOCIntegration;
 
@@ -108,6 +110,8 @@ import cpw.mods.fml.relauncher.Side;
 public class CommonProxy {
 
     public void preInit(FMLPreInitializationEvent event) {
+        FileHandler.init(event);
+        ProcessHandler.init();
         ConfigHandler.init(event.getSuggestedConfigurationFile());
         BalanceConfigHandler.init(event.getModConfigurationDirectory());
         registerEventListeners(event.getSide());
@@ -119,29 +123,6 @@ public class CommonProxy {
         registerOres();
 
         DraconicEvolution.reaperEnchant = new EnchantmentReaper(ConfigHandler.reaperEnchantID);
-        //
-        // Potion[] potionTypes = null;
-        // LogHelper.info("Expanding Potion array size to 256");
-        //
-        // for (Field f : Potion.class.getDeclaredFields()) {
-        // f.setAccessible(true);
-        //
-        // try {
-        // if (f.getName().equals("potionTypes") || f.getName().equals("field_76425_a")) {
-        // Field modfield = Field.class.getDeclaredField("modifiers");
-        // modfield.setAccessible(true);
-        // modfield.setInt(f, f.getModifiers() & ~Modifier.FINAL);
-        // potionTypes = (Potion[]) f.get(null);
-        // final Potion[] newPotionTypes = new Potion[256];
-        // System.arraycopy(potionTypes, 0, newPotionTypes, 0, potionTypes.length);
-        // f.set(null, newPotionTypes);
-        // }
-        // }
-        // catch (Exception e) {
-        // LogHelper.error("Severe error, please report this to the mod author:");
-        // e.printStackTrace();
-        // }
-        // }
 
         Achievements.addModAchievements();
         LogHelper.info("Finished PreInitialization");
@@ -232,10 +213,6 @@ public class CommonProxy {
         GameRegistry.registerTileEntity(TileChaosShard.class, References.RESOURCESPREFIX + "TileChaosShard");
         GameRegistry.registerTileEntity(TileUpgradeModifier.class, References.RESOURCESPREFIX + "TileEnhancementModifier");
         GameRegistry.registerTileEntity(TileDislocatorInhibitor.class, References.RESOURCESPREFIX + "TileDislocatorInhibitor");
-        if (DraconicEvolution.debug) {
-            GameRegistry.registerTileEntity(TileTestBlock.class, References.RESOURCESPREFIX + "TileTestBlock");
-            GameRegistry.registerTileEntity(TileContainerTemplate.class, References.RESOURCESPREFIX + "TileContainerTemplate");
-        }
         // spotless:on
     }
 
@@ -281,7 +258,6 @@ public class CommonProxy {
         EntityRegistry.registerModEntity(EntityPersistentItem.class, "Persistent Item", 1, DraconicEvolution.instance, 32, 5, true);
         EntityRegistry.registerModEntity(EntityDraconicArrow.class, "Arrow", 2, DraconicEvolution.instance, 32, 5, true);
         EntityRegistry.registerModEntity(EntityEnderArrow.class, "Ender Arrow", 3, DraconicEvolution.instance, 32, 1, true);
-        // EntityRegistry.registerModEntity(EntityChaosDrill.class, "Chaos Drill", 4, DraconicEvolution.instance, 10, 5, false);
         EntityRegistry.registerModEntity(EntityDragonHeart.class, "Dragon Heart Item", 5, DraconicEvolution.instance, 32, 5, true);
         EntityRegistry.registerModEntity(EntityChaosGuardian.class, "ChaosGuardian", 6, DraconicEvolution.instance, 256, 1, true);
         EntityRegistry.registerModEntity(EntityDragonProjectile.class, "DragonProjectile", 7, DraconicEvolution.instance, 256, 1, true);
@@ -309,6 +285,45 @@ public class CommonProxy {
     public void spawnParticle(Object particle, int range) {}
 
     public ISound playISound(ISound sound) {
+        return null;
+    }
+
+    public boolean isDedicatedServer() {
+        return true;
+    }
+
+    public MinecraftServer getMCServer() {
+        return FMLCommonHandler.instance().getMinecraftServerInstance();
+    }
+
+    public World getClientWorld() {
+        return null;
+    }
+
+    public boolean isOp(String paramString) {
+        MinecraftServer localMinecraftServer = FMLCommonHandler.instance().getMinecraftServerInstance();
+        paramString = paramString.trim();
+        for (String str : localMinecraftServer.getConfigurationManager().func_152606_n()) {
+            if (paramString.equalsIgnoreCase(str)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isSpaceDown() {
+        return false;
+    }
+
+    public boolean isCtrlDown() {
+        return false;
+    }
+
+    public boolean isShiftDown() {
+        return false;
+    }
+
+    public EntityPlayer getClientPlayer() {
         return null;
     }
 }

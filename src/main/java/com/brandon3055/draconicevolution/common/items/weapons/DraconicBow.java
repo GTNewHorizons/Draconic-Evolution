@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.common.items.weapons;
 
+import static com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil.formatNumber;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,10 +19,6 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-import com.brandon3055.brandonscore.BrandonsCore;
-import com.brandon3055.brandonscore.common.utills.InfoHelper;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.entity.EntityPersistentItem;
@@ -29,10 +27,12 @@ import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.items.tools.baseclasses.ToolBase;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.lib.Strings;
-import com.brandon3055.draconicevolution.common.utills.IHudDisplayItem;
-import com.brandon3055.draconicevolution.common.utills.IInventoryTool;
-import com.brandon3055.draconicevolution.common.utills.IUpgradableItem;
-import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.IHudDisplayItem;
+import com.brandon3055.draconicevolution.common.utils.IInventoryTool;
+import com.brandon3055.draconicevolution.common.utils.IUpgradableItem;
+import com.brandon3055.draconicevolution.common.utils.InfoHelper;
+import com.brandon3055.draconicevolution.common.utils.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -298,7 +298,7 @@ public class DraconicBow extends ItemBow
                 InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.RFCapacity.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + Utills.formatNumber(getMaxEnergyStored(stack)));
+                        + formatNumber(getMaxEnergyStored(stack)));
         list.add(
                 InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.max.txt")
                         + " "
@@ -306,7 +306,7 @@ public class DraconicBow extends ItemBow
                         + ": "
                         + InfoHelper.HITC()
                         + "+"
-                        + EnumUpgrade.ARROW_SPEED.getUpgradePoints(stack) * 100
+                        + formatNumber(EnumUpgrade.ARROW_SPEED.getUpgradePoints(stack) * 100)
                         + "%");
         list.add(
                 InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.max.txt")
@@ -314,13 +314,13 @@ public class DraconicBow extends ItemBow
                         + StatCollector.translateToLocal("gui.de.ArrowDamage.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + EnumUpgrade.ARROW_DAMAGE.getUpgradePoints(stack)
+                        + formatNumber(EnumUpgrade.ARROW_DAMAGE.getUpgradePoints(stack))
                         + "");
         list.add(
                 InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.DrawSpeed.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + properties.getDrawTicks() / 20D
+                        + formatNumber(properties.getDrawTicks() / 20D)
                         + "s");
 
         return list;
@@ -369,9 +369,10 @@ public class DraconicBow extends ItemBow
     public List<String> getDisplayData(ItemStack stack) {
         List<String> list = new ArrayList<String>();
 
-        if (BrandonsCore.proxy.getClientPlayer() != null && BrandonsCore.proxy.getClientPlayer().getItemInUse() != null
-                && BrandonsCore.proxy.getClientPlayer().getItemInUseDuration() > 2) {
-            EntityPlayer player = BrandonsCore.proxy.getClientPlayer();
+        if (DraconicEvolution.proxy.getClientPlayer() != null
+                && DraconicEvolution.proxy.getClientPlayer().getItemInUse() != null
+                && DraconicEvolution.proxy.getClientPlayer().getItemInUseDuration() > 2) {
+            EntityPlayer player = DraconicEvolution.proxy.getClientPlayer();
             BowHandler.BowProperties properties = new BowHandler.BowProperties(stack, player);
             int power = (int) Math
                     .min(((float) player.getItemInUseDuration() / (float) properties.getDrawTicks() * 100F), 100F);
@@ -395,19 +396,19 @@ public class DraconicBow extends ItemBow
                     InfoHelper.ITC() + StatCollector.translateToLocal("info.de.charge.txt")
                             + ": "
                             + InfoHelper.HITC()
-                            + Utills.formatNumber(getEnergyStored(stack))
+                            + formatNumber(getEnergyStored(stack))
                             + " / "
-                            + Utills.formatNumber(getMaxEnergyStored(stack)));
+                            + formatNumber(getMaxEnergyStored(stack)));
 
-            if (BrandonsCore.proxy.getClientPlayer() != null) {
+            if (DraconicEvolution.proxy.getClientPlayer() != null) {
                 BowHandler.BowProperties properties = new BowHandler.BowProperties(
                         stack,
-                        BrandonsCore.proxy.getClientPlayer());
+                        DraconicEvolution.proxy.getClientPlayer());
                 list.add(
                         InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.rfPerShot.txt")
                                 + ": "
                                 + InfoHelper.HITC()
-                                + Utills.addCommas(properties.calculateEnergyCost()));
+                                + formatNumber(properties.calculateEnergyCost()));
                 if (!properties.canFire() && properties.cantFireMessage != null)
                     list.add(EnumChatFormatting.DARK_RED + StatCollector.translateToLocal(properties.cantFireMessage));
             }

@@ -11,8 +11,8 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import com.brandon3055.brandonscore.client.gui.guicomponents.GUIBase;
-import com.brandon3055.brandonscore.client.utills.GuiHelper;
+import com.brandon3055.draconicevolution.client.utils.GuiHelper;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.GUIBase;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 
 /**

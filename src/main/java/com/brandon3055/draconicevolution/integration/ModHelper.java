@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
 import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler.ArmorSummery;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;

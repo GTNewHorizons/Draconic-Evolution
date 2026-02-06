@@ -16,13 +16,13 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import com.brandon3055.brandonscore.common.utills.InventoryUtils;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.blocks.DraconiumChest;
 import com.brandon3055.draconicevolution.common.container.ContainerDraconiumChest;
 import com.brandon3055.draconicevolution.common.lib.OreDoublingRegistry;
-import com.brandon3055.draconicevolution.common.utills.EnergyStorage;
-import com.brandon3055.draconicevolution.common.utills.ICustomItemData;
+import com.brandon3055.draconicevolution.common.utils.EnergyStorage;
+import com.brandon3055.draconicevolution.common.utils.ICustomItemData;
+import com.brandon3055.draconicevolution.common.utils.InventoryUtils;
 
 import cofh.api.energy.IEnergyContainerItem;
 import cofh.api.energy.IEnergyReceiver;

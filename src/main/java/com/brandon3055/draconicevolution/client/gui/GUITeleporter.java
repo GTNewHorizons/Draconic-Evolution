@@ -20,14 +20,14 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.brandonscore.client.utills.GuiHelper;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.brandonscore.common.utills.Teleporter.TeleportLocation;
 import com.brandon3055.draconicevolution.DraconicEvolution;
+import com.brandon3055.draconicevolution.client.utils.GuiHelper;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.network.TeleporterPacket;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
+import com.brandon3055.draconicevolution.common.utils.Teleporter;
 
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
@@ -43,7 +43,7 @@ public class GUITeleporter extends GuiScreen {
             References.MODID.toLowerCase(),
             "textures/gui/TeleporterMKII.png");
     private ItemStack teleporterItem;
-    protected List<TeleportLocation> locations = new ArrayList<TeleportLocation>(0);
+    protected List<Teleporter.TeleportLocation> locations = new ArrayList<>(0);
 
     private int selected = 0;
     private int selectionOffset = 0;
@@ -446,7 +446,7 @@ public class GUITeleporter extends GuiScreen {
             } else {
                 if (!textBeingEdited.getText().isEmpty()) {
                     getLocationSafely(selected + selectionOffset).setName(textBeingEdited.getText());
-                    TeleportLocation location = new TeleportLocation();
+                    Teleporter.TeleportLocation location = new Teleporter.TeleportLocation();
                     location.setName(textBeingEdited.getText());
                     DraconicEvolution.network.sendToServer(
                             new TeleporterPacket(location, TeleporterPacket.UPDATENAME, selected + selectionOffset));
@@ -460,7 +460,7 @@ public class GUITeleporter extends GuiScreen {
         }
 
         if (button.id == 1) {
-            TeleportLocation location = new TeleportLocation(
+            Teleporter.TeleportLocation location = new Teleporter.TeleportLocation(
                     player.posX,
                     player.posY - 1.62,
                     player.posZ,
@@ -484,14 +484,14 @@ public class GUITeleporter extends GuiScreen {
         if (button.id == 3 || button.id == 7) {
             if (button.id == 3) {
                 if (selected > 0) {
-                    TeleportLocation temp = getLocationSafely(selected + selectionOffset);
+                    Teleporter.TeleportLocation temp = getLocationSafely(selected + selectionOffset);
                     locations.set(selected + selectionOffset, getLocationSafely(selected + selectionOffset - 1));
                     locations.set(selected + selectionOffset - 1, temp);
                     selected--;
                 }
             } else {
                 if (selected < Math.min(11, locations.size() - 1)) {
-                    TeleportLocation temp = getLocationSafely(selected + selectionOffset);
+                    Teleporter.TeleportLocation temp = getLocationSafely(selected + selectionOffset);
                     locations.set(selected + selectionOffset, getLocationSafely(selected + selectionOffset + 1));
                     locations.set(selected + selectionOffset + 1, temp);
                     selected++;
@@ -624,7 +624,7 @@ public class GUITeleporter extends GuiScreen {
             // TeleportLocation location = new TeleportLocation(tagLocation.getDouble("X"), tagLocation.getDouble("Y"),
             // tagLocation.getDouble("Z"), tagLocation.getInteger("Dimension"), tagLocation.getFloat("Pitch"),
             // tagLocation.getFloat("Yaw"), tagLocation.getString("Name"));
-            TeleportLocation location = new TeleportLocation();
+            Teleporter.TeleportLocation location = new Teleporter.TeleportLocation();
             location.readFromNBT(tagLocation);
             location.setWriteProtected(tagLocation.getBoolean("WP"));
             locations.add(location);
@@ -632,7 +632,7 @@ public class GUITeleporter extends GuiScreen {
     }
 
     private void addCurrentLocationToList(String name) {
-        TeleportLocation currentLocation = new TeleportLocation(
+        Teleporter.TeleportLocation currentLocation = new Teleporter.TeleportLocation(
                 player.posX,
                 player.posY - 1.62,
                 player.posZ,
@@ -644,8 +644,8 @@ public class GUITeleporter extends GuiScreen {
         locations.add(currentLocation);
     }
 
-    private TeleportLocation getLocationSafely(int index) {
+    private Teleporter.TeleportLocation getLocationSafely(int index) {
         if (index < locations.size() && index >= 0) return locations.get(index);
-        return new TeleportLocation(0, 0, 0, 0, 0, 0, EnumChatFormatting.DARK_RED + "[Index Error]");
+        return new Teleporter.TeleportLocation(0, 0, 0, 0, 0, 0, EnumChatFormatting.DARK_RED + "[Index Error]");
     }
 }

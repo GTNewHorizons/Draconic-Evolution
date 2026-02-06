@@ -2,9 +2,9 @@ package com.brandon3055.draconicevolution.common.network;
 
 import net.minecraft.client.Minecraft;
 
-import com.brandon3055.brandonscore.common.utills.DataUtills;
 import com.brandon3055.draconicevolution.common.container.ContainerDataSync;
 import com.brandon3055.draconicevolution.common.tileentities.TileObjectSync;
+import com.brandon3055.draconicevolution.common.utils.DataUtils;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -55,7 +55,7 @@ public class TileObjectPacket implements IMessage {
         bytes.writeByte(dataType);
         bytes.writeShort(index);
 
-        DataUtills.instance.writeObjectToBytes(bytes, dataType, object);
+        DataUtils.instance.writeObjectToBytes(bytes, dataType, object);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class TileObjectPacket implements IMessage {
         dataType = bytes.readByte();
         index = bytes.readShort();
 
-        object = DataUtills.instance.readObjectFromBytes(bytes, dataType);
+        object = DataUtils.instance.readObjectFromBytes(bytes, dataType);
     }
 
     public static class Handler implements IMessageHandler<TileObjectPacket, IMessage> {

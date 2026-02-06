@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.client.gui.componentguis;
 
+import static com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil.formatNumber;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,29 +13,28 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraft.util.StringUtils;
 
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentBase;
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentButton;
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentCollection;
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentItemRenderer;
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentTextField;
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentTexturedRect;
-import com.brandon3055.brandonscore.client.gui.guicomponents.GUIBase;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.gui.GuiHudConfig;
 import com.brandon3055.draconicevolution.client.gui.guicomponents.ComponentConfigItemButton;
 import com.brandon3055.draconicevolution.client.gui.guicomponents.ComponentFieldAdjuster;
 import com.brandon3055.draconicevolution.client.gui.guicomponents.ComponentFieldButton;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentBase;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentButton;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentCollection;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentItemRenderer;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentTextField;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentTexturedRect;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.GUIBase;
 import com.brandon3055.draconicevolution.common.container.ContainerAdvTool;
 import com.brandon3055.draconicevolution.common.handler.ContributorHandler;
 import com.brandon3055.draconicevolution.common.items.weapons.BowHandler;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.network.ContributorPacket;
 import com.brandon3055.draconicevolution.common.network.ItemConfigPacket;
-import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
-import com.brandon3055.draconicevolution.common.utills.IInventoryTool;
-import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.IConfigurableItem;
+import com.brandon3055.draconicevolution.common.utils.IInventoryTool;
+import com.brandon3055.draconicevolution.common.utils.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
 
 /**
  * Created by Brandon on 26/12/2014.
@@ -325,7 +326,7 @@ public class GUIToolConfig extends GUIBase {
             List<String> list = new ArrayList<String>();
             list.add(
                     StatCollector.translateToLocal("gui.de.rfPerShot.txt") + ": "
-                            + Utills.addCommas(properties.calculateEnergyCost()));
+                            + formatNumber(properties.calculateEnergyCost()));
             list.add(
                     StatCollector.translateToLocal("gui.de.maxDamage.txt") + ": "
                             + properties.arrowDamage * (properties.arrowSpeed * 3));

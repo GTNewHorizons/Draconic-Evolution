@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.client.gui;
 
+import static com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil.formatNumber;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -14,7 +16,7 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.brandonscore.client.utills.GuiHelper;
+import com.brandon3055.draconicevolution.client.utils.GuiHelper;
 import com.brandon3055.draconicevolution.common.container.ContainerEnergyInfuser;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.TileEnergyInfuser;
@@ -118,10 +120,9 @@ public class GUIEnergyInfuser extends GuiContainer {
             ArrayList<String> internal = new ArrayList<String>();
             internal.add(StatCollector.translateToLocal("gui.de.internalStorage.txt"));
             internal.add(
-                    "" + EnumChatFormatting.DARK_BLUE
-                            + tile.energy.getEnergyStored()
+                    EnumChatFormatting.DARK_BLUE + formatNumber(tile.energy.getEnergyStored())
                             + "/"
-                            + tile.energy.getMaxEnergyStored());
+                            + formatNumber(tile.energy.getMaxEnergyStored()));
             GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
             drawHoveringText(internal, x + guiLeft, y + guiTop, fontRendererObj);
             GL11.glPopAttrib();
@@ -134,10 +135,9 @@ public class GUIEnergyInfuser extends GuiContainer {
             ArrayList<String> internal = new ArrayList<String>();
             internal.add(StatCollector.translateToLocal("gui.de.itemStorage.txt"));
             internal.add(
-                    "" + EnumChatFormatting.DARK_BLUE
-                            + item.getEnergyStored(tile.getStackInSlot(0))
+                    EnumChatFormatting.DARK_BLUE + formatNumber(item.getEnergyStored(tile.getStackInSlot(0)))
                             + "/"
-                            + item.getMaxEnergyStored(tile.getStackInSlot(0)));
+                            + formatNumber(item.getMaxEnergyStored(tile.getStackInSlot(0))));
             GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
             drawHoveringText(internal, x + guiLeft, y + guiTop, fontRendererObj);
             GL11.glPopAttrib();

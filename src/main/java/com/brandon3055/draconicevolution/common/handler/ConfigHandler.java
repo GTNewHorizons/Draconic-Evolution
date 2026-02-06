@@ -8,7 +8,7 @@ import java.util.Map;
 
 import net.minecraftforge.common.config.Configuration;
 
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
 public class ConfigHandler {
 
