@@ -27,6 +27,7 @@ public class ModHelper {
 
     public static boolean isGTNHLibLoaded;
     public static boolean isHodgepodgeLoaded;
+    public static boolean isBackhandLoaded;
 
     private static Item cleaver;
     private static Item avaritiaSword;
@@ -40,6 +41,7 @@ public class ModHelper {
         isAE2Installed = Loader.isModLoaded("appliedenergistics2");
         isGTNHLibLoaded = Loader.isModLoaded("gtnhlib");
         isHodgepodgeLoaded = Loader.isModLoaded("hodgepodge");
+        isBackhandLoaded = Loader.isModLoaded("backhand");
 
         final String AE2_FITEM_CLASS = "appeng.entity.EntityFloatingItem";
 
