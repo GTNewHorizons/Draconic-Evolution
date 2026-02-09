@@ -179,7 +179,6 @@ public class ModelDraconicArmor extends ModelBiped {
         } else {
             super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
             if (entity instanceof EntityPlayer) {
-                // REVIEW FIX: Use the cached boolean from ModHelper
                 if (ModHelper.isBackhandLoaded) {
                     BackhandHelper.applyFix(this, (EntityPlayer) entity);
                 }
