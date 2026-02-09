@@ -9,8 +9,6 @@ import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import xonin.backhand.api.core.BackhandUtils;
 
-import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
-
 public class ModelDraconicArmor extends ModelBiped {
 
     public ModelRenderOBJ head;
