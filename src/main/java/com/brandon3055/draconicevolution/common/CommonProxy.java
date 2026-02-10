@@ -300,17 +300,6 @@ public class CommonProxy {
         return null;
     }
 
-    public boolean isOp(String paramString) {
-        MinecraftServer localMinecraftServer = FMLCommonHandler.instance().getMinecraftServerInstance();
-        paramString = paramString.trim();
-        for (String str : localMinecraftServer.getConfigurationManager().func_152606_n()) {
-            if (paramString.equalsIgnoreCase(str)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean isSpaceDown() {
         return false;
     }
