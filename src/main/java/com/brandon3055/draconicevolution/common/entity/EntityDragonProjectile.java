@@ -17,12 +17,12 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
-import com.brandon3055.brandonscore.common.utills.Teleporter;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
 import com.brandon3055.draconicevolution.client.render.particle.Particles;
 import com.brandon3055.draconicevolution.common.network.GenericParticlePacket;
+import com.brandon3055.draconicevolution.common.utils.Teleporter;
+import com.brandon3055.draconicevolution.common.utils.Utils;
 
 import cofh.api.energy.IEnergyContainerItem;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -160,7 +160,7 @@ public class EntityDragonProjectile extends Entity {
         }
 
         if (isChaser && !worldObj.isRemote) {
-            double tDist = Utills.getDistanceAtoB(target.posX, target.posY, target.posZ, posX, posY, posZ);
+            double tDist = Utils.getDistanceAtoB(target.posX, target.posY, target.posZ, posX, posY, posZ);
             if (tDist <= 0) tDist = 0.1;
 
             double x = (target.posX - posX) / tDist;
@@ -183,7 +183,7 @@ public class EntityDragonProjectile extends Entity {
     private boolean checkTargetCondition() {
         if (worldObj.isRemote) return false;
 
-        double targetDistance = Utills.getDistanceAtoB(posX, posY, posZ, target.posX, target.posY, target.posZ);
+        double targetDistance = Utils.getDistanceAtoB(posX, posY, posZ, target.posX, target.posY, target.posZ);
 
         Entity entityHit = getHitEntity();
         if (entityHit instanceof EntityDragonPart) entityHit = null;
@@ -272,7 +272,7 @@ public class EntityDragonProjectile extends Entity {
                     List<EntityLivingBase> list = worldObj.getEntitiesWithinAABBExcludingEntity(
                             shooter,
                             boundingBox.expand(60, 60, 60),
-                            Utills.selectPlayer);
+                            Utils.selectPlayer);
                     for (i = +0; i > 0; i--) {
                         newProjectile = new EntityDragonProjectile(
                                 worldObj,
@@ -367,7 +367,7 @@ public class EntityDragonProjectile extends Entity {
             entityLivingBase.hurtResistantTime = 0;
             entityLivingBase.attackEntityFrom(
                     source,
-                    damage / (float) (Utills.getDistanceAtoB(
+                    damage / (float) (Utils.getDistanceAtoB(
                             entityLivingBase.posX,
                             entityLivingBase.posY,
                             entityLivingBase.posZ,

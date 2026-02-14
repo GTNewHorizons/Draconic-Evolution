@@ -17,13 +17,13 @@ import net.minecraft.util.StringUtils;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentScrollingBase;
-import com.brandon3055.brandonscore.client.gui.guicomponents.GUIScrollingBase;
-import com.brandon3055.brandonscore.client.utills.ClientUtills;
-import com.brandon3055.brandonscore.common.utills.InfoHelper;
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
+import com.brandon3055.draconicevolution.client.utils.ClientUtils;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentScrollingBase;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.GUIScrollingBase;
 import com.brandon3055.draconicevolution.common.handler.ContributorHandler;
 import com.brandon3055.draconicevolution.common.handler.ContributorHandler.Contributor;
+import com.brandon3055.draconicevolution.common.utils.InfoHelper;
 
 /**
  * Created by brandon3055 on 5/11/2015.
@@ -188,7 +188,7 @@ public class ComponentContributorsPage extends ComponentScrollingBase implements
     @Override
     public void confirmClicked(boolean confirmed, int button) {
         mc.displayGuiScreen(this.gui);
-        if (confirmed) ClientUtills.openLink(lastClickURL);
+        if (confirmed) ClientUtils.openLink(lastClickURL);
     }
 
     private static ModelBiped modelBiped = new ModelBiped(0.0265F);

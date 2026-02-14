@@ -20,7 +20,7 @@ public class WorldGenEnderIsland extends WorldGenerator {
     private int spawnZ;
     private int size;
 
-    private void initialize(Random rand, int x, int y, int z) {
+    private void initialize(int x, int y, int z) {
         spawnX = x;
         spawnY = y;
         spawnZ = z;
@@ -29,14 +29,12 @@ public class WorldGenEnderIsland extends WorldGenerator {
 
     @Override
     public boolean generate(World world, Random random, int x, int y, int z) {
-        // LogHelper.info("Generate");
         for (int y1 = y - 10; y1 < y + 10; y1++) {
             if (world.getBlock(x, y1, z) == Blocks.end_stone) {
-                // LogHelper.info("cancel");
                 return false;
             }
         }
-        initialize(random, x, y, z);
+        initialize(x, y, z);
         generateCentre(world, random);
         generateBelt(world, random, size + 50, size + 200);
         generateObelisks(world, random);
@@ -49,7 +47,7 @@ public class WorldGenEnderIsland extends WorldGenerator {
     private void generateCentre(World world, Random rand) {
         int centreThikness = 10; // multiplied by 2 and + 1
         int curve = 2;
-        int diffStart = 20; // (int)((double)size * 0.1D);
+        int diffStart = 20;
         int r = size;
         int offPoint = size * curve;
 

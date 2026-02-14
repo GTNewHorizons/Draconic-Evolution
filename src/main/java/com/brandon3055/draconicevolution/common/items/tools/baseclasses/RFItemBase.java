@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.common.items.tools.baseclasses;
 
+import static com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil.formatNumber;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,15 +14,14 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-import com.brandon3055.brandonscore.common.utills.InfoHelper;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.entity.EntityPersistentItem;
 import com.brandon3055.draconicevolution.common.items.ItemDE;
-import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
-import com.brandon3055.draconicevolution.common.utills.IHudDisplayItem;
-import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.IConfigurableItem;
+import com.brandon3055.draconicevolution.common.utils.IHudDisplayItem;
+import com.brandon3055.draconicevolution.common.utils.InfoHelper;
+import com.brandon3055.draconicevolution.common.utils.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
 
 import cofh.api.energy.IEnergyContainerItem;
 import cpw.mods.fml.relauncher.Side;
@@ -166,9 +167,9 @@ public class RFItemBase extends ItemDE implements IEnergyContainerItem, IConfigu
                     InfoHelper.ITC() + StatCollector.translateToLocal("info.de.charge.txt")
                             + ": "
                             + InfoHelper.HITC()
-                            + Utills.formatNumber(getEnergyStored(stack))
+                            + formatNumber(getEnergyStored(stack))
                             + " / "
-                            + Utills.formatNumber(capacity));
+                            + formatNumber(capacity));
         }
 
         return list;

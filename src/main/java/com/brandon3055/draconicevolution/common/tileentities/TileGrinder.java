@@ -32,7 +32,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
 import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.utills.EnergyStorage;
+import com.brandon3055.draconicevolution.common.utils.EnergyStorage;
 import com.mojang.authlib.GameProfile;
 
 import cofh.api.energy.IEnergyReceiver;

@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.common.items.tools;
 
+import static com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil.formatNumber;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,9 +24,6 @@ import net.minecraftforge.event.entity.player.UseHoeEvent;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.brandonscore.common.utills.InfoHelper;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.render.IRenderTweak;
 import com.brandon3055.draconicevolution.common.ModItems;
@@ -33,11 +32,13 @@ import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
 import com.brandon3055.draconicevolution.common.items.tools.baseclasses.ToolBase;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.lib.Strings;
-import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
-import com.brandon3055.draconicevolution.common.utills.IHudDisplayItem;
-import com.brandon3055.draconicevolution.common.utills.IUpgradableItem;
-import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.IConfigurableItem;
+import com.brandon3055.draconicevolution.common.utils.IHudDisplayItem;
+import com.brandon3055.draconicevolution.common.utils.IUpgradableItem;
+import com.brandon3055.draconicevolution.common.utils.InfoHelper;
+import com.brandon3055.draconicevolution.common.utils.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
 import cofh.api.energy.IEnergyContainerItem;
 import cpw.mods.fml.common.eventhandler.Event.Result;
@@ -358,16 +359,16 @@ public class DraconicHoe extends ItemHoe
                 InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.RFCapacity.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + Utills.formatNumber(getMaxEnergyStored(itemstack)));
+                        + formatNumber(getMaxEnergyStored(itemstack)));
         strings.add(
                 InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.max.txt")
                         + " "
                         + StatCollector.translateToLocal("gui.de.DigAOE.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + digaoe
+                        + formatNumber(digaoe)
                         + "x"
-                        + digaoe);
+                        + formatNumber(digaoe));
 
         return strings;
     }
@@ -388,9 +389,9 @@ public class DraconicHoe extends ItemHoe
                 InfoHelper.ITC() + StatCollector.translateToLocal("info.de.charge.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + Utills.formatNumber(getEnergyStored(stack))
+                        + formatNumber(getEnergyStored(stack))
                         + " / "
-                        + Utills.formatNumber(capacity));
+                        + formatNumber(capacity));
 
         return list;
     }

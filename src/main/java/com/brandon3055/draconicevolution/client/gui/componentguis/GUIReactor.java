@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.client.gui.componentguis;
 
+import static com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil.formatNumber;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,18 +13,18 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentButton;
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentCollection;
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentTextureButton;
-import com.brandon3055.brandonscore.client.gui.guicomponents.ComponentTexturedRect;
-import com.brandon3055.brandonscore.client.gui.guicomponents.GUIBase;
-import com.brandon3055.brandonscore.client.utills.GuiHelper;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
+import com.brandon3055.draconicevolution.client.utils.GuiHelper;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentButton;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentCollection;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentTextureButton;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.ComponentTexturedRect;
+import com.brandon3055.draconicevolution.client.utils.guicomponents.GUIBase;
 import com.brandon3055.draconicevolution.common.container.ContainerReactor;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore.ReactorState;
+import com.brandon3055.draconicevolution.common.utils.Utils;
 
 /**
  * Created by brandon3055 on 30/7/2015.
@@ -182,24 +184,24 @@ public class GUIReactor extends GUIBase {
         } else if (GuiHelper.isInRect(33, 4, 18, 114, mouseX - guiLeft, mouseY - guiTop)) {
             text.add(StatCollector.translateToLocal("gui.de.fieldStrength.txt"));
             if (core.maxFieldCharge > 0) {
-                text.add(Utills.round(core.fieldCharge / core.maxFieldCharge * 100D, 100D) + "%");
+                text.add(Utils.round(core.fieldCharge / core.maxFieldCharge * 100D, 100D) + "%");
             }
-            text.add(Utills.addCommas((int) core.fieldCharge) + " / " + Utills.addCommas((int) core.maxFieldCharge));
+            text.add(formatNumber((int) core.fieldCharge) + " / " + formatNumber((int) core.maxFieldCharge));
             drawHoveringText(text, mouseX, mouseY, fontRendererObj);
         } else if (GuiHelper.isInRect(197, 4, 18, 114, mouseX - guiLeft, mouseY - guiTop)) {
             text.add(StatCollector.translateToLocal("gui.de.energySaturation.txt"));
             if (core.maxEnergySaturation > 0) {
                 text.add(
-                        Utills.round((double) core.energySaturation / (double) core.maxEnergySaturation * 100D, 100D)
+                        Utils.round((double) core.energySaturation / (double) core.maxEnergySaturation * 100D, 100D)
                                 + "%");
             }
-            text.add(Utills.addCommas(core.energySaturation) + " / " + Utills.addCommas(core.maxEnergySaturation));
+            text.add(formatNumber(core.energySaturation) + " / " + formatNumber(core.maxEnergySaturation));
             drawHoveringText(text, mouseX, mouseY, fontRendererObj);
         } else if (GuiHelper.isInRect(221, 4, 18, 114, mouseX - guiLeft, mouseY - guiTop)) {
             text.add(StatCollector.translateToLocal("gui.de.fuelConversion.txt"));
             if (core.reactorFuel + core.convertedFuel > 0) {
                 text.add(
-                        Utills.round(
+                        Utils.round(
                                 ((double) core.convertedFuel + core.conversionUnit)
                                         / ((double) core.convertedFuel + (double) core.reactorFuel)
                                         * 100D,
@@ -207,7 +209,7 @@ public class GUIReactor extends GUIBase {
             }
             text.add(core.convertedFuel + " / " + (core.convertedFuel + core.reactorFuel));
             text.add(
-                    "Full: " + (Utills.round(
+                    "Full: " + (Utils.round(
                             (float) (core.convertedFuel + core.reactorFuel) / ConfigHandler.reactorFuelStorage * 100,
                             1000)) + "%");
             drawHoveringText(text, mouseX, mouseY, fontRendererObj);
@@ -251,26 +253,23 @@ public class GUIReactor extends GUIBase {
     private void drawStatistics() {
         double inputRate = core.fieldDrain / (1D - (core.fieldCharge / core.maxFieldCharge));
         fontRendererObj.drawString(StatCollector.translateToLocal("gui.de.tempLoad.name"), 55, 16, 0x0000FF);
-        fontRendererObj.drawString(Utills.round(core.tempDrainFactor * 100D, 1D) + "%", 60, 2 + 24, 0);
+        fontRendererObj.drawString(Utils.round(core.tempDrainFactor * 100D, 1D) + "%", 60, 2 + 24, 0);
         fontRendererObj.drawString(StatCollector.translateToLocal("gui.de.mass.name"), 55, 16 + 24, 0x0000FF);
         fontRendererObj.drawString(
-                Utills.round((core.reactorFuel + core.convertedFuel) / 1296D, 100) + "m^3",
+                Utils.round((core.reactorFuel + core.convertedFuel) / 1296D, 100) + "m^3",
                 60,
                 2 + 2 * 24,
                 0);
         fontRendererObj.drawString(StatCollector.translateToLocal("gui.de.genRate.name"), 55, 16 + 2 * 24, 0x0000FF);
-        fontRendererObj.drawString(Utills.addCommas((int) core.generationRate) + "RF/t", 60, 2 + 3 * 24, 0);
+        fontRendererObj.drawString(formatNumber((int) core.generationRate) + "RF/t", 60, 2 + 3 * 24, 0);
         fontRendererObj
                 .drawString(StatCollector.translateToLocal("gui.de.fieldInputRate.name"), 55, 16 + 3 * 24, 0x0000FF);
         fontRendererObj
-                .drawString(Utills.addCommas((int) Math.min(inputRate, Integer.MAX_VALUE)) + "RF/t", 60, 2 + 4 * 24, 0);
+                .drawString(formatNumber((int) Math.min(inputRate, Integer.MAX_VALUE)) + "RF/t", 60, 2 + 4 * 24, 0);
         fontRendererObj
                 .drawString(StatCollector.translateToLocal("gui.de.fuelConversion.name"), 55, 16 + 4 * 24, 0x0000FF);
-        fontRendererObj.drawString(
-                Utills.addCommas((int) Math.round(core.fuelUseRate * 1000000D)) + "nb/t",
-                60,
-                2 + 5 * 24,
-                0);
+        fontRendererObj
+                .drawString(formatNumber((int) Math.round(core.fuelUseRate * 1000000D)) + "nb/t", 60, 2 + 5 * 24, 0);
     }
 
     private void drawStatus() {

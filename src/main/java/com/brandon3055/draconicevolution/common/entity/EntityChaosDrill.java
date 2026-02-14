@@ -7,9 +7,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.Utils;
 
 /**
  * Created by Brandon on 14/09/2014.
@@ -73,7 +73,7 @@ public class EntityChaosDrill extends Entity {
         for (int x = (int) posX - r; x <= (int) posX + r; x++) {
             for (int z = (int) posZ - r; z <= (int) posZ + r; z++) {
                 for (int y = (int) posY - r; y <= (int) posY + r; y++) {
-                    int dist = (int) (Utills.getDistanceAtoB(x, y, z, (int) posX, (int) posY, (int) posZ));
+                    int dist = (int) (Utils.getDistanceAtoB(x, y, z, (int) posX, (int) posY, (int) posZ));
                     if (dist <= r) {
                         if (!worldObj.isAirBlock(x, y, z)) {
                             if (blocks.size() <= dist) {

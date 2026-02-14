@@ -11,8 +11,8 @@ import net.minecraft.item.ItemStack;
 
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.tileentities.TileUpgradeModifier;
-import com.brandon3055.draconicevolution.common.utills.IUpgradableItem;
-import com.brandon3055.draconicevolution.common.utills.IUpgradableItem.EnumUpgrade;
+import com.brandon3055.draconicevolution.common.utils.IUpgradableItem;
+import com.brandon3055.draconicevolution.common.utils.IUpgradableItem.EnumUpgrade;
 
 public class ContainerUpgradeModifier extends ContainerDataSync {
 

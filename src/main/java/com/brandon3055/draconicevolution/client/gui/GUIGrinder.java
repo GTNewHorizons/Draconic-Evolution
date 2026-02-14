@@ -1,9 +1,10 @@
 package com.brandon3055.draconicevolution.client.gui;
 
+import static com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil.formatNumber;
+
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -13,7 +14,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.brandonscore.client.utills.GuiHelper;
+import com.brandon3055.draconicevolution.client.utils.GuiHelper;
 import com.brandon3055.draconicevolution.common.container.ContainerGrinder;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.TileGrinder;
@@ -69,7 +70,7 @@ public class GUIGrinder extends GuiContainer {
                 guiLeft + 83,
                 guiTop + 11 + (int) (power * 40),
                 xSize,
-                0 + (int) (power * 40),
+                (int) (power * 40),
                 12,
                 40 - (int) (power * 40)); // Power bar
         drawTexturedModalRect(
@@ -81,7 +82,7 @@ public class GUIGrinder extends GuiContainer {
                 18 - (int) (fuel * 13)); // Power bar
         if (tile.isExternallyPowered()) drawTexturedModalRect(guiLeft + 100, guiTop + 37, xSize, 66, 13, 13);
 
-        fontRendererObj.drawStringWithShadow("Grinder", guiLeft + 71, guiTop + 0, 0x00FFFF);
+        fontRendererObj.drawStringWithShadow("Grinder", guiLeft + 71, guiTop, 0x00FFFF);
 
         int x = X - guiLeft;
         int y = Y - guiTop;
@@ -91,38 +92,24 @@ public class GUIGrinder extends GuiContainer {
             if (tile.isExternallyPowered()) {
                 internal.add(
                         "" + EnumChatFormatting.DARK_BLUE
-                                + tile.getEnergyStored(ForgeDirection.UP)
+                                + formatNumber(tile.getEnergyStored(ForgeDirection.UP))
                                 + "/"
-                                + tile.getMaxEnergyStored(ForgeDirection.UP));
+                                + formatNumber(tile.getMaxEnergyStored(ForgeDirection.UP)));
             } else {
                 internal.add(
                         "" + EnumChatFormatting.DARK_BLUE
-                                + tile.getInternalBuffer().getEnergyStored()
+                                + formatNumber(tile.getInternalBuffer().getEnergyStored())
                                 + "/"
-                                + tile.getInternalBuffer().getMaxEnergyStored());
+                                + formatNumber(tile.getInternalBuffer().getMaxEnergyStored()));
             }
             drawHoveringText(internal, x + guiLeft, y + guiTop, fontRendererObj);
         }
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int p_146979_1_, int p_146979_2_) {
-        // fontRendererObj.drawString("Charges: " + charges, 90, 25, 0x000000);
-        // drawCenteredString(fontRendererObj, "Charges: " + charges, 117, 25, 0x000000);
-        // drawCenteredString(fontRendererObj, "Weather Controller", xSize/2, -15, 0x2a4ed0);
-
-    }
-
-    @Override
     public void initGui() {
         super.initGui();
-
-        // ID
-        // buttonList.add(new GuiButton(0, guiLeft + 85, guiTop , 85, 20, text));
     }
-
-    @Override
-    protected void actionPerformed(GuiButton button) {}
 
     @Override
     public void updateScreen() {
@@ -134,6 +121,4 @@ public class GUIGrinder extends GuiContainer {
         super.updateScreen();
     }
 
-    // ####Draw at############ read from size
-    // drawTexturedModalRect(guiLeft + 37, guiTop + 4, 0, 143, 37, 38);
 }
