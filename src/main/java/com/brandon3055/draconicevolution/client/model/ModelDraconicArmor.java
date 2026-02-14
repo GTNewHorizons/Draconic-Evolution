@@ -1,12 +1,13 @@
 package com.brandon3055.draconicevolution.client.model;
 
-import com.brandon3055.draconicevolution.integration.ModHelper;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
-import net.minecraft.entity.player.EntityPlayer;
+import com.brandon3055.draconicevolution.integration.ModHelper;
+
 import xonin.backhand.api.core.BackhandUtils;
 
 public class ModelDraconicArmor extends ModelBiped {
@@ -217,9 +218,10 @@ public class ModelDraconicArmor extends ModelBiped {
     }
 
     private static class BackhandHelper {
+
         public static void applyFix(ModelDraconicArmor model, EntityPlayer player) {
             if (BackhandUtils.getOffhandItem(player) != null) {
-                model.bipedLeftArm.rotateAngleX = model.bipedLeftArm.rotateAngleX * 0.5F - ((float)Math.PI / 10F);
+                model.bipedLeftArm.rotateAngleX = model.bipedLeftArm.rotateAngleX * 0.5F - ((float) Math.PI / 10F);
                 model.bipedLeftArm.rotateAngleY = 0.0F;
             }
         }
