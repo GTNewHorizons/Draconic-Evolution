@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.common.items.armor;
 
+import static com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil.formatNumber;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,10 +25,6 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ISpecialArmor;
 
-import com.brandon3055.brandonscore.BrandonsCore;
-import com.brandon3055.brandonscore.common.utills.InfoHelper;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.model.ModelDraconicArmorOld;
 import com.brandon3055.draconicevolution.client.model.ModelWyvernArmor;
@@ -36,10 +34,12 @@ import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.items.tools.baseclasses.ToolBase;
 import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
-import com.brandon3055.draconicevolution.common.utills.IInventoryTool;
-import com.brandon3055.draconicevolution.common.utills.IUpgradableItem;
-import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.IConfigurableItem;
+import com.brandon3055.draconicevolution.common.utils.IInventoryTool;
+import com.brandon3055.draconicevolution.common.utils.IUpgradableItem;
+import com.brandon3055.draconicevolution.common.utils.InfoHelper;
+import com.brandon3055.draconicevolution.common.utils.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
 import com.brandon3055.draconicevolution.integration.ModHelper;
 
 import cpw.mods.fml.common.Loader;
@@ -395,17 +395,17 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
                 InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.RFCapacity.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + Utills.formatNumber(getMaxEnergyStored(stack)));
+                        + formatNumber(getMaxEnergyStored(stack)));
         strings.add(
                 InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.ShieldCapacity.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + (int) getProtectionPoints(stack));
+                        + formatNumber((int) getProtectionPoints(stack)));
         strings.add(
                 InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.ShieldRecovery.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + Utills.round(getRecoveryPoints(stack) * 0.2D, 10)
+                        + formatNumber(getRecoveryPoints(stack) * 0.2D)
                         + " EPS");
 
         return strings;
@@ -457,7 +457,7 @@ public class WyvernArmor extends ItemArmor implements ISpecialArmor, IConfigurab
     @Override
     public float getJumpModifier(ItemStack stack, EntityPlayer player) {
         if (IConfigurableItem.ProfileHelper.getBoolean(stack, "ArmorSprintOnly", false)) {
-            return player.isSprinting() || BrandonsCore.proxy.isCtrlDown()
+            return player.isSprinting() || DraconicEvolution.proxy.isCtrlDown()
                     ? IConfigurableItem.ProfileHelper.getFloat(stack, "ArmorJumpMult", 0f)
                     : IConfigurableItem.ProfileHelper.getFloat(stack, "ArmorJumpMult", 0f) / 5F;
         } else return IConfigurableItem.ProfileHelper.getFloat(stack, "ArmorJumpMult", 0f);

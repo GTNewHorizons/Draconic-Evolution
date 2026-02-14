@@ -18,8 +18,8 @@ import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.entity.EntityCustomArrow;
 import com.brandon3055.draconicevolution.common.entity.EntityEnderArrow;
 import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
-import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
-import com.brandon3055.draconicevolution.common.utills.IUpgradableItem;
+import com.brandon3055.draconicevolution.common.utils.IConfigurableItem;
+import com.brandon3055.draconicevolution.common.utils.IUpgradableItem;
 
 import cofh.api.energy.IEnergyContainerItem;
 

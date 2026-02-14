@@ -13,7 +13,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 import com.brandon3055.draconicevolution.common.tileentities.TileDraconiumChest;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.nei.FastTransferManager;

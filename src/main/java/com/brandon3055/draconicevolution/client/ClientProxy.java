@@ -5,7 +5,9 @@ import static com.brandon3055.draconicevolution.integration.nei.IMCForNEI.IMCSen
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -114,54 +116,6 @@ public class ClientProxy extends CommonProxy {
         super.preInit(event);
 
         ResourceHandler.init(event);
-
-        // downloadLocation = event.getModConfigurationDirectory().getParentFile().getAbsolutePath() +
-        // "/mods/derspack";
-        // downloadLocation = downloadLocation.replaceAll("\\\\", "/");
-        //
-        // File rescourcePack = new File(event.getModConfigurationDirectory().getParentFile(), "/mods/derspack");
-        //
-        //
-        // //File file = new File(downloadLocation);
-        // if (!rescourcePack.exists()) rescourcePack.mkdir();
-        //
-        // LogHelper.info("Downloading Images");
-        //
-        // try {
-        // URL url = new URL("http://i.imgur.com/oHRx1yQ.jpg");
-        // String fileName = url.getFile();
-        // //String destName = downloadLocation + fileName.substring(fileName.lastIndexOf("/"));
-        // File dll = new File(rescourcePack, fileName.substring(fileName.lastIndexOf("/")));
-        //
-        // InputStream is = url.openStream();
-        // OutputStream os = new FileOutputStream(dll);
-        //
-        // ByteStreams.copy(is, os);
-        //
-        // is.close();
-        // os.close();
-        // }catch (IOException e){
-        // LogHelper.info(e);
-        // }
-        //
-        //
-        // List defaultResourcePacks = Lists.newArrayList();
-        // Field f = ReflectionHelper.findField(Minecraft.class, "defaultResourcePacks", "field_110449_ao");
-        // f.setAccessible(true);
-        // try {
-        // defaultResourcePacks = (List)f.get(Minecraft.getMinecraft());
-        // defaultResourcePacks.add(new FolderResourcePack(rescourcePack));
-        // for (Object o : defaultResourcePacks){
-        // if (o instanceof FolderResourcePack) LogHelper.info(((FolderResourcePack) o).getPackName());
-        // if (o instanceof FileResourcePack) LogHelper.info(((FileResourcePack)o).getPackName());
-        // }
-        //
-        // f.set(Minecraft.getMinecraft(), defaultResourcePacks);
-        // }
-        // catch (IllegalAccessException e) {
-        // e.printStackTrace();
-        // }
-
     }
 
     @Override
@@ -390,10 +344,6 @@ public class ClientProxy extends CommonProxy {
         return beam;
     }
 
-    public boolean isOp(String paramString) {
-        return Minecraft.getMinecraft().theWorld.getWorldInfo().getGameType().isCreative();
-    }
-
     @Override
     public void spawnParticle(Object particle, int range) {
         if (particle instanceof EntityFX && ((EntityFX) particle).worldObj.isRemote)
@@ -404,5 +354,40 @@ public class ClientProxy extends CommonProxy {
     public ISound playISound(ISound sound) {
         FMLClientHandler.instance().getClient().getSoundHandler().playSound(sound);
         return sound;
+    }
+
+    @Override
+    public boolean isDedicatedServer() {
+        return false;
+    }
+
+    @Override
+    public MinecraftServer getMCServer() {
+        return super.getMCServer();
+    }
+
+    @Override
+    public World getClientWorld() {
+        return Minecraft.getMinecraft().theWorld;
+    }
+
+    @Override
+    public boolean isSpaceDown() {
+        return Minecraft.getMinecraft().gameSettings.keyBindJump.getIsKeyPressed();
+    }
+
+    @Override
+    public boolean isShiftDown() {
+        return Minecraft.getMinecraft().gameSettings.keyBindSneak.getIsKeyPressed();
+    }
+
+    @Override
+    public boolean isCtrlDown() {
+        return Minecraft.getMinecraft().gameSettings.keyBindSprint.getIsKeyPressed();
+    }
+
+    @Override
+    public EntityPlayer getClientPlayer() {
+        return Minecraft.getMinecraft().thePlayer;
     }
 }

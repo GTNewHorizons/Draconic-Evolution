@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import net.minecraft.client.Minecraft;
 
 import com.brandon3055.draconicevolution.client.gui.GUIDraconiumChest;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
 import codechicken.nei.PositionedStack;
 import codechicken.nei.api.IStackPositioner;

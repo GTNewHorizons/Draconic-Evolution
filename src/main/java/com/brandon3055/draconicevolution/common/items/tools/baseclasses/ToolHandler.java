@@ -25,8 +25,8 @@ import net.minecraft.world.World;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.entity.EntityDragonProjectile;
 import com.brandon3055.draconicevolution.common.items.weapons.IEnergyContainerWeaponItem;
-import com.brandon3055.draconicevolution.common.utills.IUpgradableItem;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.IUpgradableItem;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
 public class ToolHandler {
     // public static Block[] destroyList = {Blocks.cobblestone, Blocks.stone, Blocks.dirt, Blocks.gravel, Blocks.sand,

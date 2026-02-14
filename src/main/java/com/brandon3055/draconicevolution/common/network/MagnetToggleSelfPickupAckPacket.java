@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 
 import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
 import com.brandon3055.draconicevolution.common.items.tools.Magnet;
-import com.brandon3055.draconicevolution.common.utills.InventoryUtils;
+import com.brandon3055.draconicevolution.common.utils.InventoryUtils;
 import com.brandon3055.draconicevolution.integration.ModHelper;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;

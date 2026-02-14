@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 
 import com.brandon3055.draconicevolution.common.inventory.InventoryTool;
-import com.brandon3055.draconicevolution.common.utills.IInventoryTool;
+import com.brandon3055.draconicevolution.common.utils.IInventoryTool;
 
 /**
  * Created by Brandon on 13/01/2015.

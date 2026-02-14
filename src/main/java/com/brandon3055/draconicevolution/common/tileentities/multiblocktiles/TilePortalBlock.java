@@ -4,9 +4,9 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.render.particle.Particles;
+import com.brandon3055.draconicevolution.common.utils.Utils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -32,7 +32,7 @@ public class TilePortalBlock extends TileEntity {
         if (!worldObj.isRemote) {
             return;
         }
-        double distanceMod = Utills.getDistanceAtoB(
+        double distanceMod = Utils.getDistanceAtoB(
                 xCoord + 0.5,
                 yCoord + 0.5,
                 zCoord + 0.5,

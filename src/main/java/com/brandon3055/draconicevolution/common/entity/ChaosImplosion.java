@@ -5,9 +5,9 @@ import java.util.Random;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-import com.brandon3055.brandonscore.common.handlers.IProcess;
-import com.brandon3055.brandonscore.common.handlers.ProcessHandler;
-import com.brandon3055.brandonscore.common.utills.Utills;
+import com.brandon3055.draconicevolution.common.utils.Utils;
+import com.brandon3055.draconicevolution.common.utils.handlers.IProcess;
+import com.brandon3055.draconicevolution.common.utils.handlers.ProcessHandler;
 
 /**
  * Created by brandon3055 on 12/8/2015.
@@ -44,7 +44,7 @@ public class ChaosImplosion implements IProcess {
 
         for (int x = xCoord - size; x < xCoord + size; x++) {
             for (int z = zCoord - size; z < zCoord + size; z++) {
-                double dist = Utills.getDistanceAtoB(x, z, xCoord, zCoord);
+                double dist = Utils.getDistanceAtoB(x, z, xCoord, zCoord);
                 if (dist < OD && dist >= ID) {
                     float tracePower = power - (float) (expansion / 10D);
                     tracePower *= 1F + ((random.nextFloat() - 0.5F) * 0.2);

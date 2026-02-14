@@ -11,17 +11,17 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.client.render.particle.ParticleEnergyBeam;
 import com.brandon3055.draconicevolution.client.render.particle.ParticleEnergyField;
-import com.brandon3055.draconicevolution.common.utills.EnergyStorage;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.EnergyStorage;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.Utils;
 
 import cofh.api.energy.IEnergyHandler;
 import cofh.api.energy.IEnergyReceiver;
 
 /**
- * Created by Brandon on 24/06/2014.
+ * todo review Created by Brandon on 24/06/2014.
  */
 public class TileTestBlock extends TileEntity implements IEnergyHandler {
 
@@ -35,11 +35,6 @@ public class TileTestBlock extends TileEntity implements IEnergyHandler {
     @Override
     public void updateEntity() {
 
-        // beam = DraconicEvolution.proxy.energyBeam(worldObj, xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, 0.5, 4.5, 0.5,
-        // 100, true, beam);
-        // ring = DraconicEvolution.proxy.energyField(worldObj, xCoord + 0.5, yCoord + 0.5, zCoord + 0.5,
-        // ClientEventHandler.elapsedTicks % 100, true, ring);
-
         if (worldObj.isRemote) return;
         for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
             if (worldObj.getTileEntity(
@@ -49,57 +44,6 @@ public class TileTestBlock extends TileEntity implements IEnergyHandler {
                 ((IEnergyReceiver) worldObj.getTileEntity(xCoord + d.offsetX, yCoord + d.offsetY, zCoord + d.offsetZ))
                         .receiveEnergy(d.getOpposite(), Integer.MAX_VALUE, false);
         }
-        // LogHelper.info(Integer.MAX_VALUE);
-        // if (1==1)return;
-
-        // for (Field f : StatList.class.getDeclaredFields()) {
-        // f.setAccessible(true);
-        //
-        // try {
-        // if (f.getName().equals("oneShotStats")) {
-        // f.set(null, new HashMap());
-        // }
-        // }
-        // catch (Exception e) {
-        // LogHelper.error("Severe error, please report this to the mod author:");
-        // LogHelper.error(e);
-        // }
-        // }
-
-        // for (Field f : AchievementPage.class.getDeclaredFields()) {//
-        // f.setAccessible(true);
-        //
-        // try {
-        // if (f.getName().equals("achievementPages")) {
-        // f.set(null, new LinkedList<AchievementPage>());
-        // }
-        // }
-        // catch (Exception e) {
-        // LogHelper.error("Severe error, please report this to the mod author:");
-        // LogHelper.error(e);
-        // }
-        // }
-
-        // Achievements.addModAchievements();
-        // Achievements.registerAchievementPane();
-
-        // if (worldObj.isRemote) modelRotation += 0.5;
-
-        // LogHelper.info(modelCoreRotation);
-
-        // int test = 4;
-        // //if (!worldObj.isRemote)
-        // //System.out.println(energy.getEnergyStored());
-        //
-        // if ((this.energy.getEnergyStored() > 0)) {
-        //
-        // TileEntity tile = worldObj.getTileEntity(xCoord + UP.offsetX, yCoord + UP.offsetY, zCoord + UP.offsetZ);
-        //
-        // if ((tile instanceof IEnergyHandler)) {
-        // this.energy.extractEnergy(((IEnergyHandler)tile).receiveEnergy(UP.getOpposite(),
-        // this.energy.extractEnergy(maxInput, true), false), false);
-        // }
-        // }
     }
 
     @Override
@@ -153,7 +97,7 @@ public class TileTestBlock extends TileEntity implements IEnergyHandler {
         EntityPlayer player = null;
         if (worldObj != null) player = worldObj.getClosestPlayer(xCoord, yCoord, zCoord, -1);
         if (player != null) LogHelper
-                .info("Read: " + Utills.getDistanceAtoB(player.posX, player.posY, player.posZ, xCoord, yCoord, zCoord));
+                .info("Read: " + Utils.getDistanceAtoB(player.posX, player.posY, player.posZ, xCoord, yCoord, zCoord));
         LogHelper.info(worldObj + " " + player);
     }
 
@@ -162,7 +106,7 @@ public class TileTestBlock extends TileEntity implements IEnergyHandler {
         super.writeToNBT(p_145841_1_);
         EntityPlayer player = null;
         if (worldObj != null) player = worldObj.getClosestPlayer(xCoord, yCoord, zCoord, -1);
-        if (player != null) LogHelper.info(
-                "Write: " + Utills.getDistanceAtoB(player.posX, player.posY, player.posZ, xCoord, yCoord, zCoord));
+        if (player != null) LogHelper
+                .info("Write: " + Utils.getDistanceAtoB(player.posX, player.posY, player.posZ, xCoord, yCoord, zCoord));
     }
 }

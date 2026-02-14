@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.brandon3055.draconicevolution.common.tileentities.TileDraconiumChest;
-import com.brandon3055.draconicevolution.common.utills.ICustomItemData;
+import com.brandon3055.draconicevolution.common.utils.ICustomItemData;
 
 /**
  * Created by Brandon on 13/11/2014.

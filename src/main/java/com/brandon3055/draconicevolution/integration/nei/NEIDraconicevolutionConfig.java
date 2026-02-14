@@ -6,7 +6,7 @@ import com.brandon3055.draconicevolution.client.gui.GUIDraconiumChest;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;

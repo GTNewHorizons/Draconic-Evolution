@@ -35,7 +35,7 @@ import com.brandon3055.draconicevolution.common.blocks.itemblocks.DraconiumChest
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.lib.Strings;
 import com.brandon3055.draconicevolution.common.tileentities.TileDraconiumChest;
-import com.brandon3055.draconicevolution.common.utills.ICustomItemData;
+import com.brandon3055.draconicevolution.common.utils.ICustomItemData;
 
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import cpw.mods.fml.relauncher.Side;

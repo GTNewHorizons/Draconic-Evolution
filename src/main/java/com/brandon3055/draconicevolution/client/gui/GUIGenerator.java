@@ -1,19 +1,21 @@
 package com.brandon3055.draconicevolution.client.gui;
 
+import static com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil.formatNumber;
+
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.brandonscore.client.utills.GuiHelper;
+import com.brandon3055.draconicevolution.client.utils.GuiHelper;
 import com.brandon3055.draconicevolution.common.container.ContainerGenerator;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.TileGenerator;
@@ -73,45 +75,29 @@ public class GUIGenerator extends GuiContainer {
                 18,
                 18 - (int) (fuel * 13)); // Power bar
 
-        fontRendererObj.drawStringWithShadow("Generator", guiLeft + 64, guiTop + 0, 0x00FFFF);
+        fontRendererObj.drawStringWithShadow(
+                StatCollector.translateToLocal("tile.draconicevolution:generator.name"),
+                guiLeft + 64,
+                guiTop,
+                0x00FFFF);
 
         int x = X - guiLeft;
         int y = Y - guiTop;
         if (GuiHelper.isInRect(83, 10, 12, 40, x, y)) {
             ArrayList<String> internal = new ArrayList<String>();
-            internal.add("Internal Storage");
+            internal.add(StatCollector.translateToLocal("gui.de.internalStorage.txt"));
             internal.add(
-                    "" + EnumChatFormatting.DARK_BLUE
-                            + tile.getEnergyStored(ForgeDirection.UP)
+                    EnumChatFormatting.DARK_BLUE + formatNumber(tile.getEnergyStored(ForgeDirection.UP))
                             + "/"
-                            + tile.getMaxEnergyStored(ForgeDirection.UP));
+                            + formatNumber(tile.getMaxEnergyStored(ForgeDirection.UP)));
             drawHoveringText(internal, x + guiLeft, y + guiTop, fontRendererObj);
         }
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int X, int Y) {
-
-        int x = X - guiLeft;
-        int y = Y - guiTop;
-        /*
-         * if (GuiHelper.isInRect(83, 10, 95, 50, x, y)) { ArrayList<String> internal = new ArrayList<String>();
-         * internal.add("Internal Storage"); internal.add("" + EnumChatFormatting.DARK_BLUE +
-         * tile.getEnergyStored(ForgeDirection.UP) + "/" + tile.getMaxEnergyStored(ForgeDirection.UP));
-         * drawHoveringText(internal, x, y, fontRendererObj); }
-         */
-    }
-
-    @Override
     public void initGui() {
         super.initGui();
-
-        // ID
-        // buttonList.add(new GuiButton(0, guiLeft + 85, guiTop , 85, 20, text));
     }
-
-    @Override
-    protected void actionPerformed(GuiButton button) {}
 
     @Override
     public void updateScreen() {
@@ -123,6 +109,4 @@ public class GUIGenerator extends GuiContainer {
         super.updateScreen();
     }
 
-    // ####Draw at############ read from size
-    // drawTexturedModalRect(guiLeft + 37, guiTop + 4, 0, 143, 37, 38);
 }

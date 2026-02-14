@@ -10,10 +10,10 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.utils.Utils;
 
 /**
  * Created by Brandon on 8/02/2015.
@@ -83,14 +83,13 @@ public class ParticleEnergyBeam extends EntityFX {
         this.tZ = tZ;
 
         if (offsetMode > 0) {
-            double dist = Utills.getDistanceAtoB(x, z, tX, tZ);
+            double dist = Utils.getDistanceAtoB(x, z, tX, tZ);
             if (dist == 0) dist = 0.1;
             double xDist = x - tX;
             double zDist = z - tZ;
             double xOff = xDist / dist;
             double zOff = zDist / dist;
             if (xOff == 0 && zOff == 0) xOff = 1;
-            // LogHelper.info(xOff + " " + zOff);
             double offM = 0.4D;
 
             if (offsetMode == 2 || offsetMode == 3) setPosition(posX - xOff * offM, posY, posZ - zOff * offM);

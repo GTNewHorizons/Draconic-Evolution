@@ -4,8 +4,6 @@ import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
-import com.brandon3055.draconicevolution.DraconicEvolution;
-import com.brandon3055.draconicevolution.common.blocks.BlockContainerTemplate;
 import com.brandon3055.draconicevolution.common.blocks.BlockDE;
 import com.brandon3055.draconicevolution.common.blocks.CKeyStone;
 import com.brandon3055.draconicevolution.common.blocks.ChaosCrystal;
@@ -22,7 +20,6 @@ import com.brandon3055.draconicevolution.common.blocks.Potentiometer;
 import com.brandon3055.draconicevolution.common.blocks.RainSensor;
 import com.brandon3055.draconicevolution.common.blocks.SafetyFlame;
 import com.brandon3055.draconicevolution.common.blocks.TeleporterStand;
-import com.brandon3055.draconicevolution.common.blocks.TestBlock;
 import com.brandon3055.draconicevolution.common.blocks.XRayBlock;
 import com.brandon3055.draconicevolution.common.blocks.machine.DislocatorInhibitor;
 import com.brandon3055.draconicevolution.common.blocks.machine.DissEnchanter;
@@ -58,7 +55,6 @@ public class ModBlocks {
     public static BlockDE weatherController;
     public static BlockDE sunDial;
     public static BlockDE draconiumOre;
-    public static BlockDE testBlock;
     public static BlockDE grinder;
     public static BlockDE potentiometer;
     public static BlockDE rainSensor;
@@ -140,11 +136,6 @@ public class ModBlocks {
         longRangeDislocator = new LongRangeDislocator();
 
         if (isEnabled(chaosShardAtmos)) GameRegistry.registerBlock(chaosShardAtmos, "chaosShardAtmos");
-
-        if (DraconicEvolution.debug) {
-            testBlock = new TestBlock();
-            containerTemplate = new BlockContainerTemplate();
-        }
 
         resurrectionStone = new ItemStack(ModBlocks.draconiumBlock, 1, 1);
     }

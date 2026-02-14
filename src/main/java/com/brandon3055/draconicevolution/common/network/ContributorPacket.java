@@ -2,7 +2,6 @@ package com.brandon3055.draconicevolution.common.network;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import com.brandon3055.brandonscore.BrandonsCore;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.handler.ContributorHandler;
 
@@ -58,7 +57,7 @@ public class ContributorPacket implements IMessage {
 
                     DraconicEvolution.network.sendToAll(message);
                 } else {
-                    EntityPlayer player = BrandonsCore.proxy.getClientPlayer();
+                    EntityPlayer player = DraconicEvolution.proxy.getClientPlayer();
                     if (!contributor1.isUserValid(player)
                             || message.contributor.equals(player.getCommandSenderName())) {
                         return null;

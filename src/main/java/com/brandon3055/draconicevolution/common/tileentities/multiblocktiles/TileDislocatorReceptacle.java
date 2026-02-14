@@ -9,9 +9,9 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
-import com.brandon3055.brandonscore.common.utills.Teleporter;
 import com.brandon3055.draconicevolution.common.items.tools.TeleporterMKI;
-import com.brandon3055.draconicevolution.common.utills.PortalHelper;
+import com.brandon3055.draconicevolution.common.utils.PortalHelper;
+import com.brandon3055.draconicevolution.common.utils.Teleporter;
 
 /**
  * Created by Brandon on 22/5/2015.

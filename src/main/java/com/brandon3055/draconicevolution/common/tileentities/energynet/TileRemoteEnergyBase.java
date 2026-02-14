@@ -14,17 +14,17 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import com.brandon3055.brandonscore.common.utills.DataUtills;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
 import com.brandon3055.draconicevolution.common.items.tools.Wrench;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.TileObjectSync;
-import com.brandon3055.draconicevolution.common.utills.EnergyStorage;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.DataUtils;
+import com.brandon3055.draconicevolution.common.utils.EnergyStorage;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.Utils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -148,7 +148,7 @@ public abstract class TileRemoteEnergyBase extends TileObjectSync implements IRe
                 sendObjectToClient(
                         References.INT_PAIR_ID,
                         0,
-                        new DataUtills.IntPair(index, (int) linkedDevices.get(index).energyFlow));
+                        new DataUtils.IntPair(index, (int) linkedDevices.get(index).energyFlow));
                 linkedDevices.get(index).lastTickEnergyFlow = linkedDevices.get(index).energyFlow;
             }
 
@@ -160,9 +160,9 @@ public abstract class TileRemoteEnergyBase extends TileObjectSync implements IRe
     @SideOnly(Side.CLIENT)
     @Override
     public void receiveObjectFromServer(int index, Object object) {
-        if (index == 0 && object instanceof DataUtills.IntPair
-                && linkedDevices.size() > ((DataUtills.IntPair) object).i1) {
-            linkedDevices.get(((DataUtills.IntPair) object).i1).energyFlow = ((DataUtills.IntPair) object).i2;
+        if (index == 0 && object instanceof DataUtils.IntPair
+                && linkedDevices.size() > ((DataUtils.IntPair) object).i1) {
+            linkedDevices.get(((DataUtils.IntPair) object).i1).energyFlow = ((DataUtils.IntPair) object).i2;
         } else if (index == 1) storage.setEnergyStored((Integer) object);
     }
 
@@ -289,7 +289,7 @@ public abstract class TileRemoteEnergyBase extends TileObjectSync implements IRe
             if (worldObj.isRemote)
                 player.addChatComponentMessage(new ChatComponentTranslation("msg.de.invalidTile.txt"));
             return false;
-        } else if (Utills.getDistanceAtoB(xCoord, yCoord, zCoord, x, y, z) > range) {
+        } else if (Utils.getDistanceAtoB(xCoord, yCoord, zCoord, x, y, z) > range) {
             if (worldObj.isRemote)
                 player.addChatComponentMessage(new ChatComponentTranslation("msg.de.outOfRange.txt"));
             return false;

@@ -13,13 +13,13 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
 import com.brandon3055.draconicevolution.client.render.particle.Particles;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.blocks.DraconiumBlock;
 import com.brandon3055.draconicevolution.common.blocks.multiblock.MultiblockHelper.TileLocation;
+import com.brandon3055.draconicevolution.common.utils.Utils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -129,7 +129,7 @@ public class EntityDragonHeart extends Entity {
                         AxisAlignedBB.getBoundingBox(posX - 5, posY - 5, posZ - 5, posX + 5, posY + 5, posZ + 5));
                 for (EntityItem item : items) {
                     ItemStack stack = item.getEntityItem();
-                    if (Utills.getDistanceAtoB(posX, posY + 0.5, posZ, item.posX, item.posY, item.posZ) < 1) {
+                    if (Utils.getDistanceAtoB(posX, posY + 0.5, posZ, item.posX, item.posY, item.posZ) < 1) {
                         if (coresConsumed == 16 || worldObj.isRemote) break;
                         if (stack.getItem() != ModItems.draconicCore) {
                             item.motionX = 1;

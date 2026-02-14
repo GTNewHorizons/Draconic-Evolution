@@ -9,9 +9,9 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.AchievementPage;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.ModItems;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;

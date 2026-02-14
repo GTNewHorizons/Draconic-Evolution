@@ -7,15 +7,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
-import com.brandon3055.brandonscore.common.handlers.IProcess;
-import com.brandon3055.brandonscore.common.utills.DataUtills;
-import com.brandon3055.brandonscore.common.utills.SimplexNoise;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.entity.EntityChaosCrystal;
 import com.brandon3055.draconicevolution.common.entity.EntityChaosGuardian;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.tileentities.TileChaosShard;
+import com.brandon3055.draconicevolution.common.utils.DataUtils;
+import com.brandon3055.draconicevolution.common.utils.SimplexNoise;
+import com.brandon3055.draconicevolution.common.utils.Utils;
+import com.brandon3055.draconicevolution.common.utils.handlers.IProcess;
 
 /**
  * Created by brandon3055 on 9/9/2015.
@@ -32,8 +32,8 @@ public class ChaosWorldGenHandler {
      *                     grid.
      */
     public static void generateChunk(World world, int chunkX, int chunkZ,
-            DataUtills.XZPair<Integer, Integer> islandCenter, Random random) {
-        DataUtills.XZPair<Integer, Integer> closestSpawn = islandCenter == null ? getClosestChaosSpawn(chunkX, chunkZ)
+            DataUtils.XZPair<Integer, Integer> islandCenter, Random random) {
+        DataUtils.XZPair<Integer, Integer> closestSpawn = islandCenter == null ? getClosestChaosSpawn(chunkX, chunkZ)
                 : islandCenter;
 
         if (closestSpawn.x == 0 && closestSpawn.z == 0) return;
@@ -47,8 +47,6 @@ public class ChaosWorldGenHandler {
                 && closestSpawn.z > posZ
                 && closestSpawn.z <= posZ + 16)
             generateStructures(world, closestSpawn, random);
-
-        // long l = System.nanoTime();
 
         for (int trueX = posX; trueX < posX + 16; trueX++) {
             for (int y = 0; y < 255; y++) {
@@ -96,20 +94,12 @@ public class ChaosWorldGenHandler {
                                 y + 64,
                                 z + closestSpawn.z,
                                 (dist > 60 || dist > random.nextInt(60)) ? Blocks.end_stone : Blocks.obsidian);
-
-                    // if (density > 0.1 && world.getBlock(x + closestSpawn.x, y + 64, z + closestSpawn.z) ==
-                    // Blocks.air) {
-                    // boolean b = dist > 60 || dist > random.nextInt(60);
-                    // world.setBlock(x + closestSpawn.x, y + 64, z + closestSpawn.z, (dist > 60 || dist >
-                    // random.nextInt(60)) ? Blocks.end_stone : Blocks.obsidian);
-                    // }
                 }
             }
         }
     }
 
-    public static void generateStructures(World world, DataUtills.XZPair<Integer, Integer> islandCenter,
-            Random random) {
+    public static void generateStructures(World world, DataUtils.XZPair<Integer, Integer> islandCenter, Random random) {
         int outerRadius = 330;
 
         // Gen Chaos Cavern
@@ -144,9 +134,8 @@ public class ChaosWorldGenHandler {
         int spacing = 8;
         for (int x = islandCenter.x - outerRadius; x <= islandCenter.x + outerRadius; x++) {
             for (int z = islandCenter.z - outerRadius; z <= islandCenter.z + outerRadius; z++) {
-                int dist = (int) (Utills.getDistanceAtoB(x, z, islandCenter.x, islandCenter.z));
+                int dist = (int) (Utils.getDistanceAtoB(x, z, islandCenter.x, islandCenter.z));
                 for (int i = 0; i < rings; i++) {
-                    // if (dist < outerRadius1 && dist >= innerRadius1 || dist < outerRadius2 && dist >= innerRadius2)
                     if (dist < (outerRadius - ((width + spacing) * i))
                             && dist >= (outerRadius - width - ((width + spacing) * i))) {
                         int y = 90 + (int) ((double) (islandCenter.x - x) * 0.1D) + (random.nextInt(10) - 5);
@@ -163,17 +152,17 @@ public class ChaosWorldGenHandler {
             boolean fillIn, Random rand) {
         for (int x = xi - coreRadious; x <= xi + coreRadious; x++) {
             for (int z = zi - coreRadious; z <= zi + coreRadious; z++) {
-                double dist = Utills.getDistanceAtoB(x, yi, z, xi, yc, zi);
+                double dist = Utils.getDistanceAtoB(x, yi, z, xi, yc, zi);
 
                 double oRad = coreRadious - (Math.abs(yc - yi) * Math.abs(yc - yi)) / 10;
                 if (dist > oRad - 3D && rand.nextDouble() * 3D < dist - (oRad - 3D)) continue;
 
-                if (fillIn && (int) (Utills.getDistanceAtoB(x, z, xi, zi)) <= ringRadius) {
+                if (fillIn && (int) (Utils.getDistanceAtoB(x, z, xi, zi)) <= ringRadius) {
                     if ((int) dist < 9) world.setBlock(x, yi, z, ModBlocks.infusedObsidian);
                     else world.setBlock(x, yi, z, Blocks.obsidian);
-                } else if (!fillIn && (int) (Utills.getDistanceAtoB(x, z, xi, zi)) >= ringRadius) {
+                } else if (!fillIn && (int) (Utils.getDistanceAtoB(x, z, xi, zi)) >= ringRadius) {
                     world.setBlock(x, yi, z, Blocks.obsidian);
-                } else if (!fillIn && (int) Utills.getDistanceAtoB(x, z, xi, zi) <= ringRadius) {
+                } else if (!fillIn && (int) Utils.getDistanceAtoB(x, z, xi, zi) <= ringRadius) {
                     Block b = world.getBlock(x, yi, z);
                     if (b == Blocks.air || b == Blocks.end_stone || b == Blocks.obsidian)
                         world.setBlock(x, yi, z, ModBlocks.chaosShardAtmos);
@@ -182,13 +171,13 @@ public class ChaosWorldGenHandler {
         }
     }
 
-    public static DataUtills.XZPair<Integer, Integer> getClosestChaosSpawn(int chunkX, int chunkZ) {
-        return new DataUtills.XZPair<Integer, Integer>(
-                Utills.getNearestMultiple(chunkX * 16, ConfigHandler.chaosIslandSeparation),
-                Utills.getNearestMultiple(chunkZ * 16, ConfigHandler.chaosIslandSeparation));
+    public static DataUtils.XZPair<Integer, Integer> getClosestChaosSpawn(int chunkX, int chunkZ) {
+        return new DataUtils.XZPair<Integer, Integer>(
+                Utils.getNearestMultiple(chunkX * 16, ConfigHandler.chaosIslandSeparation),
+                Utils.getNearestMultiple(chunkZ * 16, ConfigHandler.chaosIslandSeparation));
     }
 
-    private static void generateObelisks(World world, DataUtills.XZPair<Integer, Integer> islandCenter, Random rand) {
+    private static void generateObelisks(World world, DataUtils.XZPair<Integer, Integer> islandCenter, Random rand) {
 
         for (int i = 0; i < 7; i++) {
             double rotation = i * 0.9D;
@@ -238,7 +227,7 @@ public class ChaosWorldGenHandler {
                 int r = 3;
                 for (int x = x1 - r; x <= x1 + r; x++) {
                     for (int z = z1 - r; z <= z1 + r; z++) {
-                        if (Utills.getDistanceAtoB(x, z, x1, z1) <= r) {
+                        if (Utils.getDistanceAtoB(x, z, x1, z1) <= r) {
                             if (pct > rand.nextDouble()) world.setBlock(x, y, z, Blocks.obsidian, 0, 2);
                         }
                     }
