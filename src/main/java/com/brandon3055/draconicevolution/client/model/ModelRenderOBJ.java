@@ -33,10 +33,7 @@ public class ModelRenderOBJ extends ModelRenderer {
 
             GL11.glTranslatef(this.offsetX, this.offsetY, this.offsetZ);
             GL11.glPushMatrix();
-            GL11.glTranslatef(
-                    this.rotationPointX * scale,
-                    this.rotationPointY * scale,
-                    this.rotationPointZ * scale);
+            GL11.glTranslatef(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
             if (this.rotateAngleZ != 0.0F) {
                 GL11.glRotatef(this.rotateAngleZ * 57.295776F, 0.0F, 0.0F, 1.0F);
             }
