@@ -102,9 +102,9 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
         } else {
             ArrayList<TileEntityJarXP> jarsToEmpty = new ArrayList<>();
             ArrayList<ExperienceContainer> obelisksToEmpty = new ArrayList<>();
-            int xpCost = dissenchantCost <= 16 ? dissenchantCost * (dissenchantCost + 6)
-                    : dissenchantCost < 32 ? Math.round(dissenchantCost * (2.5f * dissenchantCost - 40.5f)) + 360
-                            : Math.round(dissenchantCost * (4.5f * dissenchantCost - 162.5f)) + 2220;
+            int xpCost = dissenchantCost < 16 ? dissenchantCost * 17
+                    : dissenchantCost < 30 ? Math.round(dissenchantCost * (1.5f * dissenchantCost - 29.5f)) + 360
+                            : Math.round(dissenchantCost * (3.5f * dissenchantCost - 151.5f)) + 2220;
             int xp;
             absorb: {
                 if (isAutomagyLoaded) {
