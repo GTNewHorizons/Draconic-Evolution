@@ -14,5 +14,8 @@ dependencies {
 	compileOnly("com.github.GTNewHorizons:Backhand:1.8.2:dev") {transitive = false}
 
     compileOnly("thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev") {transitive = false}
-    compileOnly("curse.maven:computercraft-67504:2269339") {transitive = false}
+    compileOnly("curse.maven:computercraft-67504:2269339") {transitive = false}3
+
+    compileOnly('curse.maven:automagy-222153:2285272')
+    compileOnly('com.github.GTNewHorizons:EnderIO:2.10.21:dev')
 }
