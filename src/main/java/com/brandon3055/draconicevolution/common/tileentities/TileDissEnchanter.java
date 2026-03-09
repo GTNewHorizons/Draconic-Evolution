@@ -22,6 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeHooks;
 
 import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
+
 import crazypants.enderio.machine.obelisk.xp.TileExperienceObelisk;
 import crazypants.enderio.xp.ExperienceContainer;
 import tuhljin.automagy.tiles.TileEntityJarXP;
@@ -101,18 +102,23 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
         } else {
             ArrayList<TileEntityJarXP> jarsToEmpty = new ArrayList<>();
             ArrayList<ExperienceContainer> obelisksToEmpty = new ArrayList<>();
-            int xpCost = dissenchantCost <= 16 ? dissenchantCost * (dissenchantCost + 6) : dissenchantCost <32 ? Math.round(dissenchantCost * (2.5f * dissenchantCost - 40.5f)) + 360 : Math.round(dissenchantCost * (4.5f * dissenchantCost - 162.5f)) + 2220;
+            int xpCost = dissenchantCost <= 16 ? dissenchantCost * (dissenchantCost + 6)
+                    : dissenchantCost < 32 ? Math.round(dissenchantCost * (2.5f * dissenchantCost - 40.5f)) + 360
+                            : Math.round(dissenchantCost * (4.5f * dissenchantCost - 162.5f)) + 2220;
             int xp;
             absorb: {
                 if (isAutomagyLoaded) {
                     CubeIterator iter = new CubeIterator(8);
                     while (iter.hasNext()) {
                         iter.next();
-                        if (worldObj.getTileEntity(cubeIter.n + xCoord, cubeIter.l + yCoord, cubeIter.m + zCoord) instanceof TileEntityJarXP jar) {
+                        if (worldObj.getTileEntity(
+                                iter.n + xCoord,
+                                iter.l + yCoord,
+                                iter.m + zCoord) instanceof TileEntityJarXP jar) {
                             xp = jar.getXP();
                             if (xp >= xpCost) {
                                 if (!worldObj.isRemote) {
-                                    jarsToEmpty.forEach(j->j.setXP(0));
+                                    jarsToEmpty.forEach(j -> j.setXP(0));
                                     jar.setXP(xp - xpCost);
                                 }
                                 break absorb;
@@ -126,13 +132,16 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
                     CubeIterator iter = new CubeIterator(8);
                     while (iter.hasNext()) {
                         iter.next();
-                        if (worldObj.getTileEntity(cubeIter.n + xCoord, cubeIter.l + yCoord, cubeIter.m + zCoord) instanceof TileExperienceObelisk obelisk) {
+                        if (worldObj.getTileEntity(
+                                iter.n + xCoord,
+                                iter.l + yCoord,
+                                iter.m + zCoord) instanceof TileExperienceObelisk obelisk) {
                             ExperienceContainer cont = obelisk.getContainer();
-                            xp= cont.getExperienceTotal();
+                            xp = cont.getExperienceTotal();
                             if (xp >= xpCost) {
                                 if (!worldObj.isRemote) {
-                                    jarsToEmpty.forEach(j->j.setXP(0));
-                                    obelisksToEmpty.forEach(o->o.drain(null, Integer.MAX_VALUE, true));
+                                    jarsToEmpty.forEach(j -> j.setXP(0));
+                                    obelisksToEmpty.forEach(o -> o.drain(null, Integer.MAX_VALUE, true));
                                     cont.drain(null, Integer.MAX_VALUE, true);
                                     cont.addExperience(Math.max(0, xp - xpCost));
                                 }
@@ -287,12 +296,13 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
 
     @Override
     public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-        return i == 1 ? itemstack.getItem().equals(Items.book)) : i == 0 ? EnchantmentHelper.getEnchantments(itemstack).size() != 0: false;
+        return i == 1 ? itemstack.getItem().equals(Items.book)
+                : i == 0 ? EnchantmentHelper.getEnchantments(itemstack).size() != 0 : false;
     }
 
     @Override
     public int[] getAccessibleSlotsFromSide(int var1) {
-        return var1 == 0 ? new int[] {0, 2} : new int[] { 1 };
+        return var1 == 0 ? new int[] { 0, 2 } : new int[] { 1 };
     }
 
     @Override
