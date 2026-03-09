@@ -1,5 +1,9 @@
 package com.brandon3055.draconicevolution.common.tileentities;
 
+import static com.brandon3055.draconicevolution.DraconicEvolution.isAutomagyLoaded;
+import static com.brandon3055.draconicevolution.DraconicEvolution.isEioLoaded;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -18,6 +22,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeHooks;
 
 import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
+import crazypants.enderio.machine.obelisk.xp.TileExperienceObelisk;
+import crazypants.enderio.xp.ExperienceContainer;
+import tuhljin.automagy.tiles.TileEntityJarXP;
 
 /**
  * Created by Brandon on 27/06/2014.
@@ -89,7 +96,56 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
 
     public void buttonClick(EntityPlayer player) {
         if (!isValidRecipe) return;
-        if (player.experienceLevel < dissenchantCost && !player.capabilities.isCreativeMode) return;
+        if (player != null) {
+            if (player.experienceLevel < dissenchantCost && !player.capabilities.isCreativeMode) return;
+        } else {
+            ArrayList<TileEntityJarXP> jarsToEmpty = new ArrayList<>();
+            ArrayList<ExperienceContainer> obelisksToEmpty = new ArrayList<>();
+            int xpCost = dissenchantCost <= 16 ? dissenchantCost * (dissenchantCost + 6) : dissenchantCost <32 ? Math.round(dissenchantCost * (2.5f * dissenchantCost - 40.5f)) + 360 : Math.round(dissenchantCost * (4.5f * dissenchantCost - 162.5f)) + 2220;
+            int xp;
+            absorb: {
+                if (isAutomagyLoaded) {
+                    CubeIterator iter = new CubeIterator(8);
+                    while (iter.hasNext()) {
+                        iter.next();
+                        if (worldObj.getTileEntity(cubeIter.n + xCoord, cubeIter.l + yCoord, cubeIter.m + zCoord) instanceof TileEntityJarXP jar) {
+                            xp = jar.getXP();
+                            if (xp >= xpCost) {
+                                if (!worldObj.isRemote) {
+                                    jarsToEmpty.forEach(j->j.setXP(0));
+                                    jar.setXP(xp - xpCost);
+                                }
+                                break absorb;
+                            }
+                            xpCost -= xp;
+                            jarsToEmpty.add(jar);
+                        }
+                    }
+                }
+                if (isEioLoaded) {
+                    CubeIterator iter = new CubeIterator(8);
+                    while (iter.hasNext()) {
+                        iter.next();
+                        if (worldObj.getTileEntity(cubeIter.n + xCoord, cubeIter.l + yCoord, cubeIter.m + zCoord) instanceof TileExperienceObelisk obelisk) {
+                            ExperienceContainer cont = obelisk.getContainer();
+                            xp= cont.getExperienceTotal();
+                            if (xp >= xpCost) {
+                                if (!worldObj.isRemote) {
+                                    jarsToEmpty.forEach(j->j.setXP(0));
+                                    obelisksToEmpty.forEach(o->o.drain(null, Integer.MAX_VALUE, true));
+                                    cont.drain(null, Integer.MAX_VALUE, true);
+                                    cont.addExperience(Math.max(0, xp - xpCost));
+                                }
+                                break absorb;
+                            }
+                            xpCost -= xp;
+                            obelisksToEmpty.add(cont);
+                        }
+                    }
+                }
+                return;
+            }
+        }
         ItemStack input = items[0];
         ItemStack enchantedBook = new ItemStack(Items.enchanted_book);
         Map enchants = EnchantmentHelper.getEnchantments(input);
@@ -284,4 +340,82 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
         bookPower = compound.getFloat("ServivalChance");
         super.readFromNBT(compound);
     }
+
+    public static final class CubeIterator {
+
+        public int range = 0;
+
+        // wow, it's just like electron orbitals. and the spin is the sign. how beautiful
+        public int n = 0;
+        public int l = 0;
+        public int m = 0;
+
+        CubeIterator(int range) {
+            this.range = range;
+        }
+
+        // maybe i could put this in next() and make it an Iterator<Boolean>?
+        public boolean hasNext() {
+            return -n < range || -l < range || -m < range;
+        }
+
+        public void next() {
+            // this shit looks like the decompile of an obfuscated assembly but i assure you it is hand written
+            m = -m;
+            if (m < 0) return;
+            l = -l;
+            if (l < 0) return;
+            n = -n;
+            if (n < 0) return;
+            if (l >= n || m > n) {
+                if (m >= l) {
+                    if (n <= l) {
+                        if (m > n) {
+                            n ^= m;
+                            m ^= n;
+                            n ^= m;
+                            if (l > m) {
+                                ++m;
+                                return;
+                            }
+                            m = 0;
+                            ++l;
+                            return;
+                        }
+                        l = 0;
+                        m = 0;
+                        ++n;
+                        return;
+                    }
+                    n ^= l;
+                    l ^= n;
+                    n ^= l;
+                    return;
+                }
+                if (n < m) {
+                    n ^= m;
+                    m ^= n;
+                    n ^= m;
+                    return;
+                }
+                m ^= l;
+                l ^= m;
+                m ^= l;
+                return;
+            }
+            if (l > m) {
+                m ^= l;
+                l ^= m;
+                m ^= l;
+                return;
+            }
+            n ^= l;
+            l ^= n;
+            n ^= l;
+            return;
+        } // i have just found out that Java has a `when` statement, but primitive pattern matching is preview
+          // and the syntax sucks (case boolean b when a>6)
+          // i genuinely would rather have written this bytecode by bytecode but here we are
+    }
+
 }
