@@ -287,13 +287,12 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
 
     @Override
     public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-        if (i == 1 && itemstack.getItem().equals(Items.book)) return true;
-        return false;
+        return i == 1 ? itemstack.getItem().equals(Items.book)) : i == 0 ? EnchantmentHelper.getEnchantments(itemstack).size() != 0: false;
     }
 
     @Override
     public int[] getAccessibleSlotsFromSide(int var1) {
-        return new int[] { 1 };
+        return var1 == 0 ? new int[] {0, 2} : new int[] { 1 };
     }
 
     @Override
@@ -303,7 +302,7 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
 
     @Override
     public boolean canExtractItem(int slot, ItemStack item, int side) {
-        return true;
+        return slot != 0 || EnchantmentHelper.getEnchantments(item).size() == 0;
     }
 
     // ===========================================================================================================//
