@@ -302,7 +302,7 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
 
     @Override
     public int[] getAccessibleSlotsFromSide(int var1) {
-        return var1 == 0 ? new int[] { 0, 2 } : new int[] { 1 };
+        return var1 == 0 ? new int[] { 0, 2 } : new int[] { 0, 1 };
     }
 
     @Override
