@@ -99,6 +99,26 @@ public class DissEnchanter extends BlockCustomDrop {
     protected void getCustomTileEntityDrops(TileEntity te, List<ItemStack> droppes) {}
 
     @Override
+    public void onNeighborBlockChange(World worldIn, int x, int y, int z, Block neighbor) {
+        boolean powered = worldIn.isBlockIndirectlyGettingPowered(x, y, z)
+            || worldIn.isBlockIndirectlyGettingPowered(x, y - 1, z);
+        int meta = worldIn.getBlockMetadata(x, y, z);
+        boolean metaUnpowered = (meta & 8) == 0;
+
+        if (powered && metaUnpowered) {
+            if (worldIn.getTileEntity(x, y, z) instanceof TileDissEnchanter tde) tde.buttonClick(null);
+            worldIn.setBlockMetadataWithNotify(x, y, z, meta | 8, 4);
+            return;
+        }
+        if (powered || metaUnpowered) return;
+        worldIn.setBlockMetadataWithNotify(x, y, z, meta & -9, 4);
+    }
+
+    public void breakBlock(World w, int x, int y, int z, Block b, int meta) {
+        MiscUtils.dropItemsOnBlockBreak(w, x, y, z, b, meta);
+    }
+
+    @Override
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
         super.randomDisplayTick(world, x, y, z, rand);
