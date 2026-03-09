@@ -99,7 +99,7 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
         if (!isValidRecipe) return;
         if (player != null) {
             if (player.experienceLevel < dissenchantCost && !player.capabilities.isCreativeMode) return;
-        } else {
+        } else if (dissenchantCost > 0) {
             ArrayList<TileEntityJarXP> jarsToEmpty = new ArrayList<>();
             ArrayList<ExperienceContainer> obelisksToEmpty = new ArrayList<>();
             int xpCost = dissenchantCost < 16 ? dissenchantCost * 17
