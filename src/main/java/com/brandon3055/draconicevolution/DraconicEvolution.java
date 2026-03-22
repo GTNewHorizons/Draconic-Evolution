@@ -51,6 +51,9 @@ public class DraconicEvolution {
 
     public static Enchantment reaperEnchant;
 
+    public static final boolean isAutomagyLoaded = cpw.mods.fml.common.Loader.isModLoaded("Automagy");
+    public static final boolean isEioLoaded = cpw.mods.fml.common.Loader.isModLoaded("EnderIO");
+
     public DraconicEvolution() {
         LogHelper.info("Hello Minecraft!!!");
     }
