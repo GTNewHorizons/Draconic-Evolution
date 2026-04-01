@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
 import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler.ArmorSummery;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
@@ -27,6 +27,7 @@ public class ModHelper {
 
     public static boolean isGTNHLibLoaded;
     public static boolean isHodgepodgeLoaded;
+    public static boolean isBackhandLoaded;
 
     private static Item cleaver;
     private static Item avaritiaSword;
@@ -40,6 +41,7 @@ public class ModHelper {
         isAE2Installed = Loader.isModLoaded("appliedenergistics2");
         isGTNHLibLoaded = Loader.isModLoaded("gtnhlib");
         isHodgepodgeLoaded = Loader.isModLoaded("hodgepodge");
+        isBackhandLoaded = Loader.isModLoaded("backhand");
 
         final String AE2_FITEM_CLASS = "appeng.entity.EntityFloatingItem";
 

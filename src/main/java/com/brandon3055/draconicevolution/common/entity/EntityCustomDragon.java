@@ -24,8 +24,8 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
-import com.brandon3055.draconicevolution.common.utills.DamageSourceChaos;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.DamageSourceChaos;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
 /**
  * Created by Brandon on 4/07/2014.

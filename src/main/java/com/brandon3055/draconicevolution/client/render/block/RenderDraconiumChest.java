@@ -8,7 +8,7 @@ import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
 import com.brandon3055.draconicevolution.common.tileentities.TileDraconiumChest;
-import com.brandon3055.draconicevolution.common.utills.ICustomItemData;
+import com.brandon3055.draconicevolution.common.utils.ICustomItemData;
 
 /**
  * Created by Brandon on 16/11/2014.

@@ -5,11 +5,11 @@ import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-import com.brandon3055.brandonscore.common.lib.References;
-import com.brandon3055.brandonscore.common.utills.DataUtills;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
-import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.DataUtils;
+import com.brandon3055.draconicevolution.common.utils.IConfigurableItem;
+import com.brandon3055.draconicevolution.common.utils.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
+import com.brandon3055.draconicevolution.common.utils.lib.References;
 
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -47,7 +47,7 @@ public class ItemConfigPacket implements IMessage {
         this.datatype = bytes.readByte();
         this.slot = bytes.readInt();
         this.name = ByteBufUtils.readUTF8String(bytes);
-        this.value = DataUtills.instance.readObjectFromBytes(bytes, datatype);
+        this.value = DataUtils.instance.readObjectFromBytes(bytes, datatype);
         this.renameProfile = bytes.readBoolean();
     }
 
@@ -56,7 +56,7 @@ public class ItemConfigPacket implements IMessage {
         bytes.writeByte(datatype);
         bytes.writeInt(slot);
         ByteBufUtils.writeUTF8String(bytes, name);
-        DataUtills.instance.writeObjectToBytes(bytes, datatype, value);
+        DataUtils.instance.writeObjectToBytes(bytes, datatype, value);
         bytes.writeBoolean(renameProfile);
     }
 
@@ -93,7 +93,7 @@ public class ItemConfigPacket implements IMessage {
 
                         if (newValue.castToDouble() <= field.castMaxToDouble()
                                 && newValue.castToDouble() >= field.castMinToDouble()) {
-                            DataUtills.writeObjectToCompound(
+                            DataUtils.writeObjectToCompound(
                                     IConfigurableItem.ProfileHelper.getProfileCompound(stack),
                                     message.value,
                                     message.datatype,

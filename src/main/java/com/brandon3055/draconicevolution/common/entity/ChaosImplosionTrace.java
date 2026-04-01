@@ -7,8 +7,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
-import com.brandon3055.brandonscore.common.handlers.IProcess;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.ReactorExplosion;
+import com.brandon3055.draconicevolution.common.utils.handlers.IProcess;
 
 /**
  * Created by brandon3055 on 12/8/2015.

@@ -1,5 +1,7 @@
 package com.brandon3055.draconicevolution.common.items.tools.baseclasses;
 
+import static com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil.formatNumber;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,14 +32,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.world.BlockEvent;
 
-import com.brandon3055.brandonscore.common.utills.InfoHelper;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
-import com.brandon3055.brandonscore.common.utills.Utills;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
-import com.brandon3055.draconicevolution.common.utills.IUpgradableItem;
-import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.IConfigurableItem;
+import com.brandon3055.draconicevolution.common.utils.IUpgradableItem;
+import com.brandon3055.draconicevolution.common.utils.InfoHelper;
+import com.brandon3055.draconicevolution.common.utils.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
 
 /**
  * Created by Brandon on 2/01/2015. Modified by bartimaeusnek on 23/05/2018
@@ -389,39 +390,39 @@ public abstract class MiningTool extends ToolBase implements IUpgradableItem {
                 InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.RFCapacity.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + Utills.formatNumber(getMaxEnergyStored(stack)));
+                        + formatNumber(getMaxEnergyStored(stack)));
         strings.add(
                 InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.max.txt")
                         + " "
                         + StatCollector.translateToLocal("gui.de.DigAOE.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + digaoe
+                        + formatNumber(digaoe)
                         + "x"
-                        + digaoe);
+                        + formatNumber(digaoe));
         if (depth > 0) strings.add(
                 InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.max.txt")
                         + " "
                         + StatCollector.translateToLocal("gui.de.DigDepth.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + depth);
+                        + formatNumber(depth));
         strings.add(
                 InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.max.txt")
                         + " "
                         + StatCollector.translateToLocal("gui.de.DigSpeed.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + getEfficiency(stack));
+                        + formatNumber(getEfficiency(stack)));
         if (attackaoe > 0) strings.add(
                 InfoHelper.ITC() + StatCollector.translateToLocal("gui.de.max.txt")
                         + " "
                         + StatCollector.translateToLocal("gui.de.AttackAOE.txt")
                         + ": "
                         + InfoHelper.HITC()
-                        + attackaoe
+                        + formatNumber(attackaoe)
                         + "x"
-                        + attackaoe);
+                        + formatNumber(attackaoe));
 
         return strings;
     }

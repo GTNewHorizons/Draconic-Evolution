@@ -14,7 +14,7 @@ import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.inventory.GenericInventory;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore;
 import com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.reactor.TileReactorCore.ReactorState;
-import com.brandon3055.draconicevolution.common.utills.OreDictionaryHelper;
+import com.brandon3055.draconicevolution.common.utils.OreDictionaryHelper;
 
 /**
  * Created by brandon3055 on 30/7/2015.

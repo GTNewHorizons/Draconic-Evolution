@@ -19,18 +19,17 @@ import net.minecraftforge.common.ForgeHooks;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import com.brandon3055.brandonscore.BrandonsCore;
-import com.brandon3055.brandonscore.common.utills.DataUtills;
-import com.brandon3055.brandonscore.common.utills.InfoHelper;
-import com.brandon3055.brandonscore.common.utills.ItemNBTHelper;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.keybinding.KeyBindings;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.network.ToolModePacket;
-import com.brandon3055.draconicevolution.common.utills.IConfigurableItem;
-import com.brandon3055.draconicevolution.common.utills.IUpgradableItem;
-import com.brandon3055.draconicevolution.common.utills.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.DataUtils;
+import com.brandon3055.draconicevolution.common.utils.IConfigurableItem;
+import com.brandon3055.draconicevolution.common.utils.IUpgradableItem;
+import com.brandon3055.draconicevolution.common.utils.InfoHelper;
+import com.brandon3055.draconicevolution.common.utils.ItemConfigField;
+import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
 import com.google.common.collect.Sets;
 
 import cpw.mods.fml.relauncher.Side;
@@ -250,9 +249,9 @@ public class ToolBase extends RFItemBase {
 
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-        if (!world.isRemote && !BrandonsCore.proxy.isDedicatedServer()) {
+        if (!world.isRemote && !DraconicEvolution.proxy.isDedicatedServer()) {
             handleModeChange(stack, player, InfoHelper.isShiftKeyDown(), InfoHelper.isCtrlKeyDown());
-        } else if (world.isRemote && BrandonsCore.proxy.getMCServer() == null) {
+        } else if (world.isRemote && DraconicEvolution.proxy.getMCServer() == null) {
             handleModeChange(stack, player, InfoHelper.isShiftKeyDown(), InfoHelper.isCtrlKeyDown());
             DraconicEvolution.network
                     .sendToServer(new ToolModePacket(InfoHelper.isShiftKeyDown(), InfoHelper.isCtrlKeyDown()));
@@ -273,7 +272,7 @@ public class ToolBase extends RFItemBase {
                     aoe++;
                     if (aoe > (Integer) field.max) aoe = (Integer) field.min;
                     field.value = aoe;
-                    DataUtills.writeObjectToCompound(
+                    DataUtils.writeObjectToCompound(
                             IConfigurableItem.ProfileHelper.getProfileCompound(stack),
                             field.value,
                             field.datatype,
@@ -288,7 +287,7 @@ public class ToolBase extends RFItemBase {
                     aoe++;
                     if (aoe > (Integer) field.max) aoe = (Integer) field.min;
                     field.value = aoe;
-                    DataUtills.writeObjectToCompound(
+                    DataUtils.writeObjectToCompound(
                             IConfigurableItem.ProfileHelper.getProfileCompound(stack),
                             field.value,
                             field.datatype,
@@ -303,7 +302,7 @@ public class ToolBase extends RFItemBase {
                     aoe++;
                     if (aoe > (Integer) field.max) aoe = (Integer) field.min;
                     field.value = aoe;
-                    DataUtills.writeObjectToCompound(
+                    DataUtils.writeObjectToCompound(
                             IConfigurableItem.ProfileHelper.getProfileCompound(stack),
                             field.value,
                             field.datatype,

@@ -2,7 +2,7 @@ package com.brandon3055.draconicevolution.common.tileentities.energynet;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import com.brandon3055.draconicevolution.common.utills.EnergyStorage;
+import com.brandon3055.draconicevolution.common.utils.EnergyStorage;
 
 import cofh.api.energy.IEnergyHandler;
 

@@ -3,9 +3,9 @@ package com.brandon3055.draconicevolution.common.tileentities.multiblocktiles.re
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-import com.brandon3055.brandonscore.common.handlers.IProcess;
-import com.brandon3055.brandonscore.common.handlers.ProcessHandler;
-import com.brandon3055.brandonscore.common.utills.Utills;
+import com.brandon3055.draconicevolution.common.utils.Utils;
+import com.brandon3055.draconicevolution.common.utils.handlers.IProcess;
+import com.brandon3055.draconicevolution.common.utils.handlers.ProcessHandler;
 
 /**
  * Created by brandon3055 on 12/8/2015.
@@ -38,7 +38,7 @@ public class ReactorExplosion implements IProcess {
         int size = (int) expansion;
         for (int x = xCoord - size; x < xCoord + size; x++) {
             for (int z = zCoord - size; z < zCoord + size; z++) {
-                double distance = Utills.getDistanceAtoB(x, z, xCoord, zCoord);
+                double distance = Utils.getDistanceAtoB(x, z, xCoord, zCoord);
                 if (distance < expansion && distance >= size - 1) {
                     float tracePower = power - (float) (expansion / 10D);
                     tracePower *= 1F + (world.rand.nextFloat() - 0.5F) * 0.2;

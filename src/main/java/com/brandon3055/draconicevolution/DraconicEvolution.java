@@ -7,7 +7,7 @@ import com.brandon3055.draconicevolution.client.creativetab.DETab;
 import com.brandon3055.draconicevolution.common.CommonProxy;
 import com.brandon3055.draconicevolution.common.lib.OreDoublingRegistry;
 import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.utills.LogHelper;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -23,15 +23,14 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
         version = References.VERSION,
         canBeDeactivated = false,
         guiFactory = References.GUIFACTORY,
-        dependencies = "after:NotEnoughItems;" + "after:ThermalExpansion;"
-                + "after:ThermalFoundation;"
-                + "required-after:BrandonsCore@[1.0.0.11,);")
+        dependencies = "after:NotEnoughItems;" + "after:ThermalExpansion;" + "after:ThermalFoundation;")
 public class DraconicEvolution {
 
     @Mod.Instance(References.MODID)
     public static DraconicEvolution instance;
-
-    @SidedProxy(clientSide = References.CLIENTPROXYLOCATION, serverSide = References.SERVERPROXYLOCATION)
+    @SidedProxy(
+            clientSide = "com.brandon3055.draconicevolution.client.ClientProxy",
+            serverSide = "com.brandon3055.draconicevolution.common.CommonProxy")
     public static CommonProxy proxy;
 
     public static CreativeTabs tabToolsWeapons = new DETab(

@@ -4,7 +4,7 @@ import java.util.Random;
 
 import net.minecraft.world.World;
 
-import com.brandon3055.brandonscore.common.utills.DataUtills;
+import com.brandon3055.draconicevolution.common.utils.DataUtils;
 import com.brandon3055.draconicevolution.common.world.ChaosWorldGenHandler;
 import com.brandon3055.draconicevolution.common.world.DraconicWorldGenerator;
 import com.brandon3055.draconicevolution.common.world.WorldGenEnderComet;
@@ -43,12 +43,8 @@ public class GeneratorOverride {
      */
     public static void generateChaosChunk(World world, int chunkX, int chunkZ, int centerX, int centerZ,
             Random random) {
-        ChaosWorldGenHandler.generateChunk(
-                world,
-                chunkX,
-                chunkZ,
-                new DataUtills.XZPair<Integer, Integer>(centerX, centerZ),
-                random);
+        ChaosWorldGenHandler
+                .generateChunk(world, chunkX, chunkZ, new DataUtils.XZPair<Integer, Integer>(centerX, centerZ), random);
     }
 
     /**
