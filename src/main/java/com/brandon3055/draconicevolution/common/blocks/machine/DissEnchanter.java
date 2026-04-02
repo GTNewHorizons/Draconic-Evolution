@@ -3,6 +3,7 @@ package com.brandon3055.draconicevolution.common.blocks.machine;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -97,6 +98,22 @@ public class DissEnchanter extends BlockCustomDrop {
 
     @Override
     protected void getCustomTileEntityDrops(TileEntity te, List<ItemStack> droppes) {}
+
+    @Override
+    public void onNeighborBlockChange(World worldIn, int x, int y, int z, Block neighbor) {
+        boolean powered = worldIn.isBlockIndirectlyGettingPowered(x, y, z)
+                || worldIn.isBlockIndirectlyGettingPowered(x, y - 1, z);
+        int meta = worldIn.getBlockMetadata(x, y, z);
+        boolean metaUnpowered = (meta & 8) == 0;
+
+        if (powered && metaUnpowered) {
+            if (worldIn.getTileEntity(x, y, z) instanceof TileDissEnchanter tde) tde.buttonClick(null);
+            worldIn.setBlockMetadataWithNotify(x, y, z, meta | 8, 4);
+            return;
+        }
+        if (powered || metaUnpowered) return;
+        worldIn.setBlockMetadataWithNotify(x, y, z, meta & -9, 4);
+    }
 
     @Override
     @SideOnly(Side.CLIENT)
