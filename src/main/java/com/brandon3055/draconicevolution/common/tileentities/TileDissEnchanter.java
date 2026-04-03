@@ -1,5 +1,9 @@
 package com.brandon3055.draconicevolution.common.tileentities;
 
+import static com.brandon3055.draconicevolution.DraconicEvolution.isAutomagyLoaded;
+import static com.brandon3055.draconicevolution.DraconicEvolution.isEioLoaded;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -18,6 +22,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeHooks;
 
 import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
+import com.gtnewhorizon.gtnhlib.geometry.CubeIterator;
+
+import crazypants.enderio.machine.obelisk.xp.TileExperienceObelisk;
+import crazypants.enderio.xp.ExperienceContainer;
+import tuhljin.automagy.tiles.TileEntityJarXP;
 
 /**
  * Created by Brandon on 27/06/2014.
@@ -89,7 +98,64 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
 
     public void buttonClick(EntityPlayer player) {
         if (!isValidRecipe) return;
-        if (player.experienceLevel < dissenchantCost && !player.capabilities.isCreativeMode) return;
+        if (player != null) {
+            if (player.experienceLevel < dissenchantCost && !player.capabilities.isCreativeMode) return;
+        } else if (dissenchantCost > 0) {
+            ArrayList<TileEntityJarXP> jarsToEmpty = new ArrayList<>();
+            ArrayList<ExperienceContainer> obelisksToEmpty = new ArrayList<>();
+            int xpCost = dissenchantCost < 16 ? dissenchantCost * 17
+                    : dissenchantCost < 30 ? Math.round(dissenchantCost * (1.5f * dissenchantCost - 29.5f)) + 360
+                            : Math.round(dissenchantCost * (3.5f * dissenchantCost - 151.5f)) + 2220;
+            int xp;
+            absorb: {
+                if (isAutomagyLoaded) {
+                    CubeIterator iter = new CubeIterator(8);
+                    while (iter.hasNext()) {
+                        iter.next();
+                        if (worldObj.getTileEntity(
+                                iter.n + xCoord,
+                                iter.l + yCoord,
+                                iter.m + zCoord) instanceof TileEntityJarXP jar) {
+                            xp = jar.getXP();
+                            if (xp >= xpCost) {
+                                if (!worldObj.isRemote) {
+                                    jarsToEmpty.forEach(j -> j.setXP(0));
+                                    jar.setXP(xp - xpCost);
+                                }
+                                break absorb;
+                            }
+                            xpCost -= xp;
+                            jarsToEmpty.add(jar);
+                        }
+                    }
+                }
+                if (isEioLoaded) {
+                    CubeIterator iter = new CubeIterator(8);
+                    while (iter.hasNext()) {
+                        iter.next();
+                        if (worldObj.getTileEntity(
+                                iter.n + xCoord,
+                                iter.l + yCoord,
+                                iter.m + zCoord) instanceof TileExperienceObelisk obelisk) {
+                            ExperienceContainer cont = obelisk.getContainer();
+                            xp = cont.getExperienceTotal();
+                            if (xp >= xpCost) {
+                                if (!worldObj.isRemote) {
+                                    jarsToEmpty.forEach(j -> j.setXP(0));
+                                    obelisksToEmpty.forEach(o -> o.drain(null, Integer.MAX_VALUE, true));
+                                    cont.drain(null, Integer.MAX_VALUE, true);
+                                    cont.addExperience(Math.max(0, xp - xpCost));
+                                }
+                                break absorb;
+                            }
+                            xpCost -= xp;
+                            obelisksToEmpty.add(cont);
+                        }
+                    }
+                }
+                return;
+            }
+        }
         ItemStack input = items[0];
         ItemStack enchantedBook = new ItemStack(Items.enchanted_book);
         Map enchants = EnchantmentHelper.getEnchantments(input);
@@ -119,21 +185,21 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
         compound.removeTag(tagName);
         if (list.tagCount() > 0) input.setTagInfo(tagName, list);
         if (input.getItem() == Items.enchanted_book && list.tagCount() == 0) setInventorySlotContents(0, null);
-        if (!player.capabilities.isCreativeMode) player.addExperienceLevel(-dissenchantCost);
+        if (player != null && !player.capabilities.isCreativeMode) player.addExperienceLevel(-dissenchantCost);
         if (items[0] != null && ItemNBTHelper.getInteger(items[0], "RepairCost", 0) > 0) ItemNBTHelper.setInteger(
                 items[0],
                 "RepairCost",
                 ItemNBTHelper.getInteger(items[0], "RepairCost", 0)
                         - Math.min(2, ItemNBTHelper.getInteger(items[0], "RepairCost", 0)));
-        if (!player.capabilities.isCreativeMode) decrStackSize(1, 1);
+        if (player == null || !player.capabilities.isCreativeMode) decrStackSize(1, 1);
         int maxDamage = items[0] != null ? items[0].getMaxDamage() : 0;
         float damageF = (40f - bookPower) / 100f;
         int damage = (int) (damageF * (float) maxDamage);
         int damageResult = items[0] != null ? items[0].getItemDamage() + damage : 0;
 
-        if (!player.capabilities.isCreativeMode && damageResult > maxDamage && maxDamage > 0) {
+        if ((player == null || !player.capabilities.isCreativeMode) && damageResult > maxDamage && maxDamage > 0) {
             setInventorySlotContents(0, null);
-        } else if (!player.capabilities.isCreativeMode && maxDamage > 0 && items[0] != null) {
+        } else if ((player == null || !player.capabilities.isCreativeMode) && maxDamage > 0 && items[0] != null) {
             items[0].setItemDamage(damageResult);
         }
         onInventoryChanged();
@@ -231,13 +297,13 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
 
     @Override
     public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-        if (i == 1 && itemstack.getItem().equals(Items.book)) return true;
-        return false;
+        return i == 1 ? itemstack.getItem().equals(Items.book)
+                : i == 0 ? EnchantmentHelper.getEnchantments(itemstack).size() != 0 : false;
     }
 
     @Override
     public int[] getAccessibleSlotsFromSide(int var1) {
-        return new int[] { 1 };
+        return var1 == 0 ? new int[] { 0, 2 } : new int[] { 0, 1 };
     }
 
     @Override
@@ -247,7 +313,7 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
 
     @Override
     public boolean canExtractItem(int slot, ItemStack item, int side) {
-        return true;
+        return slot != 0 || EnchantmentHelper.getEnchantments(item).size() == 0;
     }
 
     // ===========================================================================================================//
@@ -284,4 +350,5 @@ public class TileDissEnchanter extends TileEntity implements ISidedInventory {
         bookPower = compound.getFloat("ServivalChance");
         super.readFromNBT(compound);
     }
+
 }
