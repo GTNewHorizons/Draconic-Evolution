@@ -52,13 +52,18 @@ public class GUIDissEnchanter extends GuiContainer {
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         drawCenteredString(
                 fontRendererObj,
-                StatCollector.translateToLocal("tile.draconicevolution:dissEnchanter.name"),
+                StatCollector.translateToLocal("gui.de.dissEnchanter.main.title"),
                 88,
                 4,
                 0x00FFFF);
 
-        fontRendererObj.drawString("Item", 5, 40, 0x0000ff);
-        fontRendererObj.drawString("Damage: " + (40 - tile.bookPower) + "%", 5, 49, 0x0000ff);
+        fontRendererObj.drawString(StatCollector.translateToLocal("gui.de.dissEnchanter.itemDamage1"), 5, 40, 0x0000ff);
+        fontRendererObj.drawString(
+                StatCollector
+                        .translateToLocalFormatted("gui.de.dissEnchanter.itemDamage2", (40 - tile.bookPower) + "%"),
+                5,
+                49,
+                0x0000ff);
     }
 
     @Override
@@ -94,6 +99,7 @@ public class GUIDissEnchanter extends GuiContainer {
         if (flag && player.experienceLevel < tile.dissenchantCost && !player.capabilities.isCreativeMode) flag = false;
         ((GuiButtonAHeight) buttonList.get(0)).enabled = flag;
         ((GuiButtonAHeight) buttonList.get(0)).packedFGColour = cachRecipeValid ? 0x000000 : 0xdf0000;
-        ((GuiButtonAHeight) buttonList.get(0)).displayString = "Cost: " + tile.dissenchantCost;
+        ((GuiButtonAHeight) buttonList.get(0)).displayString = StatCollector
+                .translateToLocalFormatted("gui.de.dissEnchanter.cost", tile.dissenchantCost);
     }
 }

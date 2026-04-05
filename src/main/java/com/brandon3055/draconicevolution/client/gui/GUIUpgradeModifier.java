@@ -86,7 +86,12 @@ public class GUIUpgradeModifier extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
-        drawCenteredString(fontRendererObj, tile.getBlockType().getLocalizedName(), xSize / 2, -9, 0x00FFFF);
+        drawCenteredString(
+                fontRendererObj,
+                StatCollector.translateToLocal("gui.de.upgradeModifier.main.title"),
+                xSize / 2,
+                -9,
+                0x00FFFF);
     }
 
     @Override
@@ -238,13 +243,25 @@ public class GUIUpgradeModifier extends GuiContainer {
                 0x00ff00);
         fontRendererObj
                 .drawString(StatCollector.translateToLocal("gui.de.cap.txt"), guiLeft + 4, guiTop + 16, 0x000000);
-        fontRendererObj.drawString(">" + coreSlots, guiLeft + 4, guiTop + 25, 0x000000);
+        fontRendererObj.drawString(
+                StatCollector.translateToLocalFormatted("gui.de.numbers", ">" + coreSlots),
+                guiLeft + 4,
+                guiTop + 25,
+                0x000000);
         fontRendererObj
                 .drawString(StatCollector.translateToLocal("gui.de.installed.txt"), guiLeft + 4, guiTop + 37, 0x000000);
-        fontRendererObj.drawString(">" + usedSlots, guiLeft + 4, guiTop + 46, 0x000000);
+        fontRendererObj.drawString(
+                StatCollector.translateToLocalFormatted("gui.de.numbers", ">" + usedSlots),
+                guiLeft + 4,
+                guiTop + 46,
+                0x000000);
         fontRendererObj
                 .drawString(StatCollector.translateToLocal("gui.de.free.txt"), guiLeft + 4, guiTop + 58, 0x000000);
-        fontRendererObj.drawString(">" + (coreSlots - usedSlots), guiLeft + 4, guiTop + 67, 0x000000);
+        fontRendererObj.drawString(
+                StatCollector.translateToLocalFormatted("gui.de.numbers", ">" + (coreSlots - usedSlots)),
+                guiLeft + 4,
+                guiTop + 67,
+                0x000000);
     }
 
     @Override

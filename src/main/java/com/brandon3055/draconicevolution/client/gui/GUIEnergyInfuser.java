@@ -83,7 +83,11 @@ public class GUIEnergyInfuser extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
-        fontRendererObj.drawStringWithShadow("Energy Infuser", 49, -9, 0x00FFFF);
+        fontRendererObj.drawStringWithShadow(
+                StatCollector.translateToLocal("gui.de.energyInfuser.main.title"),
+                49,
+                -9,
+                0x00FFFF);
 
         // bindTexture(texture);
 

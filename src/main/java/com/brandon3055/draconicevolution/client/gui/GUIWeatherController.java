@@ -6,6 +6,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
@@ -53,23 +54,28 @@ public class GUIWeatherController extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int p_146979_1_, int p_146979_2_) {
-        fontRendererObj.drawString("Charges: " + charges, 90, 25, 0x000000);
+        fontRendererObj.drawString(StatCollector.translateToLocal("gui.de.charges") + ": " + charges, 90, 25, 0x000000);
         // drawCenteredString(fontRendererObj, "Charges: " + charges, 117, 25, 0x000000);
-        drawCenteredString(fontRendererObj, "Weather Controller", xSize / 2, -15, 0x2a4ed0);
+        drawCenteredString(
+                fontRendererObj,
+                StatCollector.translateToLocal("gui.de.weatherController.main.title"),
+                xSize / 2,
+                -15,
+                0x2a4ed0);
     }
 
-    public static final String RAIN_ON_TEXT = "Turn rain on";
-    public static final String RAIN_OFF_TEXT = "Turn rain off";
-    public static final String STORM_TEXT = "Thunder Storm";
+    public static final String RAIN_ON_TEXT = "gui.de.rain.on";
+    public static final String RAIN_OFF_TEXT = "gui.de.rain.off";
+    public static final String STORM_TEXT = "gui.de.rain.storm";
     public static String text;
 
     @Override
     public void initGui() {
         super.initGui();
         buttonList.clear();
-        if (tileWC.mode == 0) text = RAIN_OFF_TEXT;
-        else if (tileWC.mode == 1) text = RAIN_ON_TEXT;
-        else text = STORM_TEXT;
+        if (tileWC.mode == 0) text = StatCollector.translateToLocal(RAIN_OFF_TEXT);
+        else if (tileWC.mode == 1) text = StatCollector.translateToLocal(RAIN_ON_TEXT);
+        else text = StatCollector.translateToLocal(STORM_TEXT);
         // ID
         buttonList.add(new GuiButton(0, guiLeft + 85, guiTop, 85, 20, text));
     }
@@ -78,9 +84,11 @@ public class GUIWeatherController extends GuiContainer {
     protected void actionPerformed(GuiButton button) {
         if (button.id == 0) {
             DraconicEvolution.network.sendToServer(new ButtonPacket((byte) 0, true));
-            if (button.displayString.equals(STORM_TEXT)) button.displayString = RAIN_OFF_TEXT;
-            else if (button.displayString.equals(RAIN_OFF_TEXT)) button.displayString = RAIN_ON_TEXT;
-            else button.displayString = STORM_TEXT;
+            if (button.displayString.equals(StatCollector.translateToLocal(STORM_TEXT))) {
+                button.displayString = StatCollector.translateToLocal(RAIN_OFF_TEXT);
+            } else if (button.displayString.equals(StatCollector.translateToLocal(RAIN_OFF_TEXT))) {
+                button.displayString = StatCollector.translateToLocal(RAIN_ON_TEXT);
+            } else button.displayString = StatCollector.translateToLocal(STORM_TEXT);
         }
     }
 
