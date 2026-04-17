@@ -36,10 +36,10 @@ public final class ClientEventHandler {
     private static final Random RANDOM = new Random();
 
     private int elapsedTicks;
-    private float previousSensitivity = 0;
-    private boolean bowZoom = false;
-    private boolean lastTickBowZoom = false;
-    private int tickSet = 0;
+    // private float previousSensitivity = 0;
+    // private boolean bowZoom = false;
+    // private boolean lastTickBowZoom = false;
+    // private int tickSet = 0;
     private int remountTicksRemaining = 0;
     private int remountEntityID = 0;
     private float energyCrystalAlphaValue = 0f;
@@ -55,15 +55,15 @@ public final class ClientEventHandler {
         if (mc.theWorld != null) {
             elapsedTicks++;
 
-            if (bowZoom && !lastTickBowZoom) {
-                previousSensitivity = mc.gameSettings.mouseSensitivity;
-                mc.gameSettings.mouseSensitivity = previousSensitivity / 3;
-            } else if (!bowZoom && lastTickBowZoom) {
-                mc.gameSettings.mouseSensitivity = previousSensitivity;
-            }
-
-            lastTickBowZoom = bowZoom;
-            if (elapsedTicks - tickSet > 10) bowZoom = false;
+            // if (bowZoom && !lastTickBowZoom) {
+            // previousSensitivity = mc.gameSettings.mouseSensitivity;
+            // mc.gameSettings.mouseSensitivity = previousSensitivity / 3;
+            // } else if (!bowZoom && lastTickBowZoom) {
+            // mc.gameSettings.mouseSensitivity = previousSensitivity;
+            // }
+            //
+            // lastTickBowZoom = bowZoom;
+            // if (elapsedTicks - tickSet > 10) bowZoom = false;
 
             if (energyCrystalAlphaValue < energyCrystalAlphaTarget) energyCrystalAlphaValue += 0.01f;
             if (energyCrystalAlphaValue > energyCrystalAlphaTarget) energyCrystalAlphaValue -= 0.01f;
