@@ -48,7 +48,7 @@ import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.entity.EntityCustomDragon;
 import com.brandon3055.draconicevolution.common.entity.EntityDragonHeart;
 import com.brandon3055.draconicevolution.common.entity.ExtendedPlayer;
-import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler;
+import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler.ArmorSummary;
 import com.brandon3055.draconicevolution.common.network.MountUpdatePacket;
 import com.brandon3055.draconicevolution.common.network.SpeedRequestPacket;
 import com.brandon3055.draconicevolution.common.tileentities.TileGrinder;
@@ -129,12 +129,10 @@ public class MinecraftForgeEventHandler {
 
     @SubscribeEvent
     public void onLivingJumpEvent(LivingEvent.LivingJumpEvent event) {
-        if (!(event.entityLiving instanceof EntityPlayer)) return;
-        EntityPlayer player = (EntityPlayer) event.entityLiving;
-        CustomArmorHandler.ArmorSummery summery = new CustomArmorHandler.ArmorSummery().getSummery(player);
-
-        if (summery != null && summery.jumpModifier > 0) {
-            player.motionY += (double) (summery.jumpModifier * 0.1F);
+        if (!(event.entityLiving instanceof EntityPlayer player)) return;
+        final ArmorSummary summary = ArmorSummary.get(player);
+        if (summary != null && summary.jumpModifier > 0) {
+            player.motionY += (summary.jumpModifier * 0.1F);
         }
     }
 
@@ -381,16 +379,15 @@ public class MinecraftForgeEventHandler {
     public void getBreakSpeed(PlayerEvent.BreakSpeed event) {
         if (event.entityPlayer != null) {
             float newDigSpeed = event.originalSpeed;
-            CustomArmorHandler.ArmorSummery summery = new CustomArmorHandler.ArmorSummery()
-                    .getSummery(event.entityPlayer);
-            if (summery == null) return;
+            final ArmorSummary summary = ArmorSummary.get(event.entityPlayer);
+            if (summary == null) return;
 
             if (event.entityPlayer.isInsideOfMaterial(Material.water)) {
-                if (summery.flight[0]) newDigSpeed *= 5f;
+                if (summary.flight[0]) newDigSpeed *= 5f;
             }
 
             if (!event.entityPlayer.onGround) {
-                if (summery.flight[0]) newDigSpeed *= 5f;
+                if (summary.flight[0]) newDigSpeed *= 5f;
             }
 
             if (event.newSpeed > 1) {

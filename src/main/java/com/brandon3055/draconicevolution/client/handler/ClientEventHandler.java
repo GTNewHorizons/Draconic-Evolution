@@ -15,7 +15,7 @@ import net.minecraftforge.client.event.RenderPlayerEvent;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.handler.ContributorHandler;
-import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler;
+import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler.ArmorSummary;
 import com.brandon3055.draconicevolution.common.items.armor.DraconicArmor;
 import com.brandon3055.draconicevolution.common.items.armor.WyvernArmor;
 import com.brandon3055.draconicevolution.common.items.weapons.BowHandler;
@@ -100,9 +100,9 @@ public final class ClientEventHandler {
         // endregion
 
         // region Armor move speed FOV effect cancellation
-        CustomArmorHandler.ArmorSummery summery = new CustomArmorHandler.ArmorSummery().getSummery(event.entity);
+        final ArmorSummary summary = ArmorSummary.get(event.entity);
 
-        if (summery != null && summery.speedModifier > 0) {
+        if (summary != null && summary.speedModifier > 0) {
             IAttributeInstance iattributeinstance = event.entity
                     .getEntityAttribute(SharedMonsterAttributes.movementSpeed);
             float f = (float) ((iattributeinstance.getAttributeValue()

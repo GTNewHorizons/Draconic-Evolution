@@ -19,7 +19,7 @@ import org.lwjgl.opengl.GL11;
 import com.brandon3055.draconicevolution.client.gui.GuiHudConfig;
 import com.brandon3055.draconicevolution.client.utils.GuiHelper;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
-import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler;
+import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler.ArmorSummary;
 import com.brandon3055.draconicevolution.common.utils.IHudDisplayBlock;
 import com.brandon3055.draconicevolution.common.utils.IHudDisplayItem;
 
@@ -133,26 +133,26 @@ public final class HudHandler {
                     .getDisplayData(mc.theWorld, mop.blockX, mop.blockY, mop.blockZ);
         }
 
-        CustomArmorHandler.ArmorSummery summery = new CustomArmorHandler.ArmorSummery().getSummery(mc.thePlayer);
+        final ArmorSummary summary = ArmorSummary.get(mc.thePlayer);
 
-        if (summery == null) {
+        if (summary == null) {
             showShieldHud = false;
             return;
         }
         showShieldHud = armorStatsFadeOut > 0F;
 
-        if (maxShieldPoints != summery.maxProtectionPoints || shieldPoints != summery.protectionPoints
-                || shieldEntropy != summery.entropy
-                || rfTotal != summery.totalEnergyStored)
+        if (maxShieldPoints != summary.maxProtectionPoints || shieldPoints != summary.protectionPoints
+                || shieldEntropy != summary.entropy
+                || rfTotal != summary.totalEnergyStored)
             armorStatsFadeOut = 5F;
 
-        maxShieldPoints = summery.maxProtectionPoints;
-        shieldPoints = summery.protectionPoints;
-        shieldPercentCharge = (int) (summery.protectionPoints / summery.maxProtectionPoints * 100D);
-        shieldEntropy = summery.entropy;
-        rfCharge = (int) ((double) summery.totalEnergyStored / Math.max((double) summery.maxTotalEnergyStorage, 1D)
+        maxShieldPoints = summary.maxProtectionPoints;
+        shieldPoints = summary.protectionPoints;
+        shieldPercentCharge = (int) (summary.protectionPoints / summary.maxProtectionPoints * 100D);
+        shieldEntropy = summary.entropy;
+        rfCharge = (int) ((double) summary.totalEnergyStored / Math.max((double) summary.maxTotalEnergyStorage, 1D)
                 * 100D);
-        rfTotal = summery.totalEnergyStored;
+        rfTotal = summary.totalEnergyStored;
     }
 
     private void drawArmorHUD(int x, int y, boolean rotated, double scale) {

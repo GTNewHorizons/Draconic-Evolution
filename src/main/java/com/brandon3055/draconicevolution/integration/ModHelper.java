@@ -6,7 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
-import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler.ArmorSummery;
+import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler.ArmorSummary;
 import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
 import cpw.mods.fml.common.Loader;
@@ -67,8 +67,8 @@ public class ModHelper {
                 && player.getHeldItem().getItem().equals(avaritiaSword);
     }
 
-    public static float applyModDamageAdjustments(ArmorSummery summery, LivingAttackEvent event) {
-        if (summery == null) return event.ammount;
+    public static float applyModDamageAdjustments(ArmorSummary summary, LivingAttackEvent event) {
+        if (summary == null) return event.ammount;
         EntityPlayer attacker = event.source.getEntity() instanceof EntityPlayer
                 ? (EntityPlayer) event.source.getEntity()
                 : null;
@@ -81,10 +81,10 @@ public class ModHelper {
             event.entityLiving.hurtResistantTime = 0;
             return 300F;
         } else if (event.source.isUnblockable() || event.source.canHarmInCreative()) {
-            summery.entropy += 3;
+            summary.entropy += 3;
 
-            if (summery.entropy > 100) {
-                summery.entropy = 100;
+            if (summary.entropy > 100) {
+                summary.entropy = 100;
             }
 
             return event.ammount * 2;

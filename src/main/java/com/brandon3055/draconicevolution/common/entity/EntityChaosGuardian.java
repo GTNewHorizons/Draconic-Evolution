@@ -1,7 +1,6 @@
 package com.brandon3055.draconicevolution.common.entity;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.block.Block;
