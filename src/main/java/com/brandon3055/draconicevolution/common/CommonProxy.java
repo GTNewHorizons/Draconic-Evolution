@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.oredict.OreDictionary;
@@ -122,6 +123,7 @@ public class CommonProxy {
 
     private Achievements achievements;
     private CustomArmorHandler armorHandler;
+    private DragonChunkLoader dragonChunkLoader;
     private final Map<World, List<TileDislocatorInhibitor>> serverInhibitorsMap = new HashMap<>();
 
     public CommonProxy() {
@@ -159,7 +161,8 @@ public class CommonProxy {
         DETab.initialize();
         PotionHandler.init();
         CCOCIntegration.init();
-        DragonChunkLoader.init();
+        this.dragonChunkLoader = new DragonChunkLoader();
+        ForgeChunkManager.setForcedChunkLoadingCallback(DraconicEvolution.instance, this.dragonChunkLoader);
         LogHelper.info("Finished Initialization");
     }
 
@@ -178,6 +181,7 @@ public class CommonProxy {
 
     public void onServerStopped(FMLServerStoppedEvent event) {
         this.serverInhibitorsMap.clear();
+        this.dragonChunkLoader.onServerStopped();
         if (this.armorHandler != null) {
             MinecraftForge.EVENT_BUS.unregister(this.armorHandler);
             FMLCommonHandler.instance().bus().unregister(this.armorHandler);
@@ -356,8 +360,12 @@ public class CommonProxy {
         return false;
     }
 
-    public Achievements getAchievements() {
-        return achievements;
+    public void triggerAchievement(EntityPlayer player, String name) {
+        this.achievements.triggerAchievement(player, name);
+    }
+
+    public DragonChunkLoader getDragonChunkLoader() {
+        return dragonChunkLoader;
     }
 
     public void registerInhibitor(TileDislocatorInhibitor tile) {

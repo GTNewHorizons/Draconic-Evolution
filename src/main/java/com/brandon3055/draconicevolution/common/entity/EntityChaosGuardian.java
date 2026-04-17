@@ -24,10 +24,10 @@ import net.minecraft.util.Vec3;
 import net.minecraft.util.WeightedRandom;
 import net.minecraft.world.World;
 
+import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.tileentities.TileChaosShard;
 import com.brandon3055.draconicevolution.common.utils.DamageSourceChaos;
-import com.brandon3055.draconicevolution.common.utils.DragonChunkLoader;
 import com.brandon3055.draconicevolution.common.utils.Utils;
 
 /**
@@ -91,7 +91,7 @@ public class EntityChaosGuardian extends EntityDragon { // summon DraconicEvolut
     public float circlePosition = 0;
     public float circleDirection = 1;
 
-    public EnumBehaviour behaviour = EnumBehaviour.ROAMING;
+    private EnumBehaviour behaviour = EnumBehaviour.ROAMING;
 
     public EntityChaosGuardian(World par1World) {
         super(par1World);
@@ -170,13 +170,17 @@ public class EntityChaosGuardian extends EntityDragon { // summon DraconicEvolut
             dataWatcher.updateObject(23, crystalZ);
             updateTarget();
 
-            if (worldObj.getClosestPlayer(posX, posY, posZ, 500) == null && getDistance(homeX, homeY, homeZ) < 100)
-                DragonChunkLoader.stopLoading(this);
-            else {
-                if (getHealth() > 0) DragonChunkLoader.updateLoaded(this);
+            if (getDistance(homeX, homeY, homeZ) < 100 && worldObj.getClosestPlayer(posX, posY, posZ, 500) == null) {
+                DraconicEvolution.proxy.getDragonChunkLoader().stopLoading(this);
+            } else {
+                if (getHealth() > 0) {
+                    DraconicEvolution.proxy.getDragonChunkLoader().updateLoaded(this);
+                }
             }
 
-            if (deathTicks > 0) DragonChunkLoader.stopLoading(this);
+            if (deathTicks > 0) {
+                DraconicEvolution.proxy.getDragonChunkLoader().stopLoading(this);
+            }
 
             customAIUpdate();
             if (behaviour == EnumBehaviour.FIREBOMB
@@ -650,14 +654,11 @@ public class EntityChaosGuardian extends EntityDragon { // summon DraconicEvolut
                                             .expand(100, 100, 100))
                     : null;
 
-            if (targets != null && targets.size() > 0) {
-                Iterator<EntityPlayer> i = targets.iterator();
-                while (i.hasNext()) {
-                    if (i.next().capabilities.isCreativeMode) i.remove();
-                }
+            if (targets != null && !targets.isEmpty()) {
+                targets.removeIf(entityPlayer -> entityPlayer.capabilities.isCreativeMode);
             }
 
-            if (attackTarget == null && targets != null && targets.size() > 0)
+            if (attackTarget == null && targets != null && !targets.isEmpty())
                 attackTarget = targets.get(rand.nextInt(targets.size()));
             if (attackTarget == null) return;
 
@@ -895,7 +896,7 @@ public class EntityChaosGuardian extends EntityDragon { // summon DraconicEvolut
                 List<EntityPlayer> targets = worldObj
                         .getEntitiesWithinAABB(EntityPlayer.class, boundingBox.expand(150, 150, 150));
                 target = null;
-                while (targets.size() > 0 && target == null) {
+                while (!targets.isEmpty() && target == null) {
                     EntityPlayer potentialTarget = targets.get(rand.nextInt(targets.size()));
                     if (worldObj.rayTraceBlocks(
                             Vec3.createVectorHelper(posX, posY, posZ),
@@ -993,7 +994,7 @@ public class EntityChaosGuardian extends EntityDragon { // summon DraconicEvolut
         return true;
     }
 
-    private static enum EnumBehaviour {
+    private enum EnumBehaviour {
 
         /**
          * Will roam around home until a player is spotted

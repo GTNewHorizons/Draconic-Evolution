@@ -216,8 +216,7 @@ public class MinecraftForgeEventHandler {
                 ItemNBTHelper.setInteger(soul, "SkeletonType", ((EntitySkeleton) entity).getSkeletonType());
             }
             world.spawnEntityInWorld(new EntityItem(world, entity.posX, entity.posY, entity.posZ, soul));
-            DraconicEvolution.proxy.getAchievements()
-                    .triggerAchievement((EntityPlayer) attacker, "draconicevolution.soul");
+            DraconicEvolution.proxy.triggerAchievement((EntityPlayer) attacker, "draconicevolution.soul");
         }
     }
 
