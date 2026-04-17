@@ -1,17 +1,19 @@
 package com.brandon3055.draconicevolution.client.render.particle;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
+import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.utils.Utils;
 
@@ -192,9 +194,9 @@ public class ParticleEnergyBeam extends EntityFX {
             GL11.glRotatef(t * 90.0F, 0.0F, -1.0F, 0.0F);
         }
 
-        if (ClientEventHandler.playerHoldingWrench) {
-            var44 = -0.15D * (double) 1;
-            var17 = 0.15D * (double) 1;
+        if (isPlayerHoldingWrench()) {
+            var44 = -0.15D;
+            var17 = 0.15D;
 
             // GL11.glColor4f(1f, 1f, 1f, 1f);
             // GL11.glTranslated(0.1, 0, 0);
@@ -233,5 +235,14 @@ public class ParticleEnergyBeam extends EntityFX {
 
     public void setFlow(int flow) {
         this.flow = flow;
+    }
+
+    private static boolean isPlayerHoldingWrench() {
+        final EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+        if (player != null) {
+            final ItemStack heldItem = player.getHeldItem();
+            return heldItem != null && heldItem.getItem() == ModItems.wrench;
+        }
+        return false;
     }
 }
