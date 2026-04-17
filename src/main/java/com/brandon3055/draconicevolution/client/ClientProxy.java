@@ -130,7 +130,9 @@ public final class ClientProxy extends CommonProxy {
         this.clientHandler = new ClientEventHandler();
         FMLCommonHandler.instance().bus().register(this.clientHandler);
         MinecraftForge.EVENT_BUS.register(this.clientHandler);
-        MinecraftForge.EVENT_BUS.register(new HudHandler());
+        final HudHandler hudHandler = new HudHandler();
+        FMLCommonHandler.instance().bus().register(hudHandler);
+        MinecraftForge.EVENT_BUS.register(hudHandler);
         registerRenderIDs();
         registerRendering();
         ResourceHandler.instance.tick(null);
