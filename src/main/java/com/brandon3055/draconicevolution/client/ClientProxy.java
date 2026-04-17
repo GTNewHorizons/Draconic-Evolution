@@ -332,7 +332,6 @@ public final class ClientProxy extends CommonProxy {
         References.idPortal = RenderingRegistry.getNextAvailableRenderId();
     }
 
-    @Override
     public ParticleEnergyBeam energyBeam(World worldObj, double x, double y, double z, double tx, double ty, double tz,
             int powerFlow, boolean advanced, ParticleEnergyBeam oldBeam, boolean render, int beamType) {
         if (!worldObj.isRemote) return null;
@@ -354,7 +353,6 @@ public final class ClientProxy extends CommonProxy {
         return beam;
     }
 
-    @Override
     public ParticleEnergyField energyField(World worldObj, double x, double y, double z, int type, boolean advanced,
             ParticleEnergyField oldBeam, boolean render) {
         if (!worldObj.isRemote) return null;
@@ -376,7 +374,6 @@ public final class ClientProxy extends CommonProxy {
         return beam;
     }
 
-    @Override
     public ParticleReactorBeam reactorBeam(TileEntity tile, ParticleReactorBeam oldBeam, boolean render) {
         if (!tile.getWorldObj().isRemote || !(tile instanceof IReactorPart)) return null;
         ParticleReactorBeam beam = oldBeam;
@@ -397,13 +394,12 @@ public final class ClientProxy extends CommonProxy {
         return beam;
     }
 
-    @Override
-    public void spawnParticle(Object particle, int range) {
-        if (particle instanceof EntityFX && ((EntityFX) particle).worldObj.isRemote)
-            ParticleHandler.spawnCustomParticle((EntityFX) particle, range);
+    public void spawnParticle(EntityFX particle, int range) {
+        if (particle.worldObj.isRemote) {
+            ParticleHandler.spawnCustomParticle(particle, range);
+        }
     }
 
-    @Override
     public ISound playISound(ISound sound) {
         FMLClientHandler.instance().getClient().getSoundHandler().playSound(sound);
         return sound;

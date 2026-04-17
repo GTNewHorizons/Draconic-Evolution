@@ -62,7 +62,7 @@ public class TileWirelessEnergyTransceiver extends TileRemoteEnergyBase {
         super.updateEntity();
 
         if (worldObj.isRemote) {
-            ring = DraconicEvolution.proxy.energyField(
+            ring = DraconicEvolution.clientProxy().energyField(
                     worldObj,
                     xCoord + 0.5,
                     yCoord + 0.5,
@@ -78,7 +78,7 @@ public class TileWirelessEnergyTransceiver extends TileRemoteEnergyBase {
                     receiver.particleEnergyCounter -= particleValue;
 
                     // todo detect box size
-                    DraconicEvolution.proxy.spawnParticle(
+                    DraconicEvolution.clientProxy().spawnParticle(
                             new Particles.TransceiverParticle(
                                     worldObj,
                                     xCoord + 0.5,

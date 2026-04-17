@@ -5,12 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.client.audio.ISound;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
@@ -20,9 +18,6 @@ import net.minecraftforge.oredict.OreDictionary;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.creativetab.DETab;
 import com.brandon3055.draconicevolution.client.gui.GuiHandler;
-import com.brandon3055.draconicevolution.client.render.particle.ParticleEnergyBeam;
-import com.brandon3055.draconicevolution.client.render.particle.ParticleEnergyField;
-import com.brandon3055.draconicevolution.client.render.particle.ParticleReactorBeam;
 import com.brandon3055.draconicevolution.common.achievements.Achievements;
 import com.brandon3055.draconicevolution.common.entity.EntityChaosBolt;
 import com.brandon3055.draconicevolution.common.entity.EntityChaosCrystal;
@@ -306,26 +301,6 @@ public class CommonProxy {
         EntityRegistry.registerModEntity(EntityChaosVortex.class, "EntityChaosEnergyVortex", 10, DraconicEvolution.instance, 512, 5, true);
         EntityRegistry.registerModEntity(EntityCustomArrow.class, "CustomArrow", 11, DraconicEvolution.instance, 128, 1, true);
         // spotless:on
-    }
-
-    public ParticleEnergyBeam energyBeam(World worldObj, double x, double y, double z, double tx, double ty, double tz,
-            int powerFlow, boolean advanced, ParticleEnergyBeam oldBeam, boolean render, int beamType) {
-        return null;
-    }
-
-    public ParticleEnergyField energyField(World worldObj, double x, double y, double z, int type, boolean advanced,
-            ParticleEnergyField oldBeam, boolean render) {
-        return null;
-    }
-
-    public ParticleReactorBeam reactorBeam(TileEntity tile, ParticleReactorBeam oldBeam, boolean render) {
-        return null;
-    }
-
-    public void spawnParticle(Object particle, int range) {}
-
-    public ISound playISound(ISound sound) {
-        return null;
     }
 
     public boolean isDedicatedServer() {

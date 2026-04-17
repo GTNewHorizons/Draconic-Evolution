@@ -78,7 +78,7 @@ public class TileEnergyTransceiver extends TileRemoteEnergyBase {
             }
         }
 
-        if (worldObj.isRemote) particle = DraconicEvolution.proxy
+        if (worldObj.isRemote) particle = DraconicEvolution.clientProxy()
                 .energyField(worldObj, getBeamX(), getBeamY(), getBeamZ(), 1, powerTier == 1, particle, inView > 0);
     }
 
