@@ -17,7 +17,6 @@ import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
 import com.brandon3055.draconicevolution.client.handler.HudHandler;
 import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
-import com.brandon3055.draconicevolution.client.keybinding.KeyBindings;
 import com.brandon3055.draconicevolution.client.keybinding.KeyInputHandler;
 import com.brandon3055.draconicevolution.client.render.IRenderTweak;
 import com.brandon3055.draconicevolution.client.render.block.RenderCrystal;
@@ -108,6 +107,8 @@ public final class ClientProxy extends CommonProxy {
 
     private static final boolean debug = DraconicEvolution.debug;
 
+    private KeyInputHandler keybindHandler;
+
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         if (debug) System.out.println("on Client side");
@@ -119,12 +120,12 @@ public final class ClientProxy extends CommonProxy {
     @Override
     public void init(FMLInitializationEvent event) {
         super.init(event);
-        FMLCommonHandler.instance().bus().register(new KeyInputHandler());
+        this.keybindHandler = new KeyInputHandler();
+        FMLCommonHandler.instance().bus().register(this.keybindHandler);
         final ClientEventHandler clientHandler = new ClientEventHandler();
         FMLCommonHandler.instance().bus().register(clientHandler);
         MinecraftForge.EVENT_BUS.register(clientHandler);
         MinecraftForge.EVENT_BUS.register(new HudHandler());
-        KeyBindings.init();
         registerRenderIDs();
         registerRendering();
         ResourceHandler.instance.tick(null);
@@ -388,5 +389,9 @@ public final class ClientProxy extends CommonProxy {
     @Override
     public boolean isClient() {
         return true;
+    }
+
+    public KeyInputHandler getKeybindHandler() {
+        return keybindHandler;
     }
 }

@@ -8,15 +8,18 @@ import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.items.tools.Magnet;
 import com.brandon3055.draconicevolution.common.items.tools.baseclasses.ToolHandler;
+import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.network.ButtonPacket;
 import com.brandon3055.draconicevolution.common.network.MagnetTogglePacket;
 import com.brandon3055.draconicevolution.common.network.MagnetToggleSelfPickupPacket;
@@ -27,6 +30,7 @@ import com.brandon3055.draconicevolution.common.utils.InventoryUtils;
 import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
 import com.brandon3055.draconicevolution.integration.ModHelper;
 
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -35,24 +39,56 @@ import cpw.mods.fml.relauncher.SideOnly;
 /**
  * Created by Brandon on 14/08/2014.
  */
+@SideOnly(Side.CLIENT)
 public class KeyInputHandler {
+
+    private final KeyBinding placeItem;
+    private final KeyBinding toolConfig;
+    private final KeyBinding toolProfileChange;
+    private final KeyBinding toggleFlight;
+    private final KeyBinding toggleMagnet;
+    private final KeyBinding toggleMagnetSelfPickup;
+
+    public KeyInputHandler() {
+        placeItem = new KeyBinding("key.placeItem", Keyboard.KEY_V, References.MODNAME);
+        toolConfig = new KeyBinding("key.toolConfig", Keyboard.KEY_NONE, References.MODNAME);
+        toolProfileChange = new KeyBinding("key.toolProfileChange", Keyboard.KEY_NONE, References.MODNAME);
+        toggleFlight = new KeyBinding("key.toggleFlight", Keyboard.KEY_NONE, References.MODNAME);
+        toggleMagnet = new KeyBinding("key.toggleMagnet", Keyboard.KEY_NONE, References.MODNAME);
+        if (ModHelper.isHodgepodgeLoaded) {
+            toggleMagnetSelfPickup = new KeyBinding(
+                    "key.toggleMagnetSelfPickup",
+                    Keyboard.KEY_NONE,
+                    References.MODNAME);
+        } else {
+            toggleMagnetSelfPickup = null;
+        }
+        ClientRegistry.registerKeyBinding(placeItem);
+        ClientRegistry.registerKeyBinding(toolConfig);
+        ClientRegistry.registerKeyBinding(toolProfileChange);
+        ClientRegistry.registerKeyBinding(toggleFlight);
+        ClientRegistry.registerKeyBinding(toggleMagnet);
+        if (toggleMagnetSelfPickup != null) {
+            ClientRegistry.registerKeyBinding(toggleMagnetSelfPickup);
+        }
+    }
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
 
-        if (KeyBindings.placeItem.isPressed()) {
+        if (this.placeItem.isPressed()) {
             handlePlaceItemKey();
-        } else if (KeyBindings.toolConfig.isPressed()) {
+        } else if (this.toolConfig.isPressed()) {
             handleToolConfigKey();
-        } else if (KeyBindings.toolProfileChange.isPressed() && player != null && player.getItemInUse() == null) {
+        } else if (this.toolProfileChange.isPressed() && player != null && player.getItemInUse() == null) {
             handleToolProfileChangeKey(player);
-        } else if (KeyBindings.toggleFlight.isPressed() && player != null) {
+        } else if (this.toggleFlight.isPressed() && player != null) {
             handleToggleFlightKey(player);
-        } else if (KeyBindings.toggleMagnet.isPressed()) {
+        } else if (this.toggleMagnet.isPressed()) {
             handleToggleMagnetKey(player);
-        } else if (ModHelper.isHodgepodgeLoaded && KeyBindings.toggleMagnetSelfPickup.isPressed()) {
+        } else if (ModHelper.isHodgepodgeLoaded && this.toggleMagnetSelfPickup.isPressed()) {
             handleToggleMagnetSelfPickup(player);
         }
     }
@@ -62,17 +98,17 @@ public class KeyInputHandler {
     public void onMouseInput(InputEvent.MouseInputEvent event) {
         EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
 
-        if (KeyBindings.placeItem.isPressed()) {
+        if (this.placeItem.isPressed()) {
             handlePlaceItemKey();
-        } else if (KeyBindings.toolConfig.isPressed()) {
+        } else if (this.toolConfig.isPressed()) {
             handleToolConfigKey();
-        } else if (KeyBindings.toolProfileChange.isPressed() && player != null) {
+        } else if (this.toolProfileChange.isPressed() && player != null) {
             handleToolProfileChangeKey(player);
-        } else if (KeyBindings.toggleFlight.isPressed() && player != null) {
+        } else if (this.toggleFlight.isPressed() && player != null) {
             handleToggleFlightKey(player);
-        } else if (KeyBindings.toggleMagnet.isPressed()) {
+        } else if (this.toggleMagnet.isPressed()) {
             handleToggleMagnetKey(player);
-        } else if (ModHelper.isHodgepodgeLoaded && KeyBindings.toggleMagnetSelfPickup.isPressed()) {
+        } else if (ModHelper.isHodgepodgeLoaded && this.toggleMagnetSelfPickup.isPressed()) {
             handleToggleMagnetSelfPickup(player);
         }
 
@@ -159,5 +195,9 @@ public class KeyInputHandler {
         if (c == 8 && i > 0) return 0;
         if (c == 150 && i < 0) return 152;
         return c + i;
+    }
+
+    public int toolConfigKeycode() {
+        return this.toolConfig.getKeyCode();
     }
 }
