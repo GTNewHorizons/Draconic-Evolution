@@ -88,18 +88,6 @@ public class DraconicEvolution {
     }
 
     @Mod.EventHandler
-    public void onClientConnect(final FMLNetworkEvent.ClientConnectedToServerEvent event) {
-        if (debug) System.out.println("onClientConnect()");
-        proxy.onClientConnect(event);
-    }
-
-    @Mod.EventHandler
-    public void onClientDisconnect(final FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
-        if (debug) System.out.println("onClientDisconnect()");
-        proxy.onClientDisconnect(event);
-    }
-
-    @Mod.EventHandler
     public void onServerStopped(final FMLServerStoppedEvent event) {
         if (debug) System.out.println("onServerStopped()");
         proxy.onServerStopped(event);

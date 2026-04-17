@@ -125,6 +125,10 @@ public final class ClientProxy extends CommonProxy {
     private ItemDisplayManager itemDisplay;
     private ShieldRenderHandler shieldRenderer;
 
+    public ClientProxy() {
+        FMLCommonHandler.instance().bus().register(this);
+    }
+
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         if (debug) System.out.println("on Client side");
@@ -159,14 +163,14 @@ public final class ClientProxy extends CommonProxy {
         ResourceHandler.instance.tick(null);
     }
 
-    @Override
+    @SubscribeEvent
     public void onClientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
         this.shieldRenderer = new ShieldRenderHandler();
         FMLCommonHandler.instance().bus().register(this.shieldRenderer);
         MinecraftForge.EVENT_BUS.register(this.shieldRenderer);
     }
 
-    @Override
+    @SubscribeEvent
     public void onClientDisconnect(final FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         this.clientInhibitorsMap.clear();
         this.itemDisplay.startDrawing(null);

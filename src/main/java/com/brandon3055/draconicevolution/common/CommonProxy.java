@@ -168,10 +168,6 @@ public class CommonProxy {
         LogHelper.info("Finished PostInitialization");
     }
 
-    public void onClientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {/* no op */}
-
-    public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {/* no op */}
-
     public void onServerStopped(FMLServerStoppedEvent event) {
         this.serverInhibitorsMap.clear();
     }
