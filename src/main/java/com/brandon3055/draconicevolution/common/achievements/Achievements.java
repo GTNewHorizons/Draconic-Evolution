@@ -21,9 +21,8 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
  */
 public class Achievements {
 
-    private static AchievementPage achievementsPage;
-    private static HashMap<String, Achievement> achievementsList = new HashMap<String, Achievement>();
-    private static HashMap<String, AchievementCondition> achievementItems = new HashMap<String, AchievementCondition>();
+    private static final HashMap<String, Achievement> achievementsList = new HashMap<>();
+    private static final HashMap<String, AchievementCondition> achievementItems = new HashMap<>();
 
     public static void addAchievement(String name, Achievement achievement, ItemStack stack, String triggerCondition) {
         if (stack == null || stack.getItem() == null) return;
@@ -446,7 +445,7 @@ public class Achievements {
         Achievement[] achievements = new Achievement[achievementsList.size()];
 
         achievements = achievementsList.values().toArray(achievements);
-        achievementsPage = new AchievementPage(
+        AchievementPage achievementsPage = new AchievementPage(
                 StatCollector.translateToLocal("draconicevolution.achievementPage.name"),
                 achievements);
         AchievementPage.registerAchievementPage(achievementsPage);

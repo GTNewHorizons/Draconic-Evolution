@@ -28,19 +28,19 @@ public class ParticleEnergyBeam extends EntityFX {
     /**
      * Beam Target X
      */
-    private double tX = 0.0D;
+    private double tX;
     /**
      * Beam Target Y
      */
-    private double tY = 0.0D;
+    private double tY;
     /**
      * Beam Target Z
      */
-    private double tZ = 0.0D;
+    private double tZ;
     /**
      * Modified Target X
      */
-    private boolean advanced;
+    private final boolean advanced;
 
     private boolean renderParticle = true;
     private float length = 0.0F;
@@ -52,10 +52,10 @@ public class ParticleEnergyBeam extends EntityFX {
 
     // todo make sure not dyrectly up or down on y axis, Set dead when player goes out of range, PaRTICLE eNGINE
 
-    private static ResourceLocation beamTextureBasic = new ResourceLocation(
+    private static final ResourceLocation beamTextureBasic = new ResourceLocation(
             References.MODID.toLowerCase(),
             "textures/models/EnergyBeamBlue.png");
-    private static ResourceLocation beamTextureAdvanced = new ResourceLocation(
+    private static final ResourceLocation beamTextureAdvanced = new ResourceLocation(
             References.MODID.toLowerCase(),
             "textures/models/EnergyBeamRed.png");
 

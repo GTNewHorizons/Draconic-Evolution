@@ -114,7 +114,11 @@ public class CommonProxy {
         ProcessHandler.init();
         ConfigHandler.init(event.getSuggestedConfigurationFile());
         BalanceConfigHandler.init(event.getModConfigurationDirectory());
-        registerEventListeners(event.getSide());
+        MinecraftForge.EVENT_BUS.register(new MinecraftForgeEventHandler());
+        final Achievements achievementHandler = new Achievements();
+        MinecraftForge.EVENT_BUS.register(achievementHandler);
+        FMLCommonHandler.instance().bus().register(achievementHandler);
+        FMLCommonHandler.instance().bus().register(new FMLEventHandler());
         ModBlocks.init();
         ModItems.init();
         ContributorHandler.init();
@@ -147,7 +151,7 @@ public class CommonProxy {
         LogHelper.info("Finished PostInitialization");
     }
 
-    public void initializeNetwork() {
+    private void initializeNetwork() {
         // spotless:off
         DraconicEvolution.network = NetworkRegistry.INSTANCE.newSimpleChannel(DraconicEvolution.networkChannelName);
         DraconicEvolution.network.registerMessage(ButtonPacket.Handler.class, ButtonPacket.class, 0, Side.SERVER);
@@ -178,7 +182,7 @@ public class CommonProxy {
         // spotless:on
     }
 
-    public void registerTileEntities() {
+    private void registerTileEntities() {
         // spotless:off
         GameRegistry.registerTileEntity(TileWeatherController.class, References.RESOURCESPREFIX + "TileWeatherController");
         GameRegistry.registerTileEntity(TileSunDial.class, References.RESOURCESPREFIX + "TileSunDial");
@@ -214,13 +218,6 @@ public class CommonProxy {
         GameRegistry.registerTileEntity(TileUpgradeModifier.class, References.RESOURCESPREFIX + "TileEnhancementModifier");
         GameRegistry.registerTileEntity(TileDislocatorInhibitor.class, References.RESOURCESPREFIX + "TileDislocatorInhibitor");
         // spotless:on
-    }
-
-    public void registerEventListeners(Side s) {
-        MinecraftForge.EVENT_BUS.register(new MinecraftForgeEventHandler());
-        MinecraftForge.EVENT_BUS.register(new Achievements());
-        FMLCommonHandler.instance().bus().register(new Achievements());
-        FMLCommonHandler.instance().bus().register(new FMLEventHandler());
     }
 
     public void registerGuiHandeler() {

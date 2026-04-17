@@ -7,7 +7,6 @@ import net.minecraft.client.audio.ISound;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -105,10 +104,9 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-public class ClientProxy extends CommonProxy {
+public final class ClientProxy extends CommonProxy {
 
     private static final boolean debug = DraconicEvolution.debug;
-    public static String downloadLocation;
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
@@ -122,9 +120,10 @@ public class ClientProxy extends CommonProxy {
     public void init(FMLInitializationEvent event) {
         super.init(event);
         FMLCommonHandler.instance().bus().register(new KeyInputHandler());
-        FMLCommonHandler.instance().bus().register(new ClientEventHandler());
+        final ClientEventHandler clientHandler = new ClientEventHandler();
+        FMLCommonHandler.instance().bus().register(clientHandler);
+        MinecraftForge.EVENT_BUS.register(clientHandler);
         MinecraftForge.EVENT_BUS.register(new HudHandler());
-        MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
         KeyBindings.init();
         registerRenderIDs();
         registerRendering();
@@ -138,7 +137,7 @@ public class ClientProxy extends CommonProxy {
         ResourceHandler.instance.tick(null);
     }
 
-    public void registerRendering() {
+    private void registerRendering() {
         // Item Renderers
         MinecraftForgeClient.registerItemRenderer(ModItems.wyvernBow, new RenderBow());
         MinecraftForgeClient.registerItemRenderer(ModItems.draconicBow, new RenderBow());
@@ -274,7 +273,7 @@ public class ClientProxy extends CommonProxy {
         RenderingRegistry.registerEntityRenderingHandler(EntityCustomArrow.class, new RenderEntityCustomArrow());
     }
 
-    public void registerRenderIDs() {
+    private void registerRenderIDs() {
         References.idTeleporterStand = RenderingRegistry.getNextAvailableRenderId();
         References.idPortal = RenderingRegistry.getNextAvailableRenderId();
     }
@@ -359,11 +358,6 @@ public class ClientProxy extends CommonProxy {
     @Override
     public boolean isDedicatedServer() {
         return false;
-    }
-
-    @Override
-    public MinecraftServer getMCServer() {
-        return super.getMCServer();
     }
 
     @Override

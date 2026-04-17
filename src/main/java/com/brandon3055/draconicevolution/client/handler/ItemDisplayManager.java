@@ -13,12 +13,13 @@ import org.lwjgl.opengl.GL12;
 
 public final class ItemDisplayManager {
 
-    private final int ticks;
-    private ItemStack itemStack;
-    private int ticksCounter;
     private static final RenderItem renderItem = new RenderItem();
     private static final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
     private static final TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
+
+    private final int ticks;
+    private ItemStack itemStack;
+    private int ticksCounter;
 
     public ItemDisplayManager(int ticks) {
         this.ticks = ticks;
