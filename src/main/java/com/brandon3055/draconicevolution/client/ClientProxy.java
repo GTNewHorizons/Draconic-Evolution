@@ -19,6 +19,7 @@ import com.brandon3055.draconicevolution.client.handler.HudHandler;
 import com.brandon3055.draconicevolution.client.handler.ItemDisplayManager;
 import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
+import com.brandon3055.draconicevolution.client.handler.ShieldRenderHandler;
 import com.brandon3055.draconicevolution.client.keybinding.KeyInputHandler;
 import com.brandon3055.draconicevolution.client.render.IRenderTweak;
 import com.brandon3055.draconicevolution.client.render.block.RenderCrystal;
@@ -113,6 +114,7 @@ public final class ClientProxy extends CommonProxy {
     private ClientEventHandler clientHandler;
     private KeyInputHandler keybindHandler;
     private ItemDisplayManager itemDisplay;
+    private ShieldRenderHandler shieldRenderer;
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
@@ -138,8 +140,8 @@ public final class ClientProxy extends CommonProxy {
         ResourceHandler.instance.tick(null);
         IMCSender();
         this.itemDisplay = new ItemDisplayManager(60);
-        MinecraftForge.EVENT_BUS.register(this.itemDisplay);
         FMLCommonHandler.instance().bus().register(this.itemDisplay);
+        MinecraftForge.EVENT_BUS.register(this.itemDisplay);
     }
 
     @Override
@@ -150,12 +152,19 @@ public final class ClientProxy extends CommonProxy {
 
     @Override
     public void onClientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-
+        this.shieldRenderer = new ShieldRenderHandler();
+        FMLCommonHandler.instance().bus().register(this.shieldRenderer);
+        MinecraftForge.EVENT_BUS.register(this.shieldRenderer);
     }
 
     @Override
     public void onClientDisconnect(final FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         this.itemDisplay.startDrawing(null);
+        if (this.shieldRenderer != null) {
+            FMLCommonHandler.instance().bus().unregister(this.shieldRenderer);
+            MinecraftForge.EVENT_BUS.unregister(this.shieldRenderer);
+            this.shieldRenderer = null;
+        }
     }
 
     private void registerRendering() {
@@ -425,5 +434,11 @@ public final class ClientProxy extends CommonProxy {
 
     public float getEnergyCrystalAlpha() {
         return this.clientHandler.getEnergyCrystalAlpha();
+    }
+
+    public void renderShield(EntityPlayer player, float shieldPowerF) {
+        if (this.shieldRenderer != null) {
+            this.shieldRenderer.renderShield(player, shieldPowerF);
+        }
     }
 }
