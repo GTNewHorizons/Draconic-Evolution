@@ -1,12 +1,19 @@
 package com.brandon3055.draconicevolution.common;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import net.minecraft.client.audio.ISound;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.brandon3055.draconicevolution.DraconicEvolution;
@@ -102,6 +109,8 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStoppedEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
@@ -111,6 +120,11 @@ import cpw.mods.fml.relauncher.Side;
 public class CommonProxy {
 
     private Achievements achievements;
+    private final Map<World, List<TileDislocatorInhibitor>> serverInhibitorsMap = new HashMap<>();
+
+    public CommonProxy() {
+        MinecraftForge.EVENT_BUS.register(this);
+    }
 
     public void preInit(FMLPreInitializationEvent event) {
         FileHandler.init(event);
@@ -157,6 +171,15 @@ public class CommonProxy {
     public void onClientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {/* no op */}
 
     public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {/* no op */}
+
+    public void onServerStopped(FMLServerStoppedEvent event) {
+        this.serverInhibitorsMap.clear();
+    }
+
+    @SubscribeEvent
+    public void onWorldUnload(WorldEvent.Unload event) {
+        this.serverInhibitorsMap.remove(event.world);
+    }
 
     private void initializeNetwork() {
         // spotless:off
@@ -326,5 +349,57 @@ public class CommonProxy {
 
     public Achievements getAchievements() {
         return achievements;
+    }
+
+    public void registerInhibitor(TileDislocatorInhibitor tile) {
+        if (tile.hasWorldObj()) {
+            registerInhibitor(this.serverInhibitorsMap, tile);
+        }
+    }
+
+    protected static void registerInhibitor(Map<World, List<TileDislocatorInhibitor>> map,
+            TileDislocatorInhibitor tile) {
+        final List<TileDislocatorInhibitor> list = map.computeIfAbsent(tile.getWorldObj(), k -> new ArrayList<>());
+        if (!list.contains(tile)) {
+            list.add(tile);
+        }
+    }
+
+    public void unregisterInhibitor(TileDislocatorInhibitor tile) {
+        if (tile.hasWorldObj()) {
+            unregisterInhibitor(this.serverInhibitorsMap, tile);
+        }
+    }
+
+    protected static void unregisterInhibitor(Map<World, List<TileDislocatorInhibitor>> map,
+            TileDislocatorInhibitor tile) {
+        final List<TileDislocatorInhibitor> list = map.get(tile.getWorldObj());
+        if (list != null) {
+            list.remove(tile);
+            if (list.isEmpty()) {
+                map.remove(tile.getWorldObj());
+            }
+        }
+    }
+
+    public boolean isBlockedByInhibitor(World world, EntityItem item) {
+        return isBlockedByInhibitor(this.serverInhibitorsMap, world, item);
+    }
+
+    protected static boolean isBlockedByInhibitor(Map<World, List<TileDislocatorInhibitor>> map, World world,
+            EntityItem item) {
+        final List<TileDislocatorInhibitor> list = map.get(world);
+        if (list == null) {
+            return false;
+        }
+        // noinspection ForLoopReplaceableByForEach
+        for (int i = 0; i < list.size(); i++) {
+            final TileDislocatorInhibitor tile = list.get(i);
+            if (tile.shouldBeActive() && tile.isInRange(item.posX, item.posY, item.posZ)
+                    && tile.isBlockingItem(item.getEntityItem())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

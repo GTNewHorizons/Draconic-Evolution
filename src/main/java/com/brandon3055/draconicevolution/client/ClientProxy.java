@@ -2,9 +2,14 @@ package com.brandon3055.draconicevolution.client;
 
 import static com.brandon3055.draconicevolution.integration.nei.IMCForNEI.IMCSender;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -12,6 +17,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
@@ -81,6 +87,7 @@ import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.TileChaosShard;
 import com.brandon3055.draconicevolution.common.tileentities.TileCustomSpawner;
+import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
 import com.brandon3055.draconicevolution.common.tileentities.TileDissEnchanter;
 import com.brandon3055.draconicevolution.common.tileentities.TileDraconiumChest;
 import com.brandon3055.draconicevolution.common.tileentities.TileEnergyInfuser;
@@ -105,12 +112,14 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 
 public final class ClientProxy extends CommonProxy {
 
     private static final boolean debug = DraconicEvolution.debug;
 
+    private final Map<World, List<TileDislocatorInhibitor>> clientInhibitorsMap = new HashMap<>();
     private ClientEventHandler clientHandler;
     private KeyInputHandler keybindHandler;
     private ItemDisplayManager itemDisplay;
@@ -159,11 +168,22 @@ public final class ClientProxy extends CommonProxy {
 
     @Override
     public void onClientDisconnect(final FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+        this.clientInhibitorsMap.clear();
         this.itemDisplay.startDrawing(null);
         if (this.shieldRenderer != null) {
             FMLCommonHandler.instance().bus().unregister(this.shieldRenderer);
             MinecraftForge.EVENT_BUS.unregister(this.shieldRenderer);
             this.shieldRenderer = null;
+        }
+    }
+
+    @Override
+    @SubscribeEvent
+    public void onWorldUnload(WorldEvent.Unload event) {
+        if (event.world.isRemote) {
+            this.clientInhibitorsMap.remove(event.world);
+        } else {
+            super.onWorldUnload(event);
         }
     }
 
@@ -443,6 +463,33 @@ public final class ClientProxy extends CommonProxy {
     public void renderShield(EntityPlayer player, float shieldPowerF) {
         if (this.shieldRenderer != null) {
             this.shieldRenderer.renderShield(player, shieldPowerF);
+        }
+    }
+
+    @Override
+    public void registerInhibitor(TileDislocatorInhibitor tile) {
+        if (tile.hasWorldObj() && tile.getWorldObj().isRemote) {
+            registerInhibitor(this.clientInhibitorsMap, tile);
+        } else {
+            super.registerInhibitor(tile);
+        }
+    }
+
+    @Override
+    public void unregisterInhibitor(TileDislocatorInhibitor tile) {
+        if (tile.hasWorldObj() && tile.getWorldObj().isRemote) {
+            unregisterInhibitor(this.clientInhibitorsMap, tile);
+        } else {
+            super.unregisterInhibitor(tile);
+        }
+    }
+
+    @Override
+    public boolean isBlockedByInhibitor(World world, EntityItem item) {
+        if (world.isRemote) {
+            return isBlockedByInhibitor(this.clientInhibitorsMap, world, item);
+        } else {
+            return super.isBlockedByInhibitor(world, item);
         }
     }
 }

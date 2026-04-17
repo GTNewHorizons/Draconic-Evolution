@@ -1,9 +1,5 @@
 package com.brandon3055.draconicevolution.common.tileentities;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -16,8 +12,8 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
-import net.minecraft.world.World;
 
+import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.container.ContainerDislocatorInhibitor;
 
@@ -26,7 +22,6 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
     public static final int MAXIMUM_RANGE = 16;
     public static final int MINIMUM_RANGE = 1;
     public static final int FILTER_SLOTS = 8;
-    public static final HashMap<World, HashSet<TileDislocatorInhibitor>> inhibitors = new HashMap<>();
 
     private boolean redstoneActive = false;
     private ActivityControlType activityControlType = ActivityControlType.ALWAYS_ACTIVE;
@@ -36,42 +31,21 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
     private boolean whitelist = false;
     private final ItemStack[] filter = new ItemStack[FILTER_SLOTS];
 
-    public static boolean isBlockedByInhibitor(World world, EntityItem item) {
-        HashSet<TileDislocatorInhibitor> list = inhibitors.get(world);
-        if (list == null) {
-            return false;
-        }
-        for (TileDislocatorInhibitor inhibitor : list) {
-            if (!inhibitor.shouldBeActive()) {
-                continue;
-            }
-            if (!inhibitor.isBlockingItem(item.getEntityItem())) {
-                continue;
-            }
-            if (inhibitor.isInRange(item.posX, item.posY, item.posZ)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     public void updateEntity() {
         if (!registered) {
-            HashSet<TileDislocatorInhibitor> map = inhibitors.computeIfAbsent(this.worldObj, k -> new HashSet<>());
-            map.add(this);
+            DraconicEvolution.proxy.registerInhibitor(this);
             registered = true;
         }
     }
 
+    @Override
+    public void onChunkUnload() {
+        this.unregister();
+    }
+
     public void unregister() {
-        if (inhibitors.containsKey(this.worldObj)) {
-            HashSet<TileDislocatorInhibitor> list = inhibitors.get(this.worldObj);
-            list.remove(this);
-            if (list.isEmpty()) {
-                inhibitors.remove(this.worldObj);
-            }
-        }
+        DraconicEvolution.proxy.unregisterInhibitor(this);
     }
 
     public int getRange() {
@@ -124,11 +98,12 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
     }
 
     public boolean isInRange(double x, double y, double z) {
-        return x >= this.xCoord - range && x <= this.xCoord + range + 1
-                && y >= this.yCoord - range
-                && y <= this.yCoord + range + 1
-                && z >= this.zCoord - range
-                && z <= this.zCoord + range + 1;
+        final int r = range;
+        return x >= this.xCoord - r && x <= this.xCoord + r + 1
+                && y >= this.yCoord - r
+                && y <= this.yCoord + r + 1
+                && z >= this.zCoord - r
+                && z <= this.zCoord + r + 1;
     }
 
     public void setActivityControl(int index) {
