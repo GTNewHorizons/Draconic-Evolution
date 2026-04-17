@@ -110,6 +110,7 @@ public final class ClientProxy extends CommonProxy {
 
     private static final boolean debug = DraconicEvolution.debug;
 
+    private ClientEventHandler clientHandler;
     private KeyInputHandler keybindHandler;
     private ItemDisplayManager itemDisplay;
 
@@ -126,9 +127,9 @@ public final class ClientProxy extends CommonProxy {
         super.init(event);
         this.keybindHandler = new KeyInputHandler();
         FMLCommonHandler.instance().bus().register(this.keybindHandler);
-        final ClientEventHandler clientHandler = new ClientEventHandler();
-        FMLCommonHandler.instance().bus().register(clientHandler);
-        MinecraftForge.EVENT_BUS.register(clientHandler);
+        this.clientHandler = new ClientEventHandler();
+        FMLCommonHandler.instance().bus().register(this.clientHandler);
+        MinecraftForge.EVENT_BUS.register(this.clientHandler);
         MinecraftForge.EVENT_BUS.register(new HudHandler());
         registerRenderIDs();
         registerRendering();
@@ -414,5 +415,9 @@ public final class ClientProxy extends CommonProxy {
 
     public void displayItem(ItemStack stack) {
         this.itemDisplay.startDrawing(stack);
+    }
+
+    public int getElapsedTicks() {
+        return this.clientHandler.getElapsedTicks();
     }
 }

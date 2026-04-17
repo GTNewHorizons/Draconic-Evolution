@@ -6,7 +6,7 @@ import net.minecraft.entity.Entity;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
+import com.brandon3055.draconicevolution.DraconicEvolution;
 
 /**
  * DragonWings - brandon3055 Created using Tabula 5.0.0
@@ -70,7 +70,8 @@ public class ModelContributorWings extends ModelBase {
         float baseRot = 0.45906584F;
         float outerRot = 0.61086524F;
 
-        float animation = (float) Math.sin(((float) ClientEventHandler.elapsedTicks + partialTick) / 20);
+        final int ticks = DraconicEvolution.clientProxy().getElapsedTicks();
+        float animation = (float) Math.sin(((float) ticks + partialTick) / 20);
 
         if (entity.isSneaking()) {
             this.leftBaseStem.rotateAngleX = 0.5F;

@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 
+import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
 import com.brandon3055.draconicevolution.common.utils.DataUtils;
 
@@ -48,7 +49,7 @@ public class ShieldHitPacket implements IMessage {
             Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(message.playerID);
             if (entity instanceof EntityPlayer) ClientEventHandler.playerShieldStatus.put(
                     (EntityPlayer) entity,
-                    new DataUtils.XZPair<>(message.shieldPowerF, ClientEventHandler.elapsedTicks));
+                    new DataUtils.XZPair<>(message.shieldPowerF, DraconicEvolution.clientProxy().getElapsedTicks()));
             return null;
         }
     }
