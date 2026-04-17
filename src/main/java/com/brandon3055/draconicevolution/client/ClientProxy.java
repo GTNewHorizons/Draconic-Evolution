@@ -436,6 +436,10 @@ public final class ClientProxy extends CommonProxy {
         return this.clientHandler.getEnergyCrystalAlpha();
     }
 
+    public void tryRepositionPlayerOnMount(int entityId) {
+        this.clientHandler.tryRepositionPlayerOnMount(entityId);
+    }
+
     public void renderShield(EntityPlayer player, float shieldPowerF) {
         if (this.shieldRenderer != null) {
             this.shieldRenderer.renderShield(player, shieldPowerF);
