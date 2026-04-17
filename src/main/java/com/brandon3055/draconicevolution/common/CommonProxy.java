@@ -109,15 +109,17 @@ import cpw.mods.fml.relauncher.Side;
 
 public class CommonProxy {
 
+    private Achievements achievements;
+
     public void preInit(FMLPreInitializationEvent event) {
         FileHandler.init(event);
         ProcessHandler.init();
         ConfigHandler.init(event.getSuggestedConfigurationFile());
         BalanceConfigHandler.init(event.getModConfigurationDirectory());
         MinecraftForge.EVENT_BUS.register(new MinecraftForgeEventHandler());
-        final Achievements achievementHandler = new Achievements();
-        MinecraftForge.EVENT_BUS.register(achievementHandler);
-        FMLCommonHandler.instance().bus().register(achievementHandler);
+        this.achievements = new Achievements();
+        MinecraftForge.EVENT_BUS.register(achievements);
+        FMLCommonHandler.instance().bus().register(achievements);
         FMLCommonHandler.instance().bus().register(new FMLEventHandler());
         ModBlocks.init();
         ModItems.init();
@@ -128,7 +130,7 @@ public class CommonProxy {
 
         DraconicEvolution.reaperEnchant = new EnchantmentReaper(ConfigHandler.reaperEnchantID);
 
-        Achievements.addModAchievements();
+        this.achievements.addModAchievements();
         LogHelper.info("Finished PreInitialization");
     }
 
@@ -147,7 +149,7 @@ public class CommonProxy {
     public void postInit(FMLPostInitializationEvent event) {
         BalanceConfigHandler.finishLoading();
         OreDoublingRegistry.init();
-        Achievements.registerAchievementPane();
+        this.achievements.registerAchievementPane();
         LogHelper.info("Finished PostInitialization");
     }
 
@@ -315,5 +317,9 @@ public class CommonProxy {
 
     public boolean isClient() {
         return false;
+    }
+
+    public Achievements getAchievements() {
+        return achievements;
     }
 }

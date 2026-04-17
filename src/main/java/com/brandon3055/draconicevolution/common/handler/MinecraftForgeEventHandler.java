@@ -48,7 +48,6 @@ import net.minecraftforge.event.world.WorldEvent;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.ModItems;
-import com.brandon3055.draconicevolution.common.achievements.Achievements;
 import com.brandon3055.draconicevolution.common.entity.EntityCustomDragon;
 import com.brandon3055.draconicevolution.common.entity.EntityDragonHeart;
 import com.brandon3055.draconicevolution.common.entity.ExtendedPlayer;
@@ -222,7 +221,7 @@ public class MinecraftForgeEventHandler {
         EntityLivingBase entity = event.entityLiving;
         Entity attacker = event.source.getEntity();
 
-        if (attacker == null || !(attacker instanceof EntityPlayer)) {
+        if (!(attacker instanceof EntityPlayer)) {
             return;
         }
 
@@ -243,7 +242,8 @@ public class MinecraftForgeEventHandler {
                 ItemNBTHelper.setInteger(soul, "SkeletonType", ((EntitySkeleton) entity).getSkeletonType());
             }
             world.spawnEntityInWorld(new EntityItem(world, entity.posX, entity.posY, entity.posZ, soul));
-            Achievements.triggerAchievement((EntityPlayer) attacker, "draconicevolution.soul");
+            DraconicEvolution.proxy.getAchievements()
+                    .triggerAchievement((EntityPlayer) attacker, "draconicevolution.soul");
         }
     }
 
