@@ -291,9 +291,10 @@ public final class CustomArmorHandler {
         // endregion
 
         // region/*---------------- HillStep -----------------*/
-        if (summery != null && player.worldObj.isRemote) {
-            boolean highStepListed = playersWithUphillStep.contains(player.getDisplayName()) && player.stepHeight >= 1f;
-            boolean hasHighStep = summery.hasHillStep;
+        if (player.worldObj.isRemote) {
+            final boolean highStepListed = player.stepHeight >= 1f
+                    && playersWithUphillStep.contains(player.getDisplayName());
+            final boolean hasHighStep = summery != null && summery.hasHillStep;
 
             if (hasHighStep && !highStepListed) {
                 playersWithUphillStep.add(player.getDisplayName());
