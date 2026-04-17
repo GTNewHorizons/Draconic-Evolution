@@ -102,6 +102,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -152,6 +153,10 @@ public class CommonProxy {
         this.achievements.registerAchievementPane();
         LogHelper.info("Finished PostInitialization");
     }
+
+    public void onClientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {/* no op */}
+
+    public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {/* no op */}
 
     private void initializeNetwork() {
         // spotless:off

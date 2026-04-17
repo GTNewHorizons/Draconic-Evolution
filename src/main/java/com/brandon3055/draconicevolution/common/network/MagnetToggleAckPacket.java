@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
+import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.items.tools.Magnet;
 import com.brandon3055.draconicevolution.common.utils.InventoryUtils;
 import com.brandon3055.draconicevolution.integration.ModHelper;
@@ -49,7 +49,7 @@ public final class MagnetToggleAckPacket implements IMessage {
             if (magnetOptional.isPresent()) {
                 ItemStack itemStack = magnetOptional.get();
                 Magnet.setStatus(itemStack, message.status);
-                ClientEventHandler.statusDisplayManager.startDrawing(itemStack.copy());
+                DraconicEvolution.clientProxy().displayItem(itemStack);
                 if (ModHelper.isGTNHLibLoaded) Magnet.renderHUDStatusChange();
             }
 

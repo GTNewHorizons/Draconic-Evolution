@@ -7,6 +7,7 @@ import net.minecraft.client.audio.ISound;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -15,6 +16,7 @@ import net.minecraftforge.common.MinecraftForge;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
 import com.brandon3055.draconicevolution.client.handler.HudHandler;
+import com.brandon3055.draconicevolution.client.handler.ItemDisplayManager;
 import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 import com.brandon3055.draconicevolution.client.keybinding.KeyInputHandler;
@@ -102,12 +104,14 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent;
 
 public final class ClientProxy extends CommonProxy {
 
     private static final boolean debug = DraconicEvolution.debug;
 
     private KeyInputHandler keybindHandler;
+    private ItemDisplayManager itemDisplay;
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
@@ -130,12 +134,25 @@ public final class ClientProxy extends CommonProxy {
         registerRendering();
         ResourceHandler.instance.tick(null);
         IMCSender();
+        this.itemDisplay = new ItemDisplayManager(60);
+        MinecraftForge.EVENT_BUS.register(this.itemDisplay);
+        FMLCommonHandler.instance().bus().register(this.itemDisplay);
     }
 
     @Override
     public void postInit(FMLPostInitializationEvent event) {
         super.postInit(event);
         ResourceHandler.instance.tick(null);
+    }
+
+    @Override
+    public void onClientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+
+    }
+
+    @Override
+    public void onClientDisconnect(final FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+        this.itemDisplay.startDrawing(null);
     }
 
     private void registerRendering() {
@@ -393,5 +410,9 @@ public final class ClientProxy extends CommonProxy {
 
     public KeyInputHandler getKeybindHandler() {
         return keybindHandler;
+    }
+
+    public void displayItem(ItemStack stack) {
+        this.itemDisplay.startDrawing(stack);
     }
 }
