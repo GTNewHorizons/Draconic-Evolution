@@ -420,4 +420,8 @@ public final class ClientProxy extends CommonProxy {
     public int getElapsedTicks() {
         return this.clientHandler.getElapsedTicks();
     }
+
+    public float getEnergyCrystalAlpha() {
+        return this.clientHandler.getEnergyCrystalAlpha();
+    }
 }

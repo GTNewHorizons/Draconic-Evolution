@@ -10,7 +10,7 @@ import net.minecraftforge.client.model.IModelCustom;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
+import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.tileentities.energynet.TileEnergyRelay;
 import com.brandon3055.draconicevolution.common.tileentities.energynet.TileEnergyTransceiver;
@@ -65,7 +65,8 @@ public class RenderTileCrystal extends TileEntitySpecialRenderer {
         RenderHelper.disableStandardItemLighting();
         GL11.glEnable(GL11.GL_BLEND);
         float innerLight = 100f;
-        float outerLight = 140f + ClientEventHandler.energyCrystalAlphaValue * 40F;
+        final float crystalAlpha = DraconicEvolution.clientProxy().getEnergyCrystalAlpha();
+        float outerLight = 140f + crystalAlpha * 40F;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, innerLight, innerLight);
         OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
 
@@ -79,7 +80,7 @@ public class RenderTileCrystal extends TileEntitySpecialRenderer {
         if (tileEntity.getPowerTier() == 0) bindTexture(crystalBlueAlpha);
         else bindTexture(crystalRedAlpha);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
-        GL11.glAlphaFunc(GL11.GL_GREATER, 0.5f + ClientEventHandler.energyCrystalAlphaValue * 0.5f);
+        GL11.glAlphaFunc(GL11.GL_GREATER, 0.5f + crystalAlpha * 0.5f);
 
         modelCrystal.renderAll();
 
@@ -131,7 +132,8 @@ public class RenderTileCrystal extends TileEntitySpecialRenderer {
         // RenderHelper.disableStandardItemLighting();
         GL11.glEnable(GL11.GL_BLEND);
         float innerLight = 100f;
-        float outerLight = 140f + ClientEventHandler.energyCrystalAlphaValue * 40F;
+        final float crystalAlpha = DraconicEvolution.clientProxy().getEnergyCrystalAlpha();
+        float outerLight = 140f + crystalAlpha * 40F;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, innerLight, innerLight);
         OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
 
@@ -145,7 +147,7 @@ public class RenderTileCrystal extends TileEntitySpecialRenderer {
         if (tileEntity.getPowerTier() == 0) bindTexture(crystalBlueAlpha);
         else bindTexture(crystalRedAlpha);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
-        GL11.glAlphaFunc(GL11.GL_GREATER, 0.5f + ClientEventHandler.energyCrystalAlphaValue * 0.5f);
+        GL11.glAlphaFunc(GL11.GL_GREATER, 0.5f + crystalAlpha * 0.5f);
 
         modelCrystalTransceiver.renderAll();
 
