@@ -27,13 +27,6 @@ public class FMLEventHandler {
     }
 
     @SubscribeEvent
-    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.START) return;
-
-        CustomArmorHandler.onPlayerTick(event);
-    }
-
-    @SubscribeEvent
     public void serverTickEvent(TickEvent event) {
         ContributorHandler.tick();
     }

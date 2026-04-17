@@ -2,9 +2,7 @@ package com.brandon3055.draconicevolution.common.items.armor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.WeakHashMap;
 
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -17,7 +15,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
@@ -25,73 +22,32 @@ import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.network.ShieldHitPacket;
 import com.brandon3055.draconicevolution.common.utils.IUpgradableItem;
 import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
+import com.brandon3055.draconicevolution.common.utils.LogHelper;
 import com.brandon3055.draconicevolution.integration.ModHelper;
 
 import cofh.api.energy.IEnergyContainerItem;
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 
 /**
  * Created by Brandon on 13/11/2014.
  */
-public class CustomArmorHandler {
+public final class CustomArmorHandler {
 
-    public static final UUID WALK_SPEED_UUID = UUID.fromString("0ea6ce8e-d2e8-11e5-ab30-625662870761");
+    private static final UUID WALK_SPEED_UUID = UUID.fromString("0ea6ce8e-d2e8-11e5-ab30-625662870761");
     private static final DamageSource ADMIN_KILL = new DamageSource("administrative.kill")
             .setDamageAllowedInCreativeMode().setDamageBypassesArmor().setDamageIsAbsolute();
-    public static Map<EntityPlayer, Boolean> playersWithFlight = new WeakHashMap<EntityPlayer, Boolean>();
-    public static List<String> playersWithUphillStep = new ArrayList<String>();
 
-    public static void onPlayerHurt(LivingHurtEvent event) {
-        // EntityPlayer player = (EntityPlayer) event.entityLiving;
-        // ArmorSummery summery = new ArmorSummery().getSummery(player);
-        // if (summery == null || summery.protectionPoints <= 0) return;
-        // float newEntropy = Math.min(summery.entropy + Math.min(3, event.ammount/5) +
-        // player.worldObj.rand.nextFloat(), 100F);
-        //
-        // //Divide the damage between the armor peaces based on how many of the protection points each peace has
-        // float totalAbsorbed = 0;
-        // for (int i = 0; i < summery.allocation.length; i++){
-        // if (summery.allocation[i] == 0) continue;
-        // ItemStack armorPeace = summery.armorStacks[i];
-        //
-        // float dmgShear = summery.allocation[i] / summery.protectionPoints;
-        // float dmg = dmgShear * event.ammount;
-        //
-        // float absorbed = Math.min(dmg, summery.allocation[i]);
-        // dmg -= absorbed;
-        // totalAbsorbed += absorbed;
-        // summery.allocation[i]-=absorbed;
-        // ItemNBTHelper.setFloat(armorPeace, "ProtectionPoints", summery.allocation[i]);
-        // ItemNBTHelper.setInteger(armorPeace, "ShieldHitTimer", 20);
-        // ItemNBTHelper.setFloat(armorPeace, "ShieldEntropy", newEntropy);
-        //
-        //// if (dmg > 0 && absorbed >= dmgShear*20F){
-        //// int energyCost = (int)(dmg * OVER_DRAIN_COST);
-        //// int extracted = ((IEnergyContainerItem)armorPeace.getItem()).extractEnergy(armorPeace, energyCost,
-        // false);
-        //// dmg = (energyCost-extracted) / OVER_DRAIN_COST;
-        //// totalAbsorbed += extracted / OVER_DRAIN_COST;
-        //// ItemNBTHelper.setFloat(armorPeace, "ShieldEntropy", 100);
-        //// }
-        //
-        //// LogHelper.info(dmg);
-        // }
-        //
-        // event.ammount-=totalAbsorbed;
-        // if (event.ammount <= 0) event.setCanceled(true);
-        // player.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).removeModifier(new
-        // AttributeModifier(KB_ATTRIB_UUID, SharedMonsterAttributes.knockbackResistance.getAttributeUnlocalizedName(),
-        // 100, 0));
-        // LogHelper.info("hurt");
-    }
+    private final Object2BooleanOpenHashMap<EntityPlayer> playersWithFlight = new Object2BooleanOpenHashMap<>();
+    private final List<String> playersWithUphillStep = new ArrayList<>();
 
-    public static void onPlayerAttacked(LivingAttackEvent event) {
-        if (event.isCanceled()) {
-            return;
-        }
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public void onLivingAttack(LivingAttackEvent event) {
+        if (!(event.entityLiving instanceof EntityPlayer player)) return;
 
-        EntityPlayer player = (EntityPlayer) event.entityLiving;
         ArmorSummery summery = new ArmorSummery().getSummery(player);
 
         float hitAmount = ModHelper.applyModDamageAdjustments(summery, event);
@@ -150,12 +106,10 @@ public class CustomArmorHandler {
         }
     }
 
-    public static void onPlayerDeath(LivingDeathEvent event) {
-        if (event.isCanceled()) {
-            return;
-        }
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public void onLivingDeath(LivingDeathEvent event) {
+        if (!(event.entityLiving instanceof EntityPlayer player)) return;
 
-        EntityPlayer player = (EntityPlayer) event.entityLiving;
         ArmorSummery summery = new ArmorSummery().getSummery(player);
 
         if (summery == null || event.source == ADMIN_KILL) return;
@@ -163,8 +117,14 @@ public class CustomArmorHandler {
         if (summery.protectionPoints > 500) {
             event.setCanceled(true);
             event.entityLiving.setHealth(10);
-            // LogHelper.warn("Something is trying to bypass the draconic shield. [Culprit: {Damage Type=" +
-            // event.source.damageType + ", Damage Class=" + event.source.toString() + "]");
+            if (DraconicEvolution.debug) {
+                LogHelper.warn(
+                        "Something is trying to bypass the draconic shield. [Culprit: {Damage Type="
+                                + event.source.damageType
+                                + ", Damage Class="
+                                + event.source
+                                + "]");
+            }
             return;
         }
 
@@ -198,19 +158,21 @@ public class CustomArmorHandler {
         player.setHealth(1);
     }
 
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-
-        EntityPlayer player = event.player;
-        ArmorSummery summery = new ArmorSummery().getSummery(player);
-
-        tickShield(summery, player);
-        tickArmorEffects(summery, player);
+    @SubscribeEvent
+    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            EntityPlayer player = event.player;
+            ArmorSummery summery = new ArmorSummery().getSummery(player);
+            tickShield(summery, player);
+            tickArmorEffects(summery, player);
+        }
     }
 
-    public static void tickShield(ArmorSummery summery, EntityPlayer player) {
-        if (summery == null || (summery.maxProtectionPoints - summery.protectionPoints < 0.01 && summery.entropy == 0)
-                || player.worldObj.isRemote)
+    private void tickShield(ArmorSummery summery, EntityPlayer player) {
+        if (summery == null || summery.maxProtectionPoints - summery.protectionPoints < 0.01 && summery.entropy == 0
+                || player.worldObj.isRemote) {
             return;
+        }
 
         float totalPointsToAdd = Math
                 .min(summery.maxProtectionPoints - summery.protectionPoints, summery.maxProtectionPoints / 60F);
@@ -245,7 +207,7 @@ public class CustomArmorHandler {
         }
     }
 
-    public static void tickArmorEffects(ArmorSummery summery, EntityPlayer player) {
+    private void tickArmorEffects(ArmorSummery summery, EntityPlayer player) {
 
         // region/*----------------- Flight ------------------*/
         if (ConfigHandler.enableFlight) {
@@ -442,8 +404,7 @@ public class CustomArmorHandler {
 
             for (int i = 0; i < armorSlots.length; i++) {
                 ItemStack stack = armorSlots[i];
-                if (stack == null || !(stack.getItem() instanceof ICustomArmor)) continue;
-                ICustomArmor armor = (ICustomArmor) stack.getItem();
+                if (stack == null || !(stack.getItem() instanceof ICustomArmor armor)) continue;
                 peaces++;
                 allocation[i] = ItemNBTHelper.getFloat(stack, "ProtectionPoints", 0);
                 protectionPoints += allocation[i];

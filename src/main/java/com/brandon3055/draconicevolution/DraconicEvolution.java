@@ -17,8 +17,8 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
 @Mod(
@@ -85,6 +85,12 @@ public class DraconicEvolution {
     public void postInit(final FMLPostInitializationEvent event) {
         if (debug) System.out.println("postInit()");
         proxy.postInit(event);
+    }
+
+    @Mod.EventHandler
+    public void onServerAboutToStart(FMLServerAboutToStartEvent event) {
+        if (debug) System.out.println("onServerAboutToStart()");
+        proxy.onServerAboutToStart(event);
     }
 
     @Mod.EventHandler

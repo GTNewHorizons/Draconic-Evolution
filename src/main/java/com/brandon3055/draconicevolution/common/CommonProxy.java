@@ -40,6 +40,7 @@ import com.brandon3055.draconicevolution.common.handler.ContributorHandler;
 import com.brandon3055.draconicevolution.common.handler.CraftingHandler;
 import com.brandon3055.draconicevolution.common.handler.FMLEventHandler;
 import com.brandon3055.draconicevolution.common.handler.MinecraftForgeEventHandler;
+import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler;
 import com.brandon3055.draconicevolution.common.lib.OreDoublingRegistry;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.magic.EnchantmentReaper;
@@ -109,9 +110,9 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -120,6 +121,7 @@ import cpw.mods.fml.relauncher.Side;
 public class CommonProxy {
 
     private Achievements achievements;
+    private CustomArmorHandler armorHandler;
     private final Map<World, List<TileDislocatorInhibitor>> serverInhibitorsMap = new HashMap<>();
 
     public CommonProxy() {
@@ -133,8 +135,8 @@ public class CommonProxy {
         BalanceConfigHandler.init(event.getModConfigurationDirectory());
         MinecraftForge.EVENT_BUS.register(new MinecraftForgeEventHandler());
         this.achievements = new Achievements();
-        MinecraftForge.EVENT_BUS.register(achievements);
-        FMLCommonHandler.instance().bus().register(achievements);
+        MinecraftForge.EVENT_BUS.register(this.achievements);
+        FMLCommonHandler.instance().bus().register(this.achievements);
         FMLCommonHandler.instance().bus().register(new FMLEventHandler());
         ModBlocks.init();
         ModItems.init();
@@ -168,8 +170,19 @@ public class CommonProxy {
         LogHelper.info("Finished PostInitialization");
     }
 
+    public void onServerAboutToStart(FMLServerAboutToStartEvent event) {
+        this.armorHandler = new CustomArmorHandler();
+        MinecraftForge.EVENT_BUS.register(this.armorHandler);
+        FMLCommonHandler.instance().bus().register(this.armorHandler);
+    }
+
     public void onServerStopped(FMLServerStoppedEvent event) {
         this.serverInhibitorsMap.clear();
+        if (this.armorHandler != null) {
+            MinecraftForge.EVENT_BUS.unregister(this.armorHandler);
+            FMLCommonHandler.instance().bus().unregister(this.armorHandler);
+            this.armorHandler = null;
+        }
     }
 
     @SubscribeEvent

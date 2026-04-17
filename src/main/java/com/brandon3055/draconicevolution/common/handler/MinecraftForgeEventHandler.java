@@ -34,11 +34,8 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -70,22 +67,22 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class MinecraftForgeEventHandler {
 
-    Random random = new Random();
+    private static final Random random = new Random();
     private static Method becomeAngryAt;
+    private static final Field persistenceRequired;
 
     public static double maxSpeed = 10F;
     public static int ticksSinceRequest = 0;
     public static boolean speedNeedsUpdating = true;
 
-    private Field persistenceRequired = null;
-
-    public MinecraftForgeEventHandler() {
+    static {
+        Field f = null;
         try {
-            persistenceRequired = ReflectionHelper
-                    .findField(EntityLiving.class, "field_82179_bU", "persistenceRequired");
+            f = ReflectionHelper.findField(EntityLiving.class, "field_82179_bU", "persistenceRequired");
         } catch (Exception e) {
             LogHelper.error("Unable to find field \"persistenceRequired\"");
         }
+        persistenceRequired = f;
     }
 
     @SubscribeEvent
@@ -131,20 +128,6 @@ public class MinecraftForgeEventHandler {
     }
 
     @SubscribeEvent
-    public void onLivingHurt(LivingHurtEvent event) {
-        if (event.entityLiving instanceof EntityPlayer) {
-            CustomArmorHandler.onPlayerHurt(event);
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOW)
-    public void onLivingDeath(LivingDeathEvent event) {
-        if (event.entityLiving instanceof EntityPlayer) {
-            CustomArmorHandler.onPlayerDeath(event);
-        }
-    }
-
-    @SubscribeEvent
     public void onLivingJumpEvent(LivingEvent.LivingJumpEvent event) {
         if (!(event.entityLiving instanceof EntityPlayer)) return;
         EntityPlayer player = (EntityPlayer) event.entityLiving;
@@ -153,13 +136,6 @@ public class MinecraftForgeEventHandler {
         if (summery != null && summery.jumpModifier > 0) {
             player.motionY += (double) (summery.jumpModifier * 0.1F);
         }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOW)
-    public void onLivingAttack(LivingAttackEvent event) {
-        if (!(event.entityLiving instanceof EntityPlayer)) return;
-
-        CustomArmorHandler.onPlayerAttacked(event);
     }
 
     @SubscribeEvent
