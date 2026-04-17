@@ -312,4 +312,8 @@ public class CommonProxy {
     public EntityPlayer getClientPlayer() {
         return null;
     }
+
+    public boolean isClient() {
+        return false;
+    }
 }
