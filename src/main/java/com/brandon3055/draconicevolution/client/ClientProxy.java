@@ -155,6 +155,9 @@ public final class ClientProxy extends CommonProxy {
         this.itemDisplay = new ItemDisplayManager(60);
         FMLCommonHandler.instance().bus().register(this.itemDisplay);
         MinecraftForge.EVENT_BUS.register(this.itemDisplay);
+        this.shieldRenderer = new ShieldRenderHandler();
+        FMLCommonHandler.instance().bus().register(this.shieldRenderer);
+        MinecraftForge.EVENT_BUS.register(this.shieldRenderer);
     }
 
     @Override
@@ -164,21 +167,9 @@ public final class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void onClientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-        this.shieldRenderer = new ShieldRenderHandler();
-        FMLCommonHandler.instance().bus().register(this.shieldRenderer);
-        MinecraftForge.EVENT_BUS.register(this.shieldRenderer);
-    }
-
-    @SubscribeEvent
     public void onClientDisconnect(final FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         this.clientInhibitorsMap.clear();
         this.itemDisplay.startDrawing(null);
-        if (this.shieldRenderer != null) {
-            FMLCommonHandler.instance().bus().unregister(this.shieldRenderer);
-            MinecraftForge.EVENT_BUS.unregister(this.shieldRenderer);
-            this.shieldRenderer = null;
-        }
     }
 
     @Override
@@ -461,9 +452,7 @@ public final class ClientProxy extends CommonProxy {
     }
 
     public void renderShield(EntityPlayer player, float shieldPowerF) {
-        if (this.shieldRenderer != null) {
-            this.shieldRenderer.renderShield(player, shieldPowerF);
-        }
+        this.shieldRenderer.renderShield(player, shieldPowerF);
     }
 
     @Override

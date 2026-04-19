@@ -7,6 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
+import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.opengl.GL11;
 
@@ -22,6 +23,13 @@ public final class ShieldRenderHandler {
             .loadModel(ResourceHandler.getResource("models/shieldSphere.obj"));
 
     private final HashMap<EntityPlayer, DataUtils.XZPair<Float, Integer>> shieldStatus = new HashMap<>();
+
+    @SubscribeEvent
+    public void onWorldUnload(WorldEvent.Unload event) {
+        if (event.world.isRemote) {
+            this.shieldStatus.clear();
+        }
+    }
 
     @SubscribeEvent
     public void tickEnd(TickEvent.ClientTickEvent event) {

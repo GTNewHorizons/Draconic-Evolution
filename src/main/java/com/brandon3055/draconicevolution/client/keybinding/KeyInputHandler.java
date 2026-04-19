@@ -40,7 +40,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * Created by Brandon on 14/08/2014.
  */
 @SideOnly(Side.CLIENT)
-public class KeyInputHandler {
+public final class KeyInputHandler {
 
     private final KeyBinding placeItem;
     private final KeyBinding toolConfig;
@@ -88,7 +88,7 @@ public class KeyInputHandler {
             handleToggleFlightKey(player);
         } else if (this.toggleMagnet.isPressed()) {
             handleToggleMagnetKey(player);
-        } else if (ModHelper.isHodgepodgeLoaded && this.toggleMagnetSelfPickup.isPressed()) {
+        } else if (this.toggleMagnetSelfPickup != null && this.toggleMagnetSelfPickup.isPressed()) {
             handleToggleMagnetSelfPickup(player);
         }
     }
@@ -108,7 +108,7 @@ public class KeyInputHandler {
             handleToggleFlightKey(player);
         } else if (this.toggleMagnet.isPressed()) {
             handleToggleMagnetKey(player);
-        } else if (ModHelper.isHodgepodgeLoaded && this.toggleMagnetSelfPickup.isPressed()) {
+        } else if (this.toggleMagnetSelfPickup != null && this.toggleMagnetSelfPickup.isPressed()) {
             handleToggleMagnetSelfPickup(player);
         }
 
