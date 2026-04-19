@@ -106,7 +106,6 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -135,6 +134,9 @@ public class CommonProxy {
         MinecraftForge.EVENT_BUS.register(this.achievements);
         FMLCommonHandler.instance().bus().register(this.achievements);
         FMLCommonHandler.instance().bus().register(new FMLEventHandler());
+        this.armorHandler = new CustomArmorHandler();
+        MinecraftForge.EVENT_BUS.register(armorHandler);
+        FMLCommonHandler.instance().bus().register(armorHandler);
         ModBlocks.init();
         ModItems.init();
         ContributorHandler.init();
@@ -168,20 +170,10 @@ public class CommonProxy {
         LogHelper.info("Finished PostInitialization");
     }
 
-    public void onServerAboutToStart(FMLServerAboutToStartEvent event) {
-        this.armorHandler = new CustomArmorHandler();
-        MinecraftForge.EVENT_BUS.register(this.armorHandler);
-        FMLCommonHandler.instance().bus().register(this.armorHandler);
-    }
-
     public void onServerStopped(FMLServerStoppedEvent event) {
         this.serverInhibitorsMap.clear();
         this.dragonChunkLoader.onServerStopped();
-        if (this.armorHandler != null) {
-            MinecraftForge.EVENT_BUS.unregister(this.armorHandler);
-            FMLCommonHandler.instance().bus().unregister(this.armorHandler);
-            this.armorHandler = null;
-        }
+        this.armorHandler.onServerStopped();
     }
 
     @SubscribeEvent

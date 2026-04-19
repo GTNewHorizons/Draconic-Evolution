@@ -1,9 +1,11 @@
 package com.brandon3055.draconicevolution.common.items.armor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
@@ -15,6 +17,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.world.WorldEvent;
 
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.handler.BalanceConfigHandler;
@@ -29,7 +32,8 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Created by Brandon on 13/11/2014.
@@ -40,8 +44,25 @@ public final class CustomArmorHandler {
     private static final DamageSource ADMIN_KILL = new DamageSource("administrative.kill")
             .setDamageAllowedInCreativeMode().setDamageBypassesArmor().setDamageIsAbsolute();
 
-    private final Object2BooleanOpenHashMap<EntityPlayer> playersWithFlight = new Object2BooleanOpenHashMap<>();
-    private final List<String> playersWithUphillStep = new ArrayList<>();
+    // Collection that will be populated with client and server players when playing on integrated server
+    private final Set<EntityPlayer> playersWithFlight = Collections.synchronizedSet(new HashSet<>());
+    private boolean clientPlayerHasHillStep;
+
+    @SubscribeEvent
+    public void onWorldUnload(WorldEvent.Unload event) {
+        if (event.world.isRemote) {
+            clientPlayerHasHillStep = false;
+        }
+        if (!playersWithFlight.isEmpty()) {
+            synchronized (playersWithFlight) {
+                playersWithFlight.removeIf(p -> event.world == p.worldObj);
+            }
+        }
+    }
+
+    public void onServerStopped() {
+        this.playersWithFlight.clear();
+    }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onLivingAttack(LivingAttackEvent event) {
@@ -69,7 +90,7 @@ public final class CustomArmorHandler {
 
         // Divide the damage between the armor peaces based on how many of the protection points each peace has
         float totalAbsorbed = 0;
-        int remainingPoints = 0;
+        float remainingPoints = 0;
         for (int i = 0; i < summary.allocation.length; i++) {
             if (summary.allocation[i] == 0) continue;
             ItemStack armorPeace = summary.armorStacks[i];
@@ -211,13 +232,18 @@ public final class CustomArmorHandler {
         // region/*----------------- Flight ------------------*/
         if (ConfigHandler.enableFlight) {
             if (summary != null && summary.flight[0]) {
-                playersWithFlight.put(player, true);
+                playersWithFlight.add(player);
                 player.capabilities.allowFlying = true;
-                if (summary.flight[1]) player.capabilities.isFlying = true;
+                if (summary.flight[1]) {
+                    player.capabilities.isFlying = true;
+                }
 
-                if (player.worldObj.isRemote) setPlayerFlySpeed(player, 0.05F + (0.05F * summary.flightSpeedModifier));
+                if (player.worldObj.isRemote) {
+                    player.capabilities.setFlySpeed(0.05F + (0.05F * summary.flightSpeedModifier));
+                }
 
-                if ((!player.onGround && player.capabilities.isFlying) && player.motionY != 0
+                if (!player.onGround && player.capabilities.isFlying
+                        && player.motionY != 0
                         && summary.flightVModifier > 0) {
                     // float percentIncrease = summary.flightVModifier;
 
@@ -238,28 +264,16 @@ public final class CustomArmorHandler {
                     player.motionZ *= 0.5;
                 }
 
-            } else {
-                if (!playersWithFlight.containsKey(player)) {
-                    playersWithFlight.put(player, false);
-                }
-
-                if (playersWithFlight.get(player) && !player.worldObj.isRemote) {
-                    playersWithFlight.put(player, false);
-
-                    if (!player.capabilities.isCreativeMode) {
-                        player.capabilities.allowFlying = false;
-                        player.capabilities.isFlying = false;
+            } else if (playersWithFlight.remove(player)) {
+                if (!player.capabilities.isCreativeMode) {
+                    player.capabilities.allowFlying = false;
+                    player.capabilities.isFlying = false;
+                    if (!player.worldObj.isRemote) {
                         player.sendPlayerAbilities();
                     }
                 }
-
-                if (player.worldObj.isRemote && playersWithFlight.get(player)) {
-                    playersWithFlight.put(player, false);
-                    if (!player.capabilities.isCreativeMode) {
-                        player.capabilities.allowFlying = false;
-                        player.capabilities.isFlying = false;
-                    }
-                    setPlayerFlySpeed(player, 0.05F);
+                if (player.worldObj.isRemote) {
+                    player.capabilities.setFlySpeed(0.05F);
                 }
             }
         }
@@ -280,8 +294,9 @@ public final class CustomArmorHandler {
                         new AttributeModifier(WALK_SPEED_UUID, speedAttr.getAttributeUnlocalizedName(), value, 1));
             }
 
-            if (!player.onGround && player.ridingEntity == null)
+            if (!player.onGround && player.ridingEntity == null) {
                 player.jumpMovementFactor = 0.02F + (0.02F * summary.speedModifier);
+            }
         } else if (player.getEntityAttribute(speedAttr).getModifier(WALK_SPEED_UUID) != null) {
             player.getEntityAttribute(speedAttr)
                     .removeModifier(player.getEntityAttribute(speedAttr).getModifier(WALK_SPEED_UUID));
@@ -291,25 +306,27 @@ public final class CustomArmorHandler {
 
         // region/*---------------- HillStep -----------------*/
         if (player.worldObj.isRemote) {
-            final boolean highStepListed = player.stepHeight >= 1f
-                    && playersWithUphillStep.contains(player.getDisplayName());
-            final boolean hasHighStep = summary != null && summary.hasHillStep;
-
-            if (hasHighStep && !highStepListed) {
-                playersWithUphillStep.add(player.getDisplayName());
-                player.stepHeight = 1f;
-            }
-
-            if (!hasHighStep && highStepListed) {
-                playersWithUphillStep.remove(player.getDisplayName());
-                player.stepHeight = 0.5F;
-            }
+            handleHillStepClient(summary, player);
         }
         // endregion
     }
 
-    private static void setPlayerFlySpeed(EntityPlayer player, float speed) {
-        player.capabilities.setFlySpeed(speed);
+    @SideOnly(value = Side.CLIENT)
+    private void handleHillStepClient(ArmorSummary summary, EntityPlayer player) {
+        if (player == Minecraft.getMinecraft().thePlayer) {
+            final boolean hasHillStep = player.stepHeight >= 1f && clientPlayerHasHillStep;
+            final boolean shouldHaveHillStep = summary != null && summary.hasHillStep;
+
+            if (shouldHaveHillStep && !hasHillStep) {
+                clientPlayerHasHillStep = true;
+                player.stepHeight = 1f;
+            }
+
+            if (!shouldHaveHillStep && hasHillStep) {
+                clientPlayerHasHillStep = false;
+                player.stepHeight = 0.5F;
+            }
+        }
     }
 
     private static boolean applyArmorDamageBlocking(LivingAttackEvent event, ArmorSummary summary) {
@@ -334,5 +351,4 @@ public final class CustomArmorHandler {
 
         return false;
     }
-
 }
