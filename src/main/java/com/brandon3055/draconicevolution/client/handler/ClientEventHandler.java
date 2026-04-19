@@ -15,7 +15,7 @@ import net.minecraftforge.client.event.RenderPlayerEvent;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.handler.ContributorHandler;
-import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler.ArmorSummary;
+import com.brandon3055.draconicevolution.common.items.armor.ArmorSummary;
 import com.brandon3055.draconicevolution.common.items.armor.DraconicArmor;
 import com.brandon3055.draconicevolution.common.items.armor.WyvernArmor;
 import com.brandon3055.draconicevolution.common.items.weapons.BowHandler;

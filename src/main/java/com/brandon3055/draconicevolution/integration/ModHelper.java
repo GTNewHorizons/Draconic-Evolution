@@ -6,7 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
-import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler.ArmorSummary;
+import com.brandon3055.draconicevolution.common.items.armor.ArmorSummary;
 import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
 import cpw.mods.fml.common.Loader;
