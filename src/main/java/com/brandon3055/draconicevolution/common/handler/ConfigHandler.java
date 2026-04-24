@@ -15,6 +15,7 @@ public class ConfigHandler {
     public static Configuration config;
 
     // GENERAL
+    public static boolean disableEarthBlock;
     public static int teleporterUsesPerPearl;
     public static int soulDropChance;
     public static int passiveSoulDropChance;
@@ -104,6 +105,9 @@ public class ConfigHandler {
             // 0:Default, 1:Disable recipe, 2:Disable completely").getInt(0);
             // disableXrayBlock = config.get(Configuration.CATEGORY_GENERAL, "Disable Xray Block", 0, "Disable
             // Distortion Flame 0:Default, 1:Disable recipe, 2:Disable completely").getInt(0);
+            disableEarthBlock = config
+                    .get(Configuration.CATEGORY_GENERAL, "Disable Earth block", false, "Disables the Earth block")
+                    .getBoolean(false);
             teleporterUsesPerPearl = config.get(
                     Configuration.CATEGORY_GENERAL,
                     "Teleporter Uses PerPearl",

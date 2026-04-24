@@ -191,7 +191,7 @@ public class CommonProxy {
         GameRegistry.registerTileEntity(TileCustomSpawner.class, References.RESOURCESPREFIX + "TileCustomSpawner");
         GameRegistry.registerTileEntity(TileGenerator.class, References.RESOURCESPREFIX + "TileGenerator");
         GameRegistry.registerTileEntity(TileEnergyStorageCore.class, References.RESOURCESPREFIX + "TileEnergyStorageCore");
-        GameRegistry.registerTileEntity(TileEarth.class, References.RESOURCESPREFIX + "TileEarth");
+        if (ModBlocks.earthBlock != null) GameRegistry.registerTileEntity(TileEarth.class, References.RESOURCESPREFIX + "TileEarth");
         GameRegistry.registerTileEntity(TileInvisibleMultiblock.class, References.RESOURCESPREFIX + "TileInvisibleMultiblock");
         GameRegistry.registerTileEntity(TileEnergyPylon.class, References.RESOURCESPREFIX + "TileEnergyPylon");
         GameRegistry.registerTileEntity(TileEnderResurrection.class, References.RESOURCESPREFIX + "TileEnderResurrection");
