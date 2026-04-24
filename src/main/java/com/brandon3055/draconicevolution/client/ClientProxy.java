@@ -180,7 +180,7 @@ public class ClientProxy extends CommonProxy {
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.reactorStabilizer), new RenderReactorStabilizer());
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.reactorEnergyInjector), new RenderReactorEnergyInjector());
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.reactorCore), new RenderReactorCore());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.earthBlock), new RenderEarthItem());
+        if (ModBlocks.earthBlock != null) MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.earthBlock), new RenderEarthItem());
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.chaosCrystal), new RenderChaosShard());
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ModBlocks.upgradeModifier), new RenderUpgradeModifier());
 
@@ -194,7 +194,7 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileCustomSpawner.class, new RenderTileCustomSpawner());
         // ClientRegistry.bindTileEntitySpecialRenderer(TileTestBlock.class, new RenderTileCrystal());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnergyStorageCore.class, new RenderTileEnergyStorageCore());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEarth.class, new RenderTileEarth());
+        if (ModBlocks.earthBlock != null) ClientRegistry.bindTileEntitySpecialRenderer(TileEarth.class, new RenderTileEarth());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnergyPylon.class, new RenderTileEnergyPylon());
         ClientRegistry.bindTileEntitySpecialRenderer(TilePlacedItem.class, new RenderTilePlacedItem());
         ClientRegistry.bindTileEntitySpecialRenderer(TileDissEnchanter.class, new RenderTileDissEnchanter());
