@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -18,10 +19,7 @@ import com.brandon3055.draconicevolution.common.tileentities.TileDissEnchanter;
 
 public class RenderTileDissEnchanter extends TileEntitySpecialRenderer {
 
-    // private final ResourceLocation texture = new ResourceLocation(References.MODID.toLowerCase(),
-    // "textures/models/EnergyInfuserTextureSheet.png");
-
-    // private static float pxl = 1F / 256F;
+    private final EntityItem cachedEntity = new EntityItem(null, 0, 0, 0, new ItemStack(Items.apple));
 
     @Override
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float f) {
@@ -71,10 +69,7 @@ public class RenderTileDissEnchanter extends TileEntitySpecialRenderer {
         if (tile.getStackInSlot(i) != null) {
             GL11.glPushMatrix();
 
-            ItemStack stack = tile.getStackInSlot(i).copy();
-            stack.stackSize = 1;
-            EntityItem itemEntity = new EntityItem(tile.getWorldObj(), 0, 0, 0, stack);
-            itemEntity.hoverStart = 0.0F;
+            ItemStack stack = tile.getStackInSlot(i);
 
             GL11.glTranslatef(0.5F, 0.5F, 0.5F);
             GL11.glScalef(1F, 1F, 1F);
@@ -85,7 +80,18 @@ public class RenderTileDissEnchanter extends TileEntitySpecialRenderer {
             }
 
             RenderItem.renderInFrame = true;
-            RenderManager.instance.renderEntityWithPosYaw(itemEntity, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+            final int stackSize = stack.stackSize;
+            try {
+                stack.stackSize = 1;
+                this.cachedEntity.setEntityItemStack(stack);
+                this.cachedEntity.setWorld(tile.getWorldObj());
+                this.cachedEntity.hoverStart = 0.0F;
+                RenderManager.instance.renderEntityWithPosYaw(this.cachedEntity, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+            } finally {
+                stack.stackSize = stackSize;
+                this.cachedEntity.setEntityItemStack(null);
+                this.cachedEntity.setWorld(null);
+            }
             RenderItem.renderInFrame = false;
 
             GL11.glPopMatrix();
