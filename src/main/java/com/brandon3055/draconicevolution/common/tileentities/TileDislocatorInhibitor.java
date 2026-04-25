@@ -44,6 +44,12 @@ public class TileDislocatorInhibitor extends TileEntity implements IInventory {
         this.unregister();
     }
 
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        this.unregister();
+    }
+
     public void unregister() {
         DraconicEvolution.proxy.unregisterInhibitor(this);
     }
