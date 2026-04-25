@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -16,7 +17,8 @@ import com.brandon3055.draconicevolution.common.tileentities.TileUpgradeModifier
 
 public class RenderTileUpgradeModifier extends TileEntitySpecialRenderer {
 
-    private static float pxl = 1F / 256F;
+    private static final float pxl = 1F / 256F;
+    private final EntityItem cachedEntity = new EntityItem(null, 0, 0, 0, new ItemStack(Items.apple));
 
     @Override
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float f) {
@@ -207,8 +209,6 @@ public class RenderTileUpgradeModifier extends TileEntitySpecialRenderer {
             GL11.glPushMatrix();
 
             ItemStack stack = tile.getStackInSlot(0);
-            EntityItem itemEntity = new EntityItem(tile.getWorldObj(), 0, 0, 0, tile.getStackInSlot(0));
-            itemEntity.hoverStart = 0.0F;
 
             GL11.glTranslatef(0.5F, 0.5F, 0.5F);
             GL11.glScalef(1F, 1F, 1F);
@@ -220,7 +220,15 @@ public class RenderTileUpgradeModifier extends TileEntitySpecialRenderer {
             }
 
             RenderItem.renderInFrame = true;
-            RenderManager.instance.renderEntityWithPosYaw(itemEntity, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+            try {
+                this.cachedEntity.setEntityItemStack(stack);
+                this.cachedEntity.setWorld(tile.getWorldObj());
+                this.cachedEntity.hoverStart = 0.0F;
+                RenderManager.instance.renderEntityWithPosYaw(this.cachedEntity, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+            } finally {
+                this.cachedEntity.setEntityItemStack(null);
+                this.cachedEntity.setWorld(null);
+            }
             RenderItem.renderInFrame = false;
 
             GL11.glPopMatrix();
