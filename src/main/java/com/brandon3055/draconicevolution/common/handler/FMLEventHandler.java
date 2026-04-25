@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 
 import com.brandon3055.draconicevolution.common.ModItems;
-import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler;
+import com.brandon3055.draconicevolution.common.items.armor.ArmorSummary;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
@@ -27,13 +27,6 @@ public class FMLEventHandler {
     }
 
     @SubscribeEvent
-    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.START) return;
-
-        CustomArmorHandler.onPlayerTick(event);
-    }
-
-    @SubscribeEvent
     public void serverTickEvent(TickEvent event) {
         ContributorHandler.tick();
     }
@@ -41,8 +34,8 @@ public class FMLEventHandler {
     @SubscribeEvent
     public void playerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (!event.player.onGround) {
-            CustomArmorHandler.ArmorSummery summery = new CustomArmorHandler.ArmorSummery().getSummery(event.player);
-            if (summery != null && summery.flight[0]) {
+            final ArmorSummary summary = ArmorSummary.get(event.player);
+            if (summary != null && summary.flight[0]) {
                 event.player.capabilities.isFlying = true;
                 event.player.sendPlayerAbilities();
             }

@@ -3,18 +3,21 @@ package com.brandon3055.draconicevolution;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 
+import com.brandon3055.draconicevolution.client.ClientProxy;
 import com.brandon3055.draconicevolution.client.creativetab.DETab;
 import com.brandon3055.draconicevolution.common.CommonProxy;
 import com.brandon3055.draconicevolution.common.lib.OreDoublingRegistry;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.utils.LogHelper;
 
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
 @Mod(
@@ -51,11 +54,18 @@ public class DraconicEvolution {
 
     public static Enchantment reaperEnchant;
 
-    public static final boolean isAutomagyLoaded = cpw.mods.fml.common.Loader.isModLoaded("Automagy");
-    public static final boolean isEioLoaded = cpw.mods.fml.common.Loader.isModLoaded("EnderIO");
+    public static final boolean isAutomagyLoaded = Loader.isModLoaded("Automagy");
+    public static final boolean isEioLoaded = Loader.isModLoaded("EnderIO");
 
     public DraconicEvolution() {
         LogHelper.info("Hello Minecraft!!!");
+    }
+
+    public static ClientProxy clientProxy() {
+        if (proxy.isClient()) {
+            return ((ClientProxy) proxy);
+        }
+        throw new IllegalStateException("Accessed ClientProxy from dedicated server");
     }
 
     @Mod.EventHandler
@@ -74,6 +84,12 @@ public class DraconicEvolution {
     public void postInit(final FMLPostInitializationEvent event) {
         if (debug) System.out.println("postInit()");
         proxy.postInit(event);
+    }
+
+    @Mod.EventHandler
+    public void onServerStopped(final FMLServerStoppedEvent event) {
+        if (debug) System.out.println("onServerStopped()");
+        proxy.onServerStopped(event);
     }
 
     @Mod.EventHandler

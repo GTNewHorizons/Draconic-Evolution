@@ -34,11 +34,8 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -48,11 +45,10 @@ import net.minecraftforge.event.world.WorldEvent;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.ModBlocks;
 import com.brandon3055.draconicevolution.common.ModItems;
-import com.brandon3055.draconicevolution.common.achievements.Achievements;
 import com.brandon3055.draconicevolution.common.entity.EntityCustomDragon;
 import com.brandon3055.draconicevolution.common.entity.EntityDragonHeart;
 import com.brandon3055.draconicevolution.common.entity.ExtendedPlayer;
-import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler;
+import com.brandon3055.draconicevolution.common.items.armor.ArmorSummary;
 import com.brandon3055.draconicevolution.common.network.MountUpdatePacket;
 import com.brandon3055.draconicevolution.common.network.SpeedRequestPacket;
 import com.brandon3055.draconicevolution.common.tileentities.TileGrinder;
@@ -71,22 +67,22 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class MinecraftForgeEventHandler {
 
-    Random random = new Random();
+    private static final Random random = new Random();
     private static Method becomeAngryAt;
+    private static final Field persistenceRequired;
 
     public static double maxSpeed = 10F;
     public static int ticksSinceRequest = 0;
     public static boolean speedNeedsUpdating = true;
 
-    private Field persistenceRequired = null;
-
-    public MinecraftForgeEventHandler() {
+    static {
+        Field f = null;
         try {
-            persistenceRequired = ReflectionHelper
-                    .findField(EntityLiving.class, "field_82179_bU", "persistenceRequired");
+            f = ReflectionHelper.findField(EntityLiving.class, "field_82179_bU", "persistenceRequired");
         } catch (Exception e) {
             LogHelper.error("Unable to find field \"persistenceRequired\"");
         }
+        persistenceRequired = f;
     }
 
     @SubscribeEvent
@@ -132,35 +128,12 @@ public class MinecraftForgeEventHandler {
     }
 
     @SubscribeEvent
-    public void onLivingHurt(LivingHurtEvent event) {
-        if (event.entityLiving instanceof EntityPlayer) {
-            CustomArmorHandler.onPlayerHurt(event);
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOW)
-    public void onLivingDeath(LivingDeathEvent event) {
-        if (event.entityLiving instanceof EntityPlayer) {
-            CustomArmorHandler.onPlayerDeath(event);
-        }
-    }
-
-    @SubscribeEvent
     public void onLivingJumpEvent(LivingEvent.LivingJumpEvent event) {
-        if (!(event.entityLiving instanceof EntityPlayer)) return;
-        EntityPlayer player = (EntityPlayer) event.entityLiving;
-        CustomArmorHandler.ArmorSummery summery = new CustomArmorHandler.ArmorSummery().getSummery(player);
-
-        if (summery != null && summery.jumpModifier > 0) {
-            player.motionY += (double) (summery.jumpModifier * 0.1F);
+        if (!(event.entityLiving instanceof EntityPlayer player)) return;
+        final ArmorSummary summary = ArmorSummary.get(player);
+        if (summary != null && summary.jumpModifier > 0) {
+            player.motionY += (summary.jumpModifier * 0.1F);
         }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOW)
-    public void onLivingAttack(LivingAttackEvent event) {
-        if (!(event.entityLiving instanceof EntityPlayer)) return;
-
-        CustomArmorHandler.onPlayerAttacked(event);
     }
 
     @SubscribeEvent
@@ -222,7 +195,7 @@ public class MinecraftForgeEventHandler {
         EntityLivingBase entity = event.entityLiving;
         Entity attacker = event.source.getEntity();
 
-        if (attacker == null || !(attacker instanceof EntityPlayer)) {
+        if (!(attacker instanceof EntityPlayer)) {
             return;
         }
 
@@ -243,7 +216,7 @@ public class MinecraftForgeEventHandler {
                 ItemNBTHelper.setInteger(soul, "SkeletonType", ((EntitySkeleton) entity).getSkeletonType());
             }
             world.spawnEntityInWorld(new EntityItem(world, entity.posX, entity.posY, entity.posZ, soul));
-            Achievements.triggerAchievement((EntityPlayer) attacker, "draconicevolution.soul");
+            DraconicEvolution.proxy.triggerAchievement((EntityPlayer) attacker, "draconicevolution.soul");
         }
     }
 
@@ -405,16 +378,15 @@ public class MinecraftForgeEventHandler {
     public void getBreakSpeed(PlayerEvent.BreakSpeed event) {
         if (event.entityPlayer != null) {
             float newDigSpeed = event.originalSpeed;
-            CustomArmorHandler.ArmorSummery summery = new CustomArmorHandler.ArmorSummery()
-                    .getSummery(event.entityPlayer);
-            if (summery == null) return;
+            final ArmorSummary summary = ArmorSummary.get(event.entityPlayer);
+            if (summary == null) return;
 
             if (event.entityPlayer.isInsideOfMaterial(Material.water)) {
-                if (summery.flight[0]) newDigSpeed *= 5f;
+                if (summary.flight[0]) newDigSpeed *= 5f;
             }
 
             if (!event.entityPlayer.onGround) {
-                if (summery.flight[0]) newDigSpeed *= 5f;
+                if (summary.flight[0]) newDigSpeed *= 5f;
             }
 
             if (event.newSpeed > 1) {

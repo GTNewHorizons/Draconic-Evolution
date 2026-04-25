@@ -19,45 +19,41 @@ import org.lwjgl.opengl.GL11;
 import com.brandon3055.draconicevolution.client.gui.GuiHudConfig;
 import com.brandon3055.draconicevolution.client.utils.GuiHelper;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
-import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler;
+import com.brandon3055.draconicevolution.common.items.armor.ArmorSummary;
 import com.brandon3055.draconicevolution.common.utils.IHudDisplayBlock;
 import com.brandon3055.draconicevolution.common.utils.IHudDisplayItem;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import cpw.mods.fml.common.gameevent.TickEvent;
 
 /**
  * Created by Brandon on 26/01/2015.
  */
-public class HudHandler {
+public final class HudHandler {
 
-    private static List<String> hudList = null;
-    private static List<String> ltHudList = null;
-    private static float toolTipFadeOut = 0F;
-    private static float armorStatsFadeOut = 0F;
-    private static boolean showShieldHud = false;
-    private static int shieldPercentCharge = 0;
-    private static float shieldPoints = 0F;
-    private static float maxShieldPoints = 0F;
-    private static float shieldEntropy = 0F;
-    private static int rfCharge = 0;
-    private static long rfTotal = 0;
-
-    int width;
-    int height;
+    private List<String> hudList = null;
+    private List<String> ltHudList = null;
+    private float toolTipFadeOut = 0F;
+    private float armorStatsFadeOut = 0F;
+    private boolean showShieldHud = false;
+    private int shieldPercentCharge = 0;
+    private float shieldPoints = 0F;
+    private float maxShieldPoints = 0F;
+    private float shieldEntropy = 0F;
+    private int rfCharge = 0;
+    private long rfTotal = 0;
 
     @SubscribeEvent
-    @SideOnly(Side.CLIENT)
     public void drawHUD(RenderGameOverlayEvent.Post event) {
         Minecraft mc = Minecraft.getMinecraft();
         if (event.type != RenderGameOverlayEvent.ElementType.ALL || mc.gameSettings.showDebugInfo
-                || mc.currentScreen instanceof GuiChat)
+                || mc.currentScreen instanceof GuiChat) {
             return;
+        }
 
         ScaledResolution resolution = event.resolution;
-        width = resolution.getScaledWidth();
-        height = resolution.getScaledHeight();
+        final int width = resolution.getScaledWidth();
+        final int height = resolution.getScaledHeight();
         FontRenderer fontRenderer = mc.fontRenderer;
 
         if (ConfigHandler.hudSettings[10] == 1 && hudList != null && toolTipFadeOut > 0) {
@@ -86,13 +82,20 @@ public class HudHandler {
         }
     }
 
-    // x, y, x, y, scale, scale, fademode, fademode, rotateArmor, armorText
-    @SideOnly(Side.CLIENT)
-    public static void clientTick() {
+    @SubscribeEvent
+    public void tickEnd(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && Minecraft.getMinecraft().theWorld != null) {
+            this.clientTick();
+        }
+    }
+
+    private void clientTick() {
         if (ConfigHandler.hudSettings[6] > 0 && toolTipFadeOut > 1F - ((float) ConfigHandler.hudSettings[6] * 0.25F)) {
             toolTipFadeOut -= 0.1F;
         }
-        if (hudList != null && (ltHudList == null || !hudList.equals(ltHudList))) toolTipFadeOut = 5F;
+        if (hudList != null && !hudList.equals(ltHudList)) {
+            toolTipFadeOut = 5F;
+        }
         if (ConfigHandler.hudSettings[7] > 0
                 && armorStatsFadeOut > 1F - ((float) ConfigHandler.hudSettings[7] * 0.25F)) {
             armorStatsFadeOut -= 0.1F;
@@ -108,7 +111,7 @@ public class HudHandler {
 
         if (mc.currentScreen != null) {
             if (mc.currentScreen instanceof GuiHudConfig) {
-                hudList = new ArrayList<String>();
+                hudList = new ArrayList<>();
                 hudList.add(StatCollector.translateToLocal("info.de.hudDisplayConfigTxt1.txt"));
                 hudList.add("");
                 hudList.add("");
@@ -130,26 +133,26 @@ public class HudHandler {
                     .getDisplayData(mc.theWorld, mop.blockX, mop.blockY, mop.blockZ);
         }
 
-        CustomArmorHandler.ArmorSummery summery = new CustomArmorHandler.ArmorSummery().getSummery(mc.thePlayer);
+        final ArmorSummary summary = ArmorSummary.get(mc.thePlayer);
 
-        if (summery == null) {
+        if (summary == null) {
             showShieldHud = false;
             return;
         }
         showShieldHud = armorStatsFadeOut > 0F;
 
-        if (maxShieldPoints != summery.maxProtectionPoints || shieldPoints != summery.protectionPoints
-                || shieldEntropy != summery.entropy
-                || rfTotal != summery.totalEnergyStored)
+        if (maxShieldPoints != summary.maxProtectionPoints || shieldPoints != summary.protectionPoints
+                || shieldEntropy != summary.entropy
+                || rfTotal != summary.totalEnergyStored)
             armorStatsFadeOut = 5F;
 
-        maxShieldPoints = summery.maxProtectionPoints;
-        shieldPoints = summery.protectionPoints;
-        shieldPercentCharge = (int) (summery.protectionPoints / summery.maxProtectionPoints * 100D);
-        shieldEntropy = summery.entropy;
-        rfCharge = (int) ((double) summery.totalEnergyStored / Math.max((double) summery.maxTotalEnergyStorage, 1D)
+        maxShieldPoints = summary.maxProtectionPoints;
+        shieldPoints = summary.protectionPoints;
+        shieldPercentCharge = (int) (summary.protectionPoints / summary.maxProtectionPoints * 100D);
+        shieldEntropy = summary.entropy;
+        rfCharge = (int) ((double) summary.totalEnergyStored / Math.max((double) summary.maxTotalEnergyStorage, 1D)
                 * 100D);
-        rfTotal = summery.totalEnergyStored;
+        rfTotal = summary.totalEnergyStored;
     }
 
     private void drawArmorHUD(int x, int y, boolean rotated, double scale) {

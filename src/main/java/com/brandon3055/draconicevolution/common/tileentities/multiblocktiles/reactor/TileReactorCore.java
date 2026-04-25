@@ -139,7 +139,7 @@ public class TileReactorCore extends TileObjectSync implements IInventory {
     @SideOnly(Side.CLIENT)
     private void updateSound() {
         if (reactorSound == null) {
-            reactorSound = (ReactorSound) DraconicEvolution.proxy.playISound(new ReactorSound(this));
+            reactorSound = (ReactorSound) DraconicEvolution.clientProxy().playISound(new ReactorSound(this));
         }
     }
 

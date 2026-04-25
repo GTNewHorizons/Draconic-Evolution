@@ -11,17 +11,14 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.storage.WorldInfo;
 
-import com.brandon3055.draconicevolution.DraconicEvolution;
-
 public class TileWeatherController extends TileEntity implements IInventory {
 
     int tick = 0;
     boolean running = false;
     public boolean lastTickInput = false;
     public int mode = 0;
-    private static final boolean debug = DraconicEvolution.debug;
 
-    private ItemStack[] items;
+    private final ItemStack[] items;
     public int charges;
 
     public TileWeatherController() {

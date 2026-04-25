@@ -40,20 +40,25 @@ public class EntityChaosVortex extends Entity {
         if (!worldObj.isRemote) dataWatcher.updateObject(20, ticksExisted);
         else ticksExisted = dataWatcher.getWatchableObjectInt(20);
 
-        if (ticksExisted < 30 && ticksExisted % 5 == 0 && worldObj.isRemote) DraconicEvolution.proxy
-                .spawnParticle(new Particles.ChaosExpansionParticle(worldObj, posX, posY, posZ, false), 512);
-        if (ticksExisted >= 100 && ticksExisted < 130 && ticksExisted % 5 == 0 && worldObj.isRemote)
-            DraconicEvolution.proxy
+        if (ticksExisted < 30 && ticksExisted % 5 == 0 && worldObj.isRemote) {
+            DraconicEvolution.clientProxy()
+                    .spawnParticle(new Particles.ChaosExpansionParticle(worldObj, posX, posY, posZ, false), 512);
+        }
+        if (ticksExisted >= 100 && ticksExisted < 130 && ticksExisted % 5 == 0 && worldObj.isRemote) {
+            DraconicEvolution.clientProxy()
                     .spawnParticle(new Particles.ChaosExpansionParticle(worldObj, posX, posY, posZ, true), 512);
+        }
         if (ticksExisted < 100) return;
 
         for (int i = 0; i < 10; i++) {
             double x = posX - 18 + rand.nextDouble() * 36;
             double y = posY - 8 + rand.nextDouble() * 16;
             double z = posZ - 18 + rand.nextDouble() * 36;
-            if (worldObj.isRemote) DraconicEvolution.proxy.spawnParticle(
-                    new Particles.AdvancedSeekerParticle(worldObj, x, y, z, posX, posY, posZ, 2, 1f, 1f, 1f, 100),
-                    128);
+            if (worldObj.isRemote) {
+                DraconicEvolution.clientProxy().spawnParticle(
+                        new Particles.AdvancedSeekerParticle(worldObj, x, y, z, posX, posY, posZ, 2, 1f, 1f, 1f, 100),
+                        128);
+            }
         }
 
         if (ticksExisted > 130 && worldObj.isRemote && ticksExisted % 2 == 0) shakeScreen();

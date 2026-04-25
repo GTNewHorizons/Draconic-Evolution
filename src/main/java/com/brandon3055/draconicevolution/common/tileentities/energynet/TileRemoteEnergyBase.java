@@ -100,7 +100,7 @@ public abstract class TileRemoteEnergyBase extends TileObjectSync implements IRe
                         rType = 1;
                     else rType = 0;
                 }
-                device.beam = DraconicEvolution.proxy.energyBeam(
+                device.beam = DraconicEvolution.clientProxy().energyBeam(
                         worldObj,
                         getBeamX(),
                         getBeamY(),

@@ -1,6 +1,6 @@
 package com.brandon3055.draconicevolution.common.network;
 
-import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
+import com.brandon3055.draconicevolution.DraconicEvolution;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -45,7 +45,7 @@ public class MountUpdatePacket implements IMessage {
                 return null;
             }
 
-            ClientEventHandler.tryRepositionPlayerOnMount(message.entityID);
+            DraconicEvolution.clientProxy().tryRepositionPlayerOnMount(message.entityID);
             return null;
         }
     }
