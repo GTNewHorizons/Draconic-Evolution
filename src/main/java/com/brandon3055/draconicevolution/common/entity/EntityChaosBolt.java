@@ -77,24 +77,6 @@ public class EntityChaosBolt extends Entity {
                     }
                 }
             }
-            // if (ticks > 40 && !worldObj.isRemote) {
-            // if (ticks % 5 == 0)
-            // {
-            // double dist = Utills.getDistanceAtoB(posX, posY, posZ, shardX, shardY, shardZ);
-            // Vec3 dir = Vec3.createVectorHelper((shardX - posX) / dist, (shardY - posY) / dist, (shardZ -
-            // posZ) / dist);
-            // MovingObjectPosition movingobjectposition =
-            // this.worldObj.//func_147447_a(Vec3.createVectorHelper(posX, posY, posZ), dir, false, true, false);
-            // Entity entity = movingobjectposition.entityHit; //WorldUtil.rayTraceEntities(worldObj,
-            // Vec3.createVectorHelper(posX, posY, posZ), dir, 20);
-            //
-            // LogHelper.info(movingobjectposition);
-            // if (entity instanceof EntityLivingBase) {
-            // entity.hurtResistantTime = 0;
-            // entity.attackEntityFrom(chaosBurst, 50F);
-            // }
-            // }
-            // }
         }
 
         if (ticks > 60) {
