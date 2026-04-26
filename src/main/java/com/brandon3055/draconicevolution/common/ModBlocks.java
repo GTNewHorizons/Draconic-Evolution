@@ -110,7 +110,7 @@ public class ModBlocks {
         customSpawner = new CustomSpawner();
         generator = new Generator();
         energyStorageCore = new EnergyStorageCore();
-        earthBlock = new Earth();
+        if (!ConfigHandler.disableEarthBlock) earthBlock = new Earth();
         draconiumBlock = new DraconiumBlock();
         invisibleMultiblock = new InvisibleMultiblock();
         energyPylon = new EnergyPylon();
