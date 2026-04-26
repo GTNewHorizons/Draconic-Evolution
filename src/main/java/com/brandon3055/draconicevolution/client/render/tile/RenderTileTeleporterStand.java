@@ -1,7 +1,5 @@
 package com.brandon3055.draconicevolution.client.render.tile;
 
-import java.awt.Point;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -10,6 +8,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -33,11 +32,11 @@ import com.brandon3055.draconicevolution.common.utils.Utils;
  */
 public class RenderTileTeleporterStand extends TileEntitySpecialRenderer {
 
-    ModelTeleporterStand model = new ModelTeleporterStand();
-
+    private final ModelTeleporterStand model = new ModelTeleporterStand();
     private final ResourceLocation texture = new ResourceLocation(
             References.MODID.toLowerCase(),
             "textures/models/TeleporterStand.png");
+    private final EntityItem cachedEntity = new EntityItem(null, 0, 0, 0, new ItemStack(Items.apple));
 
     @Override
     public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
@@ -69,27 +68,29 @@ public class RenderTileTeleporterStand extends TileEntitySpecialRenderer {
         GL11.glPopMatrix();
     }
 
-    public void renderItem(TileEntity tile, ItemStack item, float f) {
-        if (item.getItem() == null) return;
+    public void renderItem(TileEntity tile, ItemStack stack, float f) {
+        if (stack.getItem() == null) return;
         GL11.glPushMatrix();
 
-        EntityItem itemEntity = new EntityItem(tile.getWorldObj(), 0, 0, 0, item);
-        itemEntity.hoverStart = 0.0F;
-
-        if (item.getItem() instanceof TeleporterMKII) {
+        if (stack.getItem() instanceof TeleporterMKII) {
             GL11.glTranslatef(0F, 0.18F, 0.864F);
-            GL11.glRotated(180, 0, 0, 1);
-            GL11.glRotated(30, 1, 0, 0);
-            GL11.glScalef(1F, 1F, 1F);
         } else {
             GL11.glTranslatef(0F, 0.22F, 0.84F);
-            GL11.glRotated(180, 0, 0, 1);
-            GL11.glRotated(30, 1, 0, 0);
-            GL11.glScalef(1F, 1F, 1F);
         }
+        GL11.glRotated(180, 0, 0, 1);
+        GL11.glRotated(30, 1, 0, 0);
+        GL11.glScalef(1F, 1F, 1F);
 
         RenderItem.renderInFrame = true;
-        RenderManager.instance.renderEntityWithPosYaw(itemEntity, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+        try {
+            this.cachedEntity.setEntityItemStack(stack);
+            this.cachedEntity.setWorld(tile.getWorldObj());
+            this.cachedEntity.hoverStart = 0.0F;
+            RenderManager.instance.renderEntityWithPosYaw(this.cachedEntity, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+        } finally {
+            this.cachedEntity.setEntityItemStack(null);
+            this.cachedEntity.setWorld(null);
+        }
         RenderItem.renderInFrame = false;
 
         GL11.glPopMatrix();
@@ -125,9 +126,6 @@ public class RenderTileTeleporterStand extends TileEntitySpecialRenderer {
         GL11.glScalef(0.02f, 0.02f, 0.02f);
         GL11.glRotated(180, 0, 1, 0);
         GL11.glTranslated(0, -40, 0);
-
-        Point.Double p1 = new Point.Double(tileentity.xCoord + 0.5, tileentity.zCoord + 0.5);
-        Point.Double p2 = new Point.Double(player.posX, player.posZ);
 
         double xDiff = player.posX - (tileentity.xCoord + 0.5);
         double yDiff = player.posY - (tileentity.yCoord + 0.5);

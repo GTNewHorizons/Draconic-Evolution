@@ -1,20 +1,23 @@
 package com.brandon3055.draconicevolution.common;
 
-import net.minecraft.client.audio.ISound;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.creativetab.DETab;
 import com.brandon3055.draconicevolution.client.gui.GuiHandler;
-import com.brandon3055.draconicevolution.client.render.particle.ParticleEnergyBeam;
-import com.brandon3055.draconicevolution.client.render.particle.ParticleEnergyField;
-import com.brandon3055.draconicevolution.client.render.particle.ParticleReactorBeam;
 import com.brandon3055.draconicevolution.common.achievements.Achievements;
 import com.brandon3055.draconicevolution.common.entity.EntityChaosBolt;
 import com.brandon3055.draconicevolution.common.entity.EntityChaosCrystal;
@@ -33,6 +36,7 @@ import com.brandon3055.draconicevolution.common.handler.ContributorHandler;
 import com.brandon3055.draconicevolution.common.handler.CraftingHandler;
 import com.brandon3055.draconicevolution.common.handler.FMLEventHandler;
 import com.brandon3055.draconicevolution.common.handler.MinecraftForgeEventHandler;
+import com.brandon3055.draconicevolution.common.items.armor.CustomArmorHandler;
 import com.brandon3055.draconicevolution.common.lib.OreDoublingRegistry;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.magic.EnchantmentReaper;
@@ -102,6 +106,8 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStoppedEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -109,12 +115,28 @@ import cpw.mods.fml.relauncher.Side;
 
 public class CommonProxy {
 
+    private Achievements achievements;
+    private CustomArmorHandler armorHandler;
+    private DragonChunkLoader dragonChunkLoader;
+    private final Map<World, List<TileDislocatorInhibitor>> serverInhibitorsMap = new HashMap<>();
+
+    public CommonProxy() {
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
     public void preInit(FMLPreInitializationEvent event) {
         FileHandler.init(event);
         ProcessHandler.init();
         ConfigHandler.init(event.getSuggestedConfigurationFile());
         BalanceConfigHandler.init(event.getModConfigurationDirectory());
-        registerEventListeners(event.getSide());
+        MinecraftForge.EVENT_BUS.register(new MinecraftForgeEventHandler());
+        this.achievements = new Achievements();
+        MinecraftForge.EVENT_BUS.register(this.achievements);
+        FMLCommonHandler.instance().bus().register(this.achievements);
+        FMLCommonHandler.instance().bus().register(new FMLEventHandler());
+        this.armorHandler = new CustomArmorHandler();
+        MinecraftForge.EVENT_BUS.register(armorHandler);
+        FMLCommonHandler.instance().bus().register(armorHandler);
         ModBlocks.init();
         ModItems.init();
         ContributorHandler.init();
@@ -124,7 +146,7 @@ public class CommonProxy {
 
         DraconicEvolution.reaperEnchant = new EnchantmentReaper(ConfigHandler.reaperEnchantID);
 
-        Achievements.addModAchievements();
+        this.achievements.addModAchievements();
         LogHelper.info("Finished PreInitialization");
     }
 
@@ -136,18 +158,30 @@ public class CommonProxy {
         DETab.initialize();
         PotionHandler.init();
         CCOCIntegration.init();
-        DragonChunkLoader.init();
+        this.dragonChunkLoader = new DragonChunkLoader();
+        ForgeChunkManager.setForcedChunkLoadingCallback(DraconicEvolution.instance, this.dragonChunkLoader);
         LogHelper.info("Finished Initialization");
     }
 
     public void postInit(FMLPostInitializationEvent event) {
         BalanceConfigHandler.finishLoading();
         OreDoublingRegistry.init();
-        Achievements.registerAchievementPane();
+        this.achievements.registerAchievementPane();
         LogHelper.info("Finished PostInitialization");
     }
 
-    public void initializeNetwork() {
+    public void onServerStopped(FMLServerStoppedEvent event) {
+        this.serverInhibitorsMap.clear();
+        this.dragonChunkLoader.onServerStopped();
+        this.armorHandler.onServerStopped();
+    }
+
+    @SubscribeEvent
+    public void onWorldUnload(WorldEvent.Unload event) {
+        this.serverInhibitorsMap.remove(event.world);
+    }
+
+    private void initializeNetwork() {
         // spotless:off
         DraconicEvolution.network = NetworkRegistry.INSTANCE.newSimpleChannel(DraconicEvolution.networkChannelName);
         DraconicEvolution.network.registerMessage(ButtonPacket.Handler.class, ButtonPacket.class, 0, Side.SERVER);
@@ -178,7 +212,7 @@ public class CommonProxy {
         // spotless:on
     }
 
-    public void registerTileEntities() {
+    private void registerTileEntities() {
         // spotless:off
         GameRegistry.registerTileEntity(TileWeatherController.class, References.RESOURCESPREFIX + "TileWeatherController");
         GameRegistry.registerTileEntity(TileSunDial.class, References.RESOURCESPREFIX + "TileSunDial");
@@ -214,13 +248,6 @@ public class CommonProxy {
         GameRegistry.registerTileEntity(TileUpgradeModifier.class, References.RESOURCESPREFIX + "TileEnhancementModifier");
         GameRegistry.registerTileEntity(TileDislocatorInhibitor.class, References.RESOURCESPREFIX + "TileDislocatorInhibitor");
         // spotless:on
-    }
-
-    public void registerEventListeners(Side s) {
-        MinecraftForge.EVENT_BUS.register(new MinecraftForgeEventHandler());
-        MinecraftForge.EVENT_BUS.register(new Achievements());
-        FMLCommonHandler.instance().bus().register(new Achievements());
-        FMLCommonHandler.instance().bus().register(new FMLEventHandler());
     }
 
     public void registerGuiHandeler() {
@@ -268,26 +295,6 @@ public class CommonProxy {
         // spotless:on
     }
 
-    public ParticleEnergyBeam energyBeam(World worldObj, double x, double y, double z, double tx, double ty, double tz,
-            int powerFlow, boolean advanced, ParticleEnergyBeam oldBeam, boolean render, int beamType) {
-        return null;
-    }
-
-    public ParticleEnergyField energyField(World worldObj, double x, double y, double z, int type, boolean advanced,
-            ParticleEnergyField oldBeam, boolean render) {
-        return null;
-    }
-
-    public ParticleReactorBeam reactorBeam(TileEntity tile, ParticleReactorBeam oldBeam, boolean render) {
-        return null;
-    }
-
-    public void spawnParticle(Object particle, int range) {}
-
-    public ISound playISound(ISound sound) {
-        return null;
-    }
-
     public boolean isDedicatedServer() {
         return true;
     }
@@ -314,5 +321,69 @@ public class CommonProxy {
 
     public EntityPlayer getClientPlayer() {
         return null;
+    }
+
+    public boolean isClient() {
+        return false;
+    }
+
+    public void triggerAchievement(EntityPlayer player, String name) {
+        this.achievements.triggerAchievement(player, name);
+    }
+
+    public DragonChunkLoader getDragonChunkLoader() {
+        return dragonChunkLoader;
+    }
+
+    public void registerInhibitor(TileDislocatorInhibitor tile) {
+        if (tile.hasWorldObj()) {
+            registerInhibitor(this.serverInhibitorsMap, tile);
+        }
+    }
+
+    protected static void registerInhibitor(Map<World, List<TileDislocatorInhibitor>> map,
+            TileDislocatorInhibitor tile) {
+        final List<TileDislocatorInhibitor> list = map.computeIfAbsent(tile.getWorldObj(), k -> new ArrayList<>());
+        if (!list.contains(tile)) {
+            list.add(tile);
+        }
+    }
+
+    public void unregisterInhibitor(TileDislocatorInhibitor tile) {
+        if (tile.hasWorldObj()) {
+            unregisterInhibitor(this.serverInhibitorsMap, tile);
+        }
+    }
+
+    protected static void unregisterInhibitor(Map<World, List<TileDislocatorInhibitor>> map,
+            TileDislocatorInhibitor tile) {
+        final List<TileDislocatorInhibitor> list = map.get(tile.getWorldObj());
+        if (list != null) {
+            list.remove(tile);
+            if (list.isEmpty()) {
+                map.remove(tile.getWorldObj());
+            }
+        }
+    }
+
+    public boolean isBlockedByInhibitor(World world, EntityItem item) {
+        return isBlockedByInhibitor(this.serverInhibitorsMap, world, item);
+    }
+
+    protected static boolean isBlockedByInhibitor(Map<World, List<TileDislocatorInhibitor>> map, World world,
+            EntityItem item) {
+        final List<TileDislocatorInhibitor> list = map.get(world);
+        if (list == null) {
+            return false;
+        }
+        // noinspection ForLoopReplaceableByForEach
+        for (int i = 0; i < list.size(); i++) {
+            final TileDislocatorInhibitor tile = list.get(i);
+            if (tile.shouldBeActive() && tile.isInRange(item.posX, item.posY, item.posZ)
+                    && tile.isBlockingItem(item.getEntityItem())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

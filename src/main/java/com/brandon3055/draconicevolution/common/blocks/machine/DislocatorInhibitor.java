@@ -94,18 +94,6 @@ public class DislocatorInhibitor extends BlockDE implements ITileEntityProvider 
         updateRedstoneStatus(world, x, y, z);
     }
 
-    @Override
-    public void breakBlock(World worldIn, int x, int y, int z, Block blockBroken, int meta) {
-        TileEntity tile = worldIn.getTileEntity(x, y, z);
-        if (tile != null) {
-            if (tile instanceof TileDislocatorInhibitor) {
-                ((TileDislocatorInhibitor) tile).unregister();
-            }
-        }
-
-        super.breakBlock(worldIn, x, y, z, blockBroken, meta);
-    }
-
     @SideOnly(Side.CLIENT)
     @Override
     public void registerBlockIcons(IIconRegister iconRegister) {

@@ -29,7 +29,6 @@ import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.items.ItemDE;
 import com.brandon3055.draconicevolution.common.lib.References;
-import com.brandon3055.draconicevolution.common.tileentities.TileDislocatorInhibitor;
 import com.brandon3055.draconicevolution.common.utils.IConfigurableItem;
 import com.brandon3055.draconicevolution.common.utils.InfoHelper;
 import com.brandon3055.draconicevolution.common.utils.InventoryUtils;
@@ -136,7 +135,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
 
         for (EntityItem item : items) {
             if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
-                    || TileDislocatorInhibitor.isBlockedByInhibitor(world, item)) {
+                    || DraconicEvolution.proxy.isBlockedByInhibitor(world, item)) {
                 continue;
             }
 

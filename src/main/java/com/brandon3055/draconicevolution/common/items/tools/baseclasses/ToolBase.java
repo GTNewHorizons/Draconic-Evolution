@@ -20,7 +20,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import com.brandon3055.draconicevolution.DraconicEvolution;
-import com.brandon3055.draconicevolution.client.keybinding.KeyBindings;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.network.ToolModePacket;
@@ -228,10 +227,13 @@ public class ToolBase extends RFItemBase {
 
     @SideOnly(Side.CLIENT)
     public void addAditionalInformation(ItemStack stack, EntityPlayer player, List list, boolean extended) {
-        String key;
-        if (KeyBindings.toolConfig.getKeyCode() >= 0 && KeyBindings.toolConfig.getKeyCode() < Keyboard.KEYBOARD_SIZE)
-            key = Keyboard.getKeyName(KeyBindings.toolConfig.getKeyCode());
-        else key = Mouse.getButtonName(KeyBindings.toolConfig.getKeyCode() + 101);
+        final int configKeyCode = DraconicEvolution.clientProxy().getKeybindHandler().toolConfigKeycode();
+        final String key;
+        if (configKeyCode >= 0 && configKeyCode < Keyboard.KEYBOARD_SIZE) {
+            key = Keyboard.getKeyName(configKeyCode);
+        } else {
+            key = Mouse.getButtonName(configKeyCode + 101);
+        }
 
         list.add(
                 StatCollector.translateToLocal("info.de.press.txt") + " "

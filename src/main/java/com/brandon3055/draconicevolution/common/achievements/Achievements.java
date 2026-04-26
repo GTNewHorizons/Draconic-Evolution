@@ -21,38 +21,31 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
  */
 public class Achievements {
 
-    private static AchievementPage achievementsPage;
-    private static HashMap<String, Achievement> achievementsList = new HashMap<String, Achievement>();
-    private static HashMap<String, AchievementCondition> achievementItems = new HashMap<String, AchievementCondition>();
+    private final HashMap<String, Achievement> achievementsList = new HashMap<>();
+    private final HashMap<String, AchievementCondition> achievementItems = new HashMap<>();
 
-    public static void addAchievement(String name, Achievement achievement, ItemStack stack, String triggerCondition) {
+    private void addAchievement(String name, Achievement achievement, ItemStack stack, String triggerCondition) {
         if (stack == null || stack.getItem() == null) return;
         achievementsList.put(name, achievement.registerStat());
         achievementItems.put(stack.getUnlocalizedName(), new AchievementCondition(name, triggerCondition));
     }
 
-    public static void addAchievement(String name, Achievement achievement, String triggerCondition) {
+    private void addAchievement(String name, Achievement achievement, String triggerCondition) {
         addAchievement(name, achievement, achievement.theItemStack, triggerCondition);
     }
 
-    public static void addAchievement(String name, Achievement achievement) {
-        addAchievement(name, achievement, achievement.theItemStack, "null");
-    }
-
-    public static Achievement getAchievement(String name) {
+    private Achievement getAchievement(String name) {
         return achievementsList.get(name);
     }
 
-    public static void triggerAchievement(EntityPlayer player, String name) {
-
+    public void triggerAchievement(EntityPlayer player, String name) {
         Achievement ach = getAchievement(name);
-
         if (ach != null) {
             player.triggerAchievement(ach);
         }
     }
 
-    public static void addModAchievements() {
+    public void addModAchievements() {
         int x = 5;
         addAchievement(
                 "draconicevolution.dust",
@@ -442,11 +435,11 @@ public class Achievements {
                 "craft");
     }
 
-    public static void registerAchievementPane() {
+    public void registerAchievementPane() {
         Achievement[] achievements = new Achievement[achievementsList.size()];
 
         achievements = achievementsList.values().toArray(achievements);
-        achievementsPage = new AchievementPage(
+        AchievementPage achievementsPage = new AchievementPage(
                 StatCollector.translateToLocal("draconicevolution.achievementPage.name"),
                 achievements);
         AchievementPage.registerAchievementPage(achievementsPage);
@@ -458,7 +451,7 @@ public class Achievements {
         stack.stackSize = 1;
         if (achievementItems.containsKey(stack.getUnlocalizedName())
                 && achievementItems.get(stack.getUnlocalizedName()).isCorrectCondition("pickup")) {
-            triggerAchievement(event.entityPlayer, achievementItems.get(stack.getUnlocalizedName()).getName());
+            triggerAchievement(event.entityPlayer, achievementItems.get(stack.getUnlocalizedName()).name);
         }
     }
 
@@ -468,7 +461,7 @@ public class Achievements {
         stack.stackSize = 1;
         if (achievementItems.containsKey(stack.getUnlocalizedName())
                 && achievementItems.get(stack.getUnlocalizedName()).isCorrectCondition("craft")) {
-            triggerAchievement(event.player, achievementItems.get(stack.getUnlocalizedName()).getName());
+            triggerAchievement(event.player, achievementItems.get(stack.getUnlocalizedName()).name);
         }
     }
 
@@ -478,13 +471,13 @@ public class Achievements {
         stack.stackSize = 1;
         if (achievementItems.containsKey(stack.getUnlocalizedName())
                 && achievementItems.get(stack.getUnlocalizedName()).isCorrectCondition("smelt")) {
-            triggerAchievement(event.player, achievementItems.get(stack.getUnlocalizedName()).getName());
+            triggerAchievement(event.player, achievementItems.get(stack.getUnlocalizedName()).name);
         }
     }
 
     private static class AchievementCondition {
 
-        private final String name;
+        public final String name;
         public final String condition;
 
         public AchievementCondition(String name, String condition) {
@@ -494,10 +487,6 @@ public class Achievements {
 
         public boolean isCorrectCondition(String s) {
             return s.equals(condition);
-        }
-
-        public String getName() {
-            return name;
         }
     }
 }
