@@ -86,7 +86,8 @@ public class GUIParticleGenerator extends GuiScreen {
         @Override
         public void drawLabel(FontRenderer fontRenderer, int x, int y) {
             fontRenderer.drawString(label, x, y, 0x000000);
-            fontRenderer.drawString(String.valueOf(value), x, y + 10, 0x000000);
+            fontRenderer
+                    .drawString(StatCollector.translateToLocalFormatted("gui.de.numbers", value), x, y + 10, 0x000000);
         }
     }
 
@@ -141,7 +142,11 @@ public class GUIParticleGenerator extends GuiScreen {
         public void drawLabel(FontRenderer fontRenderer, int x, int y) {
             float roundedValue = Math.round(value * scale) / scale;
             fontRenderer.drawString(label, x, y, 0x000000);
-            fontRenderer.drawString(String.valueOf(roundedValue), x, y + 10, 0x000000);
+            fontRenderer.drawString(
+                    StatCollector.translateToLocalFormatted("gui.de.numbers", roundedValue),
+                    x,
+                    y + 10,
+                    0x000000);
         }
     }
 

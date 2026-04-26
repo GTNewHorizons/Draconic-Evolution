@@ -48,7 +48,7 @@ public class GUIFlowGate extends GuiScreen {
 
         drawDefaultBackground();
         ResourceHandler.bindResource("textures/gui/ToolConfig.png");
-        drawTexturedModalRect(guiLeft, guiTop, 0, 0, 197, 88);
+        drawTexturedModalRect(guiLeft, guiTop, 0, 0, 198, 89);
         fontRendererObj.drawString(
                 StatCollector.translateToLocal("gui.de.flowGate.name"),
                 guiCrt - (fontRendererObj.getStringWidth(StatCollector.translateToLocal("gui.de.flowGate.name")) / 2),

@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
@@ -82,7 +83,11 @@ public class GUIGrinder extends GuiContainer {
                 18 - (int) (fuel * 13)); // Power bar
         if (tile.isExternallyPowered()) drawTexturedModalRect(guiLeft + 100, guiTop + 37, xSize, 66, 13, 13);
 
-        fontRendererObj.drawStringWithShadow("Grinder", guiLeft + 71, guiTop, 0x00FFFF);
+        fontRendererObj.drawStringWithShadow(
+                StatCollector.translateToLocal("gui.de.grinder.main.title"),
+                guiLeft + 71,
+                guiTop,
+                0x00FFFF);
 
         int x = X - guiLeft;
         int y = Y - guiTop;

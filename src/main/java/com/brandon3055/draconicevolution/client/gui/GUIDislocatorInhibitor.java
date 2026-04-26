@@ -66,11 +66,8 @@ public class GUIDislocatorInhibitor extends GuiContainer implements INEIGuiHandl
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
-        fontRendererObj.drawString(
-                StatCollector.translateToLocal("tile.draconicevolution:dislocatorInhibitor.name"),
-                7,
-                5,
-                0x222222);
+        fontRendererObj
+                .drawString(StatCollector.translateToLocal("gui.de.dislocatorInhibitor.main.title"), 7, 5, 0x222222);
         drawGuiText();
         drawGreyOutSlots();
         drawButtonIcons();
@@ -200,7 +197,12 @@ public class GUIDislocatorInhibitor extends GuiContainer implements INEIGuiHandl
                 25,
                 0x000000,
                 false);
-        fontRendererObj.drawString(String.valueOf(range), range < 10 ? 78 : 75, 25, 0x000000, false);
+        fontRendererObj.drawString(
+                StatCollector.translateToLocalFormatted("gui.de.numbers", range),
+                range < 10 ? 78 : 75,
+                25,
+                0x000000,
+                false);
     }
 
     private void drawButtonIcons() {

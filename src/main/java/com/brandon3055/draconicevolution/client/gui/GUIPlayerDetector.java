@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
@@ -75,7 +76,7 @@ public class GUIPlayerDetector extends GuiContainer {
     public void drawScreen(int x, int y, float partialTicks) {
         super.drawScreen(x, y, partialTicks);
         ArrayList<String> lines = new ArrayList<>();
-        lines.add("Camouflage");
+        lines.add(StatCollector.translateToLocal("gui.de.playerDetector.camouflage"));
         if ((x - guiLeft > 142 && x - guiLeft < 160) && (y - guiTop > 19 && y - guiTop < 37)
                 && container.shouldShowInventory()) {
             drawHoveringText(lines, x, y, fontRendererObj);
@@ -88,15 +89,30 @@ public class GUIPlayerDetector extends GuiContainer {
         super.initGui();
         buttonList.clear();
         if (!isInEditMode) {
-            String mode = isInWhitelistMode ? "White List" : "Black List";
+            String mode = isInWhitelistMode ? StatCollector.translateToLocal("gui.de.playerDetector.whiteList")
+                    : StatCollector.translateToLocal("gui.de.playerDetector.blackList");
             int center = width / 2;
             buttonList.add(new GuiButton(0, center - 20 - 20, guiTop + 20, 20, 20, "+"));
             buttonList.add(new GuiButton(1, center + 20, guiTop + 20, 20, 20, "-"));
             buttonList.add(new GuiButton(3, center - 40, guiTop + 45, 60, 20, mode));
             buttonList.add(new GuiButton(4, center + 20, guiTop + 45, 20, 20, "!"));
-            buttonList.add(new GuiButton(6, center - 40, guiTop + 70, 80, 20, "Invert Output"));
+            buttonList.add(
+                    new GuiButton(
+                            6,
+                            center - 40,
+                            guiTop + 70,
+                            80,
+                            20,
+                            StatCollector.translateToLocal("gui.de.playerDetector.invertOutput")));
         } else {
-            buttonList.add(new GuiButton(5, guiLeft - 40, guiTop + ySize - 20, 40, 20, "Back"));
+            buttonList.add(
+                    new GuiButton(
+                            5,
+                            guiLeft - 40,
+                            guiTop + ySize - 20,
+                            40,
+                            20,
+                            StatCollector.translateToLocal("gui.de.playerDetector.back")));
         }
 
         selectedNameText = new GuiTextField(fontRendererObj, 4, -12, 168, 12);
@@ -186,7 +202,12 @@ public class GUIPlayerDetector extends GuiContainer {
     private void drawGuiText() {
         if (isInEditMode) {
             if (selectedMameIndex != -1) {
-                drawCenteredString(fontRendererObj, "Press Enter to save", xSize / 2, -22, 0xFF0000);
+                drawCenteredString(
+                        fontRendererObj,
+                        StatCollector.translateToLocal("gui.de.playerDetector.pressEnter"),
+                        xSize / 2,
+                        -22,
+                        0xFF0000);
             }
             for (int row = 0; row < 21; row++) {
                 for (int column = 0; column < 2; column++) {
@@ -200,11 +221,31 @@ public class GUIPlayerDetector extends GuiContainer {
                 }
             }
         } else {
-            drawCenteredString(fontRendererObj, "Advanced Player Detector", xSize / 2, 5, 0x00FFFF);
+            drawCenteredString(
+                    fontRendererObj,
+                    StatCollector.translateToLocal("gui.de.playerDetector.main.title"),
+                    xSize / 2,
+                    5,
+                    0x00FFFF);
 
-            fontRendererObj.drawString("Range:", 73, 21, 0x000000, false);
-            fontRendererObj.drawString("Output Inverted: " + isOutputInverted, 33, 97, 0x000000, false);
-            fontRendererObj.drawString(String.valueOf(range), range < 10 ? 85 : 82, 31, 0x000000, false);
+            fontRendererObj.drawString(
+                    StatCollector.translateToLocal("gui.de.playerDetector.range") + ":",
+                    73,
+                    21,
+                    0x000000,
+                    false);
+            fontRendererObj.drawString(
+                    StatCollector.translateToLocalFormatted("gui.de.playerDetector.outputInvert", isOutputInverted),
+                    33,
+                    97,
+                    0x000000,
+                    false);
+            fontRendererObj.drawString(
+                    StatCollector.translateToLocalFormatted("gui.de.numbers", range),
+                    range < 10 ? 85 : 82,
+                    31,
+                    0x000000,
+                    false);
         }
         selectedNameText.drawTextBox();
     }
