@@ -69,13 +69,17 @@ public class GUIWeatherController extends GuiContainer {
     public static final String STORM_TEXT = "gui.de.rain.storm";
     public static String text;
 
+    private String getModeText(int mode) {
+        if (mode == 0) return StatCollector.translateToLocal(RAIN_OFF_TEXT);
+        else if (mode == 1) return StatCollector.translateToLocal(RAIN_ON_TEXT);
+        else return StatCollector.translateToLocal(STORM_TEXT);
+    }
+
     @Override
     public void initGui() {
         super.initGui();
         buttonList.clear();
-        if (tileWC.mode == 0) text = StatCollector.translateToLocal(RAIN_OFF_TEXT);
-        else if (tileWC.mode == 1) text = StatCollector.translateToLocal(RAIN_ON_TEXT);
-        else text = StatCollector.translateToLocal(STORM_TEXT);
+        text = getModeText(tileWC.mode);
         // ID
         buttonList.add(new GuiButton(0, guiLeft + 85, guiTop, 85, 20, text));
     }
@@ -84,11 +88,8 @@ public class GUIWeatherController extends GuiContainer {
     protected void actionPerformed(GuiButton button) {
         if (button.id == 0) {
             DraconicEvolution.network.sendToServer(new ButtonPacket((byte) 0, true));
-            if (button.displayString.equals(StatCollector.translateToLocal(STORM_TEXT))) {
-                button.displayString = StatCollector.translateToLocal(RAIN_OFF_TEXT);
-            } else if (button.displayString.equals(StatCollector.translateToLocal(RAIN_OFF_TEXT))) {
-                button.displayString = StatCollector.translateToLocal(RAIN_ON_TEXT);
-            } else button.displayString = StatCollector.translateToLocal(STORM_TEXT);
+            tileWC.mode = (tileWC.mode + 1) % 3;
+            button.displayString = getModeText(tileWC.mode);
         }
     }
 
