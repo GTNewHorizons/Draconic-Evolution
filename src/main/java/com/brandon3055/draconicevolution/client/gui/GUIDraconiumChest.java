@@ -95,7 +95,7 @@ public class GUIDraconiumChest extends GuiContainer implements INEIGuiHandler {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
-        fontRendererObj.drawString(tile.getInventoryName(), 4, 4, 0x222222);
+        fontRendererObj.drawString(StatCollector.translateToLocal("gui.de.draconiumChest.main.title"), 4, 4, 0x222222);
         // fontRendererObj.drawStringWithShadow(StatCollector.translateToLocal("button.de.chestAutoFeed.txt"), 4, 180,
         // 0x00FFFF);
 

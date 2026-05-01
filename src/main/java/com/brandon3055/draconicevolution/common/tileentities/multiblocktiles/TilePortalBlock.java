@@ -92,7 +92,7 @@ public class TilePortalBlock extends TileEntity {
                     }
                 }
             }
-            DraconicEvolution.proxy.spawnParticle(
+            DraconicEvolution.clientProxy().spawnParticle(
                     new Particles.PortalParticle(worldObj, sourceX, sourceY, sourceZ, targetX, targetY, targetZ),
                     256);
         }

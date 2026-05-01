@@ -98,7 +98,7 @@ public class TileReactorStabilizer extends TileEntity
             beam = null;
         }
         if (isValid) {
-            beam = DraconicEvolution.proxy.reactorBeam(this, beam, true);
+            beam = DraconicEvolution.clientProxy().reactorBeam(this, beam, true);
         }
     }
 

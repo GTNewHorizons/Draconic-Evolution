@@ -32,9 +32,8 @@ public class RenderTileEarth extends TileEntitySpecialRenderer {
 
     @Override
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float timeSinceLastTick) {
-        if (!(tile instanceof TileEarth)) return;
+        if (!(tile instanceof TileEarth tileEarth)) return;
 
-        TileEarth tileEarth = (TileEarth) tile;
         float scale = 0.01f * tileEarth.getSize();
 
         GL11.glPushMatrix();

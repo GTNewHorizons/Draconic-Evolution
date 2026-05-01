@@ -53,7 +53,7 @@ public class TileReactorEnergyInjector extends TileEntity implements IReactorPar
 
     @SideOnly(Side.CLIENT)
     private void updateBeam() {
-        beam = DraconicEvolution.proxy.reactorBeam(this, beam, true);
+        beam = DraconicEvolution.clientProxy().reactorBeam(this, beam, true);
     }
 
     public void onPlaced() {

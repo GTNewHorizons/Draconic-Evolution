@@ -36,10 +36,10 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
  */
 public class ContributorHandler {
 
-    public static Map<String, Contributor> contributors = new LinkedHashMap<String, Contributor>();
+    public static Map<String, Contributor> contributors = new LinkedHashMap<>();
     public static boolean successfulLoad = false;
     private static DLThread thread;
-    private static ModelContributorWings wings = new ModelContributorWings();
+    private static final ModelContributorWings wings = new ModelContributorWings();
 
     public static void init() {
         thread = new DLThread();
@@ -58,8 +58,8 @@ public class ContributorHandler {
     }
 
     public static boolean isPlayerContributor(EntityPlayer player) {
-        return contributors.containsKey(player.getCommandSenderName())
-                && contributors.get(player.getCommandSenderName()).isUserValid(player);
+        final Contributor contributor = contributors.get(player.getCommandSenderName());
+        return contributor != null && contributor.isUserValid(player);
     }
 
     private static void renderWings(RenderPlayerEvent event) {
@@ -175,14 +175,14 @@ public class ContributorHandler {
                 Contributor contributor = new Contributor();
 
                 while (reader.hasNext()) {
-                    String name = reader.nextName();
-
-                    if (name.equals("name")) contributor.name = reader.nextString();
-                    else if (name.equals("ign")) contributor.ign = reader.nextString();
-                    else if (name.equals("contribution")) contributor.contribution = reader.nextString();
-                    else if (name.equals("details")) contributor.details = reader.nextString();
-                    else if (name.equals("website")) contributor.website = reader.nextString();
-                    else if (name.equals("contributionLevel")) contributor.contributionLevel = reader.nextInt();
+                    switch (reader.nextName()) {
+                        case "name" -> contributor.name = reader.nextString();
+                        case "ign" -> contributor.ign = reader.nextString();
+                        case "contribution" -> contributor.contribution = reader.nextString();
+                        case "details" -> contributor.details = reader.nextString();
+                        case "website" -> contributor.website = reader.nextString();
+                        case "contributionLevel" -> contributor.contributionLevel = reader.nextInt();
+                    }
                 }
 
                 contributors.put(contributor.ign, contributor);

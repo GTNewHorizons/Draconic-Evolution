@@ -76,7 +76,7 @@ public class GUIGenerator extends GuiContainer {
                 18 - (int) (fuel * 13)); // Power bar
 
         fontRendererObj.drawStringWithShadow(
-                StatCollector.translateToLocal("tile.draconicevolution:generator.name"),
+                StatCollector.translateToLocal("gui.de.generator.main.title"),
                 guiLeft + 64,
                 guiTop,
                 0x00FFFF);

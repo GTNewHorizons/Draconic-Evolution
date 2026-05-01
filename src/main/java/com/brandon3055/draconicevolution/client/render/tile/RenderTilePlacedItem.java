@@ -1,16 +1,16 @@
 package com.brandon3055.draconicevolution.client.render.tile;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
@@ -22,12 +22,11 @@ import com.brandon3055.draconicevolution.common.tileentities.TilePlacedItem;
  */
 public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
 
-    public RenderTilePlacedItem() {}
+    private final EntityItem cachedEntity = new EntityItem(null, 0, 0, 0, new ItemStack(Items.apple));
 
     @Override
     public void renderTileEntityAt(TileEntity te, double x, double y, double z, float timeSinceLastTick) {
-        if (te == null || !(te instanceof TilePlacedItem)) return;
-        TilePlacedItem tile = (TilePlacedItem) te;
+        if (!(te instanceof TilePlacedItem tile)) return;
         if (tile.getStack() == null) return;
         GL11.glPushMatrix();
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
@@ -39,20 +38,18 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
 
     public void renderItem(TilePlacedItem tile) {
         ItemStack stack = tile.getStack();
-        World world = Minecraft.getMinecraft().theWorld;
-        EntityItem itemEntity = new EntityItem(tile.getWorldObj(), 0, 0, 0, stack);
-        int meta = world.getBlockMetadata(tile.xCoord, tile.yCoord, tile.zCoord);
+        int meta = tile.getWorldObj().getBlockMetadata(tile.xCoord, tile.yCoord, tile.zCoord);
         // itemEntity.getEntityItem().stackSize = 1;
-        itemEntity.hoverStart = 0.0F;
-        boolean is3D = stack.getItem().isFull3D();
-        boolean isBlock = stack.getItem() instanceof ItemBlock;
+        final Item item = stack.getItem();
+        boolean is3D = item.isFull3D();
+        boolean isBlock = item instanceof ItemBlock;
 
         if (isBlock) {
             GL11.glTranslatef(0.5F, 0.25F, 0.5F);
             GL11.glScalef(1.5F, 1.5F, 1.5F);
             metaAdjustBlock(meta);
             GL11.glRotatef(tile.rotation, 0F, 1F, 0F);
-        } else if (is3D || stack.getItem() instanceof ItemArmor || stack.getItem() instanceof ItemBow) {
+        } else if (is3D || item instanceof ItemArmor || item instanceof ItemBow) {
             GL11.glScalef(2F, 2F, 2F);
             GL11.glRotatef(90F, -1F, 0F, 0F);
             GL11.glTranslatef(0.25F, -0.45F, 0.02F);
@@ -60,8 +57,7 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
             GL11.glTranslatef(0.0F, 0.21F, 0.0F);
             GL11.glRotatef(tile.rotation, 0F, 0F, 1F);
             GL11.glTranslatef(0.0F, -0.21F, 0.0F);
-        } else if (stack.getItem() instanceof MobSoul) {
-
+        } else if (item instanceof MobSoul) {
             GL11.glTranslatef(0.5F, 0.3F, 0.5F);
         } else {
             GL11.glRotatef(90F, -1F, 0F, 0F);
@@ -74,7 +70,15 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
 
         GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT);
         RenderItem.renderInFrame = true;
-        RenderManager.instance.renderEntityWithPosYaw(itemEntity, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+        try {
+            this.cachedEntity.setEntityItemStack(stack);
+            this.cachedEntity.setWorld(tile.getWorldObj());
+            this.cachedEntity.hoverStart = 0.0F;
+            RenderManager.instance.renderEntityWithPosYaw(this.cachedEntity, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+        } finally {
+            this.cachedEntity.setEntityItemStack(null);
+            this.cachedEntity.setWorld(null);
+        }
         RenderItem.renderInFrame = false;
         GL11.glPopAttrib();
     }

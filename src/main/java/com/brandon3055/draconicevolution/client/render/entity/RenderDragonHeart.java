@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
+import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.ModItems;
 import com.brandon3055.draconicevolution.common.entity.EntityDragonHeart;
 import com.brandon3055.draconicevolution.common.lib.References;
@@ -27,10 +27,11 @@ public class RenderDragonHeart extends Render {
 
     private void doRender(EntityDragonHeart entity, double x, double y, double z, float f) {
 
-        float sine = (float) Math.abs(Math.cos(ClientEventHandler.elapsedTicks / 1000D));
+        final int ticks = DraconicEvolution.clientProxy().getElapsedTicks();
+        float sine = (float) Math.abs(Math.cos(ticks / 1000D));
 
         { // Draw Item
-          // GL11.glRotatef((((float) ClientEventHandler.elapsedTicks) + f) * entity.rotationSpeed, 0f, 1f, 0f);
+          // GL11.glRotatef((((float) ticks) + f) * entity.rotationSpeed, 0f, 1f, 0f);
             GL11.glRotatef(entity.rotation + f * entity.rotationInc, 0f, 1f, 0f);
             EntityItem itemEntity = new EntityItem(entity.worldObj, 0, 0, 0, new ItemStack(ModItems.dragonHeart));
             itemEntity.hoverStart = 0.0F;

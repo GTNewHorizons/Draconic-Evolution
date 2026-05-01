@@ -18,19 +18,13 @@ import com.brandon3055.draconicevolution.common.entity.EntityChaosGuardian;
 /**
  * Created by brandon3055 on 21/10/2015.
  */
-public class DragonChunkLoader implements LoadingCallback {
+public final class DragonChunkLoader implements LoadingCallback {
 
-    public static DragonChunkLoader instance;
-    public static Map<EntityChaosGuardian, Ticket> ticketList = new HashMap<>();
-    public static boolean hasReportedIssue = false;
+    private final Map<EntityChaosGuardian, Ticket> ticketList = new HashMap<>();
+    private boolean hasReportedIssue = false;
 
-    public static void init() {
-        instance = new DragonChunkLoader();
-        ForgeChunkManager.setForcedChunkLoadingCallback(DraconicEvolution.instance, instance);
-    }
-
-    public static void updateLoaded(EntityChaosGuardian guardian) {
-        Ticket ticket;
+    public void updateLoaded(EntityChaosGuardian guardian) {
+        final Ticket ticket;
 
         if (ticketList.containsKey(guardian)) {
             ticket = ticketList.get(guardian);
@@ -90,7 +84,7 @@ public class DragonChunkLoader implements LoadingCallback {
         return false;
     }
 
-    public static void stopLoading(EntityChaosGuardian guardian) {
+    public void stopLoading(EntityChaosGuardian guardian) {
         if (!ticketList.containsKey(guardian)) return;
         ForgeChunkManager.releaseTicket(ticketList.get(guardian));
         ticketList.remove(guardian);
@@ -106,5 +100,9 @@ public class DragonChunkLoader implements LoadingCallback {
                 }
             }
         }
+    }
+
+    public void onServerStopped() {
+        this.ticketList.clear();
     }
 }
