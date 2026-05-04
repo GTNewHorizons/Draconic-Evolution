@@ -47,17 +47,14 @@ public class TileEnergyRelay extends TileRemoteEnergyBase {
         super.updateEntity();
 
         if (worldObj.isRemote) {
-            ring = DraconicEvolution.clientProxy().energyField(
-                    worldObj,
-                    xCoord + 0.5,
-                    yCoord + 0.5,
-                    zCoord + 0.5,
-                    0,
-                    powerTier == 1,
-                    ring,
-                    inView > 0);
-            return;
+            spawnEnergyField();
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void spawnEnergyField() {
+        ring = DraconicEvolution.clientProxy()
+                .energyField(worldObj, xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, 0, powerTier == 1, ring, inView > 0);
     }
 
     @Override

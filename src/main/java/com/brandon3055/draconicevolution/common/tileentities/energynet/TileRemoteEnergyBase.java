@@ -100,19 +100,7 @@ public abstract class TileRemoteEnergyBase extends TileObjectSync implements IRe
                         rType = 1;
                     else rType = 0;
                 }
-                device.beam = DraconicEvolution.clientProxy().energyBeam(
-                        worldObj,
-                        getBeamX(),
-                        getBeamY(),
-                        getBeamZ(),
-                        remoteTile.getBeamX(),
-                        remoteTile.getBeamY(),
-                        remoteTile.getBeamZ(),
-                        (int) device.energyFlow,
-                        getPowerTier() == 1,
-                        device.beam,
-                        true,
-                        rType);
+                updateBeam(device, remoteTile, rType);
             } else {
                 double difference = getCapacity() - remoteTile.getCapacity();
                 double energyToEqual = Math
@@ -135,6 +123,23 @@ public abstract class TileRemoteEnergyBase extends TileObjectSync implements IRe
                 detectAndSendChanges(linkedDevices.indexOf(device));
             }
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void updateBeam(LinkedEnergyDevice device, IRemoteEnergyHandler remoteTile, int rType) {
+        device.beam = DraconicEvolution.clientProxy().energyBeam(
+                worldObj,
+                getBeamX(),
+                getBeamY(),
+                getBeamZ(),
+                remoteTile.getBeamX(),
+                remoteTile.getBeamY(),
+                remoteTile.getBeamZ(),
+                (int) device.energyFlow,
+                getPowerTier() == 1,
+                device.beam,
+                true,
+                rType);
     }
 
     protected void detectAndSendChanges(int index) {

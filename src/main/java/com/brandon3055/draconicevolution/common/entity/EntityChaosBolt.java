@@ -8,6 +8,9 @@ import net.minecraft.world.World;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.render.particle.Particles;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 /**
  * Created by brandon3055 on 30/9/2015.
  */
@@ -62,18 +65,14 @@ public class EntityChaosBolt extends Entity {
 
         if (ticks == 10 && !burst) {
             if (worldObj.isRemote) {
-                DraconicEvolution.clientProxy().spawnParticle(
-                        new Particles.ChaosBoltParticle(worldObj, posX, posY, posZ, shardX, shardY, shardZ, 10),
-                        32);
+                spawnParticles(10);
             }
             setDead();
         } else if (ticks > 10) {
             if (ticks < 25) {
                 for (int i = 0; i < 20; i++) {
                     if (worldObj.isRemote) {
-                        DraconicEvolution.clientProxy().spawnParticle(
-                                new Particles.ChaosBoltParticle(worldObj, posX, posY, posZ, shardX, shardY, shardZ, 0),
-                                32);
+                        spawnParticles(0);
                     }
                 }
             }
@@ -84,6 +83,13 @@ public class EntityChaosBolt extends Entity {
         }
 
         ticks++;
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void spawnParticles(int mode) {
+        DraconicEvolution.clientProxy().spawnParticle(
+                new Particles.ChaosBoltParticle(worldObj, posX, posY, posZ, shardX, shardY, shardZ, mode),
+                32);
     }
 
     @Override

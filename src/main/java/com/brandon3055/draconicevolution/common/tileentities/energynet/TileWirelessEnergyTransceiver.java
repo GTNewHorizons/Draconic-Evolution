@@ -62,32 +62,13 @@ public class TileWirelessEnergyTransceiver extends TileRemoteEnergyBase {
         super.updateEntity();
 
         if (worldObj.isRemote) {
-            ring = DraconicEvolution.clientProxy().energyField(
-                    worldObj,
-                    xCoord + 0.5,
-                    yCoord + 0.5,
-                    zCoord + 0.5,
-                    2,
-                    powerTier == 1,
-                    ring,
-                    inView > 0);
+            spawnEnergyField();
 
             for (LinkedReceiver receiver : receiverList) {
                 int particleValue = 200;
                 if (receiver.particleEnergyCounter > particleValue) {
                     receiver.particleEnergyCounter -= particleValue;
-
-                    // todo detect box size
-                    DraconicEvolution.clientProxy().spawnParticle(
-                            new Particles.TransceiverParticle(
-                                    worldObj,
-                                    xCoord + 0.5,
-                                    yCoord + 0.3 + (worldObj.rand.nextDouble() * 0.4),
-                                    zCoord + 0.5,
-                                    receiver.xCoord + worldObj.rand.nextDouble(),
-                                    receiver.yCoord + worldObj.rand.nextDouble(),
-                                    receiver.zCoord + worldObj.rand.nextDouble()),
-                            64);
+                    spawnParticles(receiver);
                 }
             }
         } else {
@@ -118,6 +99,27 @@ public class TileWirelessEnergyTransceiver extends TileRemoteEnergyBase {
                     sendObjectToClient(References.SHORT_ID, 10 + receiverList.indexOf(receiver), (short) sent);
             }
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void spawnEnergyField() {
+        ring = DraconicEvolution.clientProxy()
+                .energyField(worldObj, xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, 2, powerTier == 1, ring, inView > 0);
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void spawnParticles(LinkedReceiver receiver) {
+        // todo detect box size
+        DraconicEvolution.clientProxy().spawnParticle(
+                new Particles.TransceiverParticle(
+                        worldObj,
+                        xCoord + 0.5,
+                        yCoord + 0.3 + (worldObj.rand.nextDouble() * 0.4),
+                        zCoord + 0.5,
+                        receiver.xCoord + worldObj.rand.nextDouble(),
+                        receiver.yCoord + worldObj.rand.nextDouble(),
+                        receiver.zCoord + worldObj.rand.nextDouble()),
+                64);
     }
 
     @SideOnly(Side.CLIENT)

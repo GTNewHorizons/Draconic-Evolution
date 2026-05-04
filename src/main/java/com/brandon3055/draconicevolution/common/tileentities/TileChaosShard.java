@@ -10,6 +10,9 @@ import net.minecraft.util.AxisAlignedBB;
 
 import com.brandon3055.draconicevolution.common.entity.EntityChaosVortex;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 /**
  * Created by brandon3055 on 24/9/2015.
  */
@@ -55,13 +58,18 @@ public class TileChaosShard extends TileEntity {
 
     public void detonate() {
         if (!worldObj.isRemote
-                && locationHash != getLocationHash(xCoord, yCoord, zCoord, worldObj.provider.dimensionId))
+                && locationHash != getLocationHash(xCoord, yCoord, zCoord, worldObj.provider.dimensionId)) {
             worldObj.setBlockToAir(xCoord, yCoord, zCoord);
-        else {
-            EntityChaosVortex vortex = new EntityChaosVortex(worldObj);
-            vortex.setPosition(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5);
-            worldObj.spawnEntityInWorld(vortex);
+        } else {
+            spawnChaosVortex();
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void spawnChaosVortex() {
+        EntityChaosVortex vortex = new EntityChaosVortex(worldObj);
+        vortex.setPosition(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5);
+        worldObj.spawnEntityInWorld(vortex);
     }
 
     public void setDefeated() {
