@@ -393,6 +393,7 @@ public final class ClientProxy extends CommonProxy {
         return this.clientHandler.getEnergyCrystalAlpha();
     }
 
+    @Override
     public void tryRepositionPlayerOnMount(int entityId) {
         this.clientHandler.tryRepositionPlayerOnMount(entityId);
     }

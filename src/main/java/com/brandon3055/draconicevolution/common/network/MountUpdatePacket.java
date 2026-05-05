@@ -45,7 +45,7 @@ public class MountUpdatePacket implements IMessage {
                 return null;
             }
 
-            DraconicEvolution.clientProxy().tryRepositionPlayerOnMount(message.entityID);
+            DraconicEvolution.proxy.tryRepositionPlayerOnMount(message.entityID);
             return null;
         }
     }

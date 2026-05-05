@@ -13,6 +13,8 @@ import com.brandon3055.draconicevolution.common.network.GenericParticlePacket;
 import com.brandon3055.draconicevolution.common.utils.handlers.ProcessHandler;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Created by brandon3055 on 3/10/2015.
@@ -41,12 +43,10 @@ public class EntityChaosVortex extends Entity {
         else ticksExisted = dataWatcher.getWatchableObjectInt(20);
 
         if (ticksExisted < 30 && ticksExisted % 5 == 0 && worldObj.isRemote) {
-            DraconicEvolution.clientProxy()
-                    .spawnParticle(new Particles.ChaosExpansionParticle(worldObj, posX, posY, posZ, false), 512);
+            spawnChaosParticles(false);
         }
         if (ticksExisted >= 100 && ticksExisted < 130 && ticksExisted % 5 == 0 && worldObj.isRemote) {
-            DraconicEvolution.clientProxy()
-                    .spawnParticle(new Particles.ChaosExpansionParticle(worldObj, posX, posY, posZ, true), 512);
+            spawnChaosParticles(true);
         }
         if (ticksExisted < 100) return;
 
@@ -55,9 +55,7 @@ public class EntityChaosVortex extends Entity {
             double y = posY - 8 + rand.nextDouble() * 16;
             double z = posZ - 18 + rand.nextDouble() * 36;
             if (worldObj.isRemote) {
-                DraconicEvolution.clientProxy().spawnParticle(
-                        new Particles.AdvancedSeekerParticle(worldObj, x, y, z, posX, posY, posZ, 2, 1f, 1f, 1f, 100),
-                        128);
+                spawnSeekerParticles(x, y, z);
             }
         }
 
@@ -71,6 +69,19 @@ public class EntityChaosVortex extends Entity {
         }
 
         if (ticksExisted > 620) setDead();
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void spawnChaosParticles(boolean shrink) {
+        DraconicEvolution.clientProxy()
+                .spawnParticle(new Particles.ChaosExpansionParticle(worldObj, posX, posY, posZ, shrink), 512);
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void spawnSeekerParticles(double x, double y, double z) {
+        DraconicEvolution.clientProxy().spawnParticle(
+                new Particles.AdvancedSeekerParticle(worldObj, x, y, z, posX, posY, posZ, 2, 1f, 1f, 1f, 100),
+                128);
     }
 
     private void shakeScreen() {

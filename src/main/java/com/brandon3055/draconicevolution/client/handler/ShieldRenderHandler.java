@@ -16,6 +16,8 @@ import com.brandon3055.draconicevolution.common.utils.DataUtils;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public final class ShieldRenderHandler {
 
@@ -31,6 +33,7 @@ public final class ShieldRenderHandler {
         }
     }
 
+    @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void tickEnd(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END && !shieldStatus.isEmpty()) {

@@ -55,9 +55,9 @@ public class TileChaosShard extends TileEntity {
 
     public void detonate() {
         if (!worldObj.isRemote
-                && locationHash != getLocationHash(xCoord, yCoord, zCoord, worldObj.provider.dimensionId))
+                && locationHash != getLocationHash(xCoord, yCoord, zCoord, worldObj.provider.dimensionId)) {
             worldObj.setBlockToAir(xCoord, yCoord, zCoord);
-        else {
+        } else {
             EntityChaosVortex vortex = new EntityChaosVortex(worldObj);
             vortex.setPosition(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5);
             worldObj.spawnEntityInWorld(vortex);

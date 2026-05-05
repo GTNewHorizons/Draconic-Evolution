@@ -335,6 +335,8 @@ public class CommonProxy {
         return dragonChunkLoader;
     }
 
+    public void tryRepositionPlayerOnMount(int entityId) {}
+
     public void registerInhibitor(TileDislocatorInhibitor tile) {
         if (tile.hasWorldObj()) {
             registerInhibitor(this.serverInhibitorsMap, tile);
