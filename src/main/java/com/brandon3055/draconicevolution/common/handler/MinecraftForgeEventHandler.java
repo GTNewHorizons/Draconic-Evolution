@@ -69,20 +69,19 @@ public class MinecraftForgeEventHandler {
 
     private static final Random random = new Random();
     private static Method becomeAngryAt;
-    private static final Field persistenceRequired;
+    private static final Field persistenceRequired = findPersistenceRequiredField();
 
     public static double maxSpeed = 10F;
     public static int ticksSinceRequest = 0;
     public static boolean speedNeedsUpdating = true;
 
-    static {
-        Field f = null;
+    private static Field findPersistenceRequiredField() {
         try {
-            f = ReflectionHelper.findField(EntityLiving.class, "field_82179_bU", "persistenceRequired");
+            return ReflectionHelper.findField(EntityLiving.class, "field_82179_bU", "persistenceRequired");
         } catch (Exception e) {
             LogHelper.error("Unable to find field \"persistenceRequired\"");
         }
-        persistenceRequired = f;
+        return null;
     }
 
     @SubscribeEvent
