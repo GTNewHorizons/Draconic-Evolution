@@ -139,6 +139,17 @@ public final class HudHandler {
             showShieldHud = false;
             return;
         }
+        if (!shouldDisplayArmorHud(summary)) {
+            showShieldHud = false;
+            armorStatsFadeOut = 0F;
+            maxShieldPoints = 0F;
+            shieldPoints = 0F;
+            shieldPercentCharge = 0;
+            shieldEntropy = 0F;
+            rfCharge = 0;
+            rfTotal = 0;
+            return;
+        }
         showShieldHud = armorStatsFadeOut > 0F;
 
         if (maxShieldPoints != summary.maxProtectionPoints || shieldPoints != summary.protectionPoints
@@ -153,6 +164,10 @@ public final class HudHandler {
         rfCharge = (int) ((double) summary.totalEnergyStored / Math.max((double) summary.maxTotalEnergyStorage, 1D)
                 * 100D);
         rfTotal = summary.totalEnergyStored;
+    }
+
+    private boolean shouldDisplayArmorHud(ArmorSummary summary) {
+        return summary.maxProtectionPoints > 0F || summary.maxTotalEnergyStorage > 0;
     }
 
     private void drawArmorHUD(int x, int y, boolean rotated, double scale) {
