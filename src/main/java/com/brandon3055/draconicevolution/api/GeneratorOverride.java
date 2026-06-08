@@ -2,8 +2,12 @@ package com.brandon3055.draconicevolution.api;
 
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 
+import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
 import com.brandon3055.draconicevolution.common.utils.DataUtils;
 import com.brandon3055.draconicevolution.common.world.ChaosWorldGenHandler;
 import com.brandon3055.draconicevolution.common.world.DraconicWorldGenerator;
@@ -66,5 +70,26 @@ public class GeneratorOverride {
      */
     public static void setOreEnabledInEnd(boolean cometsEnabled) {
         DraconicWorldGenerator.oreEnabledInEnd = cometsEnabled;
+    }
+
+    /**
+     * Returns coordinates of the nearest chaos island for the given chunk, or {@code null}
+     * <p>
+     * This is for mods who need to know where chaos islands generate, for example to avoid overlapping their own world
+     * features.
+     *
+     * @param chunkX chunk X position
+     * @param chunkZ chunk Z position
+     * @return Chaos Island Center coordinates, or {@code null} if none generates for that cell
+     */
+    public static @Nullable ChunkCoordinates getNearestChaosIslandCenter(int chunkX, int chunkZ) {
+        if (!DraconicWorldGenerator.chaosIslandsEnabled || !ConfigHandler.generateChaosIslands) return null;
+
+        DataUtils.XZPair<Integer, Integer> center = ChaosWorldGenHandler.getClosestChaosSpawn(chunkX, chunkZ);
+
+        // tHe island in (0, 0) is never generated
+        if (center.x == 0 && center.z == 0) return null;
+
+        return new ChunkCoordinates(center.x, 80, center.z);
     }
 }
