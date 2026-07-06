@@ -28,7 +28,7 @@ import com.brandon3055.draconicevolution.client.utils.guicomponents.GUIBase;
 import com.brandon3055.draconicevolution.common.container.ContainerAdvTool;
 import com.brandon3055.draconicevolution.common.handler.ContributorHandler;
 import com.brandon3055.draconicevolution.common.items.weapons.BowHandler;
-import com.brandon3055.draconicevolution.common.items.weapons.IEnergyContainerWeaponItem;
+import com.brandon3055.draconicevolution.common.items.weapons.IEnergyContainerBowItem;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.network.ContributorPacket;
 import com.brandon3055.draconicevolution.common.network.ItemConfigPacket;
@@ -311,11 +311,11 @@ public class GUIToolConfig extends GUIBase {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 
         if (slot > -1) editingItem = player.inventory.getStackInSlot(slot);
-        if (slot > -1 && editingItem != null && editingItem.getItem() instanceof IEnergyContainerWeaponItem) {
+        if (slot > -1 && editingItem != null && editingItem.getItem() instanceof IEnergyContainerBowItem) {
             BowHandler.BowProperties properties = new BowHandler.BowProperties(editingItem, player);
 
             if (!properties.canFire() && properties.cantFireMessage != null
-                    && !properties.cantFireMessage.equals("msg.de.outOfArrows.name")) {
+                    && !properties.cantFireMessage.equals("msg.de.outOfArrows.txt")) {
                 fontRendererObj.drawSplitString(
                         StatCollector.translateToLocal(properties.cantFireMessage),
                         0,

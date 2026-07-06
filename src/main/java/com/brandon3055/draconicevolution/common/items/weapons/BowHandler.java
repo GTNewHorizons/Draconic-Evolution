@@ -158,8 +158,8 @@ public class BowHandler {
 
         public int calculateEnergyCost() {
             updateValues();
-            double rfCost = (bow.getItem() instanceof IEnergyContainerWeaponItem)
-                    ? ((IEnergyContainerWeaponItem) bow.getItem()).getEnergyPerAttack()
+            double rfCost = (bow.getItem() instanceof IEnergyContainerBowItem)
+                    ? ((IEnergyContainerBowItem) bow.getItem()).getEnergyPerAttack()
                     : 80;
 
             rfCost *= 1 + arrowDamage;
@@ -175,7 +175,7 @@ public class BowHandler {
             updateValues();
 
             if (player == null) return false;
-            if (!(bow.getItem() instanceof IEnergyContainerWeaponItem)) {
+            if (!(bow.getItem() instanceof IEnergyContainerBowItem)) {
                 cantFireMessage = "[Error] This bow is not a valid energy container (This is a bug, Please report on the Draconic Evolution github)";
                 return false;
             } else if (!energyBolt && shockWavePower > 0) {
@@ -184,7 +184,7 @@ public class BowHandler {
             } else if (energyBolt && explosionPower > 0) {
                 cantFireMessage = "msg.de.explosiveNotForEnergyBolts.txt";
                 return false;
-            } else if (calculateEnergyCost() > ((IEnergyContainerWeaponItem) bow.getItem()).getEnergyStored(bow)
+            } else if (calculateEnergyCost() > ((IEnergyContainerBowItem) bow.getItem()).getEnergyStored(bow)
                     && !player.capabilities.isCreativeMode) {
                         cantFireMessage = "msg.de.insufficientPowerToFire.txt";
                         return false;
@@ -223,7 +223,7 @@ public class BowHandler {
         public boolean consumeArrowAndEnergy() {
 
             if (!player.capabilities.isCreativeMode)
-                ((IEnergyContainerWeaponItem) bow.getItem()).extractEnergy(bow, calculateEnergyCost(), false);
+                ((IEnergyContainerBowItem) bow.getItem()).extractEnergy(bow, calculateEnergyCost(), false);
 
             if (!energyBolt && EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, bow) == 0
                     && !player.capabilities.isCreativeMode) {

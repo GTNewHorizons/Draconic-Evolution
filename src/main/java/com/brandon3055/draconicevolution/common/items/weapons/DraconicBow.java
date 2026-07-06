@@ -39,7 +39,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class DraconicBow extends ItemBow
-        implements IInventoryTool, IUpgradableItem, IEnergyContainerWeaponItem, IHudDisplayItem {
+        implements IInventoryTool, IUpgradableItem, IEnergyContainerBowItem, IHudDisplayItem {
 
     public static final String[] bowPullIconNameArray = new String[] { "pulling_0", "pulling_1", "pulling_2" };
 
