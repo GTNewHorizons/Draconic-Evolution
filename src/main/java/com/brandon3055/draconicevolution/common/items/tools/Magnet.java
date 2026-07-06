@@ -42,6 +42,8 @@ import baubles.api.IBauble;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import thaumcraft.common.entities.EntityAspectOrb;
+import thaumcraft.common.items.wands.ItemWandCasting;
 
 /**
  * Created by brandon3055 on 9/3/2016.
@@ -120,85 +122,92 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
         }
 
         int range = stack.getItemDamage() == 0 ? 8 : 32;
-        List<EntityItem> items = world.getEntitiesWithinAABB(
-                EntityItem.class,
-                AxisAlignedBB
-                        .getBoundingBox(player.posX, player.posY, player.posZ, player.posX, player.posY, player.posZ)
-                        .expand(range, range, range));
-
-        // account for the server/client desync
-        final double playerEyesPos = player.posY
-                + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
         final boolean skipPlayerCheck = world.playerEntities.size() < 2;
-        final SelfPickUpMode selfPickupStatus = getSelfPickupStatus(stack);
-        boolean playSound = false;
 
-        for (EntityItem item : items) {
-            if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
-                    || DraconicEvolution.proxy.isBlockedByInhibitor(world, item)) {
-                continue;
-            }
+        if (isItemPickupEnabled(stack)) {
+            List<EntityItem> items = world.getEntitiesWithinAABB(
+                    EntityItem.class,
+                    AxisAlignedBB.getBoundingBox(
+                            player.posX,
+                            player.posY,
+                            player.posZ,
+                            player.posX,
+                            player.posY,
+                            player.posZ).expand(range, range, range));
 
-            String name = Item.itemRegistry.getNameForObject(item.getEntityItem().getItem());
-            if (ConfigHandler.itemDislocatorBlacklistMap.containsKey(name)
-                    && (ConfigHandler.itemDislocatorBlacklistMap.get(name) == -1
-                            || ConfigHandler.itemDislocatorBlacklistMap.get(name)
-                                    == item.getEntityItem().getItemDamage())) {
-                continue;
-            }
+            // account for the server/client desync
+            final double playerEyesPos = player.posY
+                    + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
+            final SelfPickUpMode selfPickupStatus = getSelfPickupStatus(stack);
+            boolean playSound = false;
 
-            int x = (int) Math.floor(item.posX);
-            int y = (int) Math.floor(item.posY);
-            int z = (int) Math.floor(item.posZ);
+            for (EntityItem item : items) {
+                if (item.getEntityItem() == null || ModHelper.isAE2EntityFloatingItem(item)
+                        || DraconicEvolution.proxy.isBlockedByInhibitor(world, item)) {
+                    continue;
+                }
 
-            boolean skip = false;
-            for (int i = 0; i < 2; i++) {
-                Block block = world.getBlock(x, y - i, z);
-                String blockName = Item.itemRegistry.getNameForObject(Item.getItemFromBlock(block));
-                int meta = world.getBlockMetadata(x, y - i, z);
-                if (ConfigHandler.itemDislocatorBlockBlacklistMap.containsKey(blockName)
-                        && (ConfigHandler.itemDislocatorBlockBlacklistMap.get(blockName) == -1
-                                || ConfigHandler.itemDislocatorBlockBlacklistMap.get(blockName) == meta)) {
-                    skip = true;
+                String name = Item.itemRegistry.getNameForObject(item.getEntityItem().getItem());
+                if (ConfigHandler.itemDislocatorBlacklistMap.containsKey(name)
+                        && (ConfigHandler.itemDislocatorBlacklistMap.get(name) == -1
+                                || ConfigHandler.itemDislocatorBlacklistMap.get(name)
+                                        == item.getEntityItem().getItemDamage())) {
+                    continue;
+                }
+
+                int x = (int) Math.floor(item.posX);
+                int y = (int) Math.floor(item.posY);
+                int z = (int) Math.floor(item.posZ);
+
+                boolean skip = false;
+                for (int i = 0; i < 2; i++) {
+                    Block block = world.getBlock(x, y - i, z);
+                    String blockName = Item.itemRegistry.getNameForObject(Item.getItemFromBlock(block));
+                    int meta = world.getBlockMetadata(x, y - i, z);
+                    if (ConfigHandler.itemDislocatorBlockBlacklistMap.containsKey(blockName)
+                            && (ConfigHandler.itemDislocatorBlockBlacklistMap.get(blockName) == -1
+                                    || ConfigHandler.itemDislocatorBlockBlacklistMap.get(blockName) == meta)) {
+                        skip = true;
+                    }
+                }
+
+                if (skip) continue;
+
+                if (!skipPlayerCheck) {
+                    EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
+                    if (closestPlayer == null || closestPlayer != player) continue;
+                }
+
+                boolean doMove = true;
+                if (ModHelper.isHodgepodgeLoaded && selfPickupStatus != SelfPickUpMode.ALWAYS) {
+                    boolean isOwnDrop = item.func_145800_j() != null
+                            && item.func_145800_j().equals(player.getCommandSenderName());
+                    doMove = !isOwnDrop || selfPickupStatus == SelfPickUpMode.DELAY && item.delayBeforeCanPickup <= 0;
+                }
+
+                if (doMove) {
+                    playSound = true;
+                    item.delayBeforeCanPickup = 0;
+                    item.motionX = 0;
+                    item.motionY = 0;
+                    item.motionZ = 0;
+                    item.setPosition(
+                            player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
+                            playerEyesPos - 0.62, // 1 block above feet / "belt height"
+                            player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
                 }
             }
 
-            if (skip) continue;
-
-            if (!skipPlayerCheck) {
-                EntityPlayer closestPlayer = world.getClosestPlayerToEntity(item, range);
-                if (closestPlayer == null || closestPlayer != player) continue;
-            }
-
-            boolean doMove = true;
-            if (ModHelper.isHodgepodgeLoaded && selfPickupStatus != SelfPickUpMode.ALWAYS) {
-                boolean isOwnDrop = item.func_145800_j() != null
-                        && item.func_145800_j().equals(player.getCommandSenderName());
-                doMove = !isOwnDrop || selfPickupStatus == SelfPickUpMode.DELAY && item.delayBeforeCanPickup <= 0;
-            }
-
-            if (doMove) {
-                playSound = true;
-                item.delayBeforeCanPickup = 0;
-                item.motionX = 0;
-                item.motionY = 0;
-                item.motionZ = 0;
-                item.setPosition(
-                        player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
-                        playerEyesPos - 0.62, // 1 block above feet / "belt height"
-                        player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+            if (playSound && !ConfigHandler.itemDislocatorDisableSound) {
+                world.playSoundAtEntity(
+                        player,
+                        "random.orb",
+                        0.1F,
+                        0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
             }
         }
 
-        if (playSound && !ConfigHandler.itemDislocatorDisableSound) {
-            world.playSoundAtEntity(
-                    player,
-                    "random.orb",
-                    0.1F,
-                    0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
-        }
-
-        if (!world.isRemote) {
+        if (!world.isRemote && isXpPickupEnabled(stack)) {
             List<EntityXPOrb> xp = world.getEntitiesWithinAABB(
                     EntityXPOrb.class,
                     AxisAlignedBB.getBoundingBox(
@@ -222,6 +231,38 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                             0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
                     player.onItemPickup(orb, 1);
                     player.addExperience(orb.xpValue);
+                    orb.setDead();
+                }
+            }
+        }
+
+        if (!world.isRemote && ModHelper.isThaumcraftInstalled() && isVisPickupEnabled(stack)) {
+            List<Entity> aspectOrbs = world.getEntitiesWithinAABB(
+                    EntityAspectOrb.class,
+                    AxisAlignedBB.getBoundingBox(
+                            player.posX,
+                            player.posY,
+                            player.posZ,
+                            player.posX,
+                            player.posY,
+                            player.posZ).expand(range, range, range));
+            for (Entity e : aspectOrbs) {
+                EntityAspectOrb orb = (EntityAspectOrb) e;
+                if (orb.isEntityAlive() && orb.orbCooldown == 0 && orb.getAspect().isPrimal()) {
+                    int wandSlot = thaumcraft.common.lib.utils.InventoryUtils
+                            .isWandInHotbarWithRoom(orb.getAspect(), orb.getAspectValue(), player);
+                    if (wandSlot < 0) {
+                        continue;
+                    }
+                    if (!skipPlayerCheck) {
+                        EntityPlayer closestPlayer = world.getClosestPlayerToEntity(e, range);
+                        if (closestPlayer == null || closestPlayer != player) continue;
+                    }
+                    ItemWandCasting wand = (ItemWandCasting) player.inventory.mainInventory[wandSlot].getItem();
+                    if (wand == null) {
+                        continue;
+                    }
+                    wand.addVis(player.inventory.mainInventory[wandSlot], orb.getAspect(), orb.getAspectValue(), true);
                     orb.setDead();
                 }
             }
@@ -291,6 +332,40 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
         return StatCollector.translateToLocal("info.de.selfPickup.txt") + ": " + status;
     }
 
+    public static boolean isItemPickupEnabled(ItemStack itemStack) {
+        return IConfigurableItem.ProfileHelper.getBoolean(itemStack, References.ENABLED_ITEM_PICKUP, true);
+    }
+
+    public static String getItemPickupEnabledString(ItemStack itemStack) {
+        String result = StatCollector.translateToLocal("info.de.pickupList.txt") + ": ";
+        if (isItemPickupEnabled(itemStack)) {
+            result += EnumChatFormatting.DARK_GREEN + StatCollector.translateToLocal("info.de.items.txt") + " ";
+        } else {
+            result += EnumChatFormatting.RED + StatCollector.translateToLocal("info.de.items.txt") + " ";
+        }
+        if (isXpPickupEnabled(itemStack)) {
+            result += EnumChatFormatting.DARK_GREEN + StatCollector.translateToLocal("info.de.xp.txt") + " ";
+        } else {
+            result += EnumChatFormatting.RED + StatCollector.translateToLocal("info.de.xp.txt") + " ";
+        }
+        if (ModHelper.isThaumcraftInstalled()) {
+            if (isVisPickupEnabled(itemStack)) {
+                result += EnumChatFormatting.DARK_GREEN + StatCollector.translateToLocal("info.de.vis.txt") + " ";
+            } else {
+                result += EnumChatFormatting.RED + StatCollector.translateToLocal("info.de.vis.txt") + " ";
+            }
+        }
+        return result;
+    }
+
+    public static boolean isXpPickupEnabled(ItemStack itemStack) {
+        return IConfigurableItem.ProfileHelper.getBoolean(itemStack, References.ENABLED_XP_PICKUP, true);
+    }
+
+    public static boolean isVisPickupEnabled(ItemStack itemStack) {
+        return IConfigurableItem.ProfileHelper.getBoolean(itemStack, References.ENABLED_VIS_PICKUP, true);
+    }
+
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
         if (player.isSneaking()) {
@@ -310,6 +385,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                         + StatCollector.translateToLocal("info.de.blockRange.txt"));
         list.add(getStatusString(stack));
         if (ModHelper.isHodgepodgeLoaded) list.add(getSelfPickupStatusString(stack));
+        list.add(getItemPickupEnabledString(stack));
     }
 
     @Optional.Method(modid = "gtnhlib")
@@ -377,6 +453,17 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
         List<ItemConfigField> fields = new ArrayList<>();
         fields.add(new ItemConfigField(References.BOOLEAN_ID, slot, References.ENABLED).readFromItem(stack, false));
         fields.add(new ItemConfigField(References.BOOLEAN_ID, slot, References.MAGNET_SNEAK).readFromItem(stack, true));
+        fields.add(
+                new ItemConfigField(References.BOOLEAN_ID, slot, References.ENABLED_ITEM_PICKUP)
+                        .readFromItem(stack, true));
+        fields.add(
+                new ItemConfigField(References.BOOLEAN_ID, slot, References.ENABLED_XP_PICKUP)
+                        .readFromItem(stack, true));
+        if (ModHelper.isThaumcraftInstalled()) {
+            fields.add(
+                    new ItemConfigField(References.BOOLEAN_ID, slot, References.ENABLED_VIS_PICKUP)
+                            .readFromItem(stack, true));
+        }
         return fields;
     }
 

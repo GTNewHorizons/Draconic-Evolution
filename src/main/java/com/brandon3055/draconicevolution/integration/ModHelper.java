@@ -24,6 +24,7 @@ public class ModHelper {
     private static final boolean isAvaritiaInstalled;
     private static final boolean isGregTechInstalled;
     private static final boolean isAE2Installed;
+    private static final boolean isThaumcraftInstalled;
 
     public static boolean isGTNHLibLoaded;
     public static boolean isHodgepodgeLoaded;
@@ -39,6 +40,7 @@ public class ModHelper {
         isAvaritiaInstalled = Loader.isModLoaded("Avaritia");
         isGregTechInstalled = Loader.isModLoaded("gregtech_nh");
         isAE2Installed = Loader.isModLoaded("appliedenergistics2");
+        isThaumcraftInstalled = Loader.isModLoaded("Thaumcraft");
         isGTNHLibLoaded = Loader.isModLoaded("gtnhlib");
         isHodgepodgeLoaded = Loader.isModLoaded("hodgepodge");
         isBackhandLoaded = Loader.isModLoaded("backhand");
@@ -116,5 +118,9 @@ public class ModHelper {
             case RADIOLOGICAL -> "HazmatRadiological";
             case SPACE -> "HazmatSpace";
         };
+    }
+
+    public static boolean isThaumcraftInstalled() {
+        return isThaumcraftInstalled;
     }
 }

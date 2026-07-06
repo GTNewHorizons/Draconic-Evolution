@@ -299,6 +299,10 @@ info.de.selfPickup.txt=Pick Up Own Drops
 info.de.selfPickupAlways.txt=Always
 info.de.selfPickupDelay.txt=Delayed
 info.de.selfPickupNever.txt=Never
+info.de.pickupList.txt=Picking up
+info.de.items.txt=Items
+info.de.xp.txt=XP
+info.de.vis.txt=Vis
 
 info.de.manual.nav1.txt=Navigation Tips
 info.de.manual.nav2.txt=Press Backspace to go to the previous page.
@@ -529,6 +533,9 @@ button.de.BowEnergyBolt.name=Arrow of Draconic Fire
 button.de.BowZoomModifier.name=Magnification
 button.de.Enabled.name=Enabled
 button.de.MagnetSneak.name=Disabled while sneaking
+button.de.EnabledItemPickup.name=Picking up items
+button.de.EnabledXpPickup.name=Picking up XP
+button.de.EnabledVisPickup.name=Picking up vis
 
 button.de.reactorCharge.txt=Charge Reactor
 button.de.reactorStart.txt=Activate
