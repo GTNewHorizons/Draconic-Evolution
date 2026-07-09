@@ -62,9 +62,19 @@ public class PlacedItemPacket implements IMessage {
             World world = ctx.getServerHandler().playerEntity.worldObj;
             EntityPlayer player = ctx.getServerHandler().playerEntity;
 
-            if (!world.isAirBlock(x, y, z) || player.getHeldItem() == null
-                    || !ModBlocks.isEnabled(ModBlocks.placedItem))
+            if (player.getHeldItem() == null || !ModBlocks.isEnabled(ModBlocks.placedItem)) {
                 return null;
+            }
+
+            // Aiming directly at an existing placed item display adds the held item to it.
+            if (addToExistingDisplay(world, message.blockX, message.blockY, message.blockZ, player)
+                    || addToExistingDisplay(world, x, y, z, player)) {
+                return null;
+            }
+
+            if (!world.isAirBlock(x, y, z)) {
+                return null;
+            }
 
             BlockEvent.PlaceEvent event = new BlockEvent.PlaceEvent(
                     new BlockSnapshot(world, x, y, z, ModBlocks.placedItem, 0),
@@ -92,6 +102,17 @@ public class PlacedItemPacket implements IMessage {
             tile.setStack(stack.copy());
             player.destroyCurrentEquippedItem();
             return null;
+        }
+
+        private static boolean addToExistingDisplay(World world, int x, int y, int z, EntityPlayer player) {
+            if (!(world.getTileEntity(x, y, z) instanceof TilePlacedItem tile)) {
+                return false;
+            }
+            if (!tile.addItem(player.getHeldItem().copy())) {
+                return false;
+            }
+            player.destroyCurrentEquippedItem();
+            return true;
         }
     }
 }

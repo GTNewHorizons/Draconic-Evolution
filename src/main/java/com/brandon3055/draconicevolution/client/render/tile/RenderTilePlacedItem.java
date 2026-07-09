@@ -31,17 +31,31 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
     private final EntityItem cachedEntity = new EntityItem(null, 0, 0, 0, new ItemStack(Items.apple));
     private final PlacedItemDisplayListCache displayListCache = new PlacedItemDisplayListCache();
 
+    /**
+     * Pivot point on the mounting face and the two in-plane axes used to lay out the item grid, indexed by block
+     * metadata (the side the display is attached to).
+     */
+    private static final float[][] FACE_PIVOT = { { 0.5F, 1F, 0.5F }, { 0.5F, 0F, 0.5F }, { 0.5F, 0.5F, 1F },
+            { 0.5F, 0.5F, 0F }, { 1F, 0.5F, 0.5F }, { 0F, 0.5F, 0.5F } };
+    private static final float[][] FACE_AXIS_U = { { 1F, 0F, 0F }, { 1F, 0F, 0F }, { 1F, 0F, 0F }, { 1F, 0F, 0F },
+            { 0F, 0F, 1F }, { 0F, 0F, 1F } };
+    private static final float[][] FACE_AXIS_V = { { 0F, 0F, 1F }, { 0F, 0F, 1F }, { 0F, 1F, 0F }, { 0F, 1F, 0F },
+            { 0F, 1F, 0F }, { 0F, 1F, 0F } };
+
     @Override
     public void renderTileEntityAt(TileEntity te, double x, double y, double z, float timeSinceLastTick) {
         if (!(te instanceof TilePlacedItem tile)) return;
-        ItemStack stack = tile.getStack();
-        if (stack == null) {
+        int count = tile.getDisplayCount();
+        if (count == 0) {
             displayListCache.dispose(tile);
             return;
         }
         if (tile.getWorldObj() == null) return;
         int meta = tile.getWorldObj().getBlockMetadata(tile.xCoord, tile.yCoord, tile.zCoord);
-        CacheEntry entry = displayListCache.getOrCompile(tile, stack, meta, () -> renderItem(tile));
+        if (meta < 0 || meta > 5) meta = 1;
+        final int gridMeta = meta;
+        CacheEntry entry = displayListCache.getOrCompile(tile, meta, () -> renderGrid(tile, gridMeta));
+
         GL11.glPushMatrix();
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
         GL11.glTranslated(x, y, z);
@@ -55,9 +69,44 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
         GL11.glPopMatrix();
     }
 
-    public void renderItem(TilePlacedItem tile) {
-        ItemStack stack = tile.getStack();
-        int meta = tile.getWorldObj().getBlockMetadata(tile.xCoord, tile.yCoord, tile.zCoord);
+    /**
+     * Renders every item on the display laid out in a grid on the mounting face. This is the body that gets compiled
+     * into the cached display list.
+     */
+    private void renderGrid(TilePlacedItem tile, int meta) {
+        int count = tile.getDisplayCount();
+        int gridSize = (int) Math.ceil(Math.sqrt(count));
+        int rows = (count + gridSize - 1) / gridSize;
+        float cell = 1F / gridSize;
+        float[] pivot = FACE_PIVOT[meta];
+        float[] axisU = FACE_AXIS_U[meta];
+        float[] axisV = FACE_AXIS_V[meta];
+
+        for (int i = 0; i < count; i++) {
+            ItemStack stack = tile.getStack(i);
+            if (stack == null) continue;
+
+            GL11.glPushMatrix();
+            if (gridSize > 1) {
+                int row = i / gridSize;
+                int col = i % gridSize;
+                int rowLength = Math.min(gridSize, count - row * gridSize);
+                float u = (col - (rowLength - 1) / 2F) * cell;
+                float v = ((rows - 1) / 2F - row) * cell;
+
+                GL11.glTranslatef(
+                        pivot[0] + axisU[0] * u + axisV[0] * v,
+                        pivot[1] + axisU[1] * u + axisV[1] * v,
+                        pivot[2] + axisU[2] * u + axisV[2] * v);
+                GL11.glScalef(cell, cell, cell);
+                GL11.glTranslatef(-pivot[0], -pivot[1], -pivot[2]);
+            }
+            renderItem(tile, stack, meta);
+            GL11.glPopMatrix();
+        }
+    }
+
+    public void renderItem(TilePlacedItem tile, ItemStack stack, int meta) {
         final Item item = stack.getItem();
         boolean is3D = item.isFull3D();
         boolean isBlock = item instanceof ItemBlock;

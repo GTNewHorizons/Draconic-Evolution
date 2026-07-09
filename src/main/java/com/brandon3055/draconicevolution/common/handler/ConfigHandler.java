@@ -17,6 +17,7 @@ public class ConfigHandler {
     // GENERAL
     public static boolean disableEarthBlock;
     public static int teleporterUsesPerPearl;
+    public static int placedItemStackLimit;
     public static int soulDropChance;
     public static int passiveSoulDropChance;
     public static int cometRarity;
@@ -113,6 +114,14 @@ public class ConfigHandler {
                     "Teleporter Uses PerPearl",
                     1,
                     "Charm of Dislocation uses per Ender pearl").getInt(1);
+            placedItemStackLimit = snapToAllowedStackLimit(
+                    config.get(
+                            Configuration.CATEGORY_GENERAL,
+                            "Placed Item Stack Limit",
+                            4,
+                            "Maximum number of items that can be placed in the same block with the Place Item key. Valid values: 1, 2, 4, 8, 16",
+                            1,
+                            16).getInt(4));
             bowBlockDamage = config.get(
                     Configuration.CATEGORY_GENERAL,
                     "Bow Block Damage",
@@ -477,6 +486,16 @@ public class ConfigHandler {
         } finally {
             if (config.hasChanged()) config.save();
         }
+    }
+
+    private static int snapToAllowedStackLimit(int value) {
+        int snapped = 1;
+        for (int allowed : new int[] { 1, 2, 4, 8, 16 }) {
+            if (value >= allowed) {
+                snapped = allowed;
+            }
+        }
+        return snapped;
     }
 }
 /*
