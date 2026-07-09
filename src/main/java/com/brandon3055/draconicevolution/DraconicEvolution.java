@@ -27,8 +27,8 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
         canBeDeactivated = false,
         guiFactory = References.GUIFACTORY,
         dependencies = "after:NotEnoughItems;" + "after:ThermalExpansion;"
-            + "after:ThermalFoundation;"
-            + "required-after:gtnhlib@[0.9.47,);")
+                + "after:ThermalFoundation;"
+                + "required-after:gtnhlib@[0.9.47,);")
 public class DraconicEvolution {
 
     @Mod.Instance(References.MODID)
