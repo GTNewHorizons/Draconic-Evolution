@@ -108,6 +108,16 @@ public class PlacedItemPacket implements IMessage {
             if (!(world.getTileEntity(x, y, z) instanceof TilePlacedItem tile)) {
                 return false;
             }
+
+            BlockEvent.PlaceEvent event = new BlockEvent.PlaceEvent(
+                    new BlockSnapshot(world, x, y, z, ModBlocks.placedItem, world.getBlockMetadata(x, y, z)),
+                    world.getBlock(x, y, z),
+                    player);
+            MinecraftForge.EVENT_BUS.post(event);
+            if (event.isCanceled()) {
+                return false;
+            }
+
             if (!tile.addItem(player.getHeldItem().copy())) {
                 return false;
             }
