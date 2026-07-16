@@ -35,6 +35,7 @@ public class ModelRenderOBJ extends ModelRenderer {
                 this.compileDisplayList(scale);
             }
 
+            ResourceHandler.bindTexture(texture);
             GL11.glTranslatef(this.offsetX, this.offsetY, this.offsetZ);
 
             if (this.rotateAngleX == 0.0F && this.rotateAngleY == 0.0F && this.rotateAngleZ == 0.0F) {
@@ -84,7 +85,6 @@ public class ModelRenderOBJ extends ModelRenderer {
         GL11.glNewList(this.displayList, GL11.GL_COMPILE);
 
         GL11.glPushMatrix();
-        ResourceHandler.bindTexture(texture);
         // scale = 1F/15F;
         GL11.glScalef(scale, scale, scale);
         GL11.glRotatef(180, -1, 0, 1);
@@ -102,6 +102,7 @@ public class ModelRenderOBJ extends ModelRenderer {
                 this.compileDisplayList(scale);
             }
 
+            ResourceHandler.bindTexture(texture);
             GL11.glPushMatrix();
             GL11.glTranslatef(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
             if (this.rotateAngleY != 0.0F) {
