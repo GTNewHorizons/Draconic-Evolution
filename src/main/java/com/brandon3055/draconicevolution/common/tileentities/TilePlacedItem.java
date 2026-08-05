@@ -7,6 +7,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 
 import com.brandon3055.draconicevolution.common.ModBlocks;
@@ -20,6 +21,16 @@ public class TilePlacedItem extends TileEntity {
     public ItemStack stack;
     public float rotation = 0F;
     private boolean hasUpdated = false;
+    private AxisAlignedBB renderBoundingBox;
+
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        if (renderBoundingBox == null) {
+            renderBoundingBox = AxisAlignedBB
+                    .getBoundingBox(xCoord - 2, yCoord - 2, zCoord - 2, xCoord + 2, yCoord + 2, zCoord + 2);
+        }
+        return renderBoundingBox;
+    }
 
     @Override
     public void updateEntity() {
