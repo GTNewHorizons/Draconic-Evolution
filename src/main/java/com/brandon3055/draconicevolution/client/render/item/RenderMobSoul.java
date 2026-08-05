@@ -17,6 +17,10 @@ public class RenderMobSoul implements IItemRenderer {
 
     public static volatile boolean applyTimeRotation = true;
 
+    public static float getRotationAngle() {
+        return (float) (Minecraft.getSystemTime() / -10);
+    }
+
     private final Minecraft mc;
     private final String[] randomEntities = new String[] { "Pig", "Sheep", "Enderman", "Zombie", "Creeper", "Cow",
             "Chicken", "Ozelot", "Witch", "Wolf", "MushroomCow", "Squid", "EntityHorse", "Spider", "Skeleton", "Blaze",
@@ -60,7 +64,7 @@ public class RenderMobSoul implements IItemRenderer {
             GL11.glScalef(13F, 13F, 13F);
             GL11.glTranslated(1.2, 2.2, 0);
             GL11.glRotatef(180F, 1F, 0F, 0F);
-            if (applyTimeRotation) GL11.glRotatef(mc.getSystemTime() / -10, 0F, 1F, 0F);
+            if (applyTimeRotation) GL11.glRotatef(getRotationAngle(), 0F, 1F, 0F);
             GL11.glRotatef(-20F, 1F, 0F, 0F);
             RenderManager.instance.renderEntityWithPosYaw(mob, 0, 0, 0, 0F, 1F);
             GL11.glPopMatrix();
@@ -69,7 +73,7 @@ public class RenderMobSoul implements IItemRenderer {
             GL11.glScalef(0.8F, 0.8F, 0.8F);
             GL11.glTranslated(2, 0.5, 0);
             GL11.glRotatef(20F, 0F, 0F, 1F);
-            if (applyTimeRotation) GL11.glRotatef(mc.getSystemTime() / -10, 0F, 1F, 0F);
+            if (applyTimeRotation) GL11.glRotatef(getRotationAngle(), 0F, 1F, 0F);
             GL11.glRotatef(-20F, 1F, 0F, 0F);
             RenderManager.instance.renderEntityWithPosYaw(mob, 0, 0, 0, 0F, 1F);
             GL11.glPopMatrix();
@@ -78,14 +82,14 @@ public class RenderMobSoul implements IItemRenderer {
             GL11.glScalef(0.8F, 0.8F, 0.8F);
             GL11.glTranslated(1, 0.5, 0);
             GL11.glRotatef(20F, 0F, 0F, 1F);
-            if (applyTimeRotation) GL11.glRotatef(mc.getSystemTime() / -10, 0F, 1F, 0F);
+            if (applyTimeRotation) GL11.glRotatef(getRotationAngle(), 0F, 1F, 0F);
             GL11.glRotatef(-20F, 1F, 0F, 0F);
             RenderManager.instance.renderEntityWithPosYaw(mob, 0, 0, 0, 0F, 1F);
             GL11.glPopMatrix();
         } else {
             GL11.glPushMatrix();
             GL11.glScalef(1.5F, 1.5F, 1.5F);
-            if (applyTimeRotation) GL11.glRotatef(mc.getSystemTime() / -10, 0F, 1F, 0F);
+            if (applyTimeRotation) GL11.glRotatef(getRotationAngle(), 0F, 1F, 0F);
             GL11.glRotatef(-20F, 1F, 0F, 0F);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
