@@ -109,6 +109,7 @@ public class PlacedItemDisplayListCache {
 
     @SubscribeEvent
     public void onChunkUnload(ChunkEvent.Unload event) {
+        if (!event.world.isRemote) return;
         Chunk chunk = event.getChunk();
         Iterator<Map.Entry<TilePlacedItem, CacheEntry>> it = displayListCache.entrySet().iterator();
         while (it.hasNext()) {
@@ -123,6 +124,7 @@ public class PlacedItemDisplayListCache {
 
     @SubscribeEvent
     public void onWorldUnload(WorldEvent.Unload event) {
+        if (!event.world.isRemote) return;
         clearAll();
     }
 
