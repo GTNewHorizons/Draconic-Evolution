@@ -1,13 +1,15 @@
 package com.brandon3055.draconicevolution.client.render.tile;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.WeakHashMap;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkEvent;
@@ -27,9 +29,11 @@ public class PlacedItemDisplayListCache {
     private static final long GLINT_TTL_MS = 33L;
     private static final long ANIMATED_TTL_MS = 50L;
     private static final long MOBSOUL_TTL_MS = 1000L;
+    private static final long PRUNE_INTERVAL_MS = 1000L;
 
-    private final Map<TilePlacedItem, CacheEntry> displayListCache = new WeakHashMap<>();
+    private final Map<TilePlacedItem, CacheEntry> displayListCache = new HashMap<>();
     private int atlasVersion;
+    private long nextPruneMs;
 
     public PlacedItemDisplayListCache() {
         MinecraftForge.EVENT_BUS.register(this);
@@ -94,11 +98,33 @@ public class PlacedItemDisplayListCache {
         if (entry != null) GL11.glDeleteLists(entry.listId, 1);
     }
 
+    private void pruneInvalidEntries() {
+        if (displayListCache.isEmpty()) return;
+        long now = Minecraft.getSystemTime();
+        if (now < nextPruneMs) return;
+        nextPruneMs = now + PRUNE_INTERVAL_MS;
+
+        Iterator<Map.Entry<TilePlacedItem, CacheEntry>> it = displayListCache.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<TilePlacedItem, CacheEntry> entry = it.next();
+            TilePlacedItem tile = entry.getKey();
+            if (tile.isInvalid() || tile.getWorldObj() == null || tile.getStack() == null) {
+                GL11.glDeleteLists(entry.getValue().listId, 1);
+                it.remove();
+            }
+        }
+    }
+
     private void clearAll() {
         for (CacheEntry entry : displayListCache.values()) {
             GL11.glDeleteLists(entry.listId, 1);
         }
         displayListCache.clear();
+    }
+
+    @SubscribeEvent
+    public void onRenderWorldLast(RenderWorldLastEvent event) {
+        pruneInvalidEntries();
     }
 
     @SubscribeEvent
