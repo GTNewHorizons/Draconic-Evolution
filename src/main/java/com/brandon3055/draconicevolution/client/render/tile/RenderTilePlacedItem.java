@@ -14,6 +14,8 @@ import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
 
+import com.brandon3055.draconicevolution.client.render.item.RenderMobSoul;
+import com.brandon3055.draconicevolution.client.render.tile.PlacedItemDisplayListCache.CacheEntry;
 import com.brandon3055.draconicevolution.common.items.MobSoul;
 import com.brandon3055.draconicevolution.common.tileentities.TilePlacedItem;
 
@@ -22,16 +24,33 @@ import com.brandon3055.draconicevolution.common.tileentities.TilePlacedItem;
  */
 public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
 
+    private static final float MOBSOUL_CENTER_X = 0.5F;
+    private static final float MOBSOUL_CENTER_Y = 0.3F;
+    private static final float MOBSOUL_CENTER_Z = 0.5F;
+
     private final EntityItem cachedEntity = new EntityItem(null, 0, 0, 0, new ItemStack(Items.apple));
+    private final PlacedItemDisplayListCache displayListCache = new PlacedItemDisplayListCache();
 
     @Override
     public void renderTileEntityAt(TileEntity te, double x, double y, double z, float timeSinceLastTick) {
         if (!(te instanceof TilePlacedItem tile)) return;
-        if (tile.getStack() == null) return;
+        ItemStack stack = tile.getStack();
+        if (stack == null) {
+            displayListCache.dispose(tile);
+            return;
+        }
+        if (tile.getWorldObj() == null) return;
+        int meta = tile.getWorldObj().getBlockMetadata(tile.xCoord, tile.yCoord, tile.zCoord);
+        CacheEntry entry = displayListCache.getOrCompile(tile, stack, meta, () -> renderItem(tile));
         GL11.glPushMatrix();
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
         GL11.glTranslated(x, y, z);
-        renderItem(tile);
+        if (entry.mobSoul) {
+            GL11.glTranslated(MOBSOUL_CENTER_X, MOBSOUL_CENTER_Y, MOBSOUL_CENTER_Z);
+            GL11.glRotatef(RenderMobSoul.getRotationAngle(), 0F, 1F, 0F);
+            GL11.glTranslated(-MOBSOUL_CENTER_X, -MOBSOUL_CENTER_Y, -MOBSOUL_CENTER_Z);
+        }
+        GL11.glCallList(entry.listId);
         GL11.glPopAttrib();
         GL11.glPopMatrix();
     }
@@ -39,7 +58,6 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
     public void renderItem(TilePlacedItem tile) {
         ItemStack stack = tile.getStack();
         int meta = tile.getWorldObj().getBlockMetadata(tile.xCoord, tile.yCoord, tile.zCoord);
-        // itemEntity.getEntityItem().stackSize = 1;
         final Item item = stack.getItem();
         boolean is3D = item.isFull3D();
         boolean isBlock = item instanceof ItemBlock;
@@ -58,7 +76,7 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
             GL11.glRotatef(tile.rotation, 0F, 0F, 1F);
             GL11.glTranslatef(0.0F, -0.21F, 0.0F);
         } else if (item instanceof MobSoul) {
-            GL11.glTranslatef(0.5F, 0.3F, 0.5F);
+            GL11.glTranslatef(MOBSOUL_CENTER_X, MOBSOUL_CENTER_Y, MOBSOUL_CENTER_Z);
         } else {
             GL11.glRotatef(90F, -1F, 0F, 0F);
             GL11.glTranslatef(0.5F, -0.65F, 0.02F);

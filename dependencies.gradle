@@ -18,4 +18,5 @@ dependencies {
 
     compileOnly('curse.maven:automagy-222153:2285272')
     compileOnly('com.github.GTNewHorizons:EnderIO:2.10.25:dev')
+    runtimeOnly("com.github.GTNewHorizons:NotEnoughItems:2.8.118-GTNH:dev")
 }
