@@ -60,7 +60,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
         ALWAYS,
         DELAY,
         NEVER;
-        
+
         public static final SelfPickUpMode[] VALUES = values();
 
         public SelfPickUpMode next() {
