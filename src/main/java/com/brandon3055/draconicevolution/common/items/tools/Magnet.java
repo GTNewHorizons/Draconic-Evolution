@@ -61,8 +61,10 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
         DELAY,
         NEVER;
 
+        public static final SelfPickUpMode[] VALUES = values();
+
         public SelfPickUpMode next() {
-            final SelfPickUpMode[] values = SelfPickUpMode.values();
+            final SelfPickUpMode[] values = SelfPickUpMode.VALUES;
             return values[(this.ordinal() + 1) % values.length];
         }
     }
@@ -265,7 +267,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
 
     private static SelfPickUpMode getSelfPickupStatus(ItemStack itemStack) {
         final short mode = getSelfPickupStatusShort(itemStack);
-        return SelfPickUpMode.values()[mode];
+        return SelfPickUpMode.VALUES[mode];
     }
 
     public static void toggleSelfPickupStatus(ItemStack itemStack) {
