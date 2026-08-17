@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.imageio.ImageIO;
 
@@ -48,7 +49,7 @@ public class ResourceHandler {
     private static ResourceLocation particles = new ResourceLocation(
             References.RESOURCESPREFIX + "textures/particle/particles.png");
     private static Map<String, ResourceLocation> cachedResources = new HashMap<String, ResourceLocation>();
-    public static Map<String, CustomResourceLocation> downloadedImages = new HashMap<String, CustomResourceLocation>();
+    public static Map<String, CustomResourceLocation> downloadedImages = new ConcurrentHashMap<>();
 
     private static String savePath;
     private static File saveFolder;
@@ -64,7 +65,6 @@ public class ResourceHandler {
             if (downloadThread.isReloadRequired()) LogHelper.info("Image Download Finished");
             downloadStatus = downloadThread.wasSuccessful ? 1 : 2;
             FMLCommonHandler.instance().bus().unregister(this);
-            addRSPack(event != null);
             downloadThread = null;
         }
     }
@@ -74,6 +74,10 @@ public class ResourceHandler {
 
         if (event != null) savePath = event.getModConfigurationDirectory().getParentFile().getAbsolutePath()
                 + "/config/draconicevolution";
+
+        // Register the namespace before FML's final reload; folder-pack files are resolved on demand.
+        getImagesFolder();
+        addRSPack();
         GUIManual.loadPages();
 
         downloadThread = new DownloadThread(GUIManual.imageURLs);
@@ -83,7 +87,7 @@ public class ResourceHandler {
     public static class DownloadThread extends Thread {
 
         private List<String> imageURLs;
-        private boolean isFinished = false;
+        private volatile boolean isFinished = false;
         private boolean wasSuccessful = true;
         private boolean reloadRequired = false;
 
@@ -171,7 +175,7 @@ public class ResourceHandler {
         }
     }
 
-    private static void addRSPack(boolean refreash) {
+    private static void addRSPack() {
         File rspack = new File(getConfigFolder(), "/resources");
         if (!rspack.exists()) return;
 
@@ -200,7 +204,6 @@ public class ResourceHandler {
 
             f.set(Minecraft.getMinecraft(), defaultResourcePacks);
             LogHelper.info("RS Added");
-            if (refreash) Minecraft.getMinecraft().refreshResources();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
