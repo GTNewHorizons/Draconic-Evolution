@@ -38,4 +38,7 @@ public final class References {
     public static final String ENABLED = "Enabled";
     public static final String MAGNET_SNEAK = "MagnetSneak";
     public static final String ENABLED_SELF_PICKUP = "EnabledSelfPickup";
+    public static final String ENABLED_ITEM_PICKUP = "EnabledItemPickup";
+    public static final String ENABLED_XP_PICKUP = "EnabledXpPickup";
+    public static final String ENABLED_VIS_PICKUP = "EnabledVisPickup";
 }
