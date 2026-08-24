@@ -14,8 +14,6 @@ import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
 
-import com.brandon3055.draconicevolution.client.render.item.RenderMobSoul;
-import com.brandon3055.draconicevolution.client.render.tile.PlacedItemDisplayListCache.CacheEntry;
 import com.brandon3055.draconicevolution.common.items.MobSoul;
 import com.brandon3055.draconicevolution.common.tileentities.TilePlacedItem;
 
@@ -29,29 +27,17 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
     private static final float MOBSOUL_CENTER_Z = 0.5F;
 
     private final EntityItem cachedEntity = new EntityItem(null, 0, 0, 0, new ItemStack(Items.apple));
-    private final PlacedItemDisplayListCache displayListCache = new PlacedItemDisplayListCache();
 
     @Override
     public void renderTileEntityAt(TileEntity te, double x, double y, double z, float timeSinceLastTick) {
         if (!(te instanceof TilePlacedItem tile)) return;
         ItemStack stack = tile.getStack();
-        if (stack == null) {
-            displayListCache.dispose(tile);
-            return;
-        }
+        // I think without this check it could have thrown a NPE if an item being displayed was removed
+        if (stack == null || stack.getItem() == null) return;
         if (tile.getWorldObj() == null) return;
-        int meta = tile.getWorldObj().getBlockMetadata(tile.xCoord, tile.yCoord, tile.zCoord);
-        CacheEntry entry = displayListCache.getOrCompile(tile, stack, meta, () -> renderItem(tile));
         GL11.glPushMatrix();
-        GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
         GL11.glTranslated(x, y, z);
-        if (entry.mobSoul) {
-            GL11.glTranslated(MOBSOUL_CENTER_X, MOBSOUL_CENTER_Y, MOBSOUL_CENTER_Z);
-            GL11.glRotatef(RenderMobSoul.getRotationAngle(), 0F, 1F, 0F);
-            GL11.glTranslated(-MOBSOUL_CENTER_X, -MOBSOUL_CENTER_Y, -MOBSOUL_CENTER_Z);
-        }
-        GL11.glCallList(entry.listId);
-        GL11.glPopAttrib();
+        renderItem(tile);
         GL11.glPopMatrix();
     }
 
@@ -86,7 +72,6 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
             GL11.glTranslatef(0.0F, -0.18F, 0.0F);
         }
 
-        GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT);
         RenderItem.renderInFrame = true;
         try {
             this.cachedEntity.setEntityItemStack(stack);
@@ -96,9 +81,8 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
         } finally {
             this.cachedEntity.setEntityItemStack(null);
             this.cachedEntity.setWorld(null);
+            RenderItem.renderInFrame = false;
         }
-        RenderItem.renderInFrame = false;
-        GL11.glPopAttrib();
     }
 
     private void metaAdjustItemTool(int meta) {
