@@ -31,17 +31,6 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
     private final EntityItem cachedEntity = new EntityItem(null, 0, 0, 0, new ItemStack(Items.apple));
     private final PlacedItemDisplayListCache displayListCache = new PlacedItemDisplayListCache();
 
-    /**
-     * Pivot point on the mounting face and the two in-plane axes used to lay out the item grid, indexed by block
-     * metadata (the side the display is attached to).
-     */
-    private static final float[][] FACE_PIVOT = { { 0.5F, 1F, 0.5F }, { 0.5F, 0F, 0.5F }, { 0.5F, 0.5F, 1F },
-            { 0.5F, 0.5F, 0F }, { 1F, 0.5F, 0.5F }, { 0F, 0.5F, 0.5F } };
-    private static final float[][] FACE_AXIS_U = { { 1F, 0F, 0F }, { 1F, 0F, 0F }, { 1F, 0F, 0F }, { 1F, 0F, 0F },
-            { 0F, 0F, 1F }, { 0F, 0F, 1F } };
-    private static final float[][] FACE_AXIS_V = { { 0F, 0F, 1F }, { 0F, 0F, 1F }, { 0F, 1F, 0F }, { 0F, 1F, 0F },
-            { 0F, 1F, 0F }, { 0F, 1F, 0F } };
-
     @Override
     public void renderTileEntityAt(TileEntity te, double x, double y, double z, float timeSinceLastTick) {
         if (!(te instanceof TilePlacedItem tile)) return;
@@ -75,12 +64,11 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
      */
     private void renderGrid(TilePlacedItem tile, int meta) {
         int count = tile.getDisplayCount();
-        int gridSize = (int) Math.ceil(Math.sqrt(count));
-        int rows = (count + gridSize - 1) / gridSize;
+        int gridSize = TilePlacedItem.getGridSize(count);
         float cell = 1F / gridSize;
-        float[] pivot = FACE_PIVOT[meta];
-        float[] axisU = FACE_AXIS_U[meta];
-        float[] axisV = FACE_AXIS_V[meta];
+        float[] pivot = TilePlacedItem.FACE_PIVOT[meta];
+        float[] axisU = TilePlacedItem.FACE_AXIS_U[meta];
+        float[] axisV = TilePlacedItem.FACE_AXIS_V[meta];
 
         for (int i = 0; i < count; i++) {
             ItemStack stack = tile.getStack(i);
@@ -88,11 +76,9 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
 
             GL11.glPushMatrix();
             if (gridSize > 1) {
-                int row = i / gridSize;
-                int col = i % gridSize;
-                int rowLength = Math.min(gridSize, count - row * gridSize);
-                float u = (col - (rowLength - 1) / 2F) * cell;
-                float v = ((rows - 1) / 2F - row) * cell;
+                float[] offset = TilePlacedItem.getCellOffset(i, count);
+                float u = offset[0];
+                float v = offset[1];
 
                 GL11.glTranslatef(
                         pivot[0] + axisU[0] * u + axisV[0] * v,

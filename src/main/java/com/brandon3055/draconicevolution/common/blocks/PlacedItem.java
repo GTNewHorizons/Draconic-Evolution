@@ -178,8 +178,8 @@ public class PlacedItem extends BlockDE {
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_,
-            float p_149727_7_, float p_149727_8_, float p_149727_9_) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX,
+            float hitY, float hitZ) {
         TilePlacedItem tile = (world.getTileEntity(x, y, z) != null
                 && world.getTileEntity(x, y, z) instanceof TilePlacedItem)
                         ? (TilePlacedItem) world.getTileEntity(x, y, z)
@@ -191,9 +191,10 @@ public class PlacedItem extends BlockDE {
         if (player.isSneaking()) {
             tile.rotation += 5.625F;
         } else {
-            // Pop the most recently placed item; the block is removed once the last one is taken.
+            // Remove the item the player clicked on; the block is removed once the last one is taken.
             if (!world.isRemote) {
-                ItemStack stack = tile.removeLastItem();
+                int index = tile.getStackIndexAt(world.getBlockMetadata(x, y, z), hitX, hitY, hitZ);
+                ItemStack stack = tile.removeItem(index);
                 if (stack != null) {
                     dropStack(world, x, y, z, stack);
                 }
@@ -237,9 +238,13 @@ public class PlacedItem extends BlockDE {
     @Override
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z) {
         TileEntity te = world.getTileEntity(x, y, z);
-        if (te != null && te instanceof TilePlacedItem && ((TilePlacedItem) te).getStack() != null) {
-            TilePlacedItem tile = (TilePlacedItem) te;
-            return tile.getStack();
+        if (te instanceof TilePlacedItem tile && target != null && target.hitVec != null) {
+            int index = tile.getStackIndexAt(
+                    world.getBlockMetadata(x, y, z),
+                    (float) (target.hitVec.xCoord - x),
+                    (float) (target.hitVec.yCoord - y),
+                    (float) (target.hitVec.zCoord - z));
+            return tile.getStack(index);
         }
         return null;
     }
