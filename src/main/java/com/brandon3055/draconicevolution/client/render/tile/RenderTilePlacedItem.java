@@ -34,14 +34,17 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
     @Override
     public void renderTileEntityAt(TileEntity te, double x, double y, double z, float timeSinceLastTick) {
         if (!(te instanceof TilePlacedItem tile)) return;
-        ItemStack stack = tile.getStack();
-        if (stack == null) {
+        int count = tile.getDisplayCount();
+        if (count == 0) {
             displayListCache.dispose(tile);
             return;
         }
         if (tile.getWorldObj() == null) return;
         int meta = tile.getWorldObj().getBlockMetadata(tile.xCoord, tile.yCoord, tile.zCoord);
-        CacheEntry entry = displayListCache.getOrCompile(tile, stack, meta, () -> renderItem(tile));
+        if (meta < 0 || meta > 5) meta = 1;
+        final int gridMeta = meta;
+        CacheEntry entry = displayListCache.getOrCompile(tile, meta, () -> renderGrid(tile, gridMeta));
+
         GL11.glPushMatrix();
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
         GL11.glTranslated(x, y, z);
@@ -55,9 +58,41 @@ public class RenderTilePlacedItem extends TileEntitySpecialRenderer {
         GL11.glPopMatrix();
     }
 
-    public void renderItem(TilePlacedItem tile) {
-        ItemStack stack = tile.getStack();
-        int meta = tile.getWorldObj().getBlockMetadata(tile.xCoord, tile.yCoord, tile.zCoord);
+    /**
+     * Renders every item on the display laid out in a grid on the mounting face. This is the body that gets compiled
+     * into the cached display list.
+     */
+    private void renderGrid(TilePlacedItem tile, int meta) {
+        int count = tile.getDisplayCount();
+        int gridSize = TilePlacedItem.getGridSize(count);
+        float cell = 1F / gridSize;
+        float[] pivot = TilePlacedItem.FACE_PIVOT[meta];
+        float[] axisU = TilePlacedItem.FACE_AXIS_U[meta];
+        float[] axisV = TilePlacedItem.FACE_AXIS_V[meta];
+
+        for (int i = 0; i < count; i++) {
+            ItemStack stack = tile.getStack(i);
+            if (stack == null) continue;
+
+            GL11.glPushMatrix();
+            if (gridSize > 1) {
+                float[] offset = TilePlacedItem.getCellOffset(i, count);
+                float u = offset[0];
+                float v = offset[1];
+
+                GL11.glTranslatef(
+                        pivot[0] + axisU[0] * u + axisV[0] * v,
+                        pivot[1] + axisU[1] * u + axisV[1] * v,
+                        pivot[2] + axisU[2] * u + axisV[2] * v);
+                GL11.glScalef(cell, cell, cell);
+                GL11.glTranslatef(-pivot[0], -pivot[1], -pivot[2]);
+            }
+            renderItem(tile, stack, meta);
+            GL11.glPopMatrix();
+        }
+    }
+
+    public void renderItem(TilePlacedItem tile, ItemStack stack, int meta) {
         final Item item = stack.getItem();
         boolean is3D = item.isFull3D();
         boolean isBlock = item instanceof ItemBlock;

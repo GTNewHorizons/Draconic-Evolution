@@ -2,6 +2,7 @@ package com.brandon3055.draconicevolution.client.render.tile;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.client.Minecraft;
@@ -39,18 +40,21 @@ public class PlacedItemDisplayListCache {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    public CacheEntry getOrCompile(TilePlacedItem tile, ItemStack stack, int meta, Runnable renderBody) {
+    public CacheEntry getOrCompile(TilePlacedItem tile, int meta, Runnable renderBody) {
+        List<ItemStack> stacks = tile.getStacks();
         CacheEntry entry = displayListCache.get(tile);
-        if (entry == null || !entry.isValid(stack, meta, tile.rotation, atlasVersion) || entry.needsRefresh()) {
+        if (entry == null || !entry.isValid(stacks, meta, tile.rotation, atlasVersion) || entry.needsRefresh()) {
             dispose(tile);
-            entry = compile(tile, stack, meta, renderBody);
+            entry = compile(tile, stacks, meta, renderBody);
         }
         return entry;
     }
 
-    private CacheEntry compile(TilePlacedItem tile, ItemStack stack, int meta, Runnable renderBody) {
+    private CacheEntry compile(TilePlacedItem tile, List<ItemStack> stacks, int meta, Runnable renderBody) {
         int listId = GL11.glGenLists(1);
-        boolean mobSoul = stack.getItem() instanceof MobSoul;
+        // A lone mob soul sits at the block centre, so its spin can be applied outside the list each frame. Souls in
+        // a grid are baked with their current angle instead and the list is refreshed on a short TTL.
+        boolean mobSoul = stacks.size() == 1 && stacks.get(0).getItem() instanceof MobSoul;
         boolean previousRotationFlag = RenderMobSoul.applyTimeRotation;
         GL11.glNewList(listId, GL11.GL_COMPILE);
         try {
@@ -67,26 +71,34 @@ public class PlacedItemDisplayListCache {
         }
         CacheEntry entry = new CacheEntry(
                 listId,
-                stack,
-                stack.stackSize,
+                stacks,
                 meta,
                 tile.rotation,
-                getTTL(stack, mobSoul),
+                getTTL(stacks, mobSoul),
                 mobSoul,
                 atlasVersion);
         displayListCache.put(tile, entry);
         return entry;
     }
 
-    private long getTTL(ItemStack stack, boolean mobSoul) {
-        if (mobSoul) {
+    private long getTTL(List<ItemStack> stacks, boolean mobSoulOutsideList) {
+        long ttl = Long.MAX_VALUE; // static (event-invalidated)
+        for (ItemStack stack : stacks) {
+            ttl = Math.min(ttl, getTTL(stack, mobSoulOutsideList));
+        }
+        return ttl;
+    }
+
+    private long getTTL(ItemStack stack, boolean mobSoulOutsideList) {
+        if (stack.getItem() instanceof MobSoul) {
             // "Any" soul swaps mob every second while named souls only need per-frame rotation outside the list
-            return isAnyMobSoul(stack) ? MOBSOUL_TTL_MS : Long.MAX_VALUE;
+            if (isAnyMobSoul(stack)) return MOBSOUL_TTL_MS;
+            return mobSoulOutsideList ? Long.MAX_VALUE : ANIMATED_TTL_MS;
         }
 
         if (stack.hasEffect()) return GLINT_TTL_MS; // Glint scroll (~30 fps)
         if (stack.getItem().getIconIndex(stack) instanceof ITickable) return ANIMATED_TTL_MS; // 20 Hz sprite ticks
-        return Long.MAX_VALUE; // static (event-invalidated)
+        return Long.MAX_VALUE;
     }
 
     private boolean isAnyMobSoul(ItemStack stack) {
@@ -108,7 +120,7 @@ public class PlacedItemDisplayListCache {
         while (it.hasNext()) {
             Map.Entry<TilePlacedItem, CacheEntry> entry = it.next();
             TilePlacedItem tile = entry.getKey();
-            if (tile.isInvalid() || tile.getWorldObj() == null || tile.getStack() == null) {
+            if (tile.isInvalid() || tile.getWorldObj() == null || tile.getDisplayCount() == 0) {
                 GL11.glDeleteLists(entry.getValue().listId, 1);
                 it.remove();
             }
@@ -157,20 +169,24 @@ public class PlacedItemDisplayListCache {
     public static class CacheEntry {
 
         public final int listId;
-        public final ItemStack stack;
-        public final int stackSize;
+        private final ItemStack[] stacks;
+        private final int[] stackSizes;
         public final int meta;
         public final float rotation;
         public final long ttlMs;
+        /** True when the list holds a single mob soul whose spin is applied by the caller each frame. */
         public final boolean mobSoul;
         public final int atlasVersion;
         private long lastCompileMs;
 
-        private CacheEntry(int listId, ItemStack stack, int stackSize, int meta, float rotation, long ttlMs,
-                boolean mobSoul, int atlasVersion) {
+        private CacheEntry(int listId, List<ItemStack> stacks, int meta, float rotation, long ttlMs, boolean mobSoul,
+                int atlasVersion) {
             this.listId = listId;
-            this.stack = stack;
-            this.stackSize = stackSize;
+            this.stacks = stacks.toArray(new ItemStack[0]);
+            this.stackSizes = new int[this.stacks.length];
+            for (int i = 0; i < this.stacks.length; i++) {
+                this.stackSizes[i] = this.stacks[i].stackSize;
+            }
             this.meta = meta;
             this.rotation = rotation;
             this.ttlMs = ttlMs;
@@ -179,12 +195,15 @@ public class PlacedItemDisplayListCache {
             this.lastCompileMs = System.currentTimeMillis();
         }
 
-        private boolean isValid(ItemStack stack, int meta, float rotation, int atlasVersion) {
-            // checking the pointer of the stack is enough
-            return this.stack == stack && this.stackSize == stack.stackSize
-                    && this.meta == meta
-                    && this.rotation == rotation
-                    && this.atlasVersion == atlasVersion;
+        private boolean isValid(List<ItemStack> stacks, int meta, float rotation, int atlasVersion) {
+            if (this.meta != meta || this.rotation != rotation || this.atlasVersion != atlasVersion) return false;
+            if (this.stacks.length != stacks.size()) return false;
+            for (int i = 0; i < this.stacks.length; i++) {
+                // checking the pointer of the stack is enough
+                ItemStack stack = stacks.get(i);
+                if (this.stacks[i] != stack || this.stackSizes[i] != stack.stackSize) return false;
+            }
+            return true;
         }
 
         private boolean needsRefresh() {
