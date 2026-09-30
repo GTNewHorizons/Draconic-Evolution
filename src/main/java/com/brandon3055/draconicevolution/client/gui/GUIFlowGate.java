@@ -16,8 +16,8 @@ import org.lwjgl.input.Mouse;
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 import com.brandon3055.draconicevolution.client.utils.GuiHelper;
 import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.tileentities.gates.TileFluidGate;
 import com.brandon3055.draconicevolution.common.tileentities.gates.TileGate;
-import com.brandon3055.draconicevolution.common.tileentities.gates.TileFluxGate;
 
 /**
  * Created by Brandon on 30/6/2015.
@@ -37,19 +37,17 @@ public class GUIFlowGate extends GuiScreen {
         int guiTop = (height / 2) - (88 / 2);
         buttonList.clear();
         if (tile.flowOverridden) return;
-        int buttonY = tile instanceof TileFluxGate ? 24 : 20;
+        int buttonY = 24;
         buttonList.add(new GuiTextureButton(0, guiLeft + 20, guiTop + buttonY, 0, 108, 18, 18, ""));
         buttonList.add(new GuiTextureButton(1, guiLeft + 159, guiTop + buttonY, 0, 54, 18, 18, ""));
 
         buttonList.add(new GuiTextureButton(2, guiLeft + 20, guiTop + buttonY + 30, 0, 108, 18, 18, ""));
         buttonList.add(new GuiTextureButton(3, guiLeft + 159, guiTop + buttonY + 30, 0, 54, 18, 18, ""));
 
-        if (tile instanceof TileFluxGate) {
-            flowInputs = new GuiTextField[2];
-            for (int i = 0; i < flowInputs.length; i++) {
-                flowInputs[i] = new GuiTextField(fontRendererObj, guiLeft + 49, guiTop + (i == 0 ? 57 : 27), 70, 12);
-                flowInputs[i].setMaxStringLength(10);
-            }
+        flowInputs = new GuiTextField[2];
+        for (int i = 0; i < flowInputs.length; i++) {
+            flowInputs[i] = new GuiTextField(fontRendererObj, guiLeft + 49, guiTop + (i == 0 ? 57 : 27), 70, 12);
+            flowInputs[i].setMaxStringLength(10);
         }
     }
 
@@ -137,7 +135,11 @@ public class GUIFlowGate extends GuiScreen {
                         input.setTextColor(0xFFFFFF);
                     }
                     input.drawTextBox();
-                    fontRendererObj.drawString("RF/t", guiLeft + 123, guiTop + (i == 0 ? 59 : 29), 0x2c2c2c);
+                    fontRendererObj.drawString(
+                            tile instanceof TileFluidGate ? "MB/t" : "RF/t",
+                            guiLeft + 123,
+                            guiTop + (i == 0 ? 59 : 29),
+                            0x2c2c2c);
                 }
             }
 
@@ -273,7 +275,15 @@ public class GUIFlowGate extends GuiScreen {
                         input.setTextColor(0xFF5555);
                     }
                 } else {
+                    String previous = input.getText();
+                    int cursor = input.getCursorPosition();
+                    int selection = input.getSelectionEnd();
                     input.textboxKeyTyped(p_73869_1_, key);
+                    if (!input.getText().matches("[0-9]*")) {
+                        input.setText(previous);
+                        input.setCursorPosition(cursor);
+                        input.setSelectionPos(selection);
+                    }
                     input.setTextColor(0xFFFFFF);
                 }
                 return;
