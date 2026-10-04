@@ -39,9 +39,11 @@ import com.gtnewhorizon.gtnhlib.GTNHLib;
 
 import baubles.api.BaubleType;
 import baubles.api.IBauble;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import vazkii.botania.common.block.subtile.functional.SubTileSolegnolia;
 
 /**
  * Created by brandon3055 on 9/3/2016.
@@ -49,6 +51,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @Optional.Interface(iface = "baubles.api.IBauble", modid = "Baubles")
 public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
+
+    private static final boolean BOTANIA_LOADED = Loader.isModLoaded("Botania");
 
     private IIcon draconium;
     private IIcon awakened;
@@ -118,6 +122,9 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
             return;
         }
         if (IConfigurableItem.ProfileHelper.getBoolean(stack, References.MAGNET_SNEAK, true) && entity.isSneaking()) {
+            return;
+        }
+        if (BOTANIA_LOADED && SubTileSolegnolia.hasSolegnoliaAround(player)) {
             return;
         }
 
