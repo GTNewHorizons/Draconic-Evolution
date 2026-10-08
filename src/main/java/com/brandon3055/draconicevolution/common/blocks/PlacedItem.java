@@ -147,25 +147,29 @@ public class PlacedItem extends BlockDE {
     @Override
     public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
         TileEntity te = world.getTileEntity(x, y, z);
-        if (te != null && te instanceof TilePlacedItem && ((TilePlacedItem) te).getStack() != null) {
-            TilePlacedItem tile = (TilePlacedItem) te;
-
-            float spawnX = x + world.rand.nextFloat();
-            float spawnY = y + world.rand.nextFloat();
-            float spawnZ = z + world.rand.nextFloat();
-
-            EntityItem droppedItem = new EntityItem(world, spawnX, spawnY, spawnZ, tile.getStack());
-            tile.setStack(null);
-
-            float multiplier = 0.05F;
-
-            droppedItem.motionX = (-0.5F + world.rand.nextFloat()) * multiplier;
-            droppedItem.motionY = (4 + world.rand.nextFloat()) * multiplier;
-            droppedItem.motionZ = (-0.5F + world.rand.nextFloat()) * multiplier;
-
-            world.spawnEntityInWorld(droppedItem);
+        if (te instanceof TilePlacedItem tile) {
+            ItemStack stack;
+            while ((stack = tile.removeLastItem()) != null) {
+                dropStack(world, x, y, z, stack);
+            }
         }
         super.breakBlock(world, x, y, z, block, meta);
+    }
+
+    private static void dropStack(World world, int x, int y, int z, ItemStack stack) {
+        float spawnX = x + world.rand.nextFloat();
+        float spawnY = y + world.rand.nextFloat();
+        float spawnZ = z + world.rand.nextFloat();
+
+        EntityItem droppedItem = new EntityItem(world, spawnX, spawnY, spawnZ, stack);
+
+        float multiplier = 0.05F;
+
+        droppedItem.motionX = (-0.5F + world.rand.nextFloat()) * multiplier;
+        droppedItem.motionY = (4 + world.rand.nextFloat()) * multiplier;
+        droppedItem.motionZ = (-0.5F + world.rand.nextFloat()) * multiplier;
+
+        world.spawnEntityInWorld(droppedItem);
     }
 
     @Override
@@ -174,20 +178,30 @@ public class PlacedItem extends BlockDE {
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int p_149727_6_,
-            float p_149727_7_, float p_149727_8_, float p_149727_9_) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX,
+            float hitY, float hitZ) {
+        TilePlacedItem tile = (world.getTileEntity(x, y, z) != null
+                && world.getTileEntity(x, y, z) instanceof TilePlacedItem)
+                        ? (TilePlacedItem) world.getTileEntity(x, y, z)
+                        : null;
+        if (tile == null) {
+            world.setBlockToAir(x, y, z);
+            return true;
+        }
         if (player.isSneaking()) {
-            TilePlacedItem tile = (world.getTileEntity(x, y, z) != null
-                    && world.getTileEntity(x, y, z) instanceof TilePlacedItem)
-                            ? (TilePlacedItem) world.getTileEntity(x, y, z)
-                            : null;
-            if (tile == null) {
-                world.setBlockToAir(x, y, z);
-            }
             tile.rotation += 5.625F;
         } else {
-            if (!world.isRemote) breakBlock(world, x, y, z, this, world.getBlockMetadata(x, y, z));
-            world.setBlockToAir(x, y, z);
+            // Remove the item the player clicked on; the block is removed once the last one is taken.
+            if (!world.isRemote) {
+                int index = tile.getStackIndexAt(world.getBlockMetadata(x, y, z), hitX, hitY, hitZ);
+                ItemStack stack = tile.removeItem(index);
+                if (stack != null) {
+                    dropStack(world, x, y, z, stack);
+                }
+                if (tile.getDisplayCount() == 0) {
+                    world.setBlockToAir(x, y, z);
+                }
+            }
         }
         world.markBlockForUpdate(x, y, z);
         return true;
@@ -195,45 +209,42 @@ public class PlacedItem extends BlockDE {
 
     @Override
     public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
-        if (player.isSneaking()) {
-            TilePlacedItem tile = (world.getTileEntity(x, y, z) != null
-                    && world.getTileEntity(x, y, z) instanceof TilePlacedItem)
-                            ? (TilePlacedItem) world.getTileEntity(x, y, z)
-                            : null;
-            if (tile == null) {
-                world.setBlockToAir(x, y, z);
-            }
-            tile.rotation += 22.5F;
-        } else {
-            TilePlacedItem tile = (world.getTileEntity(x, y, z) != null
-                    && world.getTileEntity(x, y, z) instanceof TilePlacedItem)
-                            ? (TilePlacedItem) world.getTileEntity(x, y, z)
-                            : null;
-            if (tile == null) {
-                world.setBlockToAir(x, y, z);
-            }
-            tile.rotation -= 22.5F;
+        TilePlacedItem tile = (world.getTileEntity(x, y, z) != null
+                && world.getTileEntity(x, y, z) instanceof TilePlacedItem)
+                        ? (TilePlacedItem) world.getTileEntity(x, y, z)
+                        : null;
+        if (tile == null) {
+            world.setBlockToAir(x, y, z);
+            return;
         }
+        tile.rotation += player.isSneaking() ? 22.5F : -22.5F;
         world.markBlockForUpdate(x, y, z);
     }
 
     @Override
     public int getLightValue(IBlockAccess world, int x, int y, int z) {
         TileEntity te = world.getTileEntity(x, y, z);
-        if (te != null && te instanceof TilePlacedItem && ((TilePlacedItem) te).getStack() != null) {
-            TilePlacedItem tile = (TilePlacedItem) te;
-            if (tile.getStack() != null && tile.getStack().getItem() instanceof ItemBlock)
-                return Block.getBlockFromItem(tile.getStack().getItem()).getLightValue();
+        int light = 0;
+        if (te instanceof TilePlacedItem tile) {
+            for (ItemStack stack : tile.getStacks()) {
+                if (stack != null && stack.getItem() instanceof ItemBlock) {
+                    light = Math.max(light, Block.getBlockFromItem(stack.getItem()).getLightValue());
+                }
+            }
         }
-        return 0;
+        return light;
     }
 
     @Override
     public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z) {
         TileEntity te = world.getTileEntity(x, y, z);
-        if (te != null && te instanceof TilePlacedItem && ((TilePlacedItem) te).getStack() != null) {
-            TilePlacedItem tile = (TilePlacedItem) te;
-            return tile.getStack();
+        if (te instanceof TilePlacedItem tile && target != null && target.hitVec != null) {
+            int index = tile.getStackIndexAt(
+                    world.getBlockMetadata(x, y, z),
+                    (float) (target.hitVec.xCoord - x),
+                    (float) (target.hitVec.yCoord - y),
+                    (float) (target.hitVec.zCoord - z));
+            return tile.getStack(index);
         }
         return null;
     }
