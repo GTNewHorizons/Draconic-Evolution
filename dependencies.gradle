@@ -10,6 +10,7 @@ dependencies {
     compileOnly("com.github.GTNewHorizons:CodeChickenCore:1.4.12:dev") {transitive = false}
     compileOnly("com.github.GTNewHorizons:inventory-tweaks:1.7.1:dev") {transitive = false}
     compileOnly('com.github.GTNewHorizons:Baubles-Expanded:2.2.11-GTNH:dev') {transitive = false}
+    compileOnly("com.github.GTNewHorizons:Botania:1.13.36-GTNH:dev") {transitive = false}
     compileOnly("com.github.GTNewHorizons:GT5-Unofficial:5.09.52.461:dev") {transitive = false}
 	compileOnly("com.github.GTNewHorizons:Backhand:1.8.8:dev") {transitive = false}
 
