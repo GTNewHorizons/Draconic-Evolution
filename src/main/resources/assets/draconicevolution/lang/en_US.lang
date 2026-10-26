@@ -586,6 +586,7 @@ gui.de.flowGateOverridden.txt=Computer Override Enabled
 gui.de.increment.name=Increment value by
 gui.de.decrement.name=Decrement value by
 gui.de.ctrlAndShift.name=You can use Ctrl and Shift to change the increment amount.
+gui.de.flowGateInputHint.name=Click a value to edit. Press Enter to apply.
 gui.de.pressOrScroll.name=Press Or Scroll
 gui.de.tempLoad.name=Temperature Load Factor
 gui.de.mass.name=Core Mass
