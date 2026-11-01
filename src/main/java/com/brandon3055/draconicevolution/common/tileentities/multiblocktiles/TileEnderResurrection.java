@@ -114,6 +114,7 @@ public class TileEnderResurrection extends TileEntity {
         EntityLightningBolt bolt = new EntityLightningBolt(worldObj, x, worldObj.getTopSolidOrLiquidBlock(z, z) - 1, z);
         if (!worldObj.isRemote) worldObj.addWeatherEffect(bolt);
         EntityPlayer p = worldObj.getClosestPlayer(xCoord, yCoord, zCoord, 100);
+        if (p == null) return;
         float yaw = p.rotationYaw;
         float pitch = p.rotationPitch;
         float mod = 0.1F;
