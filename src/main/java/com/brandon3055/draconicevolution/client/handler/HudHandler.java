@@ -16,6 +16,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import org.lwjgl.opengl.GL11;
 
+import com.brandon3055.draconicevolution.client.ClientProxy;
 import com.brandon3055.draconicevolution.client.gui.GuiHudConfig;
 import com.brandon3055.draconicevolution.client.utils.GuiHelper;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
@@ -56,7 +57,9 @@ public final class HudHandler {
         final int height = resolution.getScaledHeight();
         FontRenderer fontRenderer = mc.fontRenderer;
 
-        if (ConfigHandler.hudSettings[10] == 1 && hudList != null && toolTipFadeOut > 0) {
+        if (ConfigHandler.hudSettings[10] == 1 && hudList != null
+                && toolTipFadeOut > 0
+                && (!ClientProxy.dashboardLoaded || DashboardHud.beginInfoBox(resolution))) {
             int x = (int) (((float) ConfigHandler.hudSettings[0] / 1000F) * (float) width);
             int y = (int) (((float) ConfigHandler.hudSettings[1] / 1000F) * (float) height);
 
@@ -72,13 +75,16 @@ public final class HudHandler {
                     height);
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glPopMatrix();
+            if (ClientProxy.dashboardLoaded) DashboardHud.endRender();
         }
 
-        if (ConfigHandler.hudSettings[11] == 1 && showShieldHud) {
+        if (ConfigHandler.hudSettings[11] == 1 && showShieldHud
+                && (!ClientProxy.dashboardLoaded || DashboardHud.beginArmorHud(resolution))) {
             int x = (int) (((float) ConfigHandler.hudSettings[2] / 1000F) * (float) width);
             int y = (int) (((float) ConfigHandler.hudSettings[3] / 1000F) * (float) height);
 
             drawArmorHUD(x, y, ConfigHandler.hudSettings[8] == 1, ConfigHandler.hudSettings[5] / 100D);
+            if (ClientProxy.dashboardLoaded) DashboardHud.endRender();
         }
     }
 

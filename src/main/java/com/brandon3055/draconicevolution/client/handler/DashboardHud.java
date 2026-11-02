@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
@@ -82,6 +83,24 @@ public final class DashboardHud {
         HudRegistry.register(INFO_BOX);
         HudRegistry.register(ARMOR_HUD);
         HudRegistry.register(MAGNET_ICON);
+    }
+
+    // False means the player hid the element, so skip drawing it and do not call endRender()
+
+    static boolean beginInfoBox(ScaledResolution resolution) {
+        return HudRegistry.beginRender(INFO_BOX, resolution);
+    }
+
+    static boolean beginArmorHud(ScaledResolution resolution) {
+        return HudRegistry.beginRender(ARMOR_HUD, resolution);
+    }
+
+    static boolean beginMagnetIcon(ScaledResolution resolution) {
+        return HudRegistry.beginRender(MAGNET_ICON, resolution);
+    }
+
+    static void endRender() {
+        HudRegistry.endRender();
     }
 
     /** Thousandths of the screen, like Draconic's position settings. */
