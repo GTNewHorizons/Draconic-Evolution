@@ -31,17 +31,17 @@ import cpw.mods.fml.common.gameevent.TickEvent;
  */
 public final class HudHandler {
 
-    private List<String> hudList = null;
+    List<String> hudList = null;
     private List<String> ltHudList = null;
-    private float toolTipFadeOut = 0F;
-    private float armorStatsFadeOut = 0F;
+    float toolTipFadeOut = 0F;
+    float armorStatsFadeOut = 0F;
     private boolean showShieldHud = false;
-    private int shieldPercentCharge = 0;
-    private float shieldPoints = 0F;
-    private float maxShieldPoints = 0F;
-    private float shieldEntropy = 0F;
-    private int rfCharge = 0;
-    private long rfTotal = 0;
+    int shieldPercentCharge = 0;
+    float shieldPoints = 0F;
+    float maxShieldPoints = 0F;
+    float shieldEntropy = 0F;
+    int rfCharge = 0;
+    long rfTotal = 0;
 
     @SubscribeEvent
     public void drawHUD(RenderGameOverlayEvent.Post event) {
@@ -170,7 +170,7 @@ public final class HudHandler {
         return summary.maxProtectionPoints > 0F || summary.maxTotalEnergyStorage > 0;
     }
 
-    private void drawArmorHUD(int x, int y, boolean rotated, double scale) {
+    void drawArmorHUD(int x, int y, boolean rotated, double scale) {
         GL11.glPushMatrix();
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glEnable(GL11.GL_BLEND);
