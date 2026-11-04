@@ -10,6 +10,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.InventoryLargeChest;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -18,6 +19,7 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.brandon3055.draconicevolution.common.items.armor.ICustomArmor;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -48,6 +50,31 @@ public final class InventoryUtils {
                 ItemStack itemStack = player.inventory.getStackInSlot(i);
 
                 if (itemStack != null && itemClass.isInstance(itemStack.getItem())) {
+                    return Optional.of(itemStack);
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    /// Returns the first armor implementing ICustomArmor in the player's inventory, prefers equipped armor to inventory
+    /// items.
+    /// @return Optional, never null, but may be empty if no matching armor piece is found.
+    public static Optional<ItemStack> getDEArmorInPlayerInventory(EntityPlayer player, int armorType) {
+        for (int i = 0; i < player.inventory.armorInventory.length; i++) {
+            ItemStack itemStack = player.inventory.armorInventory[i];
+            if (itemStack != null && itemStack.getItem() instanceof ItemArmor armor
+                    && itemStack.getItem() instanceof ICustomArmor) {
+                if (armor.armorType == armorType) {
+                    return Optional.of(itemStack);
+                }
+            }
+        }
+        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+            ItemStack itemStack = player.inventory.getStackInSlot(i);
+            if (itemStack != null && itemStack.getItem() instanceof ItemArmor armor
+                    && itemStack.getItem() instanceof ICustomArmor) {
+                if (armor.armorType == armorType) {
                     return Optional.of(itemStack);
                 }
             }
