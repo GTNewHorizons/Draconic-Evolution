@@ -59,7 +59,7 @@ public final class InventoryUtils {
 
     /// Returns the first armor implementing ICustomArmor in the player's inventory, prefers equipped armor to inventory
     /// items.
-    /// @return Optional, never null, but may be empty if no helmet is found.
+    /// @return Optional, never null, but may be empty if no matching armor piece is found.
     public static Optional<ItemStack> getDEArmorInPlayerInventory(EntityPlayer player, int armorType) {
         for (int i = 0; i < player.inventory.armorInventory.length; i++) {
             ItemStack itemStack = player.inventory.armorInventory[i];
