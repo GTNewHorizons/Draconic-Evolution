@@ -16,6 +16,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import org.lwjgl.opengl.GL11;
 
+import com.brandon3055.draconicevolution.client.ClientProxy;
 import com.brandon3055.draconicevolution.client.gui.GuiHudConfig;
 import com.brandon3055.draconicevolution.client.utils.GuiHelper;
 import com.brandon3055.draconicevolution.common.handler.ConfigHandler;
@@ -31,17 +32,17 @@ import cpw.mods.fml.common.gameevent.TickEvent;
  */
 public final class HudHandler {
 
-    private List<String> hudList = null;
+    List<String> hudList = null;
     private List<String> ltHudList = null;
-    private float toolTipFadeOut = 0F;
-    private float armorStatsFadeOut = 0F;
+    float toolTipFadeOut = 0F;
+    float armorStatsFadeOut = 0F;
     private boolean showShieldHud = false;
-    private int shieldPercentCharge = 0;
-    private float shieldPoints = 0F;
-    private float maxShieldPoints = 0F;
-    private float shieldEntropy = 0F;
-    private int rfCharge = 0;
-    private long rfTotal = 0;
+    int shieldPercentCharge = 0;
+    float shieldPoints = 0F;
+    float maxShieldPoints = 0F;
+    float shieldEntropy = 0F;
+    int rfCharge = 0;
+    long rfTotal = 0;
 
     @SubscribeEvent
     public void drawHUD(RenderGameOverlayEvent.Post event) {
@@ -56,7 +57,9 @@ public final class HudHandler {
         final int height = resolution.getScaledHeight();
         FontRenderer fontRenderer = mc.fontRenderer;
 
-        if (ConfigHandler.hudSettings[10] == 1 && hudList != null && toolTipFadeOut > 0) {
+        if (ConfigHandler.hudSettings[10] == 1 && hudList != null
+                && toolTipFadeOut > 0
+                && (!ClientProxy.dashboardLoaded || DashboardHud.beginInfoBox(resolution))) {
             int x = (int) (((float) ConfigHandler.hudSettings[0] / 1000F) * (float) width);
             int y = (int) (((float) ConfigHandler.hudSettings[1] / 1000F) * (float) height);
 
@@ -72,13 +75,16 @@ public final class HudHandler {
                     height);
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glPopMatrix();
+            if (ClientProxy.dashboardLoaded) DashboardHud.endRender();
         }
 
-        if (ConfigHandler.hudSettings[11] == 1 && showShieldHud) {
+        if (ConfigHandler.hudSettings[11] == 1 && showShieldHud
+                && (!ClientProxy.dashboardLoaded || DashboardHud.beginArmorHud(resolution))) {
             int x = (int) (((float) ConfigHandler.hudSettings[2] / 1000F) * (float) width);
             int y = (int) (((float) ConfigHandler.hudSettings[3] / 1000F) * (float) height);
 
             drawArmorHUD(x, y, ConfigHandler.hudSettings[8] == 1, ConfigHandler.hudSettings[5] / 100D);
+            if (ClientProxy.dashboardLoaded) DashboardHud.endRender();
         }
     }
 
@@ -170,7 +176,7 @@ public final class HudHandler {
         return summary.maxProtectionPoints > 0F || summary.maxTotalEnergyStorage > 0;
     }
 
-    private void drawArmorHUD(int x, int y, boolean rotated, double scale) {
+    void drawArmorHUD(int x, int y, boolean rotated, double scale) {
         GL11.glPushMatrix();
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glEnable(GL11.GL_BLEND);
