@@ -50,7 +50,7 @@ public final class KeyInputHandler {
     private final KeyBinding toggleMagnetSelfPickup;
 
     public KeyInputHandler() {
-        placeItem = new KeyBinding("key.placeItem", Keyboard.KEY_V, References.MODNAME);
+        placeItem = new KeyBinding("key.placeItem", Keyboard.KEY_NONE, References.MODNAME);
         toolConfig = new KeyBinding("key.toolConfig", Keyboard.KEY_NONE, References.MODNAME);
         toolProfileChange = new KeyBinding("key.toolProfileChange", Keyboard.KEY_NONE, References.MODNAME);
         toggleFlight = new KeyBinding("key.toggleFlight", Keyboard.KEY_NONE, References.MODNAME);
