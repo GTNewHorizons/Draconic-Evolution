@@ -11,6 +11,8 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import com.brandon3055.draconicevolution.client.ClientProxy;
+
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 
@@ -45,7 +47,9 @@ public final class ItemDisplayManager {
     @SubscribeEvent
     public void renderGameOverlayEvent(RenderGameOverlayEvent.Post event) {
         if (event.type == RenderGameOverlayEvent.ElementType.ALL) {
-            if (ticksCounter > 0 && itemStack != null && itemStack.getItem() != null) {
+            if (ticksCounter > 0 && itemStack != null
+                    && itemStack.getItem() != null
+                    && (!ClientProxy.dashboardLoaded || DashboardHud.beginMagnetIcon(event.resolution))) {
                 GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
                 GL11.glEnable(GL12.GL_RESCALE_NORMAL);
                 RenderHelper.enableGUIStandardItemLighting();
@@ -59,6 +63,7 @@ public final class ItemDisplayManager {
                 RenderHelper.disableStandardItemLighting();
                 GL11.glDisable(GL12.GL_RESCALE_NORMAL);
                 GL11.glDisable(GL11.GL_BLEND);
+                if (ClientProxy.dashboardLoaded) DashboardHud.endRender();
             }
         }
     }

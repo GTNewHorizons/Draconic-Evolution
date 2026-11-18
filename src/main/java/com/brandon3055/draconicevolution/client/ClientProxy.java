@@ -21,6 +21,7 @@ import net.minecraftforge.event.world.WorldEvent;
 
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.client.handler.ClientEventHandler;
+import com.brandon3055.draconicevolution.client.handler.DashboardHud;
 import com.brandon3055.draconicevolution.client.handler.HudHandler;
 import com.brandon3055.draconicevolution.client.handler.ItemDisplayManager;
 import com.brandon3055.draconicevolution.client.handler.ParticleHandler;
@@ -109,6 +110,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -118,6 +120,7 @@ import cpw.mods.fml.common.network.FMLNetworkEvent;
 public final class ClientProxy extends CommonProxy {
 
     private static final boolean debug = DraconicEvolution.debug;
+    public static boolean dashboardLoaded;
 
     private final Map<World, List<TileDislocatorInhibitor>> clientInhibitorsMap = new HashMap<>();
     private ClientEventHandler clientHandler;
@@ -158,6 +161,9 @@ public final class ClientProxy extends CommonProxy {
         this.shieldRenderer = new ShieldRenderHandler();
         FMLCommonHandler.instance().bus().register(this.shieldRenderer);
         MinecraftForge.EVENT_BUS.register(this.shieldRenderer);
+
+        dashboardLoaded = Loader.isModLoaded("dashboard");
+        if (dashboardLoaded) DashboardHud.register(hudHandler);
     }
 
     @Override
