@@ -52,6 +52,7 @@ import com.brandon3055.draconicevolution.common.network.MagnetTogglePacket;
 import com.brandon3055.draconicevolution.common.network.MagnetToggleSelfPickupAckPacket;
 import com.brandon3055.draconicevolution.common.network.MagnetToggleSelfPickupPacket;
 import com.brandon3055.draconicevolution.common.network.MountUpdatePacket;
+import com.brandon3055.draconicevolution.common.network.NightVisionTogglePacket;
 import com.brandon3055.draconicevolution.common.network.ParticleGenPacket;
 import com.brandon3055.draconicevolution.common.network.PlacedItemPacket;
 import com.brandon3055.draconicevolution.common.network.PlayerDetectorButtonPacket;
@@ -209,6 +210,7 @@ public class CommonProxy {
         DraconicEvolution.network.registerMessage(SlotFakeClickPacket.Handler.class, SlotFakeClickPacket.class, 22, Side.SERVER);
         DraconicEvolution.network.registerMessage(MagnetToggleSelfPickupPacket.Handler.class, MagnetToggleSelfPickupPacket.class, 23, Side.SERVER);
         DraconicEvolution.network.registerMessage(MagnetToggleSelfPickupAckPacket.Handler.class, MagnetToggleSelfPickupAckPacket.class, 24, Side.CLIENT);
+        DraconicEvolution.network.registerMessage(NightVisionTogglePacket.Handler.class, NightVisionTogglePacket.class, 25, Side.SERVER);
         // spotless:on
     }
 
