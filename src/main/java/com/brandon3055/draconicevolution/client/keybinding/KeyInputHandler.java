@@ -32,6 +32,7 @@ import com.brandon3055.draconicevolution.common.utils.ItemNBTHelper;
 import com.brandon3055.draconicevolution.integration.ModHelper;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -43,6 +44,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public final class KeyInputHandler {
 
+    public static boolean inNH = Loader.isModLoaded("dreamcraft");
     private final KeyBinding placeItem;
     private final KeyBinding toolConfig;
     private final KeyBinding toolProfileChange;
@@ -52,7 +54,7 @@ public final class KeyInputHandler {
     private final KeyBinding toggleNightVision;
 
     public KeyInputHandler() {
-        placeItem = new KeyBinding("key.placeItem", Keyboard.KEY_V, References.MODNAME);
+        placeItem = new KeyBinding("key.placeItem", inNH ? Keyboard.KEY_NONE : Keyboard.KEY_V, References.MODNAME);
         toolConfig = new KeyBinding("key.toolConfig", Keyboard.KEY_NONE, References.MODNAME);
         toolProfileChange = new KeyBinding("key.toolProfileChange", Keyboard.KEY_NONE, References.MODNAME);
         toggleFlight = new KeyBinding("key.toggleFlight", Keyboard.KEY_NONE, References.MODNAME);
