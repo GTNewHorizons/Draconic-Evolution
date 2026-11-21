@@ -5,6 +5,7 @@ import java.util.Optional;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 
+import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.utils.IConfigurableItem;
 import com.brandon3055.draconicevolution.common.utils.InventoryUtils;
@@ -34,9 +35,10 @@ public class NightVisionTogglePacket implements IMessage {
 
             Optional<ItemStack> helmetOptional = InventoryUtils.getDEArmorInPlayerInventory(player, 0);
             helmetOptional.ifPresent(itemStack -> {
-                var old = IConfigurableItem.ProfileHelper
+                var inverted = !IConfigurableItem.ProfileHelper
                         .getBoolean(itemStack, References.ARMOR_NIGHT_VISION_ACTIVE, false);
-                IConfigurableItem.ProfileHelper.setBoolean(itemStack, References.ARMOR_NIGHT_VISION_ACTIVE, !old);
+                IConfigurableItem.ProfileHelper.setBoolean(itemStack, References.ARMOR_NIGHT_VISION_ACTIVE, inverted);
+                DraconicEvolution.network.sendTo(new NightVisionToggleAckPacket(inverted), player);
             });
 
             return null;
