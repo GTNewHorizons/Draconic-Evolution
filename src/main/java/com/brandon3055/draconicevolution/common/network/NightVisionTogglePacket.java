@@ -35,7 +35,7 @@ public class NightVisionTogglePacket implements IMessage {
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
 
             Optional<ItemStack> helmetOptional = InventoryUtils.getDEArmorInPlayerInventory(player, 0);
-            if (helmetOptional.isEmpty()) return null;
+            if (!helmetOptional.isPresent()) return null;
             var helmet = helmetOptional.get();
             boolean hasNightVision = false;
             boolean defaultValue = false;
