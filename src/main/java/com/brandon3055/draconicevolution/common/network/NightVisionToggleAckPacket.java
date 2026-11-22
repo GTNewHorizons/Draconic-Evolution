@@ -2,6 +2,8 @@ package com.brandon3055.draconicevolution.common.network;
 
 import java.util.Optional;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -38,6 +40,7 @@ public class NightVisionToggleAckPacket implements IMessage {
 
     public static final class Handler implements IMessageHandler<NightVisionToggleAckPacket, IMessage> {
 
+        @SideOnly(Side.CLIENT)
         @Override
         public IMessage onMessage(NightVisionToggleAckPacket message, MessageContext ctx) {
             EntityPlayer player = Minecraft.getMinecraft().thePlayer;
