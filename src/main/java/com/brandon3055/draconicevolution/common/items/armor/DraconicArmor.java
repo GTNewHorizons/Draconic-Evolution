@@ -1,5 +1,6 @@
 package com.brandon3055.draconicevolution.common.items.armor;
 
+import static com.brandon3055.draconicevolution.common.lib.References.ARMOR_NIGHT_VISION_ACTIVE;
 import static com.gtnewhorizon.gtnhlib.util.numberformatting.NumberFormatUtil.formatNumber;
 
 import java.util.ArrayList;
@@ -223,9 +224,9 @@ public class DraconicArmor extends ItemArmor implements ISpecialArmor, IConfigur
                     (int) Math.floor(player.posX),
                     (int) player.posY + 1,
                     (int) Math.floor(player.posZ)) < 5
-                    && IConfigurableItem.ProfileHelper.getBoolean(stack, "ArmorNVActive", false)) {
+                    && IConfigurableItem.ProfileHelper.getBoolean(stack, ARMOR_NIGHT_VISION_ACTIVE, false)) {
                 player.addPotionEffect(new PotionEffect(Potion.nightVision.id, 419, 0, true));
-            } else if (IConfigurableItem.ProfileHelper.getBoolean(stack, "ArmorNVActive", false)
+            } else if (IConfigurableItem.ProfileHelper.getBoolean(stack, ARMOR_NIGHT_VISION_ACTIVE, false)
                     && IConfigurableItem.ProfileHelper.getBoolean(stack, "ArmorNVLock", true))
                 player.addPotionEffect(new PotionEffect(Potion.nightVision.id, 419, 0, true));
             else if (player.isPotionActive(Potion.nightVision.id)) player.removePotionEffect(Potion.nightVision.id);
@@ -333,7 +334,9 @@ public class DraconicArmor extends ItemArmor implements ISpecialArmor, IConfigur
     public List<ItemConfigField> getFields(ItemStack stack, int slot) {
         List<ItemConfigField> list = new ArrayList<ItemConfigField>();
         if (armorType == 0) {
-            list.add(new ItemConfigField(References.BOOLEAN_ID, slot, "ArmorNVActive").readFromItem(stack, false));
+            list.add(
+                    new ItemConfigField(References.BOOLEAN_ID, slot, ARMOR_NIGHT_VISION_ACTIVE)
+                            .readFromItem(stack, false));
             list.add(new ItemConfigField(References.BOOLEAN_ID, slot, "ArmorNVLock").readFromItem(stack, true));
             if (Loader.isModLoaded("Thaumcraft")) {
                 list.add(

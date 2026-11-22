@@ -118,6 +118,8 @@ public final class KeyInputHandler {
             handleToggleMagnetKey(player);
         } else if (this.toggleMagnetSelfPickup != null && this.toggleMagnetSelfPickup.isPressed()) {
             handleToggleMagnetSelfPickup(player);
+        } else if (this.toggleNightVision.isPressed()) {
+            handleToggleNightVision(player);
         }
 
         if (player != null) {
