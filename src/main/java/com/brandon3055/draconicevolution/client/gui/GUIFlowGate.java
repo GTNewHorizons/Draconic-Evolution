@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 
@@ -14,6 +15,8 @@ import org.lwjgl.input.Mouse;
 
 import com.brandon3055.draconicevolution.client.handler.ResourceHandler;
 import com.brandon3055.draconicevolution.client.utils.GuiHelper;
+import com.brandon3055.draconicevolution.common.lib.References;
+import com.brandon3055.draconicevolution.common.tileentities.gates.TileFluidGate;
 import com.brandon3055.draconicevolution.common.tileentities.gates.TileGate;
 
 /**
@@ -22,6 +25,7 @@ import com.brandon3055.draconicevolution.common.tileentities.gates.TileGate;
 public class GUIFlowGate extends GuiScreen {
 
     public TileGate tile;
+    private GuiTextField[] flowInputs;
 
     public GUIFlowGate(TileGate gate) {
         this.tile = gate;
@@ -33,11 +37,18 @@ public class GUIFlowGate extends GuiScreen {
         int guiTop = (height / 2) - (88 / 2);
         buttonList.clear();
         if (tile.flowOverridden) return;
-        buttonList.add(new GuiTextureButton(0, guiLeft + 20, guiTop + 20, 0, 108, 18, 18, ""));
-        buttonList.add(new GuiTextureButton(1, guiLeft + 159, guiTop + 20, 0, 54, 18, 18, ""));
+        int buttonY = 24;
+        buttonList.add(new GuiTextureButton(0, guiLeft + 20, guiTop + buttonY, 0, 108, 18, 18, ""));
+        buttonList.add(new GuiTextureButton(1, guiLeft + 159, guiTop + buttonY, 0, 54, 18, 18, ""));
 
-        buttonList.add(new GuiTextureButton(2, guiLeft + 20, guiTop + 50, 0, 108, 18, 18, ""));
-        buttonList.add(new GuiTextureButton(3, guiLeft + 159, guiTop + 50, 0, 54, 18, 18, ""));
+        buttonList.add(new GuiTextureButton(2, guiLeft + 20, guiTop + buttonY + 30, 0, 108, 18, 18, ""));
+        buttonList.add(new GuiTextureButton(3, guiLeft + 159, guiTop + buttonY + 30, 0, 54, 18, 18, ""));
+
+        flowInputs = new GuiTextField[2];
+        for (int i = 0; i < flowInputs.length; i++) {
+            flowInputs[i] = new GuiTextField(fontRendererObj, guiLeft + 49, guiTop + (i == 0 ? 57 : 27), 70, 12);
+            flowInputs[i].setMaxStringLength(10);
+        }
     }
 
     @Override
@@ -45,6 +56,8 @@ public class GUIFlowGate extends GuiScreen {
         int guiLeft = (width / 2) - (197 / 2);
         int guiCrt = (width / 2);
         int guiTop = (height / 2) - (88 / 2);
+        int labelY = flowInputs == null ? 20 : 17;
+        int buttonY = flowInputs == null ? 20 : 24;
 
         drawDefaultBackground();
         ResourceHandler.bindResource("textures/gui/ToolConfig.png");
@@ -62,23 +75,23 @@ public class GUIFlowGate extends GuiScreen {
                     StatCollector.translateToLocal("gui.de.flowGateRSHigh.name"),
                     guiCrt - (fontRendererObj
                             .getStringWidth(StatCollector.translateToLocal("gui.de.flowGateRSHigh.name")) / 2),
-                    guiTop + 20,
+                    guiTop + labelY,
                     0xff0000);
-            fontRendererObj.drawString(
+            if (flowInputs == null) fontRendererObj.drawString(
                     flowRSHeigh,
                     guiCrt - (fontRendererObj.getStringWidth(flowRSHeigh) / 2),
-                    guiTop + 31,
+                    guiTop + labelY + 11,
                     0x2c2c2c);
             fontRendererObj.drawString(
                     StatCollector.translateToLocal("gui.de.flowGateRSLow.name"),
                     guiCrt - (fontRendererObj
                             .getStringWidth(StatCollector.translateToLocal("gui.de.flowGateRSLow.name")) / 2),
-                    guiTop + 50,
+                    guiTop + labelY + 30,
                     0x660000);
-            fontRendererObj.drawString(
+            if (flowInputs == null) fontRendererObj.drawString(
                     flowRSLow,
                     guiCrt - (fontRendererObj.getStringWidth(flowRSLow) / 2),
-                    guiTop + 61,
+                    guiTop + labelY + 41,
                     0x2c2c2c);
         } else drawCenteredString(
                 fontRendererObj,
@@ -98,37 +111,59 @@ public class GUIFlowGate extends GuiScreen {
                     guiTop + 90,
                     197,
                     0xFFFFFF);
-            fontRendererObj.drawSplitString(
-                    StatCollector.translateToLocal("gui.de.ctrlAndShift.name"),
+            String modifierHint = StatCollector.translateToLocal("gui.de.ctrlAndShift.name");
+            fontRendererObj.drawSplitString(modifierHint, guiLeft + 200, guiTop + 5, 100, 0xFFFFFF);
+            if (flowInputs != null) fontRendererObj.drawSplitString(
+                    StatCollector.translateToLocal("gui.de.flowGateInputHint.name"),
                     guiLeft + 200,
-                    guiTop + 5,
+                    guiTop + Math.max(
+                            34,
+                            9 + fontRendererObj.listFormattedStringToWidth(modifierHint, 100).size()
+                                    * fontRendererObj.FONT_HEIGHT),
                     100,
                     0xFFFFFF);
 
             ResourceHandler.bindResource("textures/gui/Widgets.png");
             super.drawScreen(x, y, pt);
 
+            if (flowInputs != null) {
+                for (int i = 0; i < flowInputs.length; i++) {
+                    GuiTextField input = flowInputs[i];
+                    String value = Integer.toString(i == 0 ? tile.flowRSLow : tile.flowRSHigh);
+                    if (!input.isFocused()) {
+                        if (!input.getText().equals(value)) input.setText(value);
+                        input.setTextColor(0xFFFFFF);
+                    }
+                    input.drawTextBox();
+                    fontRendererObj.drawString(
+                            tile instanceof TileFluidGate ? "MB/t" : "RF/t",
+                            guiLeft + 123,
+                            guiTop + (i == 0 ? 59 : 29),
+                            0x2c2c2c);
+                }
+            }
+
             List<String> hoverText = new ArrayList<String>();
             boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
             boolean ctrl = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
 
-            if (GuiHelper.isInRect(guiLeft + 20, guiTop + 20, 18, 18, x, y)) {
+            if (GuiHelper.isInRect(guiLeft + 20, guiTop + buttonY, 18, 18, x, y)) {
                 hoverText.add(
                         StatCollector.translateToLocal("gui.de.decrement.name") + " "
                                 + tile.getToolTip(1, shift, ctrl));
             }
-            if (GuiHelper.isInRect(guiLeft + 159, guiTop + 20, 18, 18, x, y)) {
+            if (GuiHelper.isInRect(guiLeft + 159, guiTop + buttonY, 18, 18, x, y)) {
                 hoverText.add(
                         StatCollector.translateToLocal("gui.de.increment.name") + " "
                                 + tile.getToolTip(1, shift, ctrl));
             }
 
-            if (GuiHelper.isInRect(guiLeft + 20, guiTop + 50, 18, 18, x, y)) {
+            if (GuiHelper.isInRect(guiLeft + 20, guiTop + buttonY + 30, 18, 18, x, y)) {
                 hoverText.add(
                         StatCollector.translateToLocal("gui.de.decrement.name") + " "
                                 + tile.getToolTip(0, shift, ctrl));
             }
-            if (GuiHelper.isInRect(guiLeft + 159, guiTop + 50, 18, 18, x, y)) {
+            if (GuiHelper.isInRect(guiLeft + 159, guiTop + buttonY + 30, 18, 18, x, y)) {
                 hoverText.add(
                         StatCollector.translateToLocal("gui.de.increment.name") + " "
                                 + tile.getToolTip(0, shift, ctrl));
@@ -152,20 +187,32 @@ public class GUIFlowGate extends GuiScreen {
     protected void mouseClicked(int x, int y, int button) {
         int guiLeft = (width / 2) - (197 / 2);
         int guiTop = (height / 2) - (88 / 2);
+        int buttonY = flowInputs == null ? 20 : 24;
         boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
         boolean ctrl = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
 
-        if (GuiHelper.isInRect(guiLeft + 20, guiTop + 20, 18, 18, x, y)) {
+        if (flowInputs != null && !tile.flowOverridden) {
+            for (GuiTextField input : flowInputs) {
+                boolean wasFocused = input.isFocused();
+                input.mouseClicked(x, y, button);
+                if (!wasFocused && input.isFocused()) {
+                    input.setCursorPositionEnd();
+                    input.setSelectionPos(0);
+                }
+            }
+        }
+
+        if (GuiHelper.isInRect(guiLeft + 20, guiTop + buttonY, 18, 18, x, y)) {
             tile.incrementFlow(1, ctrl, shift, false, button);
         }
-        if (GuiHelper.isInRect(guiLeft + 159, guiTop + 20, 18, 18, x, y)) {
+        if (GuiHelper.isInRect(guiLeft + 159, guiTop + buttonY, 18, 18, x, y)) {
             tile.incrementFlow(1, ctrl, shift, true, button);
         }
 
-        if (GuiHelper.isInRect(guiLeft + 20, guiTop + 50, 18, 18, x, y)) {
+        if (GuiHelper.isInRect(guiLeft + 20, guiTop + buttonY + 30, 18, 18, x, y)) {
             tile.incrementFlow(0, ctrl, shift, false, button);
         }
-        if (GuiHelper.isInRect(guiLeft + 159, guiTop + 50, 18, 18, x, y)) {
+        if (GuiHelper.isInRect(guiLeft + 159, guiTop + buttonY + 30, 18, 18, x, y)) {
             tile.incrementFlow(0, ctrl, shift, true, button);
         }
 
@@ -176,23 +223,24 @@ public class GUIFlowGate extends GuiScreen {
     public void handleMouseInput() {
         int guiLeft = (width / 2) - (197 / 2);
         int guiTop = (height / 2) - (88 / 2);
+        int buttonY = flowInputs == null ? 20 : 24;
         int x = Mouse.getEventX() * this.width / this.mc.displayWidth;
         int y = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
         boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
         boolean ctrl = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
         int i = org.lwjgl.input.Mouse.getEventDWheel();
 
-        if (i != 0 && GuiHelper.isInRect(guiLeft + 20, guiTop + 20, 18, 18, x, y)) {
+        if (i != 0 && GuiHelper.isInRect(guiLeft + 20, guiTop + buttonY, 18, 18, x, y)) {
             tile.incrementFlow(1, ctrl, shift, i < 0, 0);
         }
-        if (i != 0 && GuiHelper.isInRect(guiLeft + 159, guiTop + 20, 18, 18, x, y)) {
+        if (i != 0 && GuiHelper.isInRect(guiLeft + 159, guiTop + buttonY, 18, 18, x, y)) {
             tile.incrementFlow(1, ctrl, shift, i > 0, 0);
         }
 
-        if (i != 0 && GuiHelper.isInRect(guiLeft + 20, guiTop + 50, 18, 18, x, y)) {
+        if (i != 0 && GuiHelper.isInRect(guiLeft + 20, guiTop + buttonY + 30, 18, 18, x, y)) {
             tile.incrementFlow(0, ctrl, shift, i < 0, 0);
         }
-        if (i != 0 && GuiHelper.isInRect(guiLeft + 159, guiTop + 50, 18, 18, x, y)) {
+        if (i != 0 && GuiHelper.isInRect(guiLeft + 159, guiTop + buttonY + 30, 18, 18, x, y)) {
             tile.incrementFlow(0, ctrl, shift, i > 0, 0);
         }
 
@@ -208,6 +256,38 @@ public class GUIFlowGate extends GuiScreen {
         if (key == 1 || key == this.mc.gameSettings.keyBindInventory.getKeyCode()) {
             this.mc.displayGuiScreen(null);
             this.mc.setIngameFocus();
+            return;
+        }
+
+        if (flowInputs != null && !tile.flowOverridden) {
+            for (int i = 0; i < flowInputs.length; i++) {
+                GuiTextField input = flowInputs[i];
+                if (!input.isFocused()) continue;
+                if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) {
+                    try {
+                        int value = Integer.parseInt(input.getText());
+                        if (value < 0) throw new NumberFormatException();
+                        if (i == 0) tile.flowRSLow = value;
+                        else tile.flowRSHigh = value;
+                        tile.sendObjectToServer(References.INT_ID, i, value);
+                        input.setFocused(false);
+                    } catch (NumberFormatException ignored) {
+                        input.setTextColor(0xFF5555);
+                    }
+                } else {
+                    String previous = input.getText();
+                    int cursor = input.getCursorPosition();
+                    int selection = input.getSelectionEnd();
+                    input.textboxKeyTyped(p_73869_1_, key);
+                    if (!input.getText().matches("[0-9]*")) {
+                        input.setText(previous);
+                        input.setCursorPosition(cursor);
+                        input.setSelectionPos(selection);
+                    }
+                    input.setTextColor(0xFFFFFF);
+                }
+                return;
+            }
         }
     }
 }
