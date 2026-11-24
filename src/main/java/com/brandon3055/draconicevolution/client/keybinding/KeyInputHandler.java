@@ -23,6 +23,7 @@ import com.brandon3055.draconicevolution.common.lib.References;
 import com.brandon3055.draconicevolution.common.network.ButtonPacket;
 import com.brandon3055.draconicevolution.common.network.MagnetTogglePacket;
 import com.brandon3055.draconicevolution.common.network.MagnetToggleSelfPickupPacket;
+import com.brandon3055.draconicevolution.common.network.NightVisionTogglePacket;
 import com.brandon3055.draconicevolution.common.network.PlacedItemPacket;
 import com.brandon3055.draconicevolution.common.network.TeleporterPacket;
 import com.brandon3055.draconicevolution.common.utils.IConfigurableItem;
@@ -50,6 +51,7 @@ public final class KeyInputHandler {
     private final KeyBinding toggleFlight;
     private final KeyBinding toggleMagnet;
     private final KeyBinding toggleMagnetSelfPickup;
+    private final KeyBinding toggleNightVision;
 
     public KeyInputHandler() {
         placeItem = new KeyBinding("key.placeItem", inNH ? Keyboard.KEY_NONE : Keyboard.KEY_V, References.MODNAME);
@@ -57,6 +59,7 @@ public final class KeyInputHandler {
         toolProfileChange = new KeyBinding("key.toolProfileChange", Keyboard.KEY_NONE, References.MODNAME);
         toggleFlight = new KeyBinding("key.toggleFlight", Keyboard.KEY_NONE, References.MODNAME);
         toggleMagnet = new KeyBinding("key.toggleMagnet", Keyboard.KEY_NONE, References.MODNAME);
+        toggleNightVision = new KeyBinding("key.toggleNightVision", Keyboard.KEY_NONE, References.MODNAME);
         if (ModHelper.isHodgepodgeLoaded) {
             toggleMagnetSelfPickup = new KeyBinding(
                     "key.toggleMagnetSelfPickup",
@@ -70,6 +73,7 @@ public final class KeyInputHandler {
         ClientRegistry.registerKeyBinding(toolProfileChange);
         ClientRegistry.registerKeyBinding(toggleFlight);
         ClientRegistry.registerKeyBinding(toggleMagnet);
+        ClientRegistry.registerKeyBinding(toggleNightVision);
         if (toggleMagnetSelfPickup != null) {
             ClientRegistry.registerKeyBinding(toggleMagnetSelfPickup);
         }
@@ -92,6 +96,8 @@ public final class KeyInputHandler {
             handleToggleMagnetKey(player);
         } else if (this.toggleMagnetSelfPickup != null && this.toggleMagnetSelfPickup.isPressed()) {
             handleToggleMagnetSelfPickup(player);
+        } else if (this.toggleNightVision.isPressed()) {
+            handleToggleNightVision(player);
         }
     }
 
@@ -112,6 +118,8 @@ public final class KeyInputHandler {
             handleToggleMagnetKey(player);
         } else if (this.toggleMagnetSelfPickup != null && this.toggleMagnetSelfPickup.isPressed()) {
             handleToggleMagnetSelfPickup(player);
+        } else if (this.toggleNightVision.isPressed()) {
+            handleToggleNightVision(player);
         }
 
         if (player != null) {
@@ -188,6 +196,15 @@ public final class KeyInputHandler {
 
         if (magnetOptional.isPresent()) {
             DraconicEvolution.network.sendToServer(new MagnetToggleSelfPickupPacket());
+        }
+    }
+
+    private void handleToggleNightVision(EntityClientPlayerMP player) {
+        // 0 for helmet
+        Optional<ItemStack> nightVisionOptional = InventoryUtils.getDEArmorInPlayerInventory(player, 0);
+
+        if (nightVisionOptional.isPresent()) {
+            DraconicEvolution.network.sendToServer(new NightVisionTogglePacket());
         }
     }
 
