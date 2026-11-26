@@ -180,7 +180,9 @@ public class CommonProxy {
 
     @SubscribeEvent
     public void onWorldUnload(WorldEvent.Unload event) {
-        this.serverInhibitorsMap.remove(event.world);
+        if (!event.world.isRemote) {
+            this.serverInhibitorsMap.remove(event.world);
+        }
     }
 
     private void initializeNetwork() {
@@ -341,44 +343,34 @@ public class CommonProxy {
 
     public void tryRepositionPlayerOnMount(int entityId) {}
 
-    public void registerInhibitor(TileDislocatorInhibitor tile) {
-        if (tile.hasWorldObj()) {
-            registerInhibitor(this.serverInhibitorsMap, tile);
-        }
-    }
-
-    protected static void registerInhibitor(Map<World, List<TileDislocatorInhibitor>> map,
-            TileDislocatorInhibitor tile) {
-        final List<TileDislocatorInhibitor> list = map.computeIfAbsent(tile.getWorldObj(), k -> new ArrayList<>());
-        if (!list.contains(tile)) {
-            list.add(tile);
-        }
-    }
-
-    public void unregisterInhibitor(TileDislocatorInhibitor tile) {
-        if (tile.hasWorldObj()) {
-            unregisterInhibitor(this.serverInhibitorsMap, tile);
-        }
-    }
-
-    protected static void unregisterInhibitor(Map<World, List<TileDislocatorInhibitor>> map,
-            TileDislocatorInhibitor tile) {
-        final List<TileDislocatorInhibitor> list = map.get(tile.getWorldObj());
-        if (list != null) {
-            list.remove(tile);
-            if (list.isEmpty()) {
-                map.remove(tile.getWorldObj());
+    public final void registerInhibitor(TileDislocatorInhibitor tile) {
+        if (isServerTile(tile)) {
+            final List<TileDislocatorInhibitor> list = this.serverInhibitorsMap
+                    .computeIfAbsent(tile.getWorldObj(), w -> new ArrayList<>());
+            if (!list.contains(tile)) {
+                list.add(tile);
             }
         }
     }
 
-    public boolean isBlockedByInhibitor(World world, EntityItem item) {
-        return isBlockedByInhibitor(this.serverInhibitorsMap, world, item);
+    public final void unregisterInhibitor(TileDislocatorInhibitor tile) {
+        if (isServerTile(tile)) {
+            final List<TileDislocatorInhibitor> list = this.serverInhibitorsMap.get(tile.getWorldObj());
+            if (list != null) {
+                list.remove(tile);
+                if (list.isEmpty()) {
+                    this.serverInhibitorsMap.remove(tile.getWorldObj());
+                }
+            }
+        }
     }
 
-    protected static boolean isBlockedByInhibitor(Map<World, List<TileDislocatorInhibitor>> map, World world,
-            EntityItem item) {
-        final List<TileDislocatorInhibitor> list = map.get(world);
+    private static boolean isServerTile(TileDislocatorInhibitor tile) {
+        return tile.hasWorldObj() && !tile.getWorldObj().isRemote;
+    }
+
+    public final boolean isBlockedByInhibitor(World world, EntityItem item) {
+        final List<TileDislocatorInhibitor> list = this.serverInhibitorsMap.get(world);
         if (list == null) {
             return false;
         }
