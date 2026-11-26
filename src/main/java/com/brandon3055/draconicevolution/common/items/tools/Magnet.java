@@ -118,13 +118,17 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
     // if changes are ever made, they should be made on both
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean hotbar) {
-        if (entity.ticksExisted % 5 != 0 || !(entity instanceof EntityPlayer player) || !isEnabled(stack)) {
+        // Server-only: the client lacks the thrower, pickup delay and server config needed to make the same
+        // decision, and a client-only teleport is never corrected for an item at rest on the server.
+        if (world.isRemote || entity.ticksExisted % 5 != 0
+                || !(entity instanceof EntityPlayer player)
+                || !isEnabled(stack)) {
             return;
         }
         if (IConfigurableItem.ProfileHelper.getBoolean(stack, References.MAGNET_SNEAK, true) && entity.isSneaking()) {
             return;
         }
-        if (BOTANIA_LOADED && SubTileSolegnolia.hasSolegnoliaAround(player)) {
+        if (BOTANIA_LOADED && hasSolegnoliaAround(player)) {
             return;
         }
 
@@ -135,9 +139,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                         .getBoundingBox(player.posX, player.posY, player.posZ, player.posX, player.posY, player.posZ)
                         .expand(range, range, range));
 
-        // account for the server/client desync
-        final double playerEyesPos = player.posY
-                + (world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight());
+        final double playerEyesPos = player.posY + player.getEyeHeight();
         final boolean skipPlayerCheck = world.playerEntities.size() < 2;
         final SelfPickUpMode selfPickupStatus = getSelfPickupStatus(stack);
         boolean playSound = false;
@@ -180,7 +182,8 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
             }
 
             boolean doMove = true;
-            if (ModHelper.isHodgepodgeLoaded && selfPickupStatus != SelfPickUpMode.ALWAYS) {
+            if (selfPickupStatus != SelfPickUpMode.ALWAYS) {
+                // func_145800_j = player that dropped the item if any
                 boolean isOwnDrop = item.func_145800_j() != null
                         && item.func_145800_j().equals(player.getCommandSenderName());
                 doMove = !isOwnDrop || selfPickupStatus == SelfPickUpMode.DELAY && item.delayBeforeCanPickup <= 0;
@@ -196,6 +199,10 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                         player.posX - 0.2 + (world.rand.nextDouble() * 0.4),
                         playerEyesPos - 0.62, // 1 block above feet / "belt height"
                         player.posZ - 0.2 + (world.rand.nextDouble() * 0.4));
+                // EntityTracker only syncs item positions every 20 ticks and skips small velocity changes,
+                // so force both; otherwise the client keeps simulating the item with its old motion.
+                item.isAirBorne = true; // force position update
+                item.velocityChanged = true; // force velocity update
             }
         }
 
@@ -207,34 +214,33 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                     0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 2F));
         }
 
-        if (!world.isRemote) {
-            List<EntityXPOrb> xp = world.getEntitiesWithinAABB(
-                    EntityXPOrb.class,
-                    AxisAlignedBB.getBoundingBox(
-                            player.posX,
-                            player.posY,
-                            player.posZ,
-                            player.posX,
-                            player.posY,
-                            player.posZ).expand(range, range, range));
-            for (EntityXPOrb orb : xp) {
-                if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
-                    if (!skipPlayerCheck) {
-                        EntityPlayer closestPlayer = world.getClosestPlayerToEntity(orb, range);
-                        if (closestPlayer == null || closestPlayer != player) continue;
-                    }
-                    if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, orb))) continue;
-                    world.playSoundAtEntity(
-                            player,
-                            "random.orb",
-                            0.1F,
-                            0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
-                    player.onItemPickup(orb, 1);
-                    player.addExperience(orb.xpValue);
-                    orb.setDead();
+        List<EntityXPOrb> xp = world.getEntitiesWithinAABB(
+                EntityXPOrb.class,
+                AxisAlignedBB
+                        .getBoundingBox(player.posX, player.posY, player.posZ, player.posX, player.posY, player.posZ)
+                        .expand(range, range, range));
+        for (EntityXPOrb orb : xp) {
+            if (orb.field_70532_c == 0 && orb.isEntityAlive()) {
+                if (!skipPlayerCheck) {
+                    EntityPlayer closestPlayer = world.getClosestPlayerToEntity(orb, range);
+                    if (closestPlayer == null || closestPlayer != player) continue;
                 }
+                if (MinecraftForge.EVENT_BUS.post(new PlayerPickupXpEvent(player, orb))) continue;
+                world.playSoundAtEntity(
+                        player,
+                        "random.orb",
+                        0.1F,
+                        0.5F * ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.8F));
+                player.onItemPickup(orb, 1);
+                player.addExperience(orb.xpValue);
+                orb.setDead();
             }
         }
+    }
+
+    @Optional.Method(modid = "Botania")
+    private static boolean hasSolegnoliaAround(EntityPlayer player) {
+        return SubTileSolegnolia.hasSolegnoliaAround(player);
     }
 
     public static boolean isEnabled(ItemStack itemStack) {
@@ -318,7 +324,7 @@ public class Magnet extends ItemDE implements IBauble, IConfigurableItem {
                         + " "
                         + StatCollector.translateToLocal("info.de.blockRange.txt"));
         list.add(getStatusString(stack));
-        if (ModHelper.isHodgepodgeLoaded) list.add(getSelfPickupStatusString(stack));
+        list.add(getSelfPickupStatusString(stack));
     }
 
     @Optional.Method(modid = "gtnhlib")
